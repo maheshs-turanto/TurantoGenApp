@@ -1,0 +1,143 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    ViewBag.Title = "Delete Data Metric";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+      <strong> 	  
+		Data Metric         
+		<small>Delete - @Html.DisplayFor(model => model.DisplayValue)</small>
+      </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+				<div>
+               
+ </div>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+<label id="ErrMsg" style="color:brown;vertical-align:middle;font-size:90%;"></label>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+								
+		
+	<div class="row">	
+        <div class="col-md-12 col-sm-12 col-xs-12">	
+            <div class="card AppForm">	
+                <div class="card-header text-white bg-danger clearfix">	
+                    <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>	
+                </div>	
+                <div class="card-body">
+    <dl class="dl-horizontal">
+		 <dt>
+            @Html.DisplayNameFor(model => model.T_AssociatedDataMetricTypeID)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.t_associateddatametrictype.DisplayValue)
+			 @Html.HiddenFor(model => model.T_AssociatedDataMetricTypeID)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Name)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Name)
+			@Html.HiddenFor(model => model.T_Name)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Aggregate)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Aggregate)
+			@Html.HiddenFor(model => model.T_Aggregate)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_BackGroundColor)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_BackGroundColor)
+			@Html.HiddenFor(model => model.T_BackGroundColor)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_ToolTip)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_ToolTip)
+			@Html.HiddenFor(model => model.T_ToolTip)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_EntityName)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_EntityName)
+			@Html.HiddenFor(model => model.T_EntityName)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_FontColor)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_FontColor)
+			@Html.HiddenFor(model => model.T_FontColor)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Hide)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Hide)
+			@Html.HiddenFor(model => model.T_Hide)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_AggregatePropertyName)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_AggregatePropertyName)
+			@Html.HiddenFor(model => model.T_AggregatePropertyName)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Roles)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Roles)
+			@Html.HiddenFor(model => model.T_Roles)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_ClassIcon)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_ClassIcon)
+			@Html.HiddenFor(model => model.T_ClassIcon)
+        </dd>
+    </dl>
+
+	  </div>	
+                </div>	
+            </div>	
+        </div>
+	<br/>
+        <div class="row deletefix">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+         <a class="btn btn-default btn-sm" Onclick="goBack('@Url.Action("Index","T_DataMetric")');">Back</a>
+ 
+	@if ( User.CanDelete("T_DataMetric"))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>
+
+<script>
+    $("input[type='submit']").click(function (event) {
+        var returnvalue = true;
+        var alertmsg = "";
+        if (alertmsg.length > 0)
+            OpenAlertPopUp("Warning!", alertmsg);
+        return returnvalue;
+    });
+</script>
+
+ 

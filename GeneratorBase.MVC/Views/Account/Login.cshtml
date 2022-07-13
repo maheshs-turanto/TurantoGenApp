@@ -1,0 +1,373 @@
+﻿@model GeneratorBase.MVC.Models.LoginViewModel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>
+        @{
+           ViewBag.Title = "Log in";
+            Layout = null;
+            var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+            var AppName = commonObj.AppName();
+            var ApkUrl = commonObj.AppURL();
+            var CreateAnAccount = commonObj.EnableCreateAnAccount();
+            var CompanyProfile = commonObj.getCompanyProfile(User);
+			var maintenancemode = commonObj.MaintenanceMode().ToLower() == "true" ? true : false;
+			var url = Url.Content("~/logo/logo_white.png");
+            if (HttpContext.Current.Request.Url.Host == "localhost")
+            { url = Url.Content("~/logo/logo_white.png"); }
+            var AppLogo = url;
+            var urlbg = Url.Content("../logo/Loginbg.png");
+            if (HttpContext.Current.Request.Url.Host == "localhost")
+            { urlbg = Url.Content("~/logo/Loginbg.png"); }
+            var LoginBg = urlbg;
+            var AppLogoWidth = CompanyProfile.LogoWidth == null ? "155px" : CompanyProfile.LogoWidth;
+            var AppLogoHeight = CompanyProfile.LogoHeight == null ? "29px" : CompanyProfile.LogoHeight;
+            string apkname = ApkUrl.Replace(" ", "") + ".apk";
+
+            if (!CompanyProfile.Logo.Contains("logo_white"))
+            {
+                AppLogo = Url.Action("DisplayLoginImage", "Account", new { id = Convert.ToInt64(CompanyProfile.Logo) });
+            }
+            if (!CompanyProfile.LoginBg.Contains("Loginbg"))
+            {
+                LoginBg = Url.Action("DisplayLoginImage", "Account", new { id = Convert.ToInt64(CompanyProfile.LoginBg) });
+            }
+        }
+		@ViewBag.Title-@AppName.ToString()
+    </title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    @Styles.Render("~/Content/Newcss")
+    <link href="@Url.Content("~/Content/" + commonObj.getTenantSiteScript(User))" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Content/csstheme")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="@Url.Content("~/Content/vendor/jquery/dist/jquery.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/vendor/popper.js/dist/umd/popper.js")" type="text/javascript"></script>
+    <script>		
+        function OpenQuickQddPopUp(dvName) {
+            var url = $("#" + dvName).data("url");
+            $("#" + dvName).load(url);
+        }
+    </script>
+    <link href="~/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<style>
+	.Bgcover{
+            background-repeat:no-repeat !important;
+            background-position:center center !important;
+        -webkit-background-size: cover !important;
+  -moz-background-size: cover !important;
+  -o-background-size: cover !important;
+  background-size: cover !important;
+        }
+        .modal-backdrop {
+            position: relative;
+        }
+        .modal-header-login {
+            padding: 15px;
+            border-bottom: 1px solid #4197ca !important;
+            min-height: 16.428571429px;
+            background: #4197ca !important;
+            color: white !important;
+        }
+        .modal-content-login {
+            position: relative;
+            background-color: #fff;
+            border: 1px solid #62a8d1;
+            border: 1px solid rgb(98, 168, 209);
+            border-radius: 0px;
+            -webkit-box-shadow: 0 3px 9px rgb(19, 57, 80);
+            box-shadow: 0 3px 9px rgb(19, 57, 80);
+            background-clip: padding-box;
+            outline: 0;
+        }
+    </style>
+    </head>
+<body>
+    <div class="wrapper" style='background:#2f4050 url(@LoginBg)no-repeat;background-size: cover;'>
+        <div class="block-center mt-4 wd-xl">
+            <!-- START card-->
+            <div class="card card-flat">
+                
+                <div class="card-body">
+				 <center>
+                        <img src="@AppLogo" class="block-center rounded" style="width: @AppLogoWidth; height:@AppLogoHeight; margin-bottom:10px;" alt="Logo - @AppName.ToString()" title="Logo - @AppName.ToString()">
+                    </center>
+                    <h3 class="text-center text-primary">
+                        @AppName.ToString()</h3>
+                    
+
+
+                    <div class="mb-3">
+                        @if (!maintenancemode)
+                        {
+                            @*<h3>Welcome to @AppName.ToString()</h3>*@
+                        }
+                        else
+                        {
+                            //<h6 class="alert alert-mantainance" ><span class="fa fa-exclamation-triangle"></span> @commonObj.MaintenanceModeAlertMessage()</h6>
+                        }
+                        <h3 alt="Sign-in" title="Sign-in" style="display:none;">Sign-in </h3>
+                        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+                            <div class="form-group">
+                                <div class="input-group with-focus">
+                                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control border-right-0", @placeholder = "Email or Username", @autofocus = "autofocus", @autocomplete = "off", @alt = "Email or Username", @title = "Email or Username" })
+                                    <div class="input-group-append"><span class="input-group-text text-muted bg-transparent border-left-0"><em class="fa fa-envelope"></em></span></div>
+                                   
+                                </div>
+								 @Html.ValidationMessageFor(m => m.UserName)
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group with-focus">
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control border-right-0", @placeholder = "Password", @autocomplete = "off", @alt = "Password", @title = "Password" })
+                                    <div class="input-group-append"><span class="input-group-text text-muted bg-transparent border-left-0"><em class="fa fa-lock"></em></span></div>
+                                    
+                                </div>
+								@Html.ValidationMessageFor(m => m.Password)
+                            </div>
+							 <button id="Login" class="btn btn-block btn-primary" type="submit">Login</button>
+                            <div class="clearfix">
+                                <div class="float-right mt-1">
+                                    <a class="text-muted" href="#" data-placement="top" data-original-title="Forgot Password" data-toggle="modal" data-target="#popupForgotPassword" onclick=@Html.Raw("OpenQuickQddPopUp('dvForgotPassword');") style="color:white">Forgot password?</a>
+
+                                </div>
+                            </div>
+                           
+
+
+                            if (!string.IsNullOrEmpty(CreateAnAccount) && CreateAnAccount.ToLower() == "true")
+                            {
+                                <span class="createaccount">or <a href="#" data-placement="top" data-original-title="Create an account" data-toggle="modal" data-target="#popupCreateanaccount" onclick=@Html.Raw("OpenQuickQddPopUp('dvCreateanaccount');") alt="Create an account" title="Create an account">Create an account</a></span>
+                            }
+							if (commonObj.PreventMultipleLogin().ToLower() == "yes")
+                            {
+                                <div class="clearfix">
+                                    <div class="float-right mt-1">
+                                        <label class="text-muted" style="color:white">Logging in will disconnect all of your other sessions. </label>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+
+
+                    </div>
+
+                </div>
+            </div><!-- END card-->
+<center style="margin-top:20px;">
+            <a id="androidapp" href="~/@apkname" target="_self">
+                <img style="width:auto" src="~/Content/images/downloadapk.png" alt="Download Android APK" title="download android apk">
+            </a>
+        </center>
+            <div class="p-3 text-center"><span class="mr-2">&copy;</span><span style="color:white;">Generated With </span><span class="mr-2">-</span><span><a href="@CompanyProfile.CreatedByLink" target="_blank" alt="http://www.turanto.com" title="http://www.turanto.com">@CompanyProfile.CreatedByName</a></span></span></div>
+        </div>
+    
+
+
+            </div>
+		
+		 @if (CompanyProfile.LegalInformation != null || CompanyProfile.PrivacyPolicy != null
+                || CompanyProfile.TermsOfService != null || CompanyProfile.ThirdParty != null || CompanyProfile.Emailto != null
+                || CompanyProfile.CreatedBy != null)
+    {
+        var baseUri = commonObj.getBaseUri();
+        <center style="display:none;">
+            <br>
+            <footer>
+                <span>
+                    @{var cntPipe = 0;}
+                    @if (CompanyProfile.LegalInformationDisplay == "1" || CompanyProfile.LegalInformationDisplay == "2")
+                    {
+                        cntPipe++;
+                        <a href="@Html.Encode(baseUri + CompanyProfile.LegalInformationLink)" target="_blank" alt="Legal Information" title="Legal Information">@CompanyProfile.LegalInformation</a>
+                    }
+                    @if (CompanyProfile.TermsOfServiceDisplay == "1" || CompanyProfile.TermsOfServiceDisplay == "2")
+                    {
+                        if (cntPipe > 0)
+                        {
+                            <span>|</span>;
+                        }
+                        else
+                        {
+                            cntPipe++;
+                        }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.TermsOfServiceLink)" target="_blank" alt="Terms Of Service" title="Terms Of Service">
+                            @CompanyProfile.TermsOfService
+                        </a>
+                    }
+                    @if (CompanyProfile.PrivacyPolicyDisplay == "1" || CompanyProfile.PrivacyPolicyDisplay == "2")
+                    {
+                        if (cntPipe > 0)
+                        {
+                            <span>|</span>;
+                        }
+                        else
+                        {
+                            cntPipe++;
+                        }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.PrivacyPolicyLink)" target="_blank" alt="Privacy Policy" title="Privacy Policy">
+                            @CompanyProfile.PrivacyPolicy
+                        </a>
+                    }
+                    @if (CompanyProfile.ThirdPartyDisplay == "1" || CompanyProfile.ThirdPartyDisplay == "2")
+                    {
+                        if (cntPipe > 0)
+                        {
+                            <span>|</span>;
+                        }
+                        else
+                        {
+                            cntPipe++;
+                        }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.ThirdPartyLink)" target="_blank" alt="@CompanyProfile.ThirdParty" title="@CompanyProfile.ThirdParty">
+                            @CompanyProfile.ThirdParty
+                        </a>
+                    }
+                </span>
+                <p>&copy; Generated With <a href="@CompanyProfile.CreatedByLink" target="_blank" alt="http://www.turanto.com" title="http://www.turanto.com">@CompanyProfile.CreatedByName</a></p>
+            </footer>
+        </center>
+    }
+    else
+    {
+        <center>
+            <br>
+            <footer>
+                <p>&copy; Generated With Turanto</p>
+            </footer>
+        </center>
+    }
+  
+	<footer class="footer navbar-fixed-bottom">
+        <center>
+            @Html.Raw(CompanyProfile.Disclaimer)
+        </center>
+    </footer>
+
+    <div style="position:absolute;bottom:0px; width:100%" class="supported">
+        <div class="mx-auto text-center" style="width:100%">
+            <div class="alert alert-secondary font-weight-bold m-0 mb-0 p-1" style="font-size:18px;border-radius:0px;">
+                <i aria-hidden="true" class="fa fa-exclamation-triangle text-danger"></i> Internet Explorer not supported. Preferred browsers are Chrome and Edge.
+            </div>
+        </div>
+    </div>
+
+	<div class="modal fade" id="popupCreateanaccount" tabindex="-1" role="dialog" aria-labelledby="popupCreateanaccountLabel">
+        <div class="modal-dialog" style="padding-top:8px;">
+            <div class="modal-content">
+                <div class="modal-header  bg-primary">
+				<h4 class="modal-title" id="popupCreateanaccountLabel">Create an account</h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-hidden="true">&times;</button>                    
+                </div>
+                <div class="modal-body">
+                    <div id="dvCreateanaccount" data-url="@Url.Action("Register", "Account", null)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="modal fade" id="popupForgotPassword" tabindex="-1" role="dialog" aria-labelledby="popupForgotPasswordLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">                    
+                    <h4 class="modal-title" id="popupForgotPasswordLabel"> Forgot Password</h4>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="dvForgotPassword" data-url="@Url.Action("ForgotPassword", "Account", null)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="PopupSubmission" tabindex="-1" role="dialog" aria-labelledby="PopupSubmissionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h4 id="PopupSubmissionLabel"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:white">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="dvPopupSubmission">
+                        <h4 class="text-center SubmissionHeader"></h4>
+                    </div>
+                    <br />
+                    <div class="text-center">
+                        <button type="button" id="okPopupSubmission" class="btn btn-primary btn-lg" data-dismiss="modal" aria-hidden="true" style="width:100px" onclick="return true;">Ok</button>
+                        <button type="button" id="closePopupSubmission" class="btn btn-default btn-lg" data-dismiss="modal" aria-hidden="true" onlick="return false;" style="width:100px">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+        <!-- /container -->
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/jqueryval")
+		<script>
+            $("button[type='submit']").click(function () {
+                if ('@User.Original.Identity.IsAuthenticated' == 'True') {
+                    var r = confirm("You are already logged in as @User.Original.Identity.Name in other tab. Press OK to continue Login or Logout from other tabs.");
+                    if (r == true) {
+                        window.location.replace('@Url.Action("Index","Home")'); return false;
+                    } else {
+                        location.reload(true);
+                        return false;
+                    }
+                }
+            });
+        </script>
+
+    @if (Request != null && (Request.Browser.Browser == "IE" || Request.Browser.Browser == "InternetExplorer" ))
+    {
+    <script>
+
+        $(document).ready(function () {
+            OpenCustomPopUp("<i class='fa fa-exclamation-triangle text-danger'></i> Internet Explorer is not supported !", "<span class='text-danger'> Please Use Google Chrome or Microsoft Edge.</span>", "Ok", "");
+            $("#Login").attr('disabled', 'disabled');
+            $('a').css('cursor', 'default');
+        });
+    </script>
+    }
+
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $("#top-bar a").click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+            detectmob();
+        });
+        function detectmob() {
+            if (navigator.userAgent.match(/Android/i)) {
+                document.getElementById("androidapp").style.visibility = "visible";
+            }
+            else
+                document.getElementById("androidapp").style.display = "none";
+        }
+          function OpenCustomPopUp(header, msg, ok, close) {
+                    $('#PopupSubmissionLabel').html(header);
+                    $("#" + "PopupSubmission").modal('show');
+                    $("#" + "PopupSubmission").find('.modal-dialog.ui-draggable').attr("style", "width:50%");
+                    if (ok.length > 0)
+                        $("#okPopupSubmission").html(ok);
+                    else $("#okPopupSubmission").hide();
+                    if (close.length > 0)
+                        $("#closePopupSubmission").html(close);
+                    else $("#closePopupSubmission").hide();
+                    $("#" + "dvPopupSubmission").html(msg);
+                }
+    </script>
+    </body>
+</html>
+ 

@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Report - "+ ViewBag.DisplayName;
+}
+<style>
+    .footer {
+        display: none !important;
+    }
+
+    #Lnk_Print {
+        display:none !important;
+    }
+</style>
+
+
+<div class="content-heading">
+    
+    <div class="TitleName"><strong><a href="@Url.Action("Index","ReportList")">Reports</a><small>@ViewBag.DisplayName</small></strong></div>
+    <div class="ml-auto">
+        <div class="btn-group float-right">
+            <div class="dropdown">
+                <a class="btn btn-secondary" href="@Url.Action("Index","ReportList")">
+                    <i class="fa fa-chevron-circle-left"> </i> Back
+
+                </a>
+
+                
+            </div>
+
+
+        </div>
+    </div>
+    
+</div>
+
+   
+
+@if ((ViewBag.IsAuthenticated != null && ViewBag.IsAuthenticated) || User.IsAdmin)
+{
+    <body style="margin:0px !important;padding:0px !important;overflow:hidden !important">
+        <iframe id="frame" src="../Report/ReportViewer.aspx?report=@ViewBag.ReportName" frameborder="0" style="overflow:hidden;height:100%;min-width:100%"></iframe>
+    </body>
+    <script type="text/javascript">
+		$('#accordionSidebar').addClass('toggled');
+        function resizeIframe() {
+            var height = document.documentElement.clientHeight;
+            height -= document.getElementById('frame').offsetTop;
+            // not sure how to get this dynamically
+            height -= 50; /* whatever you set your body bottom margin/padding to be */
+            document.getElementById('frame').style.minHeight = height + "px";
+        };
+        document.getElementById('frame').onload = resizeIframe();
+        window.onresize = resizeIframe();
+    </script>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="text-primary">
+                You are not authorised to view this report.
+            </h2>
+        </div>
+    </div>
+}

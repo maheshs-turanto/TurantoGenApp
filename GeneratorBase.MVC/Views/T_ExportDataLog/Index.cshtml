@@ -1,0 +1,53 @@
+﻿@model T_ExportDataLogIndexViewModel
+@{
+    ViewBag.Title = "Export Data Log List";
+	string templatename = ("~/Views/T_ExportDataLog/" + Model.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+    if (Request.Browser.IsMobileDevice)
+    {
+     templatename = ("~/Views/T_ExportDataLog/" + Model.TemplatesName + ".Mobile.cshtml").Replace("?IsAddPop=true", "");
+    }
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Log";
+}
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("Index")">@EntityDisplayName</a><small>List</small></strong></div>
+</div>
+<a style="display:none;" href="@Url.Action("SwitchView", "Account", new { mobile = true, returnUrl = Request.Url.PathAndQuery })" id="ShowMobileView">
+    <span class="glyphicon glyphicon-globe" style="color:white;"></span> D<span class="icon"></span>
+</a>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+		  $('.edit').find('input[type=text]').hover(function () {
+            $(this).attr("title", $(this).val());
+
+        });
+    });
+</script>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvT_ExportDataLogFilter"></div>@Html.Partial(templatename, Model)
+                </div>
+            </div>
+			<style>
+.CEntityCount {
+display:none !important;
+}
+
+</style>
+<script>
+    window.onresize = function (event) {
+        if (SetWidthHeight() != undefined)
+            SetWidthHeight()
+    }
+</script>
+<script>
+    function SetWidthHeight() {
+        if ($(window).width() <= 767) {
+            $("#ShowMobileView")[0].click();
+        }
+    }
+</script>
+
+ 

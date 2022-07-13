@@ -1,0 +1,185 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@{
+    ViewBag.Title = "Global DateTime Setting";
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+<div class="content-heading">
+    <div class="col-lg-8">
+        <strong>
+            @{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+
+
+            <a href="@Url.Action("Index", "Admin")"> Admin</a>  <a href="@Url.Action("Index")"> DateTime setting </a>
+            <small> Global DateTime Setting</small>
+        </strong>
+    </div>
+    <div class="col-lg-4">
+
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+<div class="">
+    <div class="card">
+        <div class="card-body">
+            @using (Html.BeginForm("GlobalDateTimeSetting", "PropertyValidationandFormat", new { UrlReferrer = Convert.ToString(ViewData["PropertyValidationandFormatParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmPropertyValidationandFormat" }))
+            {
+                @Html.AntiForgeryToken();
+                                        Html.ValidationSummary(true);
+                                        Html.EnableClientValidation();
+                                        <input type="hidden" id="ErrMsg" />
+                                        @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+                                        <div id="errorContainer" style="display: none">
+                                            <div id="errorsMsg"></div>
+                                            <div id="errors"></div>
+                                        </div>
+                                        <div id="divDisplayThresholdLimit" style="display:none;">
+                                        </div>
+                                        <div id="divDisplayBRmsgMandatory" style="display:none;">
+                                        </div>
+                                        <div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+                                        </div>
+                                        <div id="divDisplayCodeFragment" style="display:none;">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="AppForm">
+                                                    <div class="">
+                                                        <div class="row">
+                                                            @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                                                            @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+                                                            @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default AppForm">
+                                                                    <div class="card-body">
+                                                                        <label class="text-warning">Action will restart the application, make sure that there is no process running. It will take one or two minutes.</label> <br /><br />
+                                                                        <div class="row">
+
+
+
+                                                                            <div class='col-sm-6' id="dvRegExPattern">
+                                                                                <div class='form-group' title="RegEx Pattern">
+                                                                                    <label> Date Format </label>
+
+                                                                                    @Html.TextBoxFor(model => model.RegExPattern, new { @class = "form-control", @Value = Convert.ToString(ViewBag.DateFormat) })
+
+
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class='col-sm-6' id="dvMaskPattern">
+                                                                                <div class='form-group' title="Mask Pattern">
+                                                                                    <label>Time Format </label>
+
+                                                                                    @Html.TextBoxFor(model => model.MaskPattern, new { @class = "form-control", @Value = Convert.ToString(ViewBag.TimeFormat) })
+
+
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class='col-sm-6' id="dvErrorMessage">
+                                                                                <div class='form-group' title="Error Message">
+                                                                                    <label>TimeZone</label>
+
+                                                                                    @*@Html.TextBoxFor(model => model.ErrorMessage, new { @class = "form-control", @Value = Convert.ToString(ViewBag.TimeZone) })*@
+                                                                                    @Html.DropDownList("ErrorMessage", null, "-- Select --", new { @class = "form-control" })
+
+
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="divDisplayThresholdLimit1">
+                                        </div>
+                                        <div id="divDisplayBRmsgMandatory1">
+                                        </div>
+                                        <div id="divDisplayBRmsgBeforeSaveProp1">
+                                        </div>
+                                        <div id="divDisplayCodeFragment1">
+                                        </div>
+                if (ViewBag.IsPartial == null)
+                {
+                    <a class="btn btn-secondary" onclick="goBack('@Url.Action("Index","PropertyValidationandFormat")');" alt="Cancel" title="Cancel">Cancel</a>
+                }
+                if (ViewBag.IsPartial == null)
+                {
+                    <input type="submit" name="command" value="Save" class="btn btn-primary" alt="Save" title="Save" />
+                    <input type="button" onclick="ResetDefault();" name="command" value="Reset Deault" class="btn btn-primary" alt="Reset Deault" title="Reset Deault" />
+                }
+
+                <input type="hidden" name="hdncommand" value="" />
+                <br /><br />
+            }
+
+            <div class="crad-body">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#Des_Table">
+                    <span class="fa fa-chevron-down"></span> Help - Date Time Format
+                </a>
+                <div id="Des_Table" class="table-responsive collapse" style="overflow-x:auto;">
+                    <table class="table table-hover table-striped default-bordered default-condensed">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Format
+                                </th>
+                                <th>
+                                    Result
+                                </th>
+                            </tr>
+                            <tr> <td>MM/dd/yyyy (Default)</td><td>	05/29/2015 </td></tr>
+                            <tr> <td>dd/MM/yyyy </td><td>	29/05/2015 </td></tr>
+                            <tr> <td>dd/MMM/yyyy </td><td>	29/May/2015 </td></tr>
+                            <tr> <td>dd-MMM-yyyy </td><td>	29-May-2015 </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy </td><td>	Friday, 29 May 2015 </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy HH:mm </td><td>	Friday, 29 May 2015 05:50 </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy hh:mm tt </td><td>	Friday, 29 May 2015 05:50 AM </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy H:mm </td><td>	Friday, 29 May 2015 5:50 </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy h:mm tt </td><td>	Friday, 29 May 2015 5:50 AM </td></tr>
+                            <tr> <td>dddd, dd MMMM yyyy HH:mm:ss </td><td>	Friday, 29 May 2015 05:50:06 </td></tr>
+                            <tr> <td>MM/dd/yyyy HH:mm </td><td>	5/29/2015 5:50 </td></tr>
+                            <tr> <td>MM/dd/yyyy hh:mm tt </td><td>	5/29/2015 5:50 AM</td></tr>
+                            <tr> <td>MM/dd/yyyy H:mm </td><td>	5/29/2015 5:50 </td></tr>
+                            <tr> <td>MM/dd/yyyy h:mm tt </td><td>	5/29/2015 5:50 AM</td></tr>
+                            <tr> <td>MM/dd/yyyy HH:mm:ss </td><td>	5/29/2015 5:50:06 </td></tr>
+                            <tr> <td>MMMM dd </td><td>	May 29 </td></tr>
+                            <tr> <td>HH:mm </td><td>	5:50 </td></tr>
+                            <tr> <td>hh:mm tt </td><td>	5:50 AM </td></tr>
+                            <tr> <td>H:mm </td><td>	5:50 </td></tr>
+                            <tr> <td>h:mm tt </td><td>	5:50 AM </td></tr>
+                            <tr> <td>HH:mm:ss </td><td>	5:50:06 </td></tr>
+                            <tr> <td>yyyy MMMM </td><td>	2015 May </td></tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function ResetDefault()
+    {
+        $('#RegExPattern').val('Default');
+        $('#ErrorMessage').val('Default');
+        $('#MaskPattern').val('Default');
+        $("input[type='submit']").click();
+    }
+</script>

@@ -1,0 +1,392 @@
+﻿@model GeneratorBase.MVC.Models.T_DocumentTemplate
+@using PagedList;
+
+@{
+    ViewBag.Title = "Edit Document Template";
+	var EditPermission = User.CanEditItem("T_DocumentTemplate", Model, User);
+	//var DeletePermission = User.CanDeleteItem("T_DocumentTemplate", Model, User);
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_DocumentTemplate").Properties;
+	Layout = null;
+
+	bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"])==true)
+    {
+        isRecordReadOnly = true;
+		ViewData["RecordReadOnly"]=true;
+    }
+	var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_DocumentTemplate");
+	var NonViewableProperties = User.CanNotView("T_DocumentTemplate");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_DocumentTemplate", User);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+		if(Property=="T_AutoNo")
+		 return new { @class = "form-control", @readonly = "readonly" };
+        if (User.CanEdit("T_DocumentTemplate", Property))
+        {
+            return new { @class = "form-control"};
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+		 if ($('#EntityT_DocumentTemplateDisplayValue').has('option').length > 0) {
+			var RecId = $("#Id").val()
+            $("#T_DocumentTemplateDD").append($("#EntityT_DocumentTemplateDisplayValue").html());
+            $("#T_DocumentTemplateDD").val(RecId);
+			var text = $("option:selected", $("#T_DocumentTemplateDD")).text();
+            $("#T_DocumentTemplateDD").attr('data-toggle', 'tooltip')
+            $("#T_DocumentTemplateDD").attr('title', text);
+            var lastOptionVal = $('#T_DocumentTemplateDD option:last-child').val();
+            var fristOptionVal = $('#T_DocumentTemplateDD option:first-child').val();
+            if (lastOptionVal == RecId)
+			{
+                $('#next').hide();
+				$('#SaveAndContinue').hide();
+				}
+            if (fristOptionVal == RecId)
+                $('#prev').hide();
+			} else {  $('#dvsavenext').hide(); $('#SaveAndContinue').hide(); }
+			LockHostDropdownOnEditQuick('@Convert.ToString(ViewData["AssociatedType"])','@Convert.ToBoolean(ViewData["IsFilter"])');
+        }
+        catch (ex) { }
+    });
+	 $(document).ready(function () {
+        $('input[type=text], textarea,input[type=multiline]').hover(function () {
+            $(this).attr("title", $(this).val());
+        });
+
+    });
+</script>
+<style>.multiselect-container{
+        height: 250px !important;
+}</style>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateRestrictDropdownValueRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+	 @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+		<input type="hidden" id="ErrMsg" />
+		<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+
+<div class="col-sm-6">
+     <h4>
+                <span id="HostingEntityDisplayValue">
+				 @Html.DisplayFor(model => model.DisplayValue)
+    </span>
+            </h4>
+    </div>
+
+	@if (EditPermission && !HideAction)
+            {
+            <div class="col-sm-6" id="dvsavenext">
+                <button class="btn btn-default btn-xs float-right" id="next" onclick="@Html.Raw("nextFun('T_DocumentTemplate')")">Next >></button>
+                @Html.DropDownList("T_DocumentTemplateDD", null, null, new { @onchange = "FillDisplayValueQEdit('T_DocumentTemplate')", @required = "required", @class = "float-right", @Style = "height: 22px;width: 170px;" })
+                <button class="btn btn-default btn-xs float-right" id="prev" onclick="@Html.Raw("prevFun('T_DocumentTemplate')")"><< Prev</button>
+            </div>
+        }
+
+
+</div>
+	
+@using (Html.BeginForm("EditQuick","T_DocumentTemplate",new {UrlReferrer =Convert.ToString(ViewData["T_DocumentTemplateParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditT_DocumentTemplate" }))
+{
+     Html.ValidationSummary(true);
+     Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+	if (NonViewableProperties != null) { @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))}
+			@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+		 <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+						<div>
+						    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+											<div class="row">
+												<div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="card card-default" id="dvGroupT_DocumentTemplateBasicInformation">
+                                        <div class="card-header clearfix">
+                                            
+											
+									<h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+								</div>
+                                <div class="card-body row">
+@if(!NonViewableProperties.Contains("T_AutoNo"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+							
+								<label  >@Html.LabelFor(model => model.T_AutoNo)   </label>
+								<div class='input-group' title="Auto No.">
+                                
+											
+											@Html.TextBoxFor(model => model.T_AutoNo,  getHtmlAttributes("T_AutoNo"))
+																							@Html.ValidationMessageFor(model => model.T_AutoNo)
+									
+								
+                             </div>
+						</div>
+				} 
+@if(!NonViewableProperties.Contains("T_EntityName"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EntityName">
+							
+								<label  >@Html.LabelFor(model => model.T_EntityName)  <span class="text-danger-reg">*</span> </label>
+								<div class='input-group' title="Entity Name">
+                                
+											
+											@Html.TextBoxFor(model => model.T_EntityName,  getHtmlAttributes("T_EntityName"))
+																							@Html.ValidationMessageFor(model => model.T_EntityName)
+									
+								
+                             </div>
+						</div>
+				} 
+@if(!NonViewableProperties.Contains("T_Name"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+							
+								<label  >@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+								<div class='input-group' title="Name">
+                                
+											
+											@Html.TextBoxFor(model => model.T_Name,  getHtmlAttributes("T_Name"))
+																							@Html.ValidationMessageFor(model => model.T_Name)
+									
+								
+                             </div>
+						</div>
+				} 
+@if(!NonViewableProperties.Contains("T_Description"))
+{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+							
+								<label  >@Html.LabelFor(model => model.T_Description) </label>
+								<div class='input-group' title="Description">
+                                
+								@Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+									@Html.ValidationMessageFor(model => model.T_Description)
+								
+                             </div>
+						</div>
+} 
+				@if(!NonViewableProperties.Contains("T_Document") && User.CanView("Document"))
+				{
+								 <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Document">
+                            <div class='form-group' title="Document">
+							@Html.TextBoxFor(model => model.T_Document, new { @class = "d-none" })
+                                   <label  >@Html.LabelFor(model => model.T_Document) </label>
+                                     
+									 <div style="position:relative;">
+										 <a class='btn btn-primary btnupload' href='javascript:;'>
+											 Upload File
+										 <input id="File_T_Document"    type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_T_Document" onchange='uploadedFileName("upload-file-infoFile_T_Document",$(this).val());'>
+										</a>
+										&nbsp;
+										<span class='label uploadlblFix' id="upload-file-infoFile_T_Document"></span>
+	
+										
+										 												@if (Model.T_Document > 0)
+                                                												{
+												 													<a href="@Url.Action("Download", "Document", new { id = Model.T_Document })" class="small pull-left" style="vertical-align:middle;font-size: 11px;" id='@Html.Raw("adownloadEditT_Document"+Model.Id)'></a>
+													<script>
+														displayDocumentNameEdit('@Url.Action("GetDocumentName", "Document", new { id = Model.T_Document})', '@Model.Id','T_Document')
+													</script>
+																								}
+													<span class='label uploadlblFix pull-left' style="color: brown; vertical-align: middle; font-size: 10px;" id="upload-file-infoFile_T_Document"></span>
+											                                         								
+																			</div> 
+									
+                            </div>
+                   </div>
+				}
+@if(!NonViewableProperties.Contains("T_AllowedRoles"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AllowedRoles">
+							
+								<label  >@Html.LabelFor(model => model.T_AllowedRoles)   </label>
+								<div class='input-group' title="Allowed Roles">
+                                
+											
+											@Html.TextBoxFor(model => model.T_AllowedRoles,  getHtmlAttributes("T_AllowedRoles"))
+																							@Html.ValidationMessageFor(model => model.T_AllowedRoles)
+									
+								
+                             </div>
+						</div>
+				} 
+							</div>
+                         </div>
+                      </div>
+       </div>
+											<div class="row">
+												<div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="card card-default" id="dvGroupT_DocumentTemplateUIInformation">
+                                        <div class="card-header clearfix">
+                                            
+											
+									<h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+								</div>
+                                <div class="card-body row">
+@if(!NonViewableProperties.Contains("T_DisplayType"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayType">
+							
+								<label  >@Html.LabelFor(model => model.T_DisplayType)   </label>
+								<div class='input-group' title="Display Type">
+                                
+											
+											@Html.TextBoxFor(model => model.T_DisplayType,  getHtmlAttributes("T_DisplayType"))
+																							@Html.ValidationMessageFor(model => model.T_DisplayType)
+									
+								
+                             </div>
+						</div>
+				} 
+@if(!NonViewableProperties.Contains("T_Disable"))
+{
+	                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+							  <div class="form-group" title="Disable?">
+                                <label  >
+                                    @Html.LabelFor(model => model.T_Disable) 
+                                </label>
+								
+									@Html.CheckBox("T_Disable", Model.T_Disable.HasValue ? Model.T_Disable : false)
+                                    @Html.ValidationMessageFor(model => model.T_Disable)
+                                
+								</div>
+                            </div>
+				} 
+							</div>
+                         </div>
+                      </div>
+       </div>
+			@Html.HiddenFor(model => model.T_DocumentType, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_ActionType, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_DefaultOutputFormat, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_AttachDocumentTo, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_DisplayOrder, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_ToolTip, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_BackGroundColor, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_FontColor, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_RecordAdded, new { @class = "form-control" })
+			@Html.HiddenFor(model => model.T_RecordAddedUser, new { @class = "form-control" })
+	            </div>
+        </div>
+	</div>
+</div>
+		 @Html.AntiForgeryToken();
+		 var businessrule1 = User.businessrules.Where(p => p.EntityName == "T_DocumentTemplate").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+		  var typelist = string.Join(",", businessrule1.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+		 <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true" onclick="$('#T_DocumentTemplateRefresh').click();">Cancel</button>
+		 if (EditPermission)
+         {
+			    <input type="submit" id="command" name="command" value="Save & Close" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'T_DocumentTemplate','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+				<input type="submit" id="sevranBtn" style="display:none;" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,false,'T_DocumentTemplate','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist','True');" />
+                if (!HideAction)
+				{
+				<button type="button" id="SaveAndContinue" name="SaveAndContinue" class="btn btn-primary btn-sm" onclick="@Html.Raw("SaveAndContinueEdit('T_DocumentTemplate',event)")">Save & Next</button>
+				}
+				<input type="hidden" name="hdncommand" value="" />
+  		 }	
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script>
+    $("input[type='submit']").click(function (event) {
+	if (!$("#frmQEditT_DocumentTemplate").valid()) return;
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_DocumentTemplate").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{	
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+    <script>
+    $(document).ready(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+		 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				 form = $("#frmQEditT_DocumentTemplate");
+					 dataurl = "@Url.Action("businessruletype", "T_DocumentTemplate", new { ruleType = "OnEdit"})";
+            ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_DocumentTemplate", false, "ErrMsg", form);
+			//business rules on inline associations
+			if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+                  }
+
+    });
+</script>
+<script>
+    $("form").submit(function (event) {
+	if (!$("#frmQEditT_DocumentTemplate").valid()) return;
+	document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+		var form = $("#frmQEditT_DocumentTemplate").serialize();
+					});
+</script>
+}
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+		IgnoreReadOnlyCtrlFocus();
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_DocumentTemplate','editquick',false,'Document Template')
+			var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+		
+    });
+</script>
+

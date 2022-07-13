@@ -1,0 +1,16 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.DataSourceParameters>
+@{
+    ViewBag.Title = "Http Headers List";
+	
+}
+<div class="content-heading">
+    <div class="col-lg-12">
+        <strong>
+            <a href="">Http Headers</a>  
+         <small>List</small>
+            </strong>
+</div>
+</div>
+<div id="dvDataSourceParametersFilter"></div>
+@Html.Partial("~/Views/DataSourceParameters/IndexPartial.cshtml", Model)
+

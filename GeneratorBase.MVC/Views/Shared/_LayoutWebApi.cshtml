@@ -1,0 +1,79 @@
+﻿@{
+    GeneratorBase.MVC.Models.FavoriteItem FavObj = null;
+    using (var favdb = (new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser(), 1)))
+    {
+        FavObj = favdb.FavoriteItems.Where(p => p.LastUpdatedByUser == User.Name && HttpContext.Current.Request.Url.PathAndQuery.EndsWith(p.LinkAddress)).FirstOrDefault();
+    }
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var AppName = commonObj.AppName();
+    var CompanyProfile = commonObj.getCompanyProfile(User);
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+    string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+    var url = Url.Content("~/logo/" + CompanyProfile.Icon);
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    { url = Url.Content("~/logo/" + CompanyProfile.Icon); }
+    var AppIcon = url;
+    if (!CompanyProfile.Icon.Contains("logo"))
+    {
+        if (User.CanView("Document"))
+        {
+            AppIcon = Url.Action("DisplayImageMobile", "Document", new { id = Convert.ToInt64(CompanyProfile.Icon) }) + "?637489848794789107";
+        }
+        else
+        {
+            AppIcon = Url.Content("~/logo/logo.gif");
+        }
+    }
+    var AppIconWidth = CompanyProfile.IconWidth == null ? "28px" : CompanyProfile.IconWidth;
+    var AppIconHeight = CompanyProfile.IconHeight == null ? "28px" : CompanyProfile.IconHeight;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @RenderSection("scripts", required: false)
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/layoutcss")
+    @Styles.Render("~/Content/bootstrapcss")
+    @Styles.Render("~/Content/Newcss")
+    <link href="@Url.Content("~/Content/" + commonObj.getTenantSiteScript(User))" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Content/csstheme")
+</head>
+<body id="webapiBody">
+    <div class="wrapper">
+        <header class="topnavbar-wrapper">
+            @if (User != null && User.userroles != null)
+            {
+                @Html.Partial("_TopNavbar", commonObj)
+            }
+        </header>
+        <!-- sidebar-->
+        <aside class="aside-container">
+            <div class="aside-inner">
+                @if (User != null && User.userroles != null)
+                {
+                    @Html.Partial("_Sidebar", commonObj)
+                }
+            </div>
+        </aside>
+        <!-- offsidebar-->
+        <!-- Main section-->
+        <section class="section-container">
+            <!-- Page content-->
+            <div class="content-wrapper">
+                
+            </div>
+        </section>
+        <!-- Page footer-->
+        <footer class="footer-container">
+            @Html.Partial("_Footer", CompanyProfile)
+        </footer>
+    </div>
+
+    @RenderBody()
+</body>
+
+</html>

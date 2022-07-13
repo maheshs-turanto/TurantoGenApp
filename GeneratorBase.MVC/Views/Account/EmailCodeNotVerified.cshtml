@@ -1,0 +1,164 @@
+﻿@using Microsoft.AspNet.Identity
+@model GeneratorBase.MVC.Models.ResendViewModel
+@{
+    ViewBag.Title = "Verify Email";
+    var user = (GeneratorBase.MVC.Models.ApplicationUser)ViewBag.user;
+}
+<style>
+    .sidebar-dark .sidebar-brand {
+        color: #fff;
+        display: none !important;
+    }
+
+    .sidebar-dark hr.sidebar-divider {
+        border-top: 1px solid rgba(255,255,255,.15);
+        display: none !important;
+    }
+
+    .sidebar-dark #sidebarToggle {
+        background-color: rgba(255,255,255,.2);
+        display: none;
+    }
+
+    .wrapper .aside-container {
+        background-color: #62a8d1;
+    }
+</style>
+
+<div class="content-heading">
+    <strong>
+        <img class="img-fluid" src="@Url.Content("~/logo/logo.gif")" alt="App Logo" width="40px" height="40px">
+        <a class=""></a>
+        <small> Verify Email - @user.Email (@user.FirstName @user.LastName)</small>
+    </strong>
+</div>
+
+ <div class="card" id="successdiv" style="display:none;">
+        <div class="card-body">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="AppForm">
+                    <div class="card-header clearfix">
+                        <h3 class="card-title">Verify Email</h3>
+                    </div>
+                    <div class="">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                <div class="card card-default">
+                                    <div class="card-body row">
+                                        <div class='col-sm-12 col-md-12 col-xs-12'>
+                                            <label class="alert alert-warning d-block">Email verified successfully !</label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="@Url.Action("Index","Home")" class="btn btn-primary btn-sm">Login</a>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("EmailCodeNotVerified", "Account", new { UserId = Model.UserId, ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmReSendCode" }))
+    {<div class="card" id="formdiv">
+        <div class="card-body">
+            @Html.AntiForgeryToken()
+            <div class="row">
+                @ViewBag.errorMessage
+                @ViewBag.message
+                <label class="text-danger" style="margin-left: 15px;" id="lblMessage"></label>
+                @Html.Hidden("mode", ViewData["mode"])
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+                        <div class="card-header clearfix">
+                            <h3 class="card-title">Verify Email</h3>
+                        </div>
+                        <div class="">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                    <div class="card card-default">
+                                        <div class="card-body row">
+                                            <div class='col-sm-12 col-md-12 col-xs-12'>
+                                                <label class="label">Enter Code <span class="text-danger-reg">*</span></label>
+                                                @Html.TextBox("EmailCode", Convert.ToString(ViewData["EmailCode"]), new { @required = "required", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a onclick="resendcode(this);" dataurl="@Url.Action("ResendShortEmailCode", "Account", new { userId = Model.UserId})" class="btn btn-default btn-sm">Resend Code</a>
+                    <input type="submit" value="Verify" onclick="VerifyAccount(event)" class=" btn btn-primary btn-sm" />
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+<script>
+    $(document).ready(function () {
+            $("#accordionSidebar").hide();
+    });
+    function VerifyAccount(e) {
+        e.preventDefault();
+        var form = $(e.currentTarget).closest('form');
+        if (!form.valid()) return;
+        var url = $(e.currentTarget).closest('form').attr("action");
+        var formData = $(e.currentTarget).closest('form').serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            async:false,
+            dataType: "json",
+            success: function (jsonresult) {
+                var result = jsonresult.result;
+                
+                if (result == "ok") {
+                    $("#formdiv").hide();
+                    $("#successdiv").show();
+                } else $("#lblMessage").html(jsonresult.message);
+            }
+        });
+    }</script>
+
+<script>
+    function resendcode(obj)
+    {
+        var dataurl = $(obj).attr("dataurl");
+        $.ajax({
+            type: "GET",
+            url: dataurl,
+            contentType: "application/json; charset=utf-8",
+            global: false,
+            cache: false,
+            async: false,
+            dataType: "json",
+            complete: function (jsonObj) {
+                var result = jsonObj.responseJSON;
+                if (result != "EmailSent") {
+                    // OpenAlertPopUp("Some error in sending email - " + result);
+                    $("#lblMessage").html("Some error in sending email - " + result);
+                }
+                else {
+                    $("#lblMessage").html("Verification code has been sent to registered email id.");
+                //    OpenAlertPopUp("Verification code has been sent to registered email id.")
+                }
+                $("body").css('cursor', 'default');
+            },
+            success: function (jsonObj) { },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert('Error!');
+                $("body").css('cursor', 'default');
+            }
+        });
+
+    }
+</script>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

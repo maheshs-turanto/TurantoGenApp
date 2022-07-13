@@ -1,0 +1,246 @@
+﻿@model GeneratorBase.MVC.Models.FileDocument
+@{
+    ViewBag.Title = "Create Document";
+    Layout = null;
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument").Properties;
+	var NonViewableProperties = User.CanNotView("FileDocument");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "FileDocument", User);
+var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+<script>
+    $(document).ready(function () {
+        try {
+		 			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+    <script>
+        var ResetBaseUrl = '@Url.Action("ResetToDefault", new { id = Model != null ? Model.Id : 0, groupName = "_groupname" })';
+    </script>
+    }
+   
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
+    {
+        <script>
+
+             var ResetBaseUrlField = '@Url.Action("ResetToDefaultField", new { id = Model != null ? Model.Id : 0, fieldName = "_fieldname" })';
+        </script>
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentRestrictDropdownValueRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+@if (appTheme == "Default1")
+{
+    <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+}
+else
+{<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />}
+@using (Html.BeginForm("CreateQuick", "FileDocument",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+     <a id="seturlFileDocument" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "FileDocument")).ToHtmlString()"></a>
+	   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+	@Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+    @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+		@Html.Hidden("ValueForMultiselect")
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="AppForm createQuickUI">
+			 <p id="bulkIconmsg" style="margin-top:-10px; margin-bottom:5px;display:none;">Please click on the icon <a class="btn btn-primary btn-sm" style="padding: 0px 5px;"><i class="fa fa-clipboard-list"></i></a> to convert the dropdown into multi-select dropdown.</p>
+                <div>
+               					<div class="row">
+				        
+								@if(User.CanView("FileDocument","DocumentName"))
+						{
+<div class='col-sm-6' id="dvDocumentName">
+				
+                                <div class='form-group' title="">
+                                    <label>@Html.LabelFor(model => model.DocumentName) <span class="text-danger-reg">*</span></label>
+									 
+																		   @Html.TextBoxFor(model => model.DocumentName, new { @class = "form-control" })
+									
+                                    @Html.ValidationMessageFor(model => model.DocumentName)
+									
+                                </div>
+					</div>
+						}
+								@if(User.CanView("FileDocument","Description"))
+						{
+<div class='col-sm-6' id="dvDescription">
+				
+                                <div class='form-group' title="">
+                                    <label>@Html.LabelFor(model => model.Description) </label>
+									 
+																		   @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+									
+                                    @Html.ValidationMessageFor(model => model.Description)
+									
+                                </div>
+					</div>
+						}
+				@if(User.CanAdd("Document"))
+                { 
+										if(User.CanView("FileDocument","AttachDocument"))
+				{
+ 					<div class='col-sm-6' id="dvAttachDocument"  >
+                            <div class='form-group' title="">
+                                   <label>@Html.LabelFor(model => model.AttachDocument) </label>
+                                     <div style="position:relative;">
+										 <a class='btn btn-primary btnupload' href='javascript:;' >
+											 Upload File
+										 <input id="AttachDocument"    type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="AttachDocument" onchange='$("#upload-file-infoAttachDocument").html($(this).val());'>
+										</a>
+										&nbsp;
+										<span class='label uploadlblFix' id="upload-file-infoAttachDocument"></span>
+									</div> 
+                            </div>
+                   </div>
+				   }
+				}
+@if(User.CanView("FileDocument","DateCreated"))
+{
+                            <div class='col-sm-6' id="dvDateCreated">
+                                <label >@Html.LabelFor(model => model.DateCreated)<span class="text-danger-reg">*</span></label>
+                                <div class="form-group" title="">
+                                    <div class="input-group date" id="datetimepickerDateCreated">
+									@Html.TextBox("DateCreated",null , new {@id = "datetimepickerDateCreatedtxt" ,@class = "form-control", @readonly="readonly",@Value = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, new GeneratorBase.MVC.Models.FileDocument().m_Timezone).ToString("MM/dd/yyyy hh:mm tt"),@format = modelproperties.FirstOrDefault(p => p.Name == "DateCreated").UIDisplayFormat})
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateCreated)
+                                </div>
+                            </div>
+		}
+@if(User.CanView("FileDocument","DateLastUpdated"))
+{
+                            <div class='col-sm-6' id="dvDateLastUpdated">
+                                <label >@Html.LabelFor(model => model.DateLastUpdated)<span class="text-danger-reg">*</span></label>
+                                <div class="form-group" title="">
+                                    <div class="input-group date" id="datetimepickerDateLastUpdated">
+									@Html.TextBox("DateLastUpdated",null , new {@id = "datetimepickerDateLastUpdatedtxt" ,@class = "form-control", @readonly="readonly",@Value = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, new GeneratorBase.MVC.Models.FileDocument().m_Timezone).ToString("MM/dd/yyyy hh:mm tt"),@format = modelproperties.FirstOrDefault(p => p.Name == "DateLastUpdated").UIDisplayFormat})
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateLastUpdated)
+                                </div>
+                            </div>
+		}
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+	<p id="CreateSaveCount" style="margin-top:-10px; margin-bottom:5px;display:none;">Please click <strong>"Create" </strong> to save the newly created <strong>"<span id="output"></span> Document"</strong></p>
+	<div id="PreviewTable" style=' max-height:450px; overflow:auto;'> </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+		 var typelist = string.Join(",", busineesrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" caller="@Request.QueryString["caller"]" class="btn btn-primary btn-sm bntcreate" onclick="QuickAdd(event,'FileDocument','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+ <input type="submit" caller="@Request.QueryString["caller"]"  value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'FileDocument','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" redirectedit="false" class="btn btn-primary btn-sm bntcreate" onclick="QuickAddFromIndex(event,true,'FileDocument','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+ <input type="submit" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm btncreatecontinue" onclick="QuickAddFromIndex(event,true,'FileDocument','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+		}
+    }
+@*<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>*@
+@Scripts.Render("~/bundles/jqueryval")
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsgQuickAdd").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmFileDocument");
+                dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnCreate" })";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "FileDocument", false, "ErrMsgQuickAdd", form);
+
+            });
+        </script>
+    }
+}
+
+
+
+
+
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+			IgnoreReadOnlyCtrlFocus();
+    if('@ViewBag.EntityHelp' == 'True' || '@ViewBag.EntityHelp' == 'true')
+    {
+			ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FileDocument','createquick',true,'Document')
+     }
+    });
+	var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+               if (value.length > 0) $("#"+value).hide();
+            });
+ </script>
+

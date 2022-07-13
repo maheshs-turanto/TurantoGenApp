@@ -1,0 +1,45 @@
+﻿@model IEnumerable<GeneratorBase.MVC.WebReference.CatalogItem>
+@{
+    ViewBag.Title = "Reports";
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+    if (appTheme == "Default" || appTheme == "Default_BS_5_x")
+    {
+        Layout = "~/ViewsDefault/Shared/_Layout.cshtml";
+    }
+    if (appTheme == "Angular")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<style>
+      #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+
+<div class="content-heading">
+    <div class="col-lg-10">
+
+        <strong>
+            <a href="@Url.Action("Index", "Home")">Home</a>
+
+            <small>Reports</small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="card">
+        <div class="card-body">
+
+
+            @Html.Partial("~/Views/Reports/IndexPartial.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+

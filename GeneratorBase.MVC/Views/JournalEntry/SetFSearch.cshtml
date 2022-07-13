@@ -1,0 +1,440 @@
+﻿@model GeneratorBase.MVC.Models.JournalEntry
+@{
+    ViewBag.Title = "Set Search Criteria";
+    var parentUrl = new System.Collections.Specialized.NameValueCollection();
+    if (Request.UrlReferrer != null)
+    {
+        parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+    }
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "JournalEntry");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "JournalEntry";
+}
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true);
+                                 Html.EnableClientValidation();
+
+                                <div class="content-heading">
+                                    <div class="col-lg-10">
+                                        <strong>
+                                            <a href="@Url.Action("Index")"> Journal Entries </a>
+                                            <small>  Query </small>
+                                        </strong>
+                                    </div>
+                                    <div class="col-lg-2">
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="col-sm-12 p-0 mb-2">
+
+                                                @if (ViewBag.FavoriteItem != null)
+                                                {
+                                                    <div class="btn-group">
+                                                        <button data-toggle="dropdown" type="button" class="btn btn-secondary dropdown-toggle">
+                                                            <span class="fa fa fa-star"></span> Favorite Items
+
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-left">
+                                                            @foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                                                            {
+                                                                var linkaddress = commonObj.getBaseUri() + fItem.LinkAddress;
+                                                                if (commonObj.getBaseUri().EndsWith("/") && fItem.LinkAddress.StartsWith("/"))
+                                                                {
+                                                                    linkaddress = commonObj.getBaseUri() + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                                                                }
+                                                                if (!commonObj.getBaseUri().EndsWith("/") && !fItem.LinkAddress.StartsWith("/"))
+                                                                {
+                                                                    linkaddress = commonObj.getBaseUri() + "/" + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                                                                }
+                                                                <li>
+                                                                    <a class="dropdown-item" href='@linkaddress'>@fItem.Name</a>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                            <div class="fsearch">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="card card-default">
+                                                            <div class="card-header clearfix">
+
+                                                                <h3 class="card-title">
+                                                                    All Field Search Criteria
+                                                                </h3>
+                                                            </div>
+                                                            <div class="card-body row">
+                                                                <div class='col-sm-12 col-md-12 col-xs-12'>
+                                                                    @{
+    var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+                                                                    }
+                                                                    <input type="text" id="FSearch" class="form-control" placeholder="Search Criteria" value="@txtGenCriteria" style="font-size:12px" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="accordion">
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><i class="fa fa-chevron-down pull-left"></i> Range Property</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseOne" class="card-collapse in">
+                                                                    <div class="card-body row">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'
+                                                                                 title="DateTimeOfEntry">
+                                                                                @Html.LabelFor(model => model.DateTimeOfEntry, new { @class = "col-sm-5 col-md-5 col-xs-12" })
+                                                                                <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                                                                    <input type="text" id="DateTimeOfEntryFrom" name="DateTimeOfEntryFrom" format='@EntityDisplayNameReflector.Properties.FirstOrDefault(p => p.Name == "DateTimeOfEntry").UIDisplayFormat' class="form-control" placeholder="From Date & Time"
+                                                                                           data-val='true' data-val-date='Must be a date.' />
+                                                                                    <span class="field-validation-valid" data-valmsg-for="DateTimeOfEntryFrom" data-valmsg-replace="true"></span>
+                                                                                    <script type="text/javascript">
+                                                                                        $(function () {
+                                                                                            $('#DateTimeOfEntryFrom').datetimepicker({ format: '@EntityDisplayNameReflector.Properties.FirstOrDefault(p => p.Name == "DateTimeOfEntry").UIDisplayFormat' });
+                                                                                        });
+                                                                                    </script>
+
+                                                                                    <span class="input-group-addon datefiled">
+                                                                                        <input type="text" id="DateTimeOfEntryTo" name="DateTimeOfEntryTo" format='@EntityDisplayNameReflector.Properties.FirstOrDefault(p => p.Name == "DateTimeOfEntry").UIDisplayFormat' class="form-control" placeholder="To Date & Time"
+                                                                                               data-val='true' data-val-date='Must be a date.' style="border-radius:0px 4px 4px 0px; border-left:0px;width:200px" />
+                                                                                        <div class="field-validation-valid" style="margin-top: 25px;font-size: 12px;" data-valmsg-for="DateTimeOfEntryTo" data-valmsg-replace="true"></div>
+                                                                                        <script type="text/javascript">
+                                                                                            $(function () {
+                                                                                                $('#DateTimeOfEntryTo').datetimepicker({ format: '@EntityDisplayNameReflector.Properties.FirstOrDefault(p => p.Name == "DateTimeOfEntry").UIDisplayFormat' });
+                                                                                            });
+                                                                                        </script>
+
+                                                                                        <input type="hidden" id="DateTimeOfEntryFromhdn" />
+                                                                                        <input type="hidden" id="DateTimeOfEntryTohdn" />
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="fa fa-chevron-down pull-left"></i> Association Property</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseTwo" class="card-collapse in">
+                                                                    <div class="card-body row">
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group' title="Entity">
+                                                                                @Html.LabelFor(model => model.EntityName, new { @class = "col-sm-5 col-md-5 col-xs-12" })
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvEntityName">
+
+                                                                                    @Html.DropDownList("EntityName", null, new { @multiple = "multiple" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group' title="Type">
+                                                                                @Html.LabelFor(model => model.Type, new { @class = "col-sm-5 col-md-5 col-xs-12" })
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvType">
+
+                                                                                    @Html.DropDownList("Type", null, new { @multiple = "multiple" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group' title="RoleName">
+                                                                                @Html.LabelFor(model => model.RoleName, new { @class = "col-sm-5 col-md-5 col-xs-12" })
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvRoleName">
+
+                                                                                    @Html.DropDownList("RoleName", null, new { @multiple = "multiple" })
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        @*<div class='col-sm-6 col-md-6 col-xs-12 hidden'>
+                                                                                <div class='form-group' title="Tenant">
+                                                                                    @Html.LabelFor(model => model.Tenant, new { @class = "col-sm-5 col-md-5 col-xs-12" })
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvTenant">
+
+                                                                                        @Html.DropDownList("Tenant", null, new { @multiple = "multiple" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>*@
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    @*End Div*@
+                                                </div>
+                                            </div>
+                                            <a href="@Url.Action("Index")" class="btn btn-secondary  "> Cancel</a>
+                                            <button id="clearfSearchJournalEntry" type="button" class="btn btn-primary  " onclick="@Html.Raw("clearFsearch('" + Url.Action("SetFSearch", "JournalEntry") + "',event)")">Clear</button>
+                                            <button id="fSearchJournalEntry" class="btn btn-primary  " type="submit" dataurl="@(Url.Action("Index", "JournalEntry", new { ShowDeleted = @Convert.ToString(ViewData["ShowDeleted"]) }))"
+                                                    onclick="@(Html.Raw("FacetedSearch(event,'JournalEntry','EntityName,Type,RoleName,Tenant','DateTimeOfEntryFrom,DateTimeOfEntryTo','DateTimeOfEntryFromhdn,DateTimeOfEntryTohdn','"
+   + Convert.ToString(Request.QueryString["viewtype"]) + "','" + Convert.ToString(Request.QueryString["sortBy"]) + "','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+                                                Run
+                                            </button>
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+}
+<script>
+    function clearFsearch(url, e) {
+        e.preventDefault();
+        $(e.target).closest('form').find("input:text").each(function () {
+            $(this).val('');
+        });
+        $("option:selected").removeAttr("selected");
+        $('#tblConditionList>tbody>tr').each(function () {
+            if ($(this).html() != "") {
+                $("#FilterCondition").val('');
+                $("#FilterCondition").click();
+                $(this).remove();
+            }
+        });
+        $('#tblConditionList').hide();
+        $('select[multiple="multiple"]').each(function () {
+            multiselect_deselectAll($(this));
+        });
+        clearsortorder();
+        cleargroupbycolumn();
+        return false;
+    }
+    function multiselect_deselectAll($el) {
+        $('option', $el).each(function (element) {
+            $el.multiselect('deselect', $(this).val());
+        });
+    }
+    function closealert() {
+        $('#dvalert').attr("class", "modal fade");
+        $('#dvalert').attr("aria-hidden", "true");
+        $('#dvalert').attr("style", "display:none;");
+    }
+    function cleargroupbycolumn() {
+        $("#hdnGroupByColumn").val('');
+        $("#lblgroupbycolumn").html('');
+        $("#lblgroupbycolumn").removeAttr("style");
+        $("#btngroupbycolumn").attr("style", "display:none !important;");
+        $("#lblGroupDepth").html('Group By');
+    }
+    function SetGroupByColumn() {
+        var value = $("#hdnGroupByColumn").val();
+        value += $("#GroupByColumn").val() + ",";
+        $("#hdnGroupByColumn").val(value);
+        var text = $("#GroupByColumn option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (text == "-- Select --") {
+            $('#dvalert').attr("class", "modal fade in");
+            $('#dvalert').attr("aria-hidden", "false");
+            $('#dvalert').attr("style", "display:block;");
+            $('#alertbody').html("Please select at least one property for grouping.");
+            return;
+        }
+        if ($("#lblgroupbycolumn").html().length > 0) {
+            var arrgrouping = $("#lblgroupbycolumn").html().split(' Then Group By ');
+            //var test1 = arrsortorder.indexOf(text + "-&gt");
+            if ($.inArray(text, arrgrouping) >= 0) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("This property is already selected, please select any other property.");
+                return;
+            }
+            $("#lblgroupbycolumn").append(" Then Group By " + text);
+        }
+        else
+            $("#lblgroupbycolumn").append(text);
+        $("#btngroupbycolumn").show();
+        $("#lblGroupDepth").html('Then Group By');
+        $("#lblgroupbycolumn").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }
+    function clearsortorder() {
+        $("#SortOrder").val('');
+        $("#lblsortorder").html('');
+        $("#lblsortorder").removeAttr("style");
+        $("#btnsortorder").attr("style", "display:none !important;");
+        $("#lblOrderDepth").html('Order By');
+    }
+    function SetSortOrder() {
+        var value = $("#SortOrder").val();
+        value += $("#SortOrder1").val() + ",";
+        $("#SortOrder").val(value);
+        var text = $("#SortOrder1 option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (text == "-- Select --") {
+            $('#dvalert').attr("class", "modal fade in");
+            $('#dvalert').attr("aria-hidden", "false");
+            $('#dvalert').attr("style", "display:block;");
+            $('#alertbody').html("Please select at least one property for sorting.");
+            return;
+        }
+        if ($("#lblsortorder").html().length > 0) {
+            var arrsortorder = $("#lblsortorder").html().split(';');
+            //var test1 = arrsortorder.indexOf(text + "-&gt");
+            if ($.inArray(text + "-&gt", arrsortorder) >= 0 || $.inArray(text, arrsortorder) >= 0) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("This property is already selected, please select any other property.");
+                return;
+            }
+            $("#lblsortorder").append("->" + text);
+        }
+        else
+            $("#lblsortorder").append(text);
+        $("#btnsortorder").show();
+        $("#lblOrderDepth").html('Then Order By');
+        $("#lblsortorder").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }
+    $(document).ready(function () {
+        $('#HideColumns').multiselect({
+            buttonWidth: '100%'
+        });
+        $('#EntityName').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#Type').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#RoleName').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+        $('#Tenant').multiselect({
+            buttonWidth: '100%',
+            nonSelectedText: 'ALL',
+        });
+    });
+</script>
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchJournalEntry').focus().click();
+        }
+    }
+    $(document).keypress(keypressHandler);
+    $(document).ready(function () {
+        if ("@parentUrl".length > 0) {
+
+            document.getElementById("FSearch").value = AntiSanitizeURLString("@parentUrl["search"]");
+
+            "@parentUrl["DateTimeOfEntryTo"]" == "" ? document.getElementById("DateTimeOfEntryTo").value = "" : "@parentUrl["DateTimeOfEntryTo"]";
+            "@parentUrl["DateTimeOfEntryFrom"]" == "" ? document.getElementById("DateTimeOfEntryFrom").value = "" : "@parentUrl["DateTimeOfEntryFrom"]";
+            $("#DateTimeOfEntryTo").val('@parentUrl["DateTimeOfEntryTo"]' == "" ? "" : '@parentUrl["DateTimeOfEntryTo"]')
+            $("#DateTimeOfEntryFrom").val('@parentUrl["DateTimeOfEntryFrom"]' == "" ? "" : '@parentUrl["DateTimeOfEntryFrom"]')
+
+            if ("@parentUrl["EntityName"]" != null && "@parentUrl["EntityName"]".length > 0) {
+                var resEntityName = "@parentUrl["EntityName"]".split(",");
+                var eleEntityName = document.getElementById("EntityName");
+                FillMultiSelectDropDown(resEntityName, eleEntityName, "EntityName");
+            }
+            else {
+                var resEntityName = "@parentUrl["EntityName"]".split(",");
+                var eleEntityName = document.getElementById("EntityName");
+                FillMultiSelectDropDown(resEntityName, eleEntityName, "EntityName");
+            }
+            if ("@parentUrl["Type"]" != null && "@parentUrl["Type"]".length > 0) {
+                var resType = "@parentUrl["Type"]".split(",");
+                var eleType = document.getElementById("Type");
+                FillMultiSelectDropDown(resType, eleType, "Type");
+            }
+            else {
+                var resType = "@parentUrl["Type"]".split(",");
+                var eleType = document.getElementById("Type");
+                FillMultiSelectDropDown(resType, eleType, "Type");
+            }
+            if ("@parentUrl["RoleName"]" != null && "@parentUrl["RoleName"]".length > 0) {
+                var resRoleName = "@parentUrl["RoleName"]".split(",");
+                var eleRoleName = document.getElementById("RoleName");
+                FillMultiSelectDropDown(resRoleName, eleRoleName, "RoleName");
+            }
+            else {
+                var resRoleName = "@parentUrl["RoleName"]".split(",");
+                var eleRoleName = document.getElementById("RoleName");
+                FillMultiSelectDropDown(resRoleName, eleRoleName, "RoleName");
+            }
+            if ("@parentUrl["Tenant"]" != null && "@parentUrl["Tenant"]".length > 0) {
+                var resTenant = "@parentUrl["Tenant"]".split(",");
+                var eleTenant = document.getElementById("Tenant");
+                FillMultiSelectDropDown(resTenant, eleTenant, "Tenant");
+            }
+            else {
+                var resTenant = "@parentUrl["Tenant"]".split(",");
+                var eleTenant = document.getElementById("Tenant");
+                FillMultiSelectDropDown(resTenant, eleTenant, "Tenant");
+            }
+        }
+    });
+    function FillMultiSelectDropDown(result, element, elementName) {
+        if (element != undefined) {
+            var isHaveNullSelect = false;
+            var countoptions = 0;
+            for (var o = 0; o < element.options.length; o++) {
+                if (result.indexOf(element.options[o].value) != -1)
+                    element.options[o].selected = true;
+                else if (result.indexOf("NULL") != -1)
+                    isHaveNullSelect = true;
+                countoptions++;
+            }
+            var opt = document.createElement('option');
+            opt.value = "NULL";
+            opt.innerHTML = "None";
+            if (isHaveNullSelect) {
+                opt.selected = true;
+                element.insertBefore(opt, element.firstChild);
+            }
+            if (!isHaveNullSelect) {
+                element.insertBefore(opt, element.firstChild);
+            }
+            $("#" + elementName).multiselect("rebuild");
+        }
+    }
+</script>
+
+<div class="modal fade" aria-hidden="true" id="dvalert">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="closealert();" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center><h4 class="modal-title"> JournalEntry </h4></center>
+                <div class="alert alert-warning" id="alertbody">
+                </div>
+                <button type="button" class="btn btn-secondary  " onclick="closealert();" data-dismiss="modal" aria-hidden="true">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

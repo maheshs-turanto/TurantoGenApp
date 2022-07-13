@@ -1,0 +1,541 @@
+﻿@model CommonFunction
+@{
+	GeneratorBase.MVC.Models.FavoriteItem FavObj = null;
+	using (var favdb = (new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser())))
+	{
+		FavObj = favdb.FavoriteItems.Where(p => p.LastUpdatedByUser == User.Name && HttpContext.Current.Request.Url.PathAndQuery.EndsWith(p.LinkAddress)).FirstOrDefault();
+	}
+	var entityModel = GeneratorBase.MVC.ModelReflector.Entities;
+	
+	var currentController = ViewContext.RouteData.Values["controller"].ToString();
+	var commonObj = Model;
+	var AppName = commonObj.AppName();
+	//var Compprofile = commonObj.getCompanyProfile(User);
+	var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+	var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+		string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];	
+	var maintenancemode = commonObj.MaintenanceMode().ToLower() == "true" ? true : false;
+	//Email feature changes - 
+	var baseUriEmail = commonObj.getBaseUri() + "T_Email/IndexEmail?OnlyNew=True&EntityType=";
+	ApplicationUser userinfo = null;
+    var picId ="";
+    bool IsFile = false;
+	 bool menudisplay = commonObj.ShowMenuOnTop();
+    var userSideBar = (new ApplicationContext(new SystemUser())).T_MenuBars.GetFromCache<IQueryable<T_MenuBar>, T_MenuBar>().ToList().Where(p => (User.IsInRole(p.T_Roles.Split(',').ToArray()) == true || p.T_Roles == "All") && p.T_Disabled.HasValue && !(p.T_Disabled.Value));
+    using (var userdb = new ApplicationDbContext(true))
+    {
+        userinfo = userdb.Users.FirstOrDefault(p => p.UserName == User.Name);
+        var ent = entityModel.FirstOrDefault(p => p.Name == "ApplicationUser");
+        var properties = ent.Properties;
+         var ImgProps = ent.Properties.Where(p => p.PropCheck=="File" || p.PropCheck=="Image").FirstOrDefault();
+        if (ImgProps != null)
+        {
+            var picIdVal = (userinfo.GetType()).GetProperty(ImgProps.Name).GetValue(userinfo, null);
+            if (picIdVal != null)
+            {
+                if (ImgProps.PropCheck == "File")
+                {
+                    IsFile = true;
+                    picId = Convert.ToString(picIdVal);
+                }
+                if (ImgProps.PropCheck == "Image")
+                {
+                    picId = Convert.ToString(picIdVal);
+                }
+            }
+        }
+    }
+    var ProfilePic = Url.Content("~/Content/images/user.png");
+    long deflong = 0;
+    if (!string.IsNullOrEmpty(picId) && long.TryParse(picId, out deflong))
+    {
+        if (picId == "0")
+        {
+            ProfilePic = Url.Content("~/Content/images/user.png");
+        }
+        else
+        {
+            if (IsFile)
+            {
+                ProfilePic = Url.Content("~/Files/") + picId;
+            }
+            else
+            {
+                ProfilePic = Url.Action("DisplayProfileImage", "Document", new { id = Convert.ToInt64(picId), time = "637932252151731876" });
+            }
+        }
+    }
+}
+
+<style type="text/css">
+    @@media (min-width: 992px) {
+        .TopNav .dropdown-menu .dropdown-toggle:after {
+            border-top: .3em solid transparent;
+            border-right: 0;
+            border-bottom: .3em solid transparent;
+            border-left: .3em solid;
+        }
+
+        .TopNav .dropdown-menu .dropdown-menu {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .TopNav .dropdown-menu li {
+            position: relative;
+        }
+
+        .TopNav .nav-item .submenu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 2px;
+        }
+
+        .TopNav .nav-item .submenu-left {
+            right: 100%;
+            left: auto;
+        }
+
+        .TopNav .dropdown-menu > li:hover {
+            background-color: black;
+        }
+
+        .dropdown-menu > li:hover > .submenu {
+            display: block;
+        }
+      
+    }
+    @@media (max-width: 992px) {
+        .TopNav {
+            padding: 0px!important;
+        }
+            .TopNav .navbar-nav
+			{
+				padding:5px!important;
+            }
+
+     }
+        .TopNav .dropdown:hover > .dropdown-menu {
+            display: block !important;
+            background: #f98401;
+            padding: 0px 0px 0px 0px;
+            min-width: 200px;
+            border: 1px solid #f8f9fc !important;
+        }
+
+        .TopNav .dropdown-item:focus, .dropdown-item:hover {
+            color: #020202 !important;
+            text-decoration: none;
+            background-color: #f8f9fc;
+        }
+
+        .TopNav .dropdown-item.active, .dropdown-item:active {
+            color: #000;
+            text-decoration: none;
+            background-color: #fff;
+        }
+
+        .TopNav .dropdown-item li {
+            padding: 5px;
+            margin: 0px;
+        }
+
+        .TopNav .dropdown-toggle::after {
+            vertical-align: 0.1em;
+        }
+
+        .TopNav {
+            background: #1d5072 !important;
+            padding: 5px;
+        }
+
+            .TopNav .dropdown-item {
+                color: #fff;
+            }
+
+
+            .TopNav .dropdown-menu-right .dropdown-item {
+                color: #000!important;
+                
+            }
+            .TopNav .dropdown a {
+                color: black;
+                background:white;
+                padding:5px;
+            }
+            .TopNav .topmoredrop{
+                margin-top:5px;
+            }
+    .topmoredrop .dropdown-menu .dropdown-item:hover {
+        background: #1d5072 !important;
+        color: white !important;
+    }
+    .topmoredrop .dropdown-item.active, .dropdown-item:active {
+      
+        background: #1d5072 !important;
+        color: white !important;
+    }
+</style>
+<nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
+ <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+		<i class="fa fa-bars"></i>
+	</button>
+  <div class="mr-auto ml-md-3 my-2 my-md-0 mw-100 d-flex">
+  <a class="mr-1" href="@Url.Action("Index", "Home")"><i class="fa fa-home" aria-hidden="true" style="vertical-align: middle;"></i></a>
+  <h4 style="font-size: 20px; margin-bottom: 0;"><a href="@Url.Action("Index", "Home")" style="color:#858796; text-decoration:none">@AppName</a></h4>        
+	</div>
+<div class="navbar-header" id="syncDataMessage" style="display:none;color: #858796;margin-left: 37%;">
+		<i class="fa fa-warning"></i> <label class="font-bold warning" style="font-size: 17px; margin-bottom: 0;text-decoration: none">Sync Running</label>
+	</div>
+  <ul class="navbar-nav ml-auto">
+												@if (entityModel.Where(p => p.Name == Request.RequestContext.RouteData.Values["controller"].ToString() && !p.IsAdminEntity && (!p.IsDefault || p.Name == "T_Schedule")).Count() > 0)
+						{
+							<li id="liFavorite"  class="nav-item no-arrow mx-1">
+					@{
+				string starcolor = FavObj == null ? " color:;" : "color: #F90;";
+				string favoriteId = FavObj == null ? "" : FavObj.Id.ToString();
+				string favoriteName = FavObj == null ? "" : FavObj.Name;
+					}
+					<a class="nav-link" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<em class="fa fa-star" style="@starcolor"></em>
+				</a>
+				<div class="dropdown-menu dropdown-menu-right animated zoomIn favorite-box">
+					<div class="dropdown-item">
+						<form method="post" accept-charset="UTF-8" style="padding:10px">
+							<h4 style="color:initial;">Add to Favorite</h4>
+							<div class="form-group">
+								  <input class="form-control" type="text" placeholder="Enter Name" id="Favorite" name="Favorite" required value="@favoriteName" /
+							</div>
+							 <a class="btn btn-primary btn-block mt-1" onclick="favorite();" >Save</a>
+								@*<input  type="button" id="save" value="Save" />*@
+							<input type="hidden" id="hdnFavorite" name="hdnFavorite" value="@favoriteId" />
+							<label id="lblFavoriteSuceeess" class="field-validation-error" style="font-weight:normal;"></label>
+						</form>
+					</div>
+				</div>
+			</li>
+						}
+												@if (User.CanView("PropertyHelpPage") && User.CanView("EntityHelpPage"))
+						{
+								var EntNameHelp = currentController;
+								var EntityReflectorObjHelp = entityModel.FirstOrDefault(p => p.Name == EntNameHelp);
+								var DisplayStringHelp = EntityReflectorObjHelp != null ? EntityReflectorObjHelp.DisplayName : "Home";
+									 <li class="nav-item no-arrow d-md-block" id="liHelp">
+										<a class="nav-link" onclick="OpenPopUpEntityHelp('addPopupHelpUni', 'dvPopupHelpUni', @Html.Raw("'" + Url.Action("QuickHelp", "PropertyHelpPage") + "'"), '@EntNameHelp' , '' , '' , '@DisplayStringHelp' )" style="cursor: pointer;">
+											<i class="fa fa-question"></i>
+										</a>
+									</li>
+						}
+							 <li class="nav-item d-none d-md-block" id="Lnk_Print">
+			@{
+				string CurrentURL = Request.Url.AbsoluteUri;
+			}
+
+			@{
+				if (CurrentURL.Contains("Edit"))
+				{
+					<a class="nav-link" id="printButton" title="Print">
+						<i class="fa fa-print">  </i>
+					</a>
+				}
+				else
+				{
+					<a class="nav-link" href="#" onclick="window.print();return false;" title="Print">
+						<i class="fa fa-print">  </i>
+					</a>
+				}
+			}
+
+
+		</li>
+							<li class="nav-item dropdown" id="lnkAdd">
+							<a class="nav-link" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
+		  <i class="fa fa-plus"> </i></a>
+		  <ul class="dropdown-menu dropdown-menu-right adhfix" aria-labelledby="navbarDropdownMenuLink">
+
+					@if ( User.CanAdd("T_Customer") && User.CanView("T_Customer"))
+					{
+						var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+						var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+						<li id="liT_Customer" class="dropdown-item @(currentController == "T_Customer" ? "active" : "")" alt="@DisplayString" title="@DisplayString">
+							<a href="@Url.Action("Create","T_Customer", new { EntityName="T_Customer"})">
+							<i class="fa fa-list mr-2"></i> 
+							<span class="nav-label">@DisplayString </span>
+							</a>
+						</li>
+					 }
+
+		  </ul>
+</li>
+<li class="nav-item dropdown"  id="lnkSearch">
+		   <a class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="cursor: pointer;">
+		   <i class="fa fa-search"> </i>
+			</a>
+			<div class="dropdown-menu shadow  dropdown-menu-right animated float-lg-left dropopen" aria-labelledby="navbarDropdownMenuLink" style="width:500px;padding:0px;">
+				<h5 class="bg-primary p-2">
+					Entity Search
+				</h5>
+				<div class="row m-2">
+					<div class="col-md-8">
+						@Html.TextBox("entity_search", null, new { @class = "form-control fixsearchbox", @placeholder = "Please enter a value to search" })
+					</div>
+					<div class="col-md-4">
+						<div class="dropdown topsearch">
+							<a class="btn btn-white dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Search In</a>
+							<ul class="dropdown-menu sdhfix" aria-labelledby="dropdownMenuButton">
+     
+								@if (User.CanView("T_Customer"))
+								{
+									var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+									var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+									<li id="liT_Customer" class="dropdown-item @(currentController == "T_Customer" ? "active" : "")" alt="@DisplayString" title="@DisplayString">
+										<a onclick="SearchValueInEntity('T_Customer')">
+											<span class="nav-label">@DisplayString </span>
+										</a>
+									</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+ 					   
+
+						 
+
+        @if (User.HasAdminPrivileges())
+        {
+            <li class="nav-item d-none d-md-block">
+                <a class="nav-link" href="@Url.Action("Index", "Admin")" title="Application Settings" alt="Application Settings">
+                    <i class="fa fa-cog"> </i>
+                </a>
+                <!-- /.dropdown-user -->
+            </li>
+        }		
+
+<div class="topbar-divider d-none d-sm-block"></div>
+		<!-- Nav Item - User Information -->
+		<li class="nav-item dropdown no-arrow">
+			<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="mr-2 d-none d-lg-inline text-gray-600 small">@User.Name</span>
+                    <img class="img-profile rounded-circle" src="@ProfilePic">
+			</a>
+			<!-- Dropdown - User Information -->
+			<div class="dropdown-menu prof_drop dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+ <aside class="prof_box">
+					<div class="prof_top">
+					<figure>
+						<img src="@ProfilePic" style="width:90px; height:90px">
+					</figure>
+<div class="prof_info">
+ <h6>@ViewBag.UserName</h6>
+  <p>@ViewBag.Useremail</p>
+
+								
+<aside class="amenity">
+
+					@if (User != null &&  !(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+			{
+				if (!(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+				{
+					<span>Role:</span>
+					<div> 
+					@foreach (var role in User.userroles)
+					{
+						<a href="#" class="btn btn-gradient">@role</a>
+					}
+					@if (Request.Cookies[AppUrl + "CurrentRole"] != null)
+					{
+						<a href="@Url.Action("SwitchRole", "Account")" class="edit-btn fa fa-pencil-alt"></a>
+					}
+					</div>
+				}						
+			}
+
+</aside>
+
+							@if ((new GeneratorBase.MVC.Models.UserBasedSecurityContext()).UserBasedSecurities.Count() > 0)
+							{
+									@*<span style="font-size: 16px;">TenantEntity:</span> <small style="font-weight:bold; font-size: 100%; font-size: 16px;">All </small> <a href="@Url.Action("SwitchTenant", "Account")" class="edit-btn fa fa-pencil-alt"></a>*@
+							}
+</div>
+</div>
+ <div class="prof_ftr">
+	   
+				@if(!(User.Identity is System.Security.Principal.WindowsIdentity) && User.CanView("ApplicationUser"))
+				{
+				  <a href="@Url.Action("UserProfile", "Account", new { UrlReferrer = Request.Url.PathAndQuery })" class="btn btn-white" style="font-size:16px; margin-right:10px">
+						<i class="fa fa-user"></i>
+							   User Profile
+					</a>
+				}
+				<a href="@Url.Action("Manage", "Account")" class="btn btn-blue" style="font-size:16px;margin-right:10px">
+					<i class="fas fa-key fa-sm fa-fw mr-2"></i>
+					Change Password
+				</a>
+				
+				@{ 
+					var appContext = (new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser()));
+					var lstAppSetting = from s in appContext.AppSettings select s;
+					AppSetting objApp = lstAppSetting.FirstOrDefault(s => s.Key.ToLower() == "enableprototypingtool");
+				}
+				
+
+				<div class="dropdown-divider"></div>
+				 @{var logoff = Url.Action("LogOff", "Account");}
+			<form action="@logoff" method="post" id="logoutForm">
+				@Html.AntiForgeryToken()
+					<a class="btn btn-red" id="logoutbtn1" style="font-size:16px; ">
+								<i class="fa fa-sign-out-alt"></i>
+								Logout
+							</a>
+				<script>
+					$(function () {
+						$("#logoutbtn1").click(function (e) {
+							$("#logoutForm").submit();
+						})
+					});
+				</script>
+			</form>
+			  
+
+
+
+										  </div>
+				</aside>
+</div>
+		</li>
+					</ul>
+				</nav>
+				 @if (menudisplay)
+{
+    <nav class="navbar navbar-expand-lg TopNav">
+        <button class="navbar-toggler btn btn-link d-md-none rounded-circle mr-3" type="button" data-toggle="collapse" data-target="#main_nav" style="position:absolute; top:-40px; left:15px; z-index:99999; background:white;">
+            <i class="fa fa-bars"></i>
+        </button>
+        <div class="navbar-collapse collapse navbar-right" id="main_nav">
+            <ul class="navbar-nav">
+				<li class="nav-item" id="lnkDefaultDashboard" style="display:none">
+        <a href="@Url.Action("Dashboard", "Home")" class="dropdown-item @(currentController == "Dashboard" ? "active" : "")" >
+            <i class="nav-icon fas fa-desktop float-start mt-1 mr-1"></i>
+
+            Dashboard
+        </a>
+    </li>
+				@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    var menuItems = userSideBar.SelectMany(s => s.T_MenuBarMenuItemAssociation_t_menubar.OrderBy(o => o.T_OrderNumber)).Distinct();
+    var menuItemsList = menuItems.Select(s => s.t_menuitem);
+    Html.RenderPartial("~/Views/Shared/_TopBarMenu.cshtml", menuItemsList); 
+}
+else
+{
+
+			 		if ( User.CanView("T_Customer"))
+					{
+						var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+                        var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+						<li id="liT_Customer" class="nav-item" alt="@DisplayString" title="@DisplayString">
+                            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Customer"})" class="dropdown-item @(currentController == "T_Customer" ? "active" : "")">
+							
+							<i class="fa fa-briefcase float-start mt-1 mr-1"></i> 
+							@DisplayString 
+							</a>
+                        </li>
+					 }
+}
+             </ul>
+        </div> <!-- navbar-collapse.// -->
+    </nav>
+}
+
+@if (maintenancemode)
+{
+    <div class="alert alert-mantainance alert-dismissible fade show" role="alert" style="margin: 10px 25px 5px 25px">
+        <strong>Under Maintenance</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <br />
+        @commonObj.MaintenanceModeAlertMessage()
+    </div>
+}
+				<script>
+	function favorite() {
+		$('#liFavorite').addClass("dropdown").removeClass("dropdown open");
+		var thelink = "@Url.Action("FavoriteSave", "Home")";
+		var data = $('#Favorite').val();
+		$('#lblFavoriteSuceeess').text("");
+		if (data == "") {
+			$('#lblFavoriteSuceeess').text("Favorite Name is required.");
+			return false;
+		}
+		$.ajax({
+			url: thelink,
+			cache: false,
+			data: { Id: $('#hdnFavorite').val(), Name: $('#Favorite').val(), FavoriteUrlEntityName: '@currentController', FavoriteUrl: '@Html.Raw(commonObj.getBaseForFavoriteUri())' },
+			success: function (data) {
+				if (data == "success") {
+					$('.fa.fa-1x.fa-star').css('color', '#F90');
+					$('#liFavorite').addClass("dropdown").removeClass("dropdown open");
+					$('#Favorite').val('');
+				}
+				if (data == "error") {
+					$('.fa.fa-1x.fa-star').css('color', '#FFF');
+					$('#lblFavoriteSuceeess').addClass("warning").removeClass("success");
+					$('#lblFavoriteSuceeess').text("Url not added in favourite.");
+					$('#Favorite').val('');
+				}
+			}
+		})
+		return true;
+	}
+</script>
+<script type="text/javascript">
+		 function SearchValueInEntity(entity) {
+				var txtval = $("#entity_search").val();
+				var url = '@Html.Raw(Url.Action("Index", "EntityName"))'.replace("EntityName", entity);
+				url = url + "?searchString=" + txtval + "&IsDeepSearch=true&parent=Home";
+				window.location.href = url;
+			}
+			 $(".dropopen").click(function (e) {
+		e.stopPropagation();
+	})
+	</script>
+@if (menudisplay && userSideBar != null && userSideBar.Count() > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var collapseid = $("#accordionSidebar .active").parent().attr("id");
+            getcollapseParent(collapseid);
+        });
+
+        function getcollapseParent(collapseid) {
+            uncollaseParent(collapseid);
+            var collapseparentid = $("#accordionSidebar #" + collapseid).parent().attr("id");
+            if (collapseparentid != undefined && collapseparentid != 'accordionSidebar') {
+                getcollapseParent(collapseparentid);
+            }
+        }
+
+        function uncollaseParent(collapseid) {
+            if (collapseid != undefined) {
+                if ($("#" + collapseid).hasClass("nav-item")) {
+                    $("#" + collapseid).addClass("active")
+                }
+                $("#a" + collapseid).click();
+            }
+        }
+    </script>
+}
+
+<script src="~/Scripts/bootstrap.responsive-collapse.js"></script>
+    <script type="text/javascript">
+        $(window).on('load',function () {
+		if (typeof $('ul.navbar-nav').responsiveCollapse === "function") {
+            $('ul.navbar-nav').responsiveCollapse();
+		}
+        });
+    </script>

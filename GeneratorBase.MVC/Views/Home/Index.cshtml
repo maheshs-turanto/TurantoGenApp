@@ -1,0 +1,898 @@
+﻿@{
+ViewBag.Title = "Home";
+var entityModel =  ModelReflector.Entities;
+}
+
+<style>
+.card {
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0)
+}
+   .card-body {
+   overflow: hidden;
+   position: relative;
+   }
+   .rotate {
+   float: right;
+   height: 100%;
+   }
+   .rotate i {
+   font-size: 75px;
+   text-shadow: 1px 0 #ddd;
+   left: auto;
+   right: 0;
+   bottom: 0;
+   display: block;
+   height: 65px;
+   font-size: 75px;
+   position: absolute;
+   transform: rotate(-40deg);
+   text-shadow: 1px 0 #ddd;
+   }
+         .my-favorites-text{
+	text-decoration: none;
+	white-space: nowrap;
+	width: 80%;
+	overflow: hidden;
+	text-overflow: ellipsis;} 
+   .card-subtitle {
+   padding: 10px 0px;}
+
+</style>
+<script>
+   function HomeSearchClick(e, EntityName, url) {
+       var txtval = $("#SearchString" + EntityName).val();
+       url = url + "?searchString=" + txtval + "&IsDeepSearch=false&parent=Home";
+       window.location.href = url;
+   }
+   function SearchKeyPress(e, entityName) {
+       if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+           $("#" + entityName + "Search").bind("click", (function () {
+           }));
+           $("#" + entityName + "Search").trigger("click");
+       }
+   }
+</script>
+@if (ViewBag.PageRoles != null && ViewBag.PageContent == null)
+{
+<script type="text/javascript">
+   $(document).ready(function () {
+       $('#myModal').modal('show');
+   });
+   function getrole() {
+       var selctedvalues = "";
+       $("input[name='rdbroles']").each(function () {
+           chkid = $(this).attr('id');
+           var checked = "false";
+           if ($("input[id='" + chkid + "']:checked").length == '1') {
+               selctedvalues += $(this).attr('value') + ",";
+           }
+       })
+       if (selctedvalues != '' && typeof selctedvalues != 'undefined') {
+           var data = { "key": selctedvalues };
+           var urlSet = '@Url.Action("setRoleValue", "Home")';
+           var url = '@Url.Action("Index", "Home")';
+           $.getJSON(urlSet, data, function (data) {
+               if (data == true) {
+                      window.location.href = url;
+                  }
+           });
+       }
+       else {
+           alert('Please select at least one role.')
+       }
+   }
+</script>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            <div class="card AppForm">
+                 <div class="card-header">
+                     <h3 class="card-title">
+                         Please select roles to login with
+                     </h3>
+                 </div>
+                 <div class="card-body">
+                     @{ var selecttype = !(Convert.ToBoolean(GeneratorBase.MVC.Models.CommonFunction.Instance.MultipleRoleSelection())) ? "radio" : "checkbox";  }
+                     @foreach (string pagerole in ViewBag.PageRoles)
+                     {
+                         <div class='col-sm-12 col-md-12 col-xs-12' style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;display:block;" title="@pagerole">
+                             <label for="@pagerole" class="check">
+                                 <input type="@selecttype" id="@pagerole" name="rdbroles" value="@pagerole" /> @pagerole
+                             </label>
+                         </div>
+                     }
+                 </div>
+             </div>
+            <button onclick="getrole();" class="btn btn-primary btn-sm">Login</button>
+            <button onclick="$('#logoutbtn1').click()" class="btn btn-default btn-sm" > Logout</button>
+            <br/><br/>
+         </div>
+      </div>
+   </div>
+</div>
+}
+@if (ViewBag.RegistrationEntity != null)
+{
+var AutoRegistration = Convert.ToString(ViewBag.RegistrationEntity).Split(",".ToCharArray());
+<script type="text/javascript">
+   $(document).ready(function () {
+       $('#RegistrationModal').modal('show');
+   });
+</script>
+<div class="modal fade" id="RegistrationModal" tabindex="-1" role="dialog" aria-labelledby="RegistrationModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-body">
+            <div class="card card-default">
+               <div class="card-heading clearfix" style="margin:0px; padding:8px;">
+                  <span class="fam-application-form-edit"></span> Click to Register as
+               </div>
+               <div class="card-body" style="margin:0px; padding:8px;">
+                  <div style="display:block;">
+                     @foreach (string reg in AutoRegistration)
+                     {
+                     var Ent = entityModel.FirstOrDefault(p => p.Name == reg);
+                     if (Ent != null)
+                     {
+                     @Html.ActionLink(Ent.DisplayName, "AutoRegistration", reg, new { UserId = ViewBag.UserId }, new { @class = "btn btn-default btn-sm", @style="margin-right:5px;"})
+                     }
+                     }
+                  </div>
+               </div>
+            </div>
+            <br />
+            @Html.ActionLink("Continue without Registration", "Index", "Home", null, new { @class = "btn btn-default btn-sm" })
+            <a onclick="$('#logoutbtn1').click()" class="btn btn-primary btn-sm pull-right"> Logout</a>
+         </div>
+      </div>
+   </div>
+</div>
+}
+@if (ViewBag.PageRoles == null && ViewBag.PageContent == null && ViewBag.RegistrationEntity == null)
+{
+<script>
+   $(document).ready(function () {
+   var datevalue = $("#lastlogin").html();
+   if(datevalue != undefined && datevalue.length > 0)
+   {
+   	var date = new Date(datevalue+' UTC');
+   	$("#lastlogin").html(date.toLocaleString());
+   } else $("#lastlogin").html("You logged in first time.");
+      });
+</script>
+<div class="col-xs-12" style="margin-top:10px">
+   <div class="clearfix"></div>
+   <div class="tabs-container">
+      <ul class="nav nav-tabs">
+         <li class="nav-item">
+		 <a class="nav-link active" href="#systeminfo" data-toggle="tab">
+		 Home
+		 </a>
+		 </li>
+         <li class="nav-item">
+		 <a class="nav-link" href="#allentity" data-toggle="tab">All Entities</a>
+		 </li>
+                  <li class="nav-item"><a class="nav-link" href="#recent" data-toggle="tab">Recently Updated</a></li>
+         <li class="nav-item"><a class="nav-link" href="#about" data-toggle="tab">About</a></li>
+<li class="nav-item" id="ButUinformation"><a class="nav-link" >User Information</a></li>
+         @if (ViewBag.LastLoggedIn != null && (User != null && !(User.Identity is System.Security.Principal.WindowsIdentity)))
+         {
+         <li style="margin: auto;margin-right: 0;" class="lastlogged"><b>Last Logged-In : </b><span id="lastlogin">@ViewBag.LastLoggedIn</span> </li>
+         }
+      </ul>
+<script>
+           $("#ButUinformation").click(function () {
+               $("#Uinformation").show();
+           });
+       </script>
+      <div class="tab-content">
+          
+		 
+                
+         <div class="tab-pane active" id="systeminfo">
+            <div class="card-deck" style="margin-bottom:8px" id="Uinformation">
+               <div class="card" >
+                  <div class="card-body">
+                     <div class="card-header p-1 d-flex flex-row">
+                        <div class="rotate">
+                           <i class="fa fa-user text-info"></i>
+                        </div>
+                        <div class="media-body p-0 col-sm-12">
+                           <h3 class="card-title"> User Information </h3>
+                           <p class="card-subtitle"> <span class="sub text-info"> @User.Name</span></p>
+                           <p class="card-text">@ViewBag.UserName <br /> @ViewBag.Useremail
+                              <br /><span class="homeRole">Role : @String.Join(",", ViewBag.LoginRoles) </span>
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="card">
+                  <div class="card-body">
+                     <div class="card-header p-1 d-flex flex-row">
+					 <h3 class="card-title"> My Favorites</h3>
+                        <div class="rotate">
+                           <i class="fa fa-star text-info"></i>
+                        </div>
+                        @*<i class="fa fa-star fa-2x"></i>*@
+						</div>
+                        <div class="card-contant card-deck mt-2 col-sm-12" style="height: 100px; overflow: auto;">
+                           <p class="card-text">
+                              @if (ViewBag.FavoriteItem != null)
+                              {
+                              foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                              {
+                              if (fItem.LinkAddress.Contains("IsReports=true"))
+                              {
+                              var EntityNameRef = entityModel.FirstOrDefault(p => p.Name == fItem.EntityName);
+                              var EntityDispName = EntityNameRef != null ? EntityNameRef.DisplayName : fItem.EntityName;
+                              @*/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@fItem.LinkAddress*@
+                           <li class="list-group-item clearfix" style="height: 50px;">
+                              <a id="rptViewLink" title="Show Reports of @fItem.Name" data-placement="top" title="Show Reports" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                 onclick="ViewReports('@fItem.LinkAddress','@EntityDispName');">
+                              <span class="fa fa-thumbs-up" style="color:#000000"></span> @fItem.Name
+                              </a>
+                              <span class="pull-right">
+                              <a id="rptView" data-placement="top" title="Show Reports of @fItem.Name" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                 onclick="ViewReports('@fItem.LinkAddress','@EntityDispName');">
+                              <span class="fa fa-gear"></span>
+                              </a>
+                              <a class="my-favorites-text" onclick="deleteReport(@fItem.Id ,'@fItem.Name')">
+                              <span class="fa fa-trash"></span>
+                              </a>
+                              </span>
+                           </li>
+                           }
+                           else
+                           {
+						   var linkaddress = fItem.LinkAddress;
+                           //var linkaddress = GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri() + fItem.LinkAddress;
+                           //if (GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri().EndsWith("/") && fItem.LinkAddress.StartsWith("/"))
+                           //{
+                           //linkaddress = GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri() + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                           //}
+                           //if (!GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri().EndsWith("/") && !fItem.LinkAddress.StartsWith("/"))
+                           //{
+                           //linkaddress = GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri() + "/" + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                           //}
+                           <li class="list-group-item clearfix col-sm-6" style="height: 50px;">
+                              <a href='@linkaddress' class="pull-left my-favorites-text">
+                              <span class="fa fa-thumbs-up"></span> @fItem.Name
+                              </a>
+                              <span class="pull-right">
+                              <a href="@Url.Action("FavoriteDelete", "Home", new { id = fItem.Id })">
+                              <span class="fa fa-trash"></span>
+                              </a>
+                              </span>
+                           </li>
+                           }
+                           }
+                           }
+                           else
+                           {
+                           <li class="list-group-item clearfix col-sm-6"  style="height: 50px;">
+                              No favorites available.
+                           </li>
+                           }
+                           </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+			 @if (Convert.ToBoolean(ViewBag.ShowDashboard))
+             { 
+            <div class="card" >
+                  <div class="card-body">
+                      <div class="row">
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+                      {
+					    if (item.t_associatedfacetedsearch != null)
+                        {
+							  var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+							  var isgroupby = metricquery["GroupByColumn"];
+							  if (!string.IsNullOrEmpty(isgroupby))
+							  {
+								  Html.RenderPartial("~/Views/Shared/_CrosstabMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+							  }
+                        }
+                      }
+                      </div>
+
+
+                      <div class="row">
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+                      {
+						    if (item.t_associatedfacetedsearch != null)
+                            {
+							  var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+							  var isgroupby = metricquery["GroupByColumn"];
+							  if (string.IsNullOrEmpty(isgroupby))
+							  {
+								  Html.RenderPartial("~/Views/Shared/_NumberMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+							  }
+						    }
+
+                      }
+                      </div>
+                 <div class="row mt-4">
+                @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.MetricsHyperlink)
+                {
+                    var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                    Html.RenderPartial("~/Views/Shared/_HyperlinkMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+                }
+            </div>
+
+                      <div class="col-sm-12 pt-12 " style="padding:0px!important;">
+
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.GraphMetrics)
+                          {
+						   
+                              var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                              var isgroupby = metricquery["GroupByColumn"];
+                              if (!string.IsNullOrEmpty(isgroupby))
+                              {
+                                  Html.RenderPartial("~/Views/Shared/_GraphMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+                              }
+                          }
+
+                      </div>
+					  @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.ListMetrics)
+                {
+				
+                    <div style="clear:both"></div>
+					<div class="content-heading">
+                        <div class="TitleName"><strong><a href="@Html.Raw(item.t_associatedfacetedsearch.T_LinkAddress)">@item.T_Name</a><small>List</small></strong></div>
+                     </div>
+                    <div class="card">
+                        <div class="card-body" id="Metric_@item.Id">
+                            <div id="@item.T_EntityName"><label class="label-info">Loading...</label></div>
+                            <script>
+                                $(document).ready(function () {
+                                    ListFromHome('@item.T_EntityName', '@Html.Raw(item.t_associatedfacetedsearch.T_LinkAddress)', '@User.Name', 'Metric_@item.Id','@Request.Url.PathAndQuery');
+                                });
+                            </script>
+                        </div>
+                    </div>
+                }
+                  </div>
+              </div>
+			  }
+            <div class="row">
+               			   @{Html.RenderPartial("~/Views/Shared/_EntityHomeLinks.cshtml", "T_Customer", new ViewDataDictionary { { "type", "box" },{ "IconBackground", "info" }, { "Count",ViewBag.T_CustomerCount} });}
+                             
+            </div>
+         </div>
+         <div class="tab-pane fade" id="about">
+            <div class="card card-default ">
+               <div class="card-body" style="min-height:240px;">
+                  @if (ViewBag.AboutCompany != null)
+                  {
+                  @Html.Raw(ViewBag.AboutCompany)
+                  }
+               </div>
+            </div>
+         </div>
+         <div class="tab-pane fade" id="allentity">
+            <div class="card card-default ">
+               <div class="card-body">
+                  <div id="Des_Table" class="table-responsive">
+                     <table class="table default-bordered table-hover default-condensed">
+                        <thead>
+                           <tr>
+                              <th class="col1" style="width:70px;">Actions</th>
+                              <th style="width:30%;">Entity Name</th>
+                              <th style="width:30%;">Entity Description</th>
+                              <th>Search</th>
+                           </tr>
+                        </thead>
+                        @foreach (var EntityReflectorObj in entityModel.Where(wh => !wh.IsDefault && !wh.IsAdminEntity && wh.Name != "T_DataMetrictype" && wh.Name != "VerbsName").OrderBy(o => o.DisplayName))
+                        {
+							if (User.CanView(EntityReflectorObj.Name))
+                            {
+                                var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : EntityReflectorObj.Name;
+                                var Asearch = EntityReflectorObj.Name + "ASearch";
+                                var SearchValue = EntityReflectorObj.Name + "A";
+                                <tr>
+                                    <td>
+                                        <div style="width:60px; margin-top:-2px;">
+                                            <center>
+                                                <div class="btn-group">
+                                                   <a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = EntityReflectorObj.Name })"><i class="fa fa-eye"></i></a>
+                                                    @if (User.CanAdd(EntityReflectorObj.Name))
+													{
+													if (EntityReflectorObj.Name.ToLower() != "T_FacetedSearch".ToLower())
+                                                        {
+														<a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", EntityReflectorObj.Name, new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="fa fa-plus-circle" style="cursor: pointer;"></i></a>
+														}
+													}
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </td>
+                                   <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = EntityReflectorObj.Name })">@DisplayString @(EntityReflectorObj.IsExternalEntity ? " (External Service)":"")</a></td>
+								   <td>@DisplayString</td>
+								   <td>
+									  <div class="input-group">
+										 @Html.TextBox("SearchString" + EntityReflectorObj.Name + "A", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event, '" + EntityReflectorObj.Name + "');", @placeholder = "Search" })
+										 <div class="input-group-btn">
+											<a id="@Asearch" onclick="HomeSearchClick(event,'@SearchValue','@Html.Raw(Url.Action("Index", EntityReflectorObj.Name))');"
+											data-original-title="List Search"
+											class="btn btn-default btn-default tip-top"  style="cursor: pointer;"><span class="fa fa-search"></span></a>
+										 </div>
+									  </div>
+								   </td>
+                                </tr>
+                            }
+                        }
+                        @if (User.CanView("ApplicationFeedback"))
+                        {
+                        <tr>
+                           <td>
+                              <div style="width:60px; margin-top:-2px;">
+                                 <center>
+                                    <div class="btn-group">
+                                       <a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "ApplicationFeedback" })" class="btn btn-default btn-xs"><i class="fa fa-eye"></i></a>
+                                       @if ( User.CanAdd("ApplicationFeedback"))
+                                       {
+                                       <a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ApplicationFeedback", new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") class="btn btn-default btn-xs"><i class="fa fa-plus-circle" style="cursor: pointer;"></i></a>
+                                       }                        
+                                    </div>
+                                 </center>
+                              </div>
+                           </td>
+                           <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "ApplicationFeedback" })">Application Feedback</a></td>
+                           <td>Application Feedback</td>
+                           <td>
+                              <div class="input-group">
+                                 @Html.TextBox("SearchStringApplicationFeedback", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'ApplicationFeedback');", @placeholder = "Search" })
+                                 <div class="input-group-btn">
+                                    <a id="ApplicationFeedbackSearch" onclick="HomeSearchClick(event,'ApplicationFeedback','@Html.Raw(Url.Action("Index", "ApplicationFeedback"))');"
+                                    data-original-title="List Search"
+                                    class="btn btn-default btn-default tip-top"  style="cursor: pointer;"><span class="fa fa-search"></span></a>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                        }
+                        @if (User.CanView("FeedbackResource"))
+                        {
+                        <tr>
+                           <td>
+                              <div style="width:60px; margin-top:-2px;">
+                                 <center>
+                                    <div class="btn-group">
+                                       <a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "FeedbackResource" })"><i class="fa fa-eye"></i></a>
+                                       @if ( User.CanAdd("FeedbackResource"))
+                                       {
+                                       <a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FeedbackResource", new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="fa fa-plus-circle" style="cursor: pointer;"></i></a>
+                                       }                        
+                                    </div>
+                                 </center>
+                              </div>
+                           </td>
+                           <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "FeedbackResource" })">Feedback Resource</a></td>
+                           <td>Application Feedback Resources</td>
+                           <td>
+                              <div class="input-group">
+                                 @Html.TextBox("SearchStringFeedbackResource", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'FeedbackResource');", @placeholder = "Search" })
+                                 <div class="input-group-btn">
+                                    <a id="FeedbackResourceSearch" onclick="HomeSearchClick(event,'FeedbackResource','@Html.Raw(Url.Action("Index", "FeedbackResource"))');"
+                                    data-original-title="List Search"
+                                    class="btn btn-default btn-default tip-top"  style="cursor: pointer;"><span class="fa fa-search"></span></a>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                        }
+                                                @if (User.CanView("JournalEntry"))
+                        {
+                        <tr>
+                           <td>
+                              <div style="width:60px; margin-top:-2px;">
+                                 <center>
+                                    <div class="btn-group">
+                                       <a class="btn btn-default btn-xs" href="@Url.Action("Index", "JournalEntry")"><i class="fa fa-eye"></i></a>
+                                    </div>
+                                 </center>
+                              </div>
+                           </td>
+                           <td><a href="@Url.Action("Index", "JournalEntry")">Journal Entry</a></td>
+                           <td>Journal Entry</td>
+                           <td>
+                           </td>
+                        </tr>
+                        }
+                                                @if (User != null)
+                        {
+                        if (User.CanView("ImportConfiguration"))
+                        {
+                        <tr>
+                           <td>
+                              <div style="width:60px; margin-top:-2px;">
+                                 <center>
+                                    <div class="btn-group">
+                                       <a class="btn btn-default btn-xs" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "ImportConfiguration" })"><i class="fa fa-eye"></i></a>
+                                       @if ( User.CanAdd("ImportConfiguration"))
+                                       {
+                                       <a class="btn btn-default btn-xs" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ImportConfiguration", new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")><i class="fa fa-plus-circle" style="cursor: pointer;"></i></a>
+                                       }                        
+                                    </div>
+                                 </center>
+                              </div>
+                           </td>
+                           <td><a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "ImportConfiguration" })">Import Configuration</a></td>
+                           <td>Import Configuration</td>
+                           <td>
+                              <div class="input-group">
+                                 @Html.TextBox("SearchStringImportConfiguration", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'ImportConfiguration');", @placeholder = "Search" })
+                                 <div class="input-group-btn">
+                                    <a id="ImportConfigurationSearch" onclick="HomeSearchClick(event,'ImportConfiguration','@Html.Raw(Url.Action("Index", "ImportConfiguration"))');"
+                                    data-original-title="List Search"
+                                    class="btn btn-default btn-default tip-top"  style="cursor: pointer;"><span class="fa fa-search"></span></a>
+                                 </div>
+                              </div>
+                           </td>
+                        </tr>
+                        }
+                        }
+                        @if (User.IsAdmin)
+                        {
+                        <tr>
+                           <td>
+                              <div style="width:60px; margin-top:-2px;">
+                                 <center>
+                                    <div class="btn-group">
+                                       <a class="btn btn-default btn-xs" href="@Url.Action("Index", "Admin")"><i class="fa fa-eye"></i></a>
+                                    </div>
+                                 </center>
+                              </div>
+                           </td>
+                           <td><a href="@Url.Action("Index", "Admin")">Admin</a></td>
+                           <td>Admin</td>
+                           <td>
+                           </td>
+                        </tr>
+                        }
+						                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="tab-pane fade" id="recent">
+            <div class="row" id="accordion">
+                  				  @{Html.RenderPartial("~/Views/Shared/_EntityHomeLinks.cshtml", "T_Customer", new ViewDataDictionary { { "type", "recent" },{ "IconBackground", "info" },{ "entitytype", "Normal" } });}
+                                                   </div>
+            </div>
+         </div>
+      </div>
+</div>
+}
+@if (ViewBag.PageContent != null && ViewBag.PageRoles == null)
+{
+<script>
+        $(document).ready(function () {
+            document.getElementsByTagName("html")[0].style.visibility = "visible";
+            $("div").remove(".preview");
+            $("a").remove(".remove, .drag, .clone, .settings");
+            $("div").removeClass("TurantoRow ui-draggable ui-droppable ui-sortable view column clearfix");
+            $(".card-body").css({ "min-height": "auto", "position": "unset", "right": "auto", "height": "auto", "bottom": "auto", "padding": "10px 19px 34px!important" });
+            $(".container").css({ "padding": "0px", "margin": "0px", "width": "100%" });
+            $(".container").removeClass('container').addClass('pageClass');
+            $('.pageClass div:nth-child(1)').attr('style', 'height: auto !important;padding: 0px;');
+            $('.pageClass div').attr('style', 'height: auto !important;padding: 0px;');
+            $('.pageClass').find('br').remove(); 
+            $('.box').attr('style', 'opacity: inherit');
+            $('.card-body').attr('style', 'padding: 10px 19px 20px; margin-bottom:0px!important');
+            $('.col-md-6').attr('style', 'padding-top: 0px!important');
+            $('.card-header').attr('style', 'background-color: #ffffff !important; border-bottom: 0px solid #dddddd !important; padding-bottom:0px!important; ');
+            $('.card-header #lblnew').attr('style', 'font-size: 1rem !important; font-weight:700');
+            var userdiv = $(this).find('div#dvuserFavorite');
+            if (userdiv != undefined) {
+                userdiv.html('');
+                userdiv.html($("#dvMyFavorite").html());
+            }
+        });
+    </script>
+<link href="~/PageBuilder/css/HomePage1.css" rel="stylesheet" type="text/css" />
+<link href="~/PageBuilder/font-awesome/css/font-awesome.css" rel="stylesheet" />
+<script>
+   $(window).on('load',function () {
+       // Delay show just to simulate a real page with tons of content to load
+       window.setInterval(showPage, 3000);
+       function showPage() {
+           $('body').show();
+       }
+   });
+</script>
+ <style>
+        @@media (min-width: 1200px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        @@media (min-width: 992px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        @@media (min-width: 768px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+
+        @@media (min-width: 576px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+<script>
+   $(document).ready(function () {
+   var datevalue = $("#lastlogin").html();
+   if(datevalue != undefined && datevalue.length > 0)
+   {
+   	var date = new Date(datevalue+' UTC');
+   	$("#lastlogin").html(date.toLocaleString());
+   } else $("#lastlogin").html("You logged in first time.");
+   });
+</script>
+<div class="content-heading">
+        <div class="TitleName">
+            <strong>
+                Home
+            </strong>
+        </div>
+        <div class="ml-auto">
+            @if (ViewBag.LastLoggedIn != null && (User != null && !(User.Identity is System.Security.Principal.WindowsIdentity)))
+            {
+                <span class="float-right" style="font-size:14px;"><b>Last Logged-In : </b><span id="lastlogin">@ViewBag.LastLoggedIn</span> </span>
+            }
+        </div>
+    </div>
+	    
+	<div class="card-deck">
+               <div class="card">
+                  <div class="card-body">
+                     <div class="card-header p-1 d-flex flex-row">
+                        <div class="rotate">
+                           <i class="fa fa-user text-info"></i>
+                        </div>
+                        <div class="media-body p-0 col-sm-12">
+                           <h3 class="card-title"> User Information </h3>
+                           <p class="card-subtitle"> <span class="sub text-info"> @User.Name</span></p>
+                           <p class="card-text">@ViewBag.UserName <br /> @ViewBag.Useremail
+                              <br />Role : @String.Join(",", ViewBag.LoginRoles)
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="card">
+                  <div class="card-body">
+                     <div class="card-header p-1 d-flex flex-row">
+					 <h3 class="card-title"> My Favorites</h3>
+                        <div class="rotate">
+                           <i class="fa fa-star text-info"></i>
+                        </div>
+                        @*<i class="fa fa-star fa-2x"></i>*@
+						</div>
+                        <div class="card-contant card-deck mt-2 col-sm-12" style="height: 100px; overflow: auto;">
+                           <p class="card-text">
+                              @if (ViewBag.FavoriteItem != null)
+                              {
+                              foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                              {
+                              if (fItem.LinkAddress.Contains("IsReports=true"))
+                              {
+                              var EntityNameRef = entityModel.FirstOrDefault(p => p.Name == fItem.EntityName);
+                              var EntityDispName = EntityNameRef != null ? EntityNameRef.DisplayName : fItem.EntityName;
+                              @*/@GeneratorBase.MVC.Models.CommonFunction.Instance.AppURL().ToString()@fItem.LinkAddress*@
+                           <li class="list-group-item clearfix" style="height: 50px;">
+                              <a id="rptViewLink" title="Show Reports of @fItem.Name" data-placement="top" title="Show Reports" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                 onclick="ViewReports('@fItem.LinkAddress','@EntityDispName');">
+                              <span class="fa fa-thumbs-up" style="color:#000000"></span> @fItem.Name
+                              </a>
+                              <span class="pull-right">
+                              <a id="rptView" data-placement="top" title="Show Reports of @fItem.Name" data-original-title="Show Reports" data-toggle="modal" data-target="#ShowReoprts"
+                                 onclick="ViewReports('@fItem.LinkAddress','@EntityDispName');">
+                              <span class="fa fa-gear"></span>
+                              </a>
+                              <a class="my-favorites-text" onclick="deleteReport(@fItem.Id ,'@fItem.Name')">
+                              <span class="fa fa-trash"></span>
+                              </a>
+                              </span>
+                           </li>
+                           }
+                           else
+                           {
+                            var linkaddress = fItem.LinkAddress;
+                           <li class="list-group-item clearfix col-sm-6" style="height: 50px;">
+                              <a href='@linkaddress' class="pull-left my-favorites-text">
+                              <span class="fa fa-thumbs-up"></span> @fItem.Name
+                              </a>
+                              <span class="pull-right">
+                              <a href="@Url.Action("FavoriteDelete", "Home", new { id = fItem.Id })">
+                              <span class="fa fa-trash"></span>
+                              </a>
+                              </span>
+                           </li>
+                           }
+                           }
+                           }
+                           else
+                           {
+                           <li class="list-group-item clearfix col-sm-6"  style="height: 50px;">
+                              No favorites available.
+                           </li>
+                           }
+                           </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+			<div>
+            @if (Convert.ToBoolean(ViewBag.ShowDashboard))
+             { 
+            <div class="card" >
+                  <div class="card-body">
+                      <div class="row">
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+                      {
+					    if (item.t_associatedfacetedsearch != null)
+                        {
+							  var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+							  var isgroupby = metricquery["GroupByColumn"];
+							  if (!string.IsNullOrEmpty(isgroupby))
+							  {
+								  Html.RenderPartial("~/Views/Shared/_CrosstabMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+							  }
+                        }
+                      }
+                      </div>
+
+
+                      <div class="row">
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+                      {
+						    if (item.t_associatedfacetedsearch != null)
+                            {
+							  var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+							  var isgroupby = metricquery["GroupByColumn"];
+							  if (string.IsNullOrEmpty(isgroupby))
+							  {
+								  Html.RenderPartial("~/Views/Shared/_NumberMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+							  }
+						    }
+
+                      }
+                      </div>
+
+                      <div class="row mt-4">
+                @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.MetricsHyperlink)
+                {
+
+                    var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+
+                    Html.RenderPartial("~/Views/Shared/_HyperlinkMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+                }
+            </div>
+
+                      <div class="col-sm-12 pt-12 " style="padding:0px!important;">
+
+                          @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.GraphMetrics)
+                          {
+						   
+                              var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                              var isgroupby = metricquery["GroupByColumn"];
+                              if (!string.IsNullOrEmpty(isgroupby))
+                              {
+                                  Html.RenderPartial("~/Views/Shared/_GraphMetric.cshtml", item, new ViewDataDictionary { { "FromHome", "true" } });
+                              }
+                          }
+
+                      </div>
+					  @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.ListMetrics)
+                {
+				
+                    <div style="clear:both"></div>
+					<div class="content-heading">
+                        <div class="TitleName"><strong><a href="@Html.Raw(item.t_associatedfacetedsearch.T_LinkAddress)">@item.T_Name</a><small>List</small></strong></div>
+                     </div>
+                    <div class="card">
+                        <div class="card-body" id="Metric_@item.Id">
+                            <div id="@item.T_EntityName"><label class="label-info">Loading...</label></div>
+                            <script>
+                                $(document).ready(function () {
+                                    ListFromHome('@item.T_EntityName', '@Html.Raw(item.t_associatedfacetedsearch.T_LinkAddress)', '@User.Name', 'Metric_@item.Id','@Request.Url.PathAndQuery');
+                                });
+                            </script>
+                        </div>
+                    </div>
+                }
+                  </div>
+              </div>
+			  }
+	</div>
+    
+@Html.Raw(ViewBag.PageContent)
+    <div class="row">
+                
+			    @{Html.RenderPartial("~/Views/Shared/_EntityHomeLinks.cshtml", "T_Customer", new ViewDataDictionary { { "type", "pagecontent" },{ "IconBackground", "info" },{ "entitytype", "Normal" }, { "Count",ViewBag.T_CustomerCount} });}
+                              
+            </div>
+}
+<div id="dvMyFavorite" style="display:none">
+   @if (ViewBag.FavoriteItem != null)
+   {
+   foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+   {
+   <div class="TurantoRow ui-draggable ui-droppable" style="display: block;">
+      <div class="view">
+         <a class="udplink" href="@GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri()@fItem.LinkAddress">
+         @fItem.Name
+         </a>
+         <a onclick="deleteFavraite(@fItem.Id ,'@fItem.Name')" class="pull-right" style="margin-top:-30px;position:absolute; right:35px"><span class="fam-cross"></span></a>
+      </div>
+   </div>
+   }
+   }
+</div>
+<div class="modal fade" id="ShowReoprts" tabindex="-1" role="dialog" aria-labelledby="ShowReoprtsLabel" aria-hidden="true">
+   <div class="modal-dialog" style="width:80%">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="ShowReoprtsLabel">Reports of</h4>
+         </div>
+         <div class="modal-body">
+            <div id="LoadReportsDiv"></div>
+            <div style="clear:both"></div>
+         </div>
+      </div>
+   </div>
+</div>
+<script>
+   function deleteReport(Id, rptname) {
+       var r = confirm("Do you want to delete " + rptname + " report!");
+       if (r == true) {
+           var thelink = "@Url.Action("DeleteCustomReports", "Reports")";
+           $.ajax({
+               url: thelink,
+               cache: false,
+               data: { Id: Id },
+               success: function (data) {
+                   if (data == "success") {
+                       window.location.reload();
+                   }
+               }
+           })
+       }
+       else {
+           return true;
+       }
+   }
+   function deleteFavraite(Id, favname) {
+       var r = confirm("Do you want to delete " + favname + " Favorite!");
+       if (r == true) {
+           var thelink = "@Url.Action("FavoriteDeleteUDF", "Home")";
+           $.ajax({
+               url: thelink,
+               cache: false,
+               data: { Id: Id },
+               success: function (data) {
+                   if (data == "success") {
+                       window.location.reload();
+                   }
+               }
+           })
+       }
+       else {
+           return true;
+       }
+   }
+</script>
+

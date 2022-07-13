@@ -1,0 +1,15 @@
+﻿@model GeneratorBase.MVC.Models.ImportConfiguration
+@{
+    ViewBag.Title = "Create Import Configuration";
+}
+<div class="content-heading">
+    <div class="col-lg-12">
+        <strong>
+            Import Configuration
+            <small class="text-primary"> Add Import Configuration - @Html.DisplayFor(model => model.DisplayValue) </small>
+        </strong>
+       
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/ImportConfiguration/CreatePartial.cshtml", Model)

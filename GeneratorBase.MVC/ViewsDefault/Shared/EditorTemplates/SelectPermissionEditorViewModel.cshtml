@@ -1,0 +1,358 @@
+﻿@model GeneratorBase.MVC.Models.SelectPermissionEditorViewModel
+@Html.HiddenFor(model => model.EntityName) 
+@{
+    if (Model.IsAssociatedWithUser)
+    {
+        ViewBag.cmbUserAssociation = new SelectList(Model.UserAssociationList, "Name", "DisplayName"); ;
+    }
+    if (Model.IsRuleBasedRole)
+    {
+        ViewBag.DataSecurityAssociationsView = ViewBag.DataSecurityAssociationsEdit = ViewBag.DataSecurityAssociationsDelete = new SelectList(Model.DataSecurityAssociationsView, "Name", "DisplayName"); ;
+    }
+    //code for verb action security
+    if (Model.IsHaveVerbs)
+    {
+        ViewBag.cmbEntityVerb = new SelectList(Model.EntityVerbsList, "Name", "DisplayName"); ;
+    }
+    //
+    var ModelEntity = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName);
+    var DispName = Model.EntityName;
+    if (ModelEntity != null)
+    {
+        DispName = ModelEntity.DisplayName;
+    }
+
+}
+@if (Model.IsAppHeader)
+{
+    <tr class="header expand" id="trAppHeader">
+        <td colspan="8" style="background: #f8f9fc; font-weight:bold; cursor:pointer"><span class="sign"></span> Application Entities</td>
+    </tr>
+}
+
+@if (Model.IsDefaultHeader)
+{
+    <tr class="header expand" id="trDefaultHeader">
+        <td colspan="8" style="background: #f8f9fc; font-weight:bold; cursor:pointer"><span class="sign"></span> Default Entities</td>
+    </tr>
+}
+
+
+<tr>
+    <td>
+        @Html.HiddenFor(model => model.EntityName)
+        @DispName
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanAdd, new { @class = "fooAdd" })
+    </td>
+    <td style="text-align:center" id='tdDataSecurityAssociationsEdit_@Model.EntityName'>
+        @Html.CheckBoxFor(model => model.CanEdit, new { @class = "fooEdit" })
+
+        @if (Model.IsRuleBasedRole && Model.DataSecurityAssociationsEdit.Count() > 0)
+        { @Html.HiddenFor(model => model.DataSecurityAssociationsEditValue, new { @class = "classuser" })
+
+            if (!string.IsNullOrEmpty(Model.DataSecurityAssociationsEditCustom))
+            {
+                <a class="btn btn-info btn-xs" id="anchorViewE_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewE_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-default btn-xs" id="anchorViewE_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewE_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            <div class="modal fade fade midal-fade-inline" id="quickaddViewE_@Model.EntityName" tabindex="-1" role="dialog" aria-labelledby="quickaddViewE_@Model.EntityName" aria-hidden="true" data-keyboard="false" data-backdrop="">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="quickaddRuleBasedLabel_@Model.EntityName">  Restrict edit of @DispName using</h4>
+
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="dvQAddquickaddViewE_@Model.EntityName" class="modal-body">
+                            <div style="display:none;">
+                                @Html.DropDownList("DataSecurityAssociationsEdit", null, new { onchange = "disableCheckbox(this,'CanEdit','anchorViewE_" + Model.EntityName + "');", @multiple = "multiple" })
+                            </div>
+                            @Html.TextAreaFor(model => model.DataSecurityAssociationsEditCustom, new { onfocusout = "SetValue(this,'CanEdit','anchorViewE_" + Model.EntityName + "');", @class = "form-control" })
+                            <div class="tabbable responsive">
+                                <div id="Des_Table" class="table-responsive" style="overflow-x:inherit;">
+                                    <table class="table table-hover table-striped default-bordered default-condensed">
+                                        <tr>
+                                            <th>Query</th>
+                                            <th>Select</th>
+                                        </tr>
+                                        @foreach(var item in (SelectList)ViewBag.DataSecurityAssociationsEdit)
+                                        { 
+                                        <tr>
+                                            <td>
+                                                @item.Text.Replace(".", " . ")
+                                            </td>
+                                            
+                                            <td>
+                                                <input type="checkbox" id="chkViewE_@Model.EntityName" dataval="@item.Value" onclick="@Html.Raw("selectcheckbox(this,'ViewE_" + Model.EntityName + "');")" />
+                                            </td>
+                                        </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+            </div>
+
+        }
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanDelete, new { @class = "fooDelete" })
+        @if (Model.IsRuleBasedRole && Model.DataSecurityAssociationsDelete.Count() > 0)
+        {@Html.HiddenFor(model => model.DataSecurityAssociationsDeleteValue, new { @class = "classuser" })
+
+            if (!string.IsNullOrEmpty(Model.DataSecurityAssociationsDeleteCustom))
+            {
+                <a class="btn btn-info btn-xs" id="anchorViewD_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewD_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-default btn-xs" id="anchorViewD_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewD_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            <div class="modal fade fade midal-fade-inline" id="quickaddViewD_@Model.EntityName" tabindex="-1" role="dialog" aria-labelledby="quickaddViewD_@Model.EntityName" aria-hidden="true" data-keyboard="false" data-backdrop="">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="quickaddRuleBasedLabel_@Model.EntityName">  Restrict delete of @DispName using</h4>
+
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="dvQAddquickaddViewD_@Model.EntityName" class="modal-body">
+                            <div style="display:none;">
+                                @Html.DropDownList("DataSecurityAssociationsDelete", null, new { onchange = "disableCheckbox(this,'CanDelete','anchorViewD_" + Model.EntityName + "');", @multiple = "multiple" })
+                            </div>
+                            @Html.TextAreaFor(model => model.DataSecurityAssociationsDeleteCustom, new { onfocusout = "SetValue(this,'CanDelete','anchorViewD_" + Model.EntityName + "');", @class = "form-control" })
+                            <div class="tabbable responsive">
+                                <div id="Des_Table" class="table-responsive" style="overflow-x:inherit;">
+                                    <table class="table table-hover table-striped default-bordered default-condensed">
+                                        <tr>
+                                            <th>Query</th>
+                                            <th>Select</th>
+                                        </tr>
+                                        @foreach (var item in (SelectList)ViewBag.DataSecurityAssociationsDelete)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.Text.Replace(".", " . ")
+                                                </td>
+
+                                                <td>
+                                                    <input type="checkbox" id="chkViewD_@Model.EntityName" dataval="@item.Value" onclick="@Html.Raw("selectcheckbox(this,'ViewD_" + Model.EntityName + "');")" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.CanView, new { @class = "fooView", @onclick = "ChangeViewPermissionOfEntity(this)" })
+        @if (Model.IsRuleBasedRole && Model.DataSecurityAssociationsView.Count() > 0)
+        {
+            @Html.HiddenFor(model => model.DataSecurityAssociationsViewValue, new { @class = "classuser" })
+            if (!string.IsNullOrEmpty(Model.DataSecurityAssociationsViewCustom))
+            {
+                <a class="btn btn-info btn-xs" id="anchorViewR_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewR_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-default btn-xs" id="anchorViewR_@Model.EntityName" data-placement="top" data-original-title="Restrict" data-toggle="modal" data-target="#quickaddViewR_@Model.EntityName">
+                    <span class="fa fa-plus-circle"> </span> R
+                </a>
+            }
+            <div class="modal fade fade midal-fade-inline" id="quickaddViewR_@Model.EntityName" tabindex="-1" role="dialog" aria-labelledby="quickaddViewR_@Model.EntityName" aria-hidden="true" data-keyboard="false" data-backdrop="">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="quickaddRuleBasedLabel_@Model.EntityName">  Restrict view of @DispName using</h4>
+
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="dvQAddquickaddViewR_@Model.EntityName" class="modal-body">
+                            <div style="display:none;">
+                                @Html.DropDownList("DataSecurityAssociationsView", null, new { onchange = "disableCheckbox(this,'CanView','anchorViewR_" + Model.EntityName + "');", @multiple = "multiple" })
+                            </div>
+                            @Html.TextAreaFor(model => model.DataSecurityAssociationsViewCustom, new { onfocusout = "SetValue(this,'CanView','anchorViewR_" + Model.EntityName + "');", @class = "form-control" })
+                                <div class="tabbable responsive">
+                                <div id="Des_Table" class="table-responsive" style="overflow-x:inherit;">
+                                    <table class="table table-hover table-striped default-bordered default-condensed">
+                                        <tr>
+                                            <th>Query</th>
+                                            <th>Select</th>
+                                        </tr>
+                                        @foreach (var item in (SelectList)ViewBag.DataSecurityAssociationsView)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @item.Text.Replace(".", " . ")
+                                                </td>
+
+                                                <td>
+                                                    <input type="checkbox" id="chkViewR_@Model.EntityName" dataval="@item.Value" onclick="@Html.Raw("selectcheckbox(this,'ViewR_" + Model.EntityName + "');")" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </td>
+    @*code for verb action security*@
+    <td style="text-align:center" id='tdVerbs_@Model.EntityName'>
+
+        @if (Model.IsHaveVerbs)
+        {
+            @Html.DropDownList("cmbEntityVerb", null, new { @onchange = "CheckIsVerbs(this);", @Verbent = Model.EntityName, @multiple = "multiple" })
+            @Html.HiddenFor(model => model.Verbs, new { @id = Model.EntityName + "Verbstxt", @class = "classuser" })
+        }
+
+    </td>
+
+    <td style="text-align:center" id='td_@Model.EntityName'>
+        @if (Model.IsAssociatedWithUser)
+        {
+            @Html.DropDownList("cmbUserAssociation", null, new { @onchange = "CheckIsOwner(this);", @ent = Model.EntityName, @multiple = "multiple" })
+            @Html.CheckBoxFor(model => model.IsOwner, new { @id = Model.EntityName + "Owner", @class = "foo1 d-none" })
+            @Html.HiddenFor(model => model.UserAssociation, new { @id = Model.EntityName + "Ownertxt", @class = "classuser" })
+        }
+    </td>
+    <td style="text-align:center">
+        @if (Model.IsSelfRegistrartion)
+        {
+            @Html.CheckBoxFor(model => model.SelfRegistration)
+        }
+    </td>
+</tr>
+<div style="display:none;">
+    @if (Model.IsRuleBasedRole)
+    {
+        <script type="text/javascript">
+    $(document).ready(function () {
+        var flag = false;
+        var roles = "@Model.DataSecurityAssociationsEditValue".split(",");
+        var eleRoles1 = $('select[multiple=multiple]', '#dvQAddquickaddViewE_@Model.EntityName');
+                var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+                if (roles != undefined && eleRoles != undefined)
+                    for (i = 0; i < roles.length; i++) {
+                        for (var o = 0; o < eleRoles.options.length; o++) {
+                            if (eleRoles.options[o].value == roles[i])
+                            {
+                                $("#chkViewE_@Model.EntityName" + "[dataval='" + roles[i] + "']").prop("checked", "true");
+                                eleRoles.options[o].selected = true; flag = true;
+                            }
+                        }
+                    }
+                if(flag)
+                {
+                    eleRoles1.trigger("change");
+                }
+            });
+            $(document).ready(function () {
+                var flag = false;
+                var roles = "@Model.DataSecurityAssociationsDeleteValue".split(",");
+        var eleRoles1 = $('select[multiple=multiple]', '#dvQAddquickaddViewD_@Model.EntityName');
+        var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+        if (roles != undefined && eleRoles != undefined)
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                    {
+                        $("#chkViewD_@Model.EntityName" + "[dataval='" + roles[i] + "']").prop("checked", "true");
+                        eleRoles.options[o].selected = true; flag = true;
+                    }
+                }
+            }
+        if (flag) {
+            eleRoles1.trigger("change");
+        }
+    });
+    $(document).ready(function () {
+        var flag = false;
+        var roles = "@Model.DataSecurityAssociationsViewValue".split(",");
+        var eleRoles1 = $('select[multiple=multiple]', '#dvQAddquickaddViewR_@Model.EntityName');
+        var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+        if (roles != undefined && eleRoles != undefined)
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                    {
+                        $("#chkViewR_@Model.EntityName" + "[dataval='" + roles[i] + "']").prop("checked", "true");
+                        eleRoles.options[o].selected = true; flag = true;
+                    }
+                }
+            }
+        if (flag) {
+            eleRoles1.trigger("change");
+        }
+    });
+        </script>
+    }
+    @if (Model.IsAssociatedWithUser)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var roles = "@Model.UserAssociation".split(",");
+                var eleRoles1 = $('select[multiple=multiple]', '#td_@Model.EntityName');
+                var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+                if (roles != undefined)
+                    for (i = 0; i < roles.length; i++) {
+                        for (var o = 0; o < eleRoles.options.length; o++) {
+                            if (eleRoles.options[o].value == roles[i])
+                                eleRoles.options[o].selected = true;
+                        }
+                    }
+            });
+        </script>
+    }
+    @*code for verb action security*@
+    @if (Model.IsHaveVerbs)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var verbs = "@Model.Verbs".split(",");
+
+                var eleVerbs1 = $('select[multiple=multiple]', '#tdVerbs_@Model.EntityName');
+                var eleverbs = document.getElementById($(eleVerbs1).attr("id"));
+                if (verbs != undefined)
+                    for (i = 0; i < verbs.length; i++) {
+                        for (var o = 0; o < eleverbs.options.length; o++) {
+                            if (eleverbs.options[o].value == verbs[i])
+                                eleverbs.options[o].selected = true;
+                        }
+                    }
+            });
+        </script>
+    }
+</div>
+

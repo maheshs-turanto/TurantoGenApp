@@ -1,0 +1,49 @@
+﻿@model GeneratorBase.MVC.Models.SelectFlsEditorViewModel
+@{
+    bool IsRequired = false;
+    var PropDisplayName = Model.PropertyName;
+    var Entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.EntityName);
+    if (Entity != null)
+    {
+        var prop = Entity.Properties.FirstOrDefault(p => p.Name == Model.PropertyName);
+        PropDisplayName = prop != null ? prop.DisplayName : Model.PropertyName;
+        Type currentType = Type.GetType("GeneratorBase.MVC.Models." + Model.EntityName + ", GeneratorBase.MVC.Models");
+        if (currentType != null)
+        {
+            System.ComponentModel.DataAnnotations.RequiredAttribute requiredAttribute;
+            System.Reflection.PropertyInfo property = currentType.GetProperty(Model.PropertyName);
+            if (property != null)
+            {
+                requiredAttribute = (System.ComponentModel.DataAnnotations.RequiredAttribute)property.GetCustomAttributes(
+                    typeof(System.ComponentModel.DataAnnotations.RequiredAttribute), true).FirstOrDefault();
+                if (requiredAttribute != null)
+                {
+                    IsRequired = true;
+                }
+            }
+        }
+    }
+}
+<tr>
+    @Html.HiddenFor(model => model.EntityName)
+    @Html.HiddenFor(model => model.PropertyName)
+    <td>
+        @PropDisplayName @if (IsRequired)
+        {
+            <span class="text-danger-reg">*</span>
+        }
+    </td>
+    <td style="text-align:center">
+        @Html.CheckBoxFor(model => model.NoEdit, new { @class = "foo" })
+    </td>
+    <td style="text-align:center">
+        @if (IsRequired)
+        {
+            @Html.CheckBoxFor(model => model.NoView, new { @disabled = "disabled" })
+        }
+        else
+        {
+            @Html.CheckBoxFor(model => model.NoView, new { @class = "foo" })
+        }
+    </td>
+</tr>

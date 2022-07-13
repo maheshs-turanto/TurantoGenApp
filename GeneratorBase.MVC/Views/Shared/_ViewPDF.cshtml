@@ -1,0 +1,16 @@
+﻿@{
+    Layout = null;
+}
+<style type="text/css">
+    #pdfbox {
+        width: 750px;
+        height: 500px;
+        border: 5px solid #ccc;
+    }
+</style>
+<div id='pdf'>
+    <object id='pdfbox' type="application/pdf" data="@Html.Raw(Url.Action("GenerateDocument", ViewBag.EntityName, new { id = ViewBag.EntityId, DocumentId = ViewBag.T_Document, documentName = ViewBag.T_Name, outputFormat = ViewBag.T_DefaultOutputFormat, isdownload = false, ispreview = true,forcedOutput="" }, null))"
+            style="background: transparent url(@Html.Raw(Url.Content("'../../Scripts/NewTheme/plugins/justified-gallery/loading.gif'"))) no-repeat center">
+    </object>
+</div>
+<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm d-none" data-dismiss="modal" aria-hidden="true">Cancel</button>

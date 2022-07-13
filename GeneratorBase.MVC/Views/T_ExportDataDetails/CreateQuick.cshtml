@@ -1,0 +1,266 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataDetails
+@{
+    ViewBag.Title = "Create Export Data Details";
+    Layout = null;
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataDetails").Properties;
+	var NonViewableProperties = User.CanNotView("T_ExportDataDetails");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_ExportDataDetails", User);
+var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+<script>
+    $(document).ready(function () {
+        try {
+		 			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataDetailsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataDetailsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataDetailsIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataDetailsIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataDetailsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataDetailsIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataDetailsRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataDetailsRestrictDropdownValueRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+@if (appTheme == "Default1")
+{
+    <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+}
+else
+{<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />}
+@using (Html.BeginForm("CreateQuick", "T_ExportDataDetails",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+     <a id="seturlT_ExportDataDetails" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_ExportDataDetails")).ToHtmlString()"></a>
+	   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+	@Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+    @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+		@Html.Hidden("ValueForMultiselect")
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="AppForm createQuickUI">
+			 <p id="bulkIconmsg" style="margin-top:-10px; margin-bottom:5px;display:none;">Please click on the icon <a class="btn btn-primary btn-sm" style="padding: 0px 5px;"><i class="fa fa-clipboard-list"></i></a> to convert the dropdown into multi-select dropdown.</p>
+                <div>
+               					<div class="row">
+				        
+								<div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="card card-default" id="dvGroupT_ExportDataDetailsBasicInformation">
+                                        <div class="card-header clearfix">
+                                          
+                                            <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                                        </div>
+                                        <div class="card-body row">
+@if(User.CanView("T_ExportDataDetails","T_ExportDataConfigurationExportDataDetailsAssociationID"))
+	{
+  				<div class='col-sm-6'  id="dvT_ExportDataConfigurationExportDataDetailsAssociationID">
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_ExportDataConfigurationExportDataDetailsAssociationID) </label>
+                            <div class="input-group" style="width: 100%;">
+									@Html.DropDownList("T_ExportDataConfigurationExportDataDetailsAssociationID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "T_ExportDataConfiguration", @dataurl = Url.Action("GetAllValue", "T_ExportDataConfiguration",new { caller = "T_ExportDataConfigurationExportDataDetailsAssociationID" }) })
+        @if (Convert.ToString(ViewData["AssociatedType"]) != "T_ExportDataConfigurationExportDataDetailsAssociation")
+         {
+           <a class="btn btn-primary btn-sm iconToggle" style="padding:0px 5px;display:none" onclick="toggleToMultiselect('T_ExportDataConfigurationExportDataDetailsAssociationID','T_ExportDataConfiguration',event,'','Export Data Details');" id="togeltomultiselectT_ExportDataConfigurationExportDataDetailsAssociationID"><i class="fa fa-clipboard-list"></i></a>
+         }
+                                       
+                            </div>
+							 @Html.ValidationMessageFor(model => model.T_ExportDataConfigurationExportDataDetailsAssociationID)
+                        </div>
+                    </div>
+
+		}
+					@if(User.CanView("T_ExportDataDetails","T_ChildEntity"))
+						{
+							<div class='col-sm-6' id="dvT_ChildEntity">
+                                <div class='form-group' title="Entity">
+                                    <label>@Html.LabelFor(model => model.T_ChildEntity) </label>
+                                    @Html.TextAreaFor(model => model.T_ChildEntity, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_ChildEntity)
+                                </div>
+							</div>
+							}
+					@if(User.CanView("T_ExportDataDetails","T_ParentEntity"))
+						{
+							<div class='col-sm-6' id="dvT_ParentEntity">
+                                <div class='form-group' title="Parent Entity">
+                                    <label>@Html.LabelFor(model => model.T_ParentEntity) </label>
+                                    @Html.TextAreaFor(model => model.T_ParentEntity, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_ParentEntity)
+                                </div>
+							</div>
+							}
+							</div>
+                         </div>
+                      </div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+	<p id="CreateSaveCount" style="margin-top:-10px; margin-bottom:5px;display:none;">Please click <strong>"Create" </strong> to save the newly created <strong>"<span id="output"></span> Export Data Details"</strong></p>
+	<div id="PreviewTable" style=' max-height:450px; overflow:auto;'> </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "T_ExportDataDetails").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+		 var typelist = string.Join(",", busineesrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" caller="@Request.QueryString["caller"]" class="btn btn-primary btn-sm bntcreate" onclick="QuickAdd(event,'T_ExportDataDetails','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+ <input type="submit" caller="@Request.QueryString["caller"]"  value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'T_ExportDataDetails','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" redirectedit="false" class="btn btn-primary btn-sm bntcreate" onclick="QuickAddFromIndex(event,true,'T_ExportDataDetails','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+ <input type="submit" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm btncreatecontinue" onclick="QuickAddFromIndex(event,true,'T_ExportDataDetails','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+		}
+    		  <a class="btn btn-primary btn-sm pull-right btnbulkadd" onclick="ShowBulk()">Bulk Add</a>
+          <a class="btn btn-primary btn-sm pull-right btnPreviewCreate" style="display:none;" onclick="AddText(BulkAddDropDown);">Create(Preview)</a>
+          <a id='btnBack' style="display:none;" onclick="backPreiview('Export Data Details');" class="btn btn-primary btn-sm pull-right">Back</a>
+}
+@*<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>*@
+@Scripts.Render("~/bundles/jqueryval")
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_ExportDataDetails").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsgQuickAdd").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmT_ExportDataDetails");
+                dataurl = "@Url.Action("businessruletype", "T_ExportDataDetails", new { ruleType = "OnCreate" })";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "T_ExportDataDetails", false, "ErrMsgQuickAdd", form);
+
+            });
+        </script>
+    }
+}
+
+
+
+
+
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+			IgnoreReadOnlyCtrlFocus();
+			ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_ExportDataDetails','createquick',false,'Export Data Details')
+    });
+	var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+ function AddText(obj)
+    {
+	$("#addPopupLabel").html("Preview New Export Data Details(s)")
+	 $('#PreviewTable').html('');
+        $(".createQuickUI" ).hide();
+        $('#CreateSaveCount').show();
+        $('#PreviewTable').show();
+        $('#btnBack').show();
+        $('.btnPreviewCreate').hide();
+        var content = "<table id='#tblPreview' class='table table-hover default-bordered default-condensed tblPreview'><thead>";
+	  	            content +='@(User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails","T_ExportDataConfigurationExportDataDetailsAssociationID"))'.toLowerCase() == 'true' ? "<th>@modelproperties.FirstOrDefault(q => q.Name == "T_ExportDataConfigurationExportDataDetailsAssociationID").DisplayName</th>":"";
+                        content +='@(User.CanView("T_ExportDataDetails","T_ChildEntity"))'.toLowerCase()=='true' ? "<th>Entity</th>":"";
+                        content +='@(User.CanView("T_ExportDataDetails","T_ParentEntity"))'.toLowerCase()=='true' ? "<th>Parent Entity</th>":"";
+            	
+        content +="</thead>";
+        var rndValue;
+         if ($("#" + obj).val() == null && $('#' + obj).next().find('button').attr('tempclass') == 'selectmulti' && $('#' + obj).next().find('button').attr('title').toUpperCase() == "ALL") {
+                    LoadAllItem()
+                }
+        rndValue = $("#"+obj).val();
+        rndtext=$("#"+obj+" option:selected");
+	    if(rndValue.length>0)
+        {
+		for(i=0; i < rndValue.length; i++)
+            {
+                var subcontent="";
+								if("T_ExportDataConfigurationExportDataDetailsAssociationID" == obj)
+                {
+                    var val = rndtext[i].text;
+                    subcontent+='@(User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails","T_ExportDataConfigurationExportDataDetailsAssociationID"))'.toLowerCase() == 'true' ? '<td>' + val + '</td>':"";
+                    
+                }
+                else
+                {
+                    var val = $('#T_ExportDataConfigurationExportDataDetailsAssociationID option:selected').text();
+                    subcontent+='@(User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails","T_ExportDataConfigurationExportDataDetailsAssociationID"))'.toLowerCase() == 'true' ? '<td>' + val + '</td>':"";
+                }
+                    subcontent+='@(User.CanView("T_ExportDataDetails","T_ChildEntity"))'.toLowerCase() == 'true' ? '<td>'+$('#T_ChildEntity').val()+'</td>':"";
+		                    subcontent+='@(User.CanView("T_ExportDataDetails","T_ParentEntity"))'.toLowerCase() == 'true' ? '<td>'+$('#T_ParentEntity').val()+'</td>':"";
+			
+                content += '<tr>'+subcontent+'</tr>';
+			}
+		}
+		content += "</table>"
+        $('#PreviewTable').append(content);
+	}
+   
+    
+ </script>
+<style>
+        .tblPreview td {
+            position: initial !important;
+        }
+        .tblPreview thead th {
+            vertical-align: bottom;
+            background-color: #f3f5f9;
+            color: #62a8d1;
+        }
+
+        .tblPreview .table th a {
+            color: #1b1b1b !important;
+        }
+    </style>
+

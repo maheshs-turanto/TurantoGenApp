@@ -1,0 +1,306 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.AppSetting>
+@{
+    var _list = Model.ToList();
+}
+<div id="AppSetting">
+    <button id="AppSettingSearchCancel" type="button" hidden onclick="CancelSearch('AppSetting','@Html.Raw(Url.Action("Index", "AppSetting", new {ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" style="padding:3px 5px;"></button>
+
+    <div class="card">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            @foreach (var appgroup in ViewBag.AppSettingGroup)
+            {
+                if (!ViewBag.HasThirdParty && appgroup.DisplayValue == "Third Party Login (Social Media)")
+                {
+                    continue;
+                }
+                <div class="">
+                    @if (!appgroup.IsDefault)
+                    {
+
+                        <div class="pt-2">
+                            <div class="card-title">
+                                <h3 class="float-left">@appgroup.Name</h3>
+                                <div class="btn-group  ml-4 mt-1">
+                                    <a class="btn btn-primary btn-xs" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting Group','dvPopup','" + Url.Action("EditGroup", "AppSetting", new { id = appgroup.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")">
+                                        <i class="fa fa-pencil-alt text-white"></i>
+                                    </a>
+                                    <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                        <span class="sr-only"></span>
+                                    </button>
+                                    <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                        <li>
+                                            <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting Group','dvPopup','" + Url.Action("EditGroup", "AppSetting", new { id = appgroup.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-edit pull-left"></i>  Edit</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting Group','dvPopup','" + Url.Action("DeleteGroup", "AppSetting", new { id = appgroup.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-trash pull-left"></i>  Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="pt-2 clearfix">
+                            <h3 class="card-title">@appgroup.Name</h3>
+                        </div>
+                    }
+
+                    <div class="">
+                        @{
+                    var groupName = appgroup.Name;
+                    var itemSetting = _list.Where(app => app.associatedappsettinggroup != null && app.associatedappsettinggroup.DisplayValue == groupName);
+                        }
+
+                        <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                            <table class="table table-bordered table-hover table-condensed">
+                                <thead class="border">
+                                    <tr>
+                                        <th class="col1" style="width:100px;">Actions</th>
+                                        <th style="width:25%">Key</th>
+                                        <th style="width:35%;">Value</th>
+                                        <th style="width:auto">Description</th>
+                                    </tr>
+                                </thead>
+
+                                @foreach (var item in itemSetting)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (item.Key != "DateFormat" && item.Key != "TimeFormat" && item.Key != "TimeZone" && item.Key != "DomainName" && item.Key != "UseActiveDirectory" && item.Key != "UseActiveDirectoryRole" && item.Key != "AdministratorRoles" && item.Key != "ReportFolder")
+                                            {
+                                                <div>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-secondary text-primary  dropdown-toggle" data-toggle="dropdown" type="button">
+                                                            Action
+                                                        </a>
+                                                        <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                            <li>
+                                                                @if (User.CanEdit("AppSetting"))
+                                                                {
+                                                                    <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-edit"></i>  Edit</a>
+                                                                }
+                                                            </li>
+                                                            @if (!item.IsDefault)
+                                                            {
+                                                                <li>
+                                                                    @if (User.CanDelete("AppSetting"))
+                                                                    {
+                                                                        <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting','dvPopup','" + Url.Action("DeleteSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-trash"></i>  Delete</a>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                if (item.Key.ToLower() == "dateformat" || item.Key.ToLower() == "timeformat" || item.Key.ToLower() == "timezone")
+                                                {<div>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-secondary text-primary  dropdown-toggle" data-toggle="dropdown" type="button">
+                                                            Action
+                                                        </a>
+                                                        <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="@Html.Raw("NavigateToUrl('" + Url.Action("GlobalDateTimeSetting", "PropertyValidationandFormat", new { UrlReferrer = Request.Url.PathAndQuery }, null) + "');")">
+                                                                    <i class="fa fa-edit"></i>  Edit
+                                                                </a>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                }
+                                                else
+                                                {
+                                                    <div>web.config setting</div>
+                                                }
+                                            }
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.Key)</td>
+                                        @if (item.Key.ToLower() == "reportpass")
+                                        {
+                                            if (item.Value != null)
+                                            {
+                                                string newString = new string('*', item.Value.Length);
+                                                <td>@newString</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td> }
+                                        }
+                                        else if (item.Key.ToLower() == "googlemapapikey")
+                                        {
+                                            <td>●●●●●●●●●●●●●●●●●●●●●●</td>
+                                        }
+
+                                        else
+                                        {
+                                            if (item.Key.ToLower() == "dateformat" || item.Key.ToLower() == "timeformat" || item.Key.ToLower() == "timezone")
+                                            {
+                                                <td>@System.Configuration.ConfigurationManager.AppSettings[item.Key]</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                            }
+                                        }
+                                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                    </tr>
+                                }
+                               @if (itemSetting.FirstOrDefault() != null &&(itemSetting.FirstOrDefault().associatedappsettinggroup.DisplayValue.ToLower() == "security compliance settings" || itemSetting.FirstOrDefault().associatedappsettinggroup.Id == 3))
+                                {
+                                    string IsVerifyUserEmail = System.Configuration.ConfigurationManager.AppSettings["VerifyUserEmail"];
+                                    if (IsVerifyUserEmail != null)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-secondary text-primary  dropdown-toggle" data-toggle="dropdown" type="button">
+                                                            Action
+                                                        </a>
+                                                        <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                            <li>
+                                                                @if (User.CanEdit("AppSetting"))
+                                                                {
+                                                                    if (IsVerifyUserEmail == "")
+                                                                    {
+                                                                        <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("SetVerifyUserEmail", "AppSetting", new { confirm = "true", UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }, null)"> Enable</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("SetVerifyUserEmail", "AppSetting", new { confirm ="", UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }, null)"> Disable</a>
+                                                                    }
+                                                                }
+                                                            </li>
+
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>VerifyUserEmail</td>
+                                            <td>@{var VerifyUserEmailstr = IsVerifyUserEmail == "" ? "No" : "Yes";} @VerifyUserEmailstr</td>
+                                            <td>Set value as Yes to enable send verification email(Make sure to correct all user's existing email ids before enabling this)</td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="">
+                <div class="pt-2 clearfix">
+                    <h3 class="card-title">Other Settings</h3>
+                </div>
+                <div class="">
+                    <div id="Des_Table" class="table-responsive">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <thead class="border">
+                                <tr>
+                                    <th class="col1" style="width:100px;">Actions</th>
+                                    <th style="width:25%">Key</th>
+                                    <th style="width:35%;">Value</th>
+                                    <th style="width:auto">Description</th>
+                                </tr>
+                            </thead>
+                            @foreach (var item in Model.Where(app => app.associatedappsettinggroup == null))
+                            {
+                                var flag = false;
+                                <tr>
+                                    <td>
+                                        @if (item.Key != "AppURL")
+                                        {
+                                            <div>
+                                                <div class="btn-group">
+                                                    <a class="btn btn-secondary text-primary  dropdown-toggle" data-toggle="dropdown" type="button">
+                                                        Action
+                                                    </a>
+                                                    <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                        @if (item.Key == "SoftDeleteEnabled")
+                                                        {
+                                                            var SoftDeleteEnabled = System.Configuration.ConfigurationManager.AppSettings["SoftDeleteEnabled"]; //CommonFunction.Instance.UseActiveDirectory();
+                                                            if (Convert.ToBoolean(SoftDeleteEnabled))
+                                                            {
+                                                                flag = true;
+                                                                <li>
+                                                                    @if (User.CanEdit("AppSetting"))
+                                                                    {
+                                                                        <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-edit"></i>  Edit</a>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div>Turanto modelling option</div>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>
+                                                                @if (User.CanEdit("AppSetting"))
+                                                                {
+                                                                    <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Setting','dvPopup','" + Url.Action("EditSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-edit"></i>  Edit</a>
+                                                                }
+                                                            </li>
+                                                        }
+                                                        @if (!item.IsDefault)
+                                                        {
+                                                            <li>
+                                                                @if (User.CanDelete("AppSetting"))
+                                                                {
+                                                                    <a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Setting','dvPopup','" + Url.Action("DeleteSetting", "AppSetting", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-trash"></i>  Delete</a>
+                                                                }
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div>web.config setting</div>}
+                                    </td>
+                                    @if (item.Key.ToLower() == "enableprototypingtool")
+                                    {
+                                        <td>Enable Feedback</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.DisplayFor(modelItem => item.Key)</td>
+                                    }
+
+                                    @if (item.Key.ToLower() == "reportpass")
+                                    {
+                                        if (item.Value != null)
+                                        {
+                                            string newString = new string('*', item.Value.Length);
+                                            <td>@newString</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td> }
+                                    }
+                                    else
+                                    {
+                                        <td>@Html.DisplayFor(modelItem => item.Value)</td>
+                                    }
+                                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @if (User.CanEditAdminFeature("ApplicationConfiguration"))
+            {<div class="card ButtonFooter">
+                <div class="card-footer container-fluid">
+                    <a href="@Url.Action("ApplySetting", "AppSetting")" class="btn btn-primary btn-sm">Apply Setting</a>
+                </div>
+            </div>
+            }
+
+        </div>
+    </div>
+</div>

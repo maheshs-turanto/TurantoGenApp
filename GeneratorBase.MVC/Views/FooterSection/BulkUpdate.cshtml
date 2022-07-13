@@ -1,0 +1,100 @@
+﻿@model GeneratorBase.MVC.Models.FooterSection
+@{
+ ViewBag.Title = "Bulk Update Footer Section ";
+    Layout = null;
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection");
+}
+<script>
+    $(document).ready(function () {
+       LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.form-control:input').change(function () {
+            var $this = $(this);
+            $("input[type=checkbox][value=" + $this.attr('id') + "]").prop("checked", $this.val() != '' ? true : false);
+            var ChildDDids = $this.attr('ChildDDids');
+            if (ChildDDids != undefined) {
+                var ids = ChildDDids.split(",");
+                for (var i = 0; i < ids.length; i++) {
+                    $("input[type=checkbox][value=" + ids[i] + "]").prop("checked", $this.val() != '' ? true : false);
+                }
+            }
+        })
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("BulkUpdate", "FooterSection", new { UrlReferrer = Convert.ToString(ViewData["FooterSectionParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+   @Html.AntiForgeryToken();
+   @Html.Hidden("BulkUpdate", (object)ViewBag.BulkUpdate);
+	<div class="alert alert-danger" style="margin-top:-10px;">
+        <strong>Warning!</strong> This action updates all the selected records.
+        Select the desired properties from the checkbox list in the pop-up window.
+        Click "Update" to proceed with modification action of the selected properties.
+    </div>
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="AppForm">
+               
+                   <table class="table table-striped default-bordered table-hover default-condensed">
+                        <thead>
+                            <tr>
+                                <th style="width:70px">Select to update property</th>
+                                <th>Property Name</th>
+                                <th>Set Value of Property</th>
+                            </tr>
+							<tr>
+                <td align="center"><input type="checkbox" name="chkUpdate" value="CompanyInformationFooterSectionAssociationID" /></td>
+				<td>@Html.LabelFor(model => model.CompanyInformationFooterSectionAssociationID)</td>
+				<td>
+@Html.DropDownList("CompanyInformationFooterSectionAssociationID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "CompanyInformation", @dataurl = Url.Action("GetAllValue", "CompanyInformation",new { caller = "CompanyInformationFooterSectionAssociationID" }) })
+				</td></tr>
+<tr>
+                <td align="center"><input type="checkbox" name="chkUpdate" value="Name" /></td>
+                <td>@Html.LabelFor(model => model.Name)</td>
+				<td> @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })</td></tr>
+<tr>
+                <td align="center"><input type="checkbox" name="chkUpdate" value="AssociatedFooterSectionTypeID" /></td>
+				<td>@Html.LabelFor(model => model.AssociatedFooterSectionTypeID)</td>
+				<td>
+@Html.DropDownList("AssociatedFooterSectionTypeID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "FooterSectiontype", @dataurl = Url.Action("GetAllValue", "FooterSectiontype",new { caller = "AssociatedFooterSectionTypeID" }) })
+				</td></tr>
+<tr>
+                <td align="center"><input type="checkbox" name="chkUpdate" value="WebLink" /></td>
+                <td>@Html.LabelFor(model => model.WebLink)</td>
+				<td> @Html.TextBoxFor(model => model.WebLink, new { @class = "form-control" })</td></tr>
+                        </thead>
+                    </table>
+
+ </div>
+  </div>
+   </div>
+   <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    if (ViewBag.IsDDAdd == null && User.CanEdit("FooterSection"))
+    {
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+    }
+    <br /><br />
+	}
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+    

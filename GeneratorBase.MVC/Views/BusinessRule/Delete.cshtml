@@ -1,0 +1,89 @@
+﻿@model GeneratorBase.MVC.Models.BusinessRule
+@{
+    ViewBag.Title = "Delete Business Rule";
+}
+<style>
+    .dl-horizontal dt {
+        float: left;
+        width: 10%;
+    }
+</style>
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            Delete Business Rule
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card card-default AppForm">
+                <div class="card-header text-white bg-danger clearfix">
+                    <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>
+                </div>
+                <div class="card-body">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.RuleName)
+                        </dt>
+                        <dd class="clearfix">
+                            @Html.DisplayFor(model => model.RuleName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.EntityName)
+                        </dt>
+                        <dd class="clearfix">
+                            @Html.DisplayFor(model => model.EntityName)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Roles)
+                        </dt>
+                        <dd class="clearfix">
+                            @Html.DisplayFor(model => model.Roles)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.DateCreated1)
+                        </dt>
+                        <dd class="clearfix">
+                            @Html.DisplayFor(model => model.DateCreated1)
+                        </dd>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Disable)
+                        </dt>
+                        <dd class="clearfix">
+                            @Html.DisplayFor(model => model.Disable)
+                        </dd>
+                        @*<dt>
+                                @Html.DisplayNameFor(model => model.AssociatedBusinessRuleTypeID)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.associatedbusinessruletype.DisplayValue)
+                            </dd>
+                            <dt>
+                                Is Time-Based Alert?
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.EntitySubscribe)
+                            </dd>*@
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
+                <input type="submit" value="Delete" class="btn btn-primary btn-sm" />
+            </div>
+        </div>
+    }
+</div>
+

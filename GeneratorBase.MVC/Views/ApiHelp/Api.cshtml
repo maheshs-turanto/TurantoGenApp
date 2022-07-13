@@ -1,0 +1,38 @@
+@using System.Web.Http
+@using GeneratorBase.MVC.Models
+@model HelpPageApiModel
+
+@{
+    var controller = HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString();
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+    string layout = "";
+    if (appTheme != "Angular")
+    {
+        layout = "~/ViewsDefault/Shared/_LayoutWebApi.cshtml";
+    }
+    else
+    {
+        layout = "~/Views/Shared/_LayoutWebApi.cshtml";
+
+    }
+
+    Layout = layout;
+
+
+    var description = Model.ApiDescription;
+    ViewBag.Title = description.HttpMethod.Method + " " + description.RelativePath;
+}
+@*@Scripts.Render("~/bundles/WebApi")*@
+
+
+    <section class="content-wrapper main-content clear-fix">
+      @Html.DisplayFor(m => Model)
+    </section>
+
+
+@Html.DisplayForModel("TestClientDialogs",ViewData["Token"])
+@section Scripts {
+    @Html.DisplayForModel("TestClientReferences", ViewData["Token"])
+    <link type="text/css" href="~/Content/HelpPage.css" rel="stylesheet" />
+}

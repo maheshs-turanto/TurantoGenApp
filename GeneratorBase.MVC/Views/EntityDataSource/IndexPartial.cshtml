@@ -1,0 +1,420 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.EntityDataSource>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && Request.QueryString["TabToken"] != null)
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+}
+<div id="EntityDataSource">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'EntityDataSource')
+                PaginationClick(e, 'EntityDataSource', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchEntityDataSource").addClass('in');
+                if ('@ViewData["HostingEntity"]'.length > 0) {
+                    $("#" + "@ViewData["HostingEntity"]" + "_EntityDataSource").hide();
+                }
+            }
+            $("#SearchStringEntityDataSource").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#EntityDataSourceSearch").bind("click", (function () {
+                    }));
+                    $('#EntityDataSourceSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideEntityDataSource").mouseup(function () {
+                if (document.getElementById('ColumnShowHideEntityDataSource').className == 'collapse') {
+                    $('#lblEntityDataSource').css('display', 'none');
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+
+                    flag = Request.QueryString["flag"],
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    flag = Request.QueryString["flag"],
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+    }
+
+               
+                    <div class="pull-left actionbar">
+                        <div class="btn-group" id='@ViewData["HostingEntity"]_EntityDataSource'>
+                            @if (User.CanAdd("EntityDataSource"))
+                        {
+
+                        <button class="btn btn-secondary" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Entity Data Source','dvPopup','" + Url.Action("CreateQuick", "EntityDataSource", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+                            <i class="fa fa-plus-circle"></i> Add
+                        </button>
+                        }
+                        </div>
+                        <div class="btn-group d-none">
+                            <button class="btn btn-secondary" data-original-title="Export Excel" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"EntityDataSource",getSortHtmlAttributes(null, false, null, true), null) + "');") style=" cursor: pointer; ">
+                                <span class="fa fa-download"></span> Export
+                            </button>
+                        </div>
+
+                        <div class="btn-group">
+                            <a class="btn btn-secondary" data-original-title="Bulk Actions"  data-toggle="dropdown" href="#">
+                                <span class="fa fa-wrench"></span> Bulk
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-item">
+                                    @if (User.CanEdit("EntityDataSource") && User.CanUseVerb("BulkUpdate", "EntityDataSource", User))
+                                    {
+                                        <a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                           onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Entity Data Source','dvPopup','" + Url.Action("BulkUpdate", "EntityDataSource", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Update</a>
+                                    }
+                                </li>
+                                <li class="dropdown-item">
+                                    @if (User.CanDelete("EntityDataSource") && User.CanUseVerb("BulkDelete", "EntityDataSource", User))
+                                    {
+                                        <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'EntityDataSource','Bulk Delete','@Url.Action("DeleteBulk", "EntityDataSource")');">Delete</a>
+                                    }
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <div class="input-group">
+                                @Html.TextBox("SearchStringEntityDataSource", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                                <div class="input-group-btn">
+                                    <a id="EntityDataSourceSearch" onclick="SearchClick(event, 'EntityDataSource', '@Html.Raw(Url.Action("Index", "EntityDataSource", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top"><span class="fa fa-search"></span></a>
+                                    @if (ViewData["HostingEntity"] == null)
+                                    {
+                                        <a href="@(Url.Action("SetFSearch", "EntityDataSource")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-default btn-default tip-top d-none"><span class="fa fa-binoculars"></span></a>
+                                    }
+                                    <a id="EntityDataSourceCancel" type="button" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('EntityDataSource','@Html.Raw(Url.Action("Index", "EntityDataSource", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top">
+                                        <span class="fa fa-minus-circle"></span>
+                                    </a>
+                                    <a id="EntityDataSourceSearchCancel" type="button" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('EntityDataSource','@Html.Raw(Url.Action("Index", "EntityDataSource", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top">
+                                        <span class="fa fa-refresh"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+    <div style="clear:both"></div>
+    <div>
+        @if (ViewData["HostingEntity"] == null)
+        {
+            if (ViewBag.SearchResult != "")
+            {
+                <div id="fsearchEntityDataSource" class="collapse MessageFSearch">
+                    @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+                    <a href="@Url.Action("Index", "EntityDataSource")" style="margin-left:5px;float:right"><span class="fa fa-trash"></span> Clear</a>
+                    <a href="@(Url.Action("SetFSearch", "EntityDataSource")+Request.Url.Query)" style="float:right"><span class="fa fa-pencil-alt"></span> Modify</a>
+                </div>
+            }
+        }
+
+        <div id="Des_Table" class="table-responsive" style="overflow-x:auto; margin-top:5px;">
+            <table class="table table-hover table-striped default-bordered default-condensed">
+                <thead>
+                    <tr>
+                        <th class="col0" style="width:20px;">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                        <th class="col1" style="width:70px;">Actions</th>
+                        @if (User.CanView("EntityDataSource", "EntityName"))
+                        {
+                            <th class="col2">
+                                @Html.ActionLink("Entity Name", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityName")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityName")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "DataSource"))
+                        {
+                            <th class="col3">
+                                @Html.ActionLink("Data Source", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("DataSource", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DataSource")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DataSource")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "SourceType"))
+                        {
+                            <th class="col4">
+                                @Html.ActionLink("Source Type", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("SourceType", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "SourceType")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "SourceType")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "MethodType"))
+                        {
+                            <th class="col5">
+                                @Html.ActionLink("Method Type", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("MethodType", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "MethodType")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "MethodType")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "Action"))
+                        {
+                            <th class="col6">
+                                @Html.ActionLink("Action", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("Action", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Action")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Action")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "flag"))
+                        {
+                            <th class="col7">
+                                @Html.ActionLink("Disabled", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("flag", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "flag")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "flag")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                        @if (User.CanView("EntityDataSource", "other"))
+                        {
+                            <th class="col8">
+                                @Html.ActionLink("APIKey", ActionNameUrl, "EntityDataSource", getSortHtmlAttributes("other", false, null, false), new { @onclick = "SortLinkClick(event,'EntityDataSource');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "other")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "other")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                        }
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "EntityDataSource", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+                            <td>
+                                <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="btn-group" style="position:absolute;">
+                                        <a href="@Url.Action("Edit","EntityDataSource", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)" class="btn btn-info btn-xs" alt="Edit" title="Edit">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                        <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                            <span class="sr-only"></span>
+                                        </button>                                        
+                                        <ul class="dropdown-menu pull-left">
+                                            <li>
+                                                <a class="dropdown-item" href="@Url.Action("Details", "EntityDataSource", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="fa  fa-eye"></i>  View</a>
+                                            </li>
+
+                                            @if (User.CanEditItem("EntityDataSource", item, User))
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item" id="btnfulledit_@item.Id" href="@Url.Action("Edit","EntityDataSource", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                                                </li>
+                                            }
+                                            @if (User.CanDeleteItem("EntityDataSource", item, User))
+                                            {
+                                                <li class="divider" style="clear:both"></li>
+                                                <li>
+                                                    <a class="dropdown-item" href="@Url.Action("Delete", "EntityDataSource", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa  fa-trash"></i> Delete</a>
+                                                </li>
+                                            }
+                                            <li class="divider" style="clear:both"></li>
+                                            <li class="dropdown-submenu dropdown-item">
+                                                <a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fa fa-plus-circle"></i> Add Association</a>
+                                                <ul class="dropdown-menu pull-left">
+                                                    @if (User.CanAdd("DataSourceParameters"))
+                                                    {
+                                                        <li class="dropdown-item">
+                                                            <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "DataSourceParameters",
+						new { UrlReferrer = BackUrl,
+								AssociatedType ="EntityDataSourceParameters",
+							HostingEntityName = "EntityDataSource",
+							HostingEntityID = @Convert.ToString(item.Id) }, null) + "');") style=" cursor: pointer; ">
+                                                                <i class="fa fa-plus"></i>  Data Source Parameters
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                    @if (User.CanAdd("PropertyMapping"))
+                                                    {
+                                                        <li class="dropdown-item">
+                                                            <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "PropertyMapping",
+						new { UrlReferrer = BackUrl,
+								AssociatedType ="EntityPropertyMapping",
+							HostingEntityName = "EntityDataSource",
+							HostingEntityID = @Convert.ToString(item.Id) }, null) + "');") style=" cursor: pointer; ">
+                                                                <i class="fa fa-plus"></i>  Property Mapping
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            @if (User.CanView("EntityDataSource", "EntityName"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EntityName)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "DataSource"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DataSource)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "SourceType"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SourceType)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "MethodType"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MethodType)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "Action"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Action)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "flag"))
+                            {
+                                <td>
+                                    @Html.ValueFor(modelItem => item.flag)
+                                </td>
+                            }
+                            @if (User.CanView("EntityDataSource", "other"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.other)
+                                </td>
+                            }
+                        </tr>
+                    }
+            </table>
+        </div>
+
+
+
+      
+
+
+
+
+     
+      @if (Model.Count > 0 && Model.TotalItemCount > 10)
+      {
+            <div id="pagination">
+               @if(Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+                    {
+
+
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "EntityDataSource", getSortHtmlAttributes(null, true, page, false)),
+              
+                new PagedListRenderOptions
+                {
+                    FunctionToTransformEachPageLink = (liTag, aTag) =>
+                    {
+                        aTag.Attributes.Add("class", "page-link");
+                        liTag.InnerHtml = aTag.ToString();
+                        return liTag;
+                    },
+                    LiElementClasses = new[] { "page-item" },
+                    UlElementClasses = new[] { "pagination pagination-sm" }
+
+                })
+               }
+                <div class="fixPageSize">
+                    Page Size :
+                    @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistEntityDataSource",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'EntityDataSource','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "EntityDataSource",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                    <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                </div>
+            </div>
+        }
+    </div>
+
+
+           
+</div>

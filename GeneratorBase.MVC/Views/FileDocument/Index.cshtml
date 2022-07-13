@@ -1,0 +1,53 @@
+﻿@model FileDocumentIndexViewModel
+@{
+    ViewBag.Title = "Document List";
+	string templatename = ("~/Views/FileDocument/" + Model.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+    if (Request.Browser.IsMobileDevice)
+    {
+     templatename = ("~/Views/FileDocument/" + Model.TemplatesName + ".Mobile.cshtml").Replace("?IsAddPop=true", "");
+    }
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
+}
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="FileDocument"})">@EntityDisplayName</a><small>List</small></strong></div>
+</div>
+<a style="display:none;" href="@Url.Action("SwitchView", "Account", new { mobile = true, returnUrl = Request.Url.PathAndQuery })" id="ShowMobileView">
+    <span class="glyphicon glyphicon-globe" style="color:white;"></span> D<span class="icon"></span>
+</a>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+		  $('.edit').find('input[type=text]').hover(function () {
+            $(this).attr("title", $(this).val());
+
+        });
+    });
+</script>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvFileDocumentFilter"></div>@Html.Partial(templatename, Model)
+                </div>
+            </div>
+			<style>
+.CEntityCount {
+display:none !important;
+}
+
+</style>
+<script>
+    window.onresize = function (event) {
+        if (SetWidthHeight() != undefined)
+            SetWidthHeight()
+    }
+</script>
+<script>
+    function SetWidthHeight() {
+        if ($(window).width() <= 767) {
+            $("#ShowMobileView")[0].click();
+        }
+    }
+</script>
+
+ 

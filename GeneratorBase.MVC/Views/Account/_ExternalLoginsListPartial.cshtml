@@ -1,0 +1,130 @@
+﻿@using GeneratorBase.MVC.Models
+@model ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    string action = Model.Action;
+    string returnUrl = Model.ReturnUrl;
+    string provider = "";
+    string name = "";
+	string icon = "";
+    string authType = "";
+    if (loginProviders != null && loginProviders.Count() > 0)
+    {
+        <aside class="social-wrap">
+            <div class="or-line"><span>or</span></div>
+            <p>Login with your social media account</p>
+            <div class="socials">
+                @foreach (AuthenticationDescription p in loginProviders)
+                {
+                    provider = p.AuthenticationType;
+                    name = p.Caption.Contains("Google") ? "google" : p.Caption.ToLower();
+					icon = name.ToLower() == "microsoft" ? "fa fa-windows" : "fa fa-"+name.ToLower();
+                    authType = p.AuthenticationType.Contains("Google") ? "Google" : p.AuthenticationType;
+                    using (Html.BeginForm(action, "Account", new { provider = provider, ReturnUrl = returnUrl }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" id="@p.AuthenticationType" name="@p.AuthenticationType" value="@p.AuthenticationType" class="@name.ToLower() btns">  <span class="@icon"></span>@p.AuthenticationType</button>
+                        <!--<div class="col-md-4" class="facebook">
+                            <button type="submit" id="@p.AuthenticationType" class="@name" name="provider" value="@p.AuthenticationType">
+                                <i class="fa fa-@name"></i>
+                            </button>-->
+                        @*<p class="text-center">@authType</p>*@
+                        <!--</div>-->
+                    }
+
+                }
+            </div>
+        </aside>
+
+    }
+}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+<style type="text/css">
+    .social-wrap {
+        width: 100%;
+    }
+
+        .social-wrap p {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+    .socials {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .socials button {
+            margin: 0 5px;
+        }
+
+    .btns .fa {
+        margin: 0 5px 0 0px;
+    }
+
+    .or-line {
+        text-align: center;
+        position: relative;
+        margin-bottom: 10px;
+    }
+
+        .or-line span {
+            font-size: 18px;
+            display: inline-block;
+            background: #fff;
+            position: relative;
+            z-index: 10;
+            padding: 1px 5px;
+            font-style: italic;
+        }
+
+        .or-line:after {
+            position: absolute;
+            content: " ";
+            width: 100%;
+            border-bottom: solid 1px #ccc;
+            left: 0;
+            top: 50%;
+        }
+
+
+    .facebook {
+        display: inline-block;
+        margin: 0px 5px;
+        border: solid 1px #2a76a9;
+        border-radius: 0px;
+        background: #1d5072;
+        color: #fff;
+        padding: 4px 10px 4px 15px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+	
+	.microsoft {
+        display: inline-block;
+        margin: 0px 5px;
+        border: solid 1px #2a76a9;
+        border-radius: 0px;
+        background: #2672ec;
+        color: #fff;
+        padding: 4px 10px 4px 15px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .google {
+        display: inline-block;
+        margin:0px 5px;
+        border: solid 1px #e34133;
+        border-radius: 0px;
+        background: #e34133;
+        color: #fff;
+        padding: 4px 10px 4px 15px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+</style>
+

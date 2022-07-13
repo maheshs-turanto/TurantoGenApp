@@ -1,0 +1,45 @@
+@using System.Web.Http
+@using System.Web.Http.Description
+
+@using GeneratorBase.MVC.Models
+@model IGrouping<string, ApiDescription>
+
+@{
+    //Layout = "~/Views/Shared/_LayoutWebApi.cshtml";
+}
+
+<div class="panel-body" style="margin:0px; padding:0px;">
+    
+        <table class="table ApiTable">
+            <thead style="background: #1c4f71;color:white;">
+                <tr ><th style="color:white;">API</th><th style="color:white;"></th><th style="color:white;">Description</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var api in Model)
+                {
+                    
+                    <tr style="margin-top:5px;" onclick="return theFunction();">
+                        <td class="td_@api.HttpMethod.Method">
+                            <a href="@Url.Action("Api", "ApiHelp", new { apiId = api.GetFriendlyId(Convert.ToString(ViewData["version"])), Token = ViewData["Token"],version=Convert.ToString(ViewData["version"]) })">    <div class="btn_@api.HttpMethod.Method" style="width:70px!important">@api.HttpMethod.Method</div></a>
+</td>
+                        <td class="api-name ellipsis td_@api.HttpMethod.Method" style="width:60%" title="@api.HttpMethod.Method @api.RelativePath">
+                            <span><a href="@Url.Action("Api", "ApiHelp", new { apiId = api.GetFriendlyId(Convert.ToString(ViewData["version"])), Token = ViewData["Token"],version=Convert.ToString(ViewData["version"]) })">@api.RelativePath</a></span>
+                        </td>
+                        <td class="api-documentation td_@api.HttpMethod.Method" style="width:40%">
+                            @if (api.Documentation != null)
+                            {
+                                <p>@api.Documentation</p>
+                            }
+                            else
+                            {
+
+                                <p>No documentation available.</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    
+</div>
+

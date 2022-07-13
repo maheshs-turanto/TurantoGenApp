@@ -1,0 +1,83 @@
+﻿@model GeneratorBase.MVC.Models.EditUserViewModel
+@{
+    ViewBag.Title = "Edit";   
+}
+    <div class="content-heading">
+    <div class="col-lg-12">
+
+        <strong>
+            <a href="@Url.Action("Index", "Admin")"> Admin</a>
+
+          <small>  Edit User </small>
+        </strong>
+
+    </div>
+</div>
+    <div class="">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="card card-default AppForm">
+                        @*<div class="card-header clearfix">
+                        
+                            <h3 class="card-title">  Change email address of @Model.UserName</h3>
+
+                            
+                        </div>*@
+                        <div class="card-body" style="padding-top:0px;">
+                            <p class="text-danger-reg">@ViewBag.DuplicacyMessage</p>
+                            <div class=" col-md-4 col-sm-4 col-xs-4">
+                                @Html.ValidationSummary(true)
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.UserName, new { @class = "" })
+                                    @Html.TextBoxFor(model => model.UserName, new { @readonly = "readonly", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.UserName)
+                                </div>
+                                <div class="form-group">
+                                    <label>  @Html.LabelFor(model => model.FirstName, new { @class = "" })<span style="color:red !important;">*</span></label>
+
+                                    @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.FirstName)
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LastName, new { @class = "" })
+
+                                    @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LastName)
+
+                                </div>
+                                <div class="form-group">
+                                    <label>  @Html.LabelFor(model => model.Email, new { @class = "" })<span style="color:red !important;">*</span></label>
+
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Email)
+
+                                </div>
+                                <div class="form-group">
+                                    <label> @Html.LabelFor(model => model.PhoneNumber, new { @class = "" })<span style="color:red !important;">*</span></label>
+
+                                    @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PhoneNumber)
+
+                                </div>
+								  @Html.Partial("~/Views/Account/EditUserExtra.cshtml", Model, new ViewDataDictionary { { "view", "Register" } })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+            if (User.CanEditAdminFeature("User"))
+            {
+                <input type="submit" value="Save" class="btn btn-primary" />
+            }
+        }
+    </div>
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }
+<script src="~/Scripts/Common3/jquery.maskedinput.js" type="text/javascript"></script>
+<script type='text/javascript'>$(document).ready(function () { $('#PhoneNumber').mask('999-999-9999'); });</script>

@@ -1,0 +1,115 @@
+﻿@model IList<GeneratorBase.MVC.Models.ExportData>
+@{
+    ViewBag.Title = "Export Data";
+    Layout = null;
+}
+
+@using (Html.BeginForm("ExportData", Convert.ToString(ViewData["EntityName"]), FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div>
+        <label>
+            <i class="fa fa-minus-circle"></i>
+        </label>
+        <strong>@GeneratorBase.MVC.ModelReflector.Entities.FirstOrDefault(fd => fd.Name == Convert.ToString(ViewData["EntityName"])).DisplayName - @ViewBag.DisplayValue </strong><input type="checkbox" disabled="true" checked="true" />
+        <ul style="list-style-type:none;">
+            @foreach (var str in Model)
+            {
+                <li id="li_@str.AssociationValue">
+                    @if (str.IsNested)
+                    {
+                        <a id="a_@str.AssociationValue" onclick="exportdata('@str.EntityName','@str.AssociationValue','@str.FilterQuery','@Url.Action("NestedExportAllData")')">
+                            <i class="fa fa-plus-circle"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <label>
+                            <i class="fa fa-minus-circle"></i>
+                        </label>
+                    }
+                    @str.DisplayName <input id="chk_@str.AssociationValue" name="chk_@str.AssociationValue" type="checkbox" value="@str.AssociationName" onclick="nestedcheck('@str.EntityName','@str.AssociationValue','@str.FilterQuery');" />
+                </li>
+
+            }
+        </ul>
+    </div>
+    <button class="btn btn-primary btn-sm pull-left mr-1" command="export">Export</button>
+
+    <button class="btn btn-primary btn-sm pull-left" command="export and recycle">Export & Move to Recycle</button>
+}
+<script>
+    function exportdata(entityName, association, filterquery, dataurl)
+    {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: dataurl + "?EntityName="+entityName+"+&FilterQuery="+filterquery,
+            success: function (data) {
+                var isdata = false;
+                debugger;
+                var ulid = "ul_" + association;
+                var ulappend = "<ul id='" + ulid + "' style='list-style-type:none;'>";
+                for (var i = 0; i < data.length; i++)
+                {
+                    var keyval = data[i].DisplayName;
+                    var key = data[i].EntityName;
+                    var Associate = data[i].AssociationName;
+                    var fltquery = data[i].FilterQuery;
+                    var AssociateVal = data[i].AssociationValue;
+
+                    ulappend += "<li id='li_" + AssociateVal + "'>";
+                    if (data[i].IsNested)
+                    {
+                        ulappend += "<a id = 'a_" + AssociateVal + "' onclick=\"exportdata('" + key + "','" + AssociateVal + "','" + fltquery + "','" + '@Html.Raw(Url.Action("NestedExportAllData"))' + "');\"> <i class='fa fa-plus-circle'></i></a> ";
+                    }
+                    else
+                    {
+                        ulappend += "<label'> <i class='fa fa-minus-circle'></i></label> ";
+                    }
+                    ulappend += keyval + " <input id='chk_" + AssociateVal + "' name='chk_" + AssociateVal + "' type='checkbox' value='" + Associate + "' onclick=\"nestedcheck('" + key + "','" + AssociateVal +"','" + fltquery +"');\"></input>";
+                    ulappend += "</li>";
+
+                    if (!isdata)
+                        isdata = true;
+                }
+                if (isdata)
+                    ulappend += '</ul>';
+
+                $("#chk_" + association).after(ulappend);
+                $("#a_" + association).removeAttr('onclick');
+                $("#a_" + association).attr("onclick", "removenested('" + ulid + "','" + entityName + "','" + association+"','" + filterquery + "','" + dataurl + "');");
+                $("#a_" + association).html(" <i class='fa fa-minus-circle'></i>");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    function removenested(ulid, entityName, association, filterquery, dataurl)
+    {
+        $("#" + ulid).remove();
+        $("#a_" + association).removeAttr('onclick');
+        $("#a_" + association).attr("onclick", "exportdata('" + entityName + "','" + association+"','" + filterquery+"','" + dataurl + "')")
+        $("#a_" + association).html(" <i class='fa fa-plus-circle'></i>")
+    }
+
+    function nestedcheck(entityName, association, filterquery)
+    {
+        if ($("#a_" + association).is(":visible") && $("#chk_" + association).prop("checked"))
+        {
+            if ($("#ul_" + association).is(":visible"))
+                $("#ul_" + association).remove();
+            exportdata(entityName,association,filterquery,'@Url.Action("NestedExportAllData")');
+        }
+        if ($("#chk_" + association).prop("checked")) {
+            var hiddenfield = "<input type='hidden' id='hdn_" + association + "' name='hdn_" + association + "' value= '" + filterquery + "' />";
+            $("#chk_" + association).after(hiddenfield);
+        }
+        else
+        {
+            if ($("#hdn_" + association).is(":hidden"))
+                $("#hdn_" + association).remove();
+        }
+        //$("#li_" + entityName).find('li').find(":checkbox").prop("checked", $("#chk_" + entityName).prop("checked"));
+    }
+</script>

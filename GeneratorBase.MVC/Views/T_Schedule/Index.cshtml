@@ -1,0 +1,26 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_Schedule>
+@{
+    ViewBag.Title = "Schedule List";
+
+    string templatename = ("~/Views/T_Schedule/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+}
+
+<div class="content-heading">
+    <div class="TitleName"><a href="@Url.Action("Index")">Schedule</a><small>List</small></div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+
+<div class="card">
+    <div class="card-body">
+        <div id="dvT_ScheduleFilter"></div>
+        @Html.Partial(templatename, Model)
+    </div>
+</div>
+
+

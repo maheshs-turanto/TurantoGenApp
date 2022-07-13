@@ -1,0 +1,399 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.FeedbackResource>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<div id="FeedbackResource">
+<style>
+    .table-responsive > .fixed-column {
+        position: absolute;
+        display: block;
+        width: auto;
+        border: 0px solid transparent;
+        border-top: 1px solid #c3ddec;
+    }
+    .fixed-column th {
+        background: #fff;
+    }
+    .fixed-column td {
+        background: #fff;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'FeedbackResource')
+			PaginationClick(e, 'FeedbackResource','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchFeedbackResource").addClass('in');
+        }
+	    $("#SearchStringFeedbackResource").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#FeedbackResourceSearch").bind("click", (function () {
+                        }));
+                $('#FeedbackResourceSearch').trigger("click");
+                return false;
+			}
+        })
+        $("#btnShowHideFeedbackResource").mouseup(function () {
+            if (document.getElementById('ColumnShowHideFeedbackResource').className == 'collapse') {
+				 $('#lblFeedbackResource').css('display', 'none');
+            }
+        })
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+  ResourceIdFrom = Request.QueryString["ResourceIdFrom"],
+  ResourceIdTo = Request.QueryString["ResourceIdTo"],
+				search=Request.QueryString["search"],
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+  ResourceIdFrom = Request.QueryString["ResourceIdFrom"],
+  ResourceIdTo = Request.QueryString["ResourceIdTo"],
+		search=Request.QueryString["search"],
+            };
+        }
+    }
+}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-sx-12">
+        <div class="card card-default">
+            <div class="card-header clearfix">
+                <div class="btn-group">
+                    <div class="">
+                        <div class="dropdown mr-1">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                                <i class="fa fa-plus-circle"></i> Add
+                            </button>
+                            <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+
+                                @if (User.CanAdd("FeedbackResource"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item btn  tip-top" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','FeedbackResource','dvPopup','" + Url.Action("CreateQuick", "FeedbackResource", new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">Quick Add</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item btn tip-top" data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FeedbackResource", new { UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>Full Add</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="dropdown mr-1">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                            <span class="fa fa-file-excel-o"></span>
+                        </button>
+                        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                                        @if (User.CanAdd("FeedbackResource"))
+                            {
+                                if (ViewData["HostingEntity"] == null)
+                                {
+                                    <li>
+                                        <a class="btn tip-top dropdown-item" data-original-title="Import Excel" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "FeedbackResource") + "');")>
+                                            Import Excel
+                                        </a></li>
+                                        }
+                                        }
+<li><a class="btn tip-top dropdown-item" data-original-title="Export Excel" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"FeedbackResource",getSortHtmlAttributes(null, false, null, true), null) + "');")>
+    Export Excel
+</a></li>
+</ul>
+</div>
+
+                    <div class="dropdown mr-1">
+                        <a class="btn btn-secondary dropdown-toggle tip-top" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                            <span class="fa fa-trash"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                @if (User.CanDelete("FeedbackResource"))
+                                {
+                                    <a class="dropdown-item"  onclick="PerformBulkOperation(this,'FeedbackResource','Bulk Delete','@Url.Action("DeleteBulk", "FeedbackResource")');">Bulk Delete</a>
+                                }
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                    <div class="pull-right">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringFeedbackResource", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                                <a id="FeedbackResourceSearch" onclick="SearchClick(event, 'FeedbackResource', '@Html.Raw(Url.Action("Index", "FeedbackResource", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top"><span class="fa fa-search"></span></a>
+                                @if (ViewData["HostingEntity"] == null)
+                                {
+                                    <a href="@(Url.Action("SetFSearch", "FeedbackResource")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-secondary tip-top"><span class="fa fa-binoculars"></span></a>
+                                }
+                                <button id="FeedbackResourceCancel" type="button" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('FeedbackResource','@Html.Raw(Url.Action("Index", "FeedbackResource", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top">
+                                    <span class="fa fa-minus-circle"></span>
+                                </button>
+                                <button id="FeedbackResourceSearchCancel" type="button" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('FeedbackResource','@Html.Raw(Url.Action("Index", "FeedbackResource", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top">
+                                    <span class="fa fa-refresh"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+
+            <div class="card-body">
+ @if (ViewData["HostingEntity"]==null)
+	{ 
+	if (ViewBag.SearchResult != "" )
+                            {
+			<div id="fsearchFeedbackResource" class="collapse MessageFSearch">
+                        @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, "<br/>"))
+						 <a href="@Url.Action("Index", "FeedbackResource")" ><span class="fa fa-minus-circle"></span> Clear</a>
+            </div>
+	}
+}
+	
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-hover table-striped default-bordered default-condensed">
+            <thead>
+                <tr>
+	 <th class="col2" style="width:20px;">
+		<input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+        @Html.Hidden("SelectedItems")
+	</th>
+					<th class="col1" style="width:70px;">Actions</th>
+@if(User.CanView("FeedbackResource","ResourceId") )
+{	
+			<th class="col2">@Html.ActionLink("Resource Id", ActionNameUrl, "FeedbackResource",getSortHtmlAttributes("ResourceId", false, null, false),new {  @onclick = "SortLinkClick(event,'FeedbackResource');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ResourceId")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ResourceId")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("FeedbackResource","FirstName") )
+{	
+			<th class="col3">@Html.ActionLink("First Name", ActionNameUrl, "FeedbackResource",getSortHtmlAttributes("FirstName", false, null, false),new {  @onclick = "SortLinkClick(event,'FeedbackResource');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "FirstName")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "FirstName")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("FeedbackResource","LastName") )
+{	
+			<th class="col4">@Html.ActionLink("Last Name", ActionNameUrl, "FeedbackResource",getSortHtmlAttributes("LastName", false, null, false),new {  @onclick = "SortLinkClick(event,'FeedbackResource');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "LastName")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "LastName")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("FeedbackResource","Email") )
+{	
+			<th class="col5">@Html.ActionLink("Email", ActionNameUrl, "FeedbackResource",getSortHtmlAttributes("Email", false, null, false),new {  @onclick = "SortLinkClick(event,'FeedbackResource');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Email")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Email")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+@if(User.CanView("FeedbackResource","PhoneNo") )
+{	
+			<th class="col6">@Html.ActionLink("Phone No", ActionNameUrl, "FeedbackResource",getSortHtmlAttributes("PhoneNo", false, null, false),new {  @onclick = "SortLinkClick(event,'FeedbackResource');" }) 
+				@if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "PhoneNo")
+                {<i class="fa fa-sort-desc"></i>}
+                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "PhoneNo")
+                {<i class="fa fa-sort-asc"></i>}
+			</th>
+}
+       </tr>
+@foreach (var item in Model) {
+     <tr ondblclick="DoubleClickRow(@item.Id,'@Url.Action("Details", "FeedbackResource", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+	 <td>
+			 <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+	</td>
+		   <td>
+	   <div>
+        <div class="btn-group" style="position: absolute;">
+
+            <button data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-secondary">
+                Action
+
+            </button>
+            <ul class="dropdown-menu pull-left">
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("Details", "FeedbackResource", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)"><i class="fa fa-eye"></i>  View</a>
+                </li>
+                <li>
+                    @if (User.CanEdit("FeedbackResource"))
+                    {
+                        <a class="dropdown-item" href="@Url.Action("Edit","FeedbackResource", new { id = item.Id,  UrlReferrer = Request.Url, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>
+                @if (User.CanAdd("ApplicationFeedback"))
+                {
+                    <li>
+                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ApplicationFeedback",
+new
+{
+    UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="ApplicationFeedbackResource",
+							HostingEntityName = "FeedbackResource",
+							HostingEntityID = @Convert.ToString(item.Id) }, null) + "');")>
+                            <i class="fa fa-plus"></i>  Add Feedback
+                        </a>
+                    </li>
+                }
+                <li>
+                    @if (User.CanDelete("FeedbackResource"))
+                    {
+                        <a class="dropdown-item" href="@Url.Action("Delete", "FeedbackResource", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                    }
+                </li>
+            </ul>
+        </div>
+		</div>
+	</td>
+	@if(User.CanView("FeedbackResource","ResourceId"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ResourceId)
+        </td>
+}
+@if(User.CanView("FeedbackResource","FirstName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+}
+@if(User.CanView("FeedbackResource","LastName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+}
+@if(User.CanView("FeedbackResource","Email"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+}
+@if(User.CanView("FeedbackResource","PhoneNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.PhoneNo)
+        </td>
+}
+                                </tr>
+                            }
+                    </table>
+                </div>
+				 <ul id="Mob_List" class="list-group d-none">
+                    @foreach (var item in Model)
+                    {
+                        <li class="list-group-item">
+@if(User.CanView("FeedbackResource","ResourceId"))
+{
+		<p><span class="text-primary"> Resource Id </span> : <span>
+            @Html.DisplayFor(modelItem => item.ResourceId)
+         </span> </p>	
+		 }
+@if(User.CanView("FeedbackResource","FirstName"))
+{
+		<p><span class="text-primary"> First Name </span> : <span>
+            @Html.DisplayFor(modelItem => item.FirstName)
+         </span> </p>	
+		 }
+@if(User.CanView("FeedbackResource","LastName"))
+{
+		<p><span class="text-primary"> Last Name </span> : <span>
+            @Html.DisplayFor(modelItem => item.LastName)
+         </span> </p>	
+		 }
+@if(User.CanView("FeedbackResource","Email"))
+{
+		<p><span class="text-primary"> Email </span> : <span>
+            @Html.DisplayFor(modelItem => item.Email)
+         </span> </p>	
+		 }
+@if(User.CanView("FeedbackResource","PhoneNo"))
+{
+		<p><span class="text-primary"> Phone No </span> : <span>
+            @Html.DisplayFor(modelItem => item.PhoneNo)
+         </span> </p>	
+		 }
+<span class="label label-primary text-linkwhite"> 
+@Html.ActionLink("View", "Details","FeedbackResource", new { id = item.Id },null)
+</span>
+<span class="label label-warning text-linkwhite"> 
+@if ( User.CanEdit("FeedbackResource"))
+				 {
+					@Html.ActionLink("Edit", "Edit", "FeedbackResource", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)  
+				 }
+				 </span>
+				<span class="label label-danger text-linkwhite"> 
+				@if ( User.CanDelete("FeedbackResource"))
+				 {
+					@Html.ActionLink("Delete", "Delete", "FeedbackResource", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)    
+				 }
+				 </span>
+				   </li>
+                    }
+                </ul>
+  			   @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "FeedbackResource", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+							, new { @id = "pagesizelistFeedbackResource",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'FeedbackResource','"
+							  + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "FeedbackResource",
+							 getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div> 
+ </div>
+</div>

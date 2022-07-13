@@ -1,0 +1,307 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.CustomReports>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=CustomReports.xls");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("CustomReports","ReportName"))
+{
+		<th>Report Name</th>
+}
+@if(User.CanView("CustomReports","CreatedOn"))
+{
+		<th>Created On</th>
+}
+@if(User.CanView("CustomReports","ReportType"))
+{
+		<th>Report Type</th>
+}
+@if(User.CanView("CustomReports","CreatedByUserID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "User"?"hidden":"")>Created By</th>
+}
+@if(User.CanView("CustomReports","Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("CustomReports","EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("CustomReports","ResultProperty"))
+{
+		<th>Result Property</th>
+}
+@if(User.CanView("CustomReports","ColumnOrder"))
+{
+		<th>Column Order</th>
+}
+@if(User.CanView("CustomReports","OrderBy"))
+{
+		<th>Order By</th>
+}
+@if(User.CanView("CustomReports","GroupBy"))
+{
+		<th>Group By</th>
+}
+@if(User.CanView("CustomReports","CrossTabRow"))
+{
+		<th>Cross Tab Row</th>
+}
+@if(User.CanView("CustomReports","CrossTabColumn"))
+{
+		<th>Cross Tab Column</th>
+}
+@if(User.CanView("CustomReports","AggregateEntity"))
+{
+		<th>Aggregate Entity</th>
+}
+@if(User.CanView("CustomReports","AggregateProperty"))
+{
+		<th>Aggregate Property</th>
+}
+@if(User.CanView("CustomReports","AggregateFunction"))
+{
+		<th>Aggregate Function</th>
+}
+@if(User.CanView("CustomReports","FilterProperty"))
+{
+		<th>Filter Property</th>
+}
+@if(User.CanView("CustomReports","FilterCondition"))
+{
+		<th>Filter Condition</th>
+}
+@if(User.CanView("CustomReports","FilterType"))
+{
+		<th>Filter Type</th>
+}
+@if(User.CanView("CustomReports","FilterValue"))
+{
+		<th>Filter Value</th>
+}
+@if(User.CanView("CustomReports","SelectValueFromList"))
+{
+		<th>Select Value From List</th>
+}
+@if(User.CanView("CustomReports","SelectProperty"))
+{
+		<th>Select Property</th>
+}
+@if(User.CanView("CustomReports","RelatedEntity"))
+{
+		<th>Related Entity</th>
+}
+@if(User.CanView("CustomReports","ForeignKeyEntity"))
+{
+		<th>ForeignKey Entity</th>
+}
+@if(User.CanView("CustomReports","RelationName"))
+{
+		<th>Relation Name</th>
+}
+@if(User.CanView("CustomReports","EntityValues"))
+{
+		<th>EntityValues</th>
+}
+@if(User.CanView("CustomReports","CrossTabPropertyValues"))
+{
+		<th>CrossTabPropertyValues</th>
+}
+@if(User.CanView("CustomReports","QueryConditionValues"))
+{
+		<th>QueryConditionValues</th>
+}
+@if(User.CanView("CustomReports","RelationsValues"))
+{
+		<th>RelationsValues</th>
+}
+@if(User.CanView("CustomReports","OtherValues"))
+{
+		<th>OtherValues</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("CustomReports","ReportName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportName)
+        </td>
+}
+@if(User.CanView("CustomReports","CreatedOn"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.CreatedOn)
+        </td>
+}
+@if(User.CanView("CustomReports","ReportType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportType)
+        </td>
+}
+@if(User.CanView("CustomReports","CreatedByUserID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "User"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.createdbyuser.UserName)
+        </td>
+}
+@if(User.CanView("CustomReports","Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+}
+@if(User.CanView("CustomReports","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+@if(User.CanView("CustomReports","ResultProperty"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ResultProperty)
+        </td>
+}
+@if(User.CanView("CustomReports","ColumnOrder"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ColumnOrder)
+        </td>
+}
+@if(User.CanView("CustomReports","OrderBy"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.OrderBy)
+        </td>
+}
+@if(User.CanView("CustomReports","GroupBy"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.GroupBy)
+        </td>
+}
+@if(User.CanView("CustomReports","CrossTabRow"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.CrossTabRow)
+        </td>
+}
+@if(User.CanView("CustomReports","CrossTabColumn"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.CrossTabColumn)
+        </td>
+}
+@if(User.CanView("CustomReports","AggregateEntity"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.AggregateEntity)
+        </td>
+}
+@if(User.CanView("CustomReports","AggregateProperty"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.AggregateProperty)
+        </td>
+}
+@if(User.CanView("CustomReports","AggregateFunction"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.AggregateFunction)
+        </td>
+}
+@if(User.CanView("CustomReports","FilterProperty"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FilterProperty)
+        </td>
+}
+@if(User.CanView("CustomReports","FilterCondition"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FilterCondition)
+        </td>
+}
+@if(User.CanView("CustomReports","FilterType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FilterType)
+        </td>
+}
+@if(User.CanView("CustomReports","FilterValue"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.FilterValue)
+        </td>
+}
+@if(User.CanView("CustomReports","SelectValueFromList"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.SelectValueFromList)
+        </td>
+}
+@if(User.CanView("CustomReports","SelectProperty"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.SelectProperty)
+        </td>
+}
+@if(User.CanView("CustomReports","RelatedEntity"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.RelatedEntity)
+        </td>
+}
+@if(User.CanView("CustomReports","ForeignKeyEntity"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ForeignKeyEntity)
+        </td>
+}
+@if(User.CanView("CustomReports","RelationName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.RelationName)
+        </td>
+}
+@if(User.CanView("CustomReports","EntityValues"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityValues)
+        </td>
+}
+@if(User.CanView("CustomReports","CrossTabPropertyValues"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.CrossTabPropertyValues)
+        </td>
+}
+@if(User.CanView("CustomReports","QueryConditionValues"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.QueryConditionValues)
+        </td>
+}
+@if(User.CanView("CustomReports","RelationsValues"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.RelationsValues)
+        </td>
+}
+@if(User.CanView("CustomReports","OtherValues"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.OtherValues)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

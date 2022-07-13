@@ -1,0 +1,448 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataLog
+@using PagedList;
+@{
+    ViewBag.Title = "View Export Data Log";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Log";
+	var modelproperties = EntityDisplayNameReflector.Properties;
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_ExportDataLog", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+
+
+    var NonViewableProperties = User.CanNotView("T_ExportDataLog");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+	List<string> groupcontaininginlinegrid = new List<string>();  
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_ExportDataLog", User, groupcontaininginlinegrid);
+
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function() {
+                $(this).click();
+            });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("Index")">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanUseVerb("T_Purge","T_ExportDataLog", User))
+                    {
+                        <a onclick="ExcuteSingleVerb('T_ExportDataLog',this);" id="vrbT_Purge" dataurl="@Url.Action("T_Purge","T_ExportDataLog", new { id = Model.Id},null)"><i class="fa fa-edit"></i>  Purge</a>
+                    }
+                </li>
+				<li>
+                    @if ( User.CanUseVerb("T_Restore","T_ExportDataLog", User))
+                    {
+                        <a onclick="ExcuteSingleVerb('T_ExportDataLog',this);" id="vrbT_Restore" dataurl="@Url.Action("T_Restore","T_ExportDataLog", new { id = Model.Id},null)"><i class="fa fa-edit"></i>  Restore</a>
+                    }
+                </li>
+				<li>
+                    @if ( User.CanEdit("T_ExportDataLog"))
+                    {
+                        <a href="@Url.Action("Edit","T_ExportDataLog", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("T_ExportDataLog"))
+                    {
+                        <a href="@Url.Action("Delete", "T_ExportDataLog", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+   </div>
+</div>
+</div>
+	<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+
+ @if (User.CanView("JournalEntry"))
+        {
+		 <li class="nav-item">
+		 <a class="nav-link" onclick="LoadTab('JournalEntryToT_ExportDataLogRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "T_ExportDataLog", HostingEntity = "T_ExportDataLog", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToT_ExportDataLogRelation" data-toggle="tab" title="Export Data Log Journal">Export Data Log Journal</a>
+		 </li>
+		 }
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupT_ExportDataLogBasicInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Basic Information</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+@if(User.CanView("T_ExportDataLog","T_AutoNo")  && !hiddenProperties.Contains("T_AutoNo") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+	<div class='form-group' title="@Model.T_AutoNo">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_AutoNo) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblT_AutoNo" class="viewlabel">@Model.T_AutoNo</p>
+								</div>
+	</div>
+</div>
+}
+	@if(User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataLog","T_ExportDataConfigurationExportDataLogAssociationID") && !hiddenProperties.Contains("T_ExportDataConfigurationExportDataLogAssociationID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ExportDataConfigurationExportDataLogAssociation">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_ExportDataConfigurationExportDataLogAssociationID)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		@if (@Model.T_ExportDataConfigurationExportDataLogAssociationID == 0 || @Model.T_ExportDataConfigurationExportDataLogAssociationID == null || @Model.t_exportdataconfigurationexportdatalogassociation == null)
+		{
+	         <p id="lblT_ExportDataConfigurationExportDataLogAssociationID" class="viewlabel"></p>
+        }
+        else
+        {
+		     <p id="lblT_ExportDataConfigurationExportDataLogAssociationID" class="viewlabel" title="@Model.t_exportdataconfigurationexportdatalogassociation.DisplayValue">@Model.t_exportdataconfigurationexportdatalogassociation.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_ExportDataLog","T_Tag")  && !hiddenProperties.Contains("T_Tag"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Tag">
+	<div class='form-group' title="@Model.T_Tag">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Tag)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_Tag</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_ExportDataLog","T_Notes")  && !hiddenProperties.Contains("T_Notes"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Notes">
+	<div class='form-group' title="@Model.T_Notes">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Notes)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_Notes</p>
+		</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupT_ExportDataLogStatusInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Status Information</h3>
+								</div>
+                <div class="card-body row">
+
+
+                    @if (User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog", "T_AssociatedExportDataLogStatusID") && User.CanView("JournalEntry"))
+                    {
+                        <div class='col-sm-12 col-md-12 col-xs-12'>
+                            <ol class="wf-chevron">
+                                @{
+                                    var WFHistoryT_AssociatedExportDataLogStatus = ((List<GeneratorBase.MVC.Models.JournalEntry>)ViewBag.JournalEntry).Where(p => p.Type == "Added" || p.PropertyName == "Status");
+                                    string classlabelT_AssociatedExportDataLogStatus = "status";
+                                    string newvalueT_AssociatedExportDataLogStatus = "";
+                                    var wfcountT_AssociatedExportDataLogStatus = 0;
+                                    if (!WFHistoryT_AssociatedExportDataLogStatus.Any(p => p.PropertyName == "Status"))
+                                    {
+                                        var DateTimeOfEntryAdded = WFHistoryT_AssociatedExportDataLogStatus.FirstOrDefault(p => p.Type == "Added");
+                                        var TimeofEntry = TimeZoneInfo.ConvertTimeFromUtc(DateTimeOfEntryAdded.DateTimeOfEntry, DateTimeOfEntryAdded.m_Timezone);
+                                        <li>
+                                            @if (Model.t_associatedexportdatalogstatus != null)
+                                            {
+                                                <span class="@classlabelT_AssociatedExportDataLogStatus">@Model.t_associatedexportdatalogstatus.DisplayValue </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="@classlabelT_AssociatedExportDataLogStatus"> Null </span>
+                                            }
+                                            <span style="margin: 0px; padding: 8px 0px 0px 0px; display: block; font-size: 10px; ">@TimeofEntry </span>
+                                            <span style=" margin: 0px; padding: 3px 0px 0px 0px; display: block; font-size: 10px;">  <i class="fa fa-user fa-fw"></i> @DateTimeOfEntryAdded.UserName </span>
+                                        </li>
+                                    }
+                                    foreach (var str in WFHistoryT_AssociatedExportDataLogStatus)
+                                    {
+                                        if (str.PropertyName == "Status")
+                                        {
+                                            var OldValue = string.IsNullOrEmpty(str.OldValue) ? "Null" : str.OldValue;
+                                            var NewValue = string.IsNullOrEmpty(str.NewValue) ? "Null" : str.NewValue;
+                                            var DateTimeOfEntryOld = str.DateTimeOfEntry;
+                                            var UserInsert = str.UserName;
+                                            if (wfcountT_AssociatedExportDataLogStatus == 0)
+                                            {
+                                                var wfObj = WFHistoryT_AssociatedExportDataLogStatus.FirstOrDefault(p => p.Type == "Added");
+                                                DateTimeOfEntryOld = wfObj != null ? wfObj.DateTimeOfEntry : DateTime.MaxValue;
+                                                UserInsert = wfObj != null ? wfObj.UserName : "";
+                                            }
+                                            DateTimeOfEntryOld = TimeZoneInfo.ConvertTimeFromUtc(DateTimeOfEntryOld, str.m_Timezone);
+                                            if (newvalueT_AssociatedExportDataLogStatus != str.OldValue)
+                                            {
+                                                <li>
+                                                    <span class="@classlabelT_AssociatedExportDataLogStatus">@OldValue </span>
+                                                    <span style="margin: 0px; padding: 8px 0px 0px 0px; display: block; font-size: 10px; ">@DateTimeOfEntryOld </span>
+                                                    <span style=" margin: 0px; padding: 3px 0px 0px 0px; display: block; font-size: 10px;">  <i class="fa fa-user fa-fw"></i> @UserInsert </span>
+                                                </li>
+                                            }
+                                            <li>
+                                                <span class="@classlabelT_AssociatedExportDataLogStatus">@NewValue </span>
+                                                <span style="margin: 0px; padding: 8px 0px 0px 0px; display: block; font-size: 10px; ">@TimeZoneInfo.ConvertTimeFromUtc(str.DateTimeOfEntry, str.m_Timezone) </span>
+                                                <span style=" margin: 0px; padding: 3px 0px 0px 0px; display: block; font-size: 10px;">  <i class="fa fa-user fa-fw"></i> @str.UserName </span>
+                                            </li>
+                                            newvalueT_AssociatedExportDataLogStatus = str.NewValue; wfcountT_AssociatedExportDataLogStatus++;
+                                        }
+                                    }
+                                }
+                            </ol>
+                        </div>
+                    }
+                    @*@if(User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog","T_AssociatedExportDataLogStatusID") && !hiddenProperties.Contains("T_AssociatedExportDataLogStatusID"))
+        {
+        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AssociatedExportDataLogStatus">
+            <div class='form-group' >
+                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_AssociatedExportDataLogStatusID)</label>
+                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                @if (@Model.T_AssociatedExportDataLogStatusID == 0 || @Model.T_AssociatedExportDataLogStatusID == null || @Model.t_associatedexportdatalogstatus == null)
+                {
+                     <p id="lblT_AssociatedExportDataLogStatusID" class="viewlabel"></p>
+                }
+                else
+                {
+                     <p id="lblT_AssociatedExportDataLogStatusID" class="viewlabel" title="@Model.t_associatedexportdatalogstatus.DisplayValue">@Model.t_associatedexportdatalogstatus.DisplayValue</p>
+                }
+                </div>
+            </div>
+        </div>
+        }*@
+                    @if (!NonViewableProperties.Contains("T_Summary") && !hiddenProperties.Contains("T_Summary"))
+                    {
+                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Summary" style="mar">
+                        <div class='form-group' title="Summary">
+                            <label class="col-sm-3 col-md-3 float-left col-xs-12">@Html.LabelFor(model => model.T_Summary) </label>
+                            <div class="input-group col-sm-9 col-md-9 float-left col-xs-12">
+                                <span style="white-space: pre-line">@Model.T_Summary </span>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.T_Summary)
+                    </div>
+                    }
+                    else
+                    {
+                    if (!NonViewableProperties.Contains("T_Summary"))
+                    { @Html.HiddenFor(model => model.T_Summary, new { @class = "form-control" })}
+                    }
+                </div>
+        </div>
+	</div>
+	</div>
+				</div>
+			</div>
+			<div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","T_ExportDataLog")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("T_ExportDataLog"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+@foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+{
+	if (item.T_DisplayType == "Button")
+	{
+        var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+        var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+        if (ispreview)
+                            {
+        <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "T_ExportDataLog", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+            <i class="fa fa-file-pdf"></i> @item.T_Name
+        </a>
+                            }
+                            else
+                            {
+        
+	    <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick=GenerateDocumentFromButton(this,'@isdownload'); dataurl="@Url.Action("GenerateDocument", "T_ExportDataLog", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+        }
+	}
+}
+@if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+{ 
+<div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                    @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                    {
+										var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                        <div class="col-sm-4">
+                                            <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload?"download=true":"download:false") dataurl='@Url.Action("GenerateDocument", "T_ExportDataLog", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body row pull-right">
+								 <label id="lblGenerateDocument" class="text-primary"></label>
+                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                </div>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</div>
+<a class="btn btn-primary btn-sm pull-left formbuttonfix" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+}
+
+
+        @{List<string> hiddenVerb = new List<string>(); var Verblist = "";
+		if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(16)))
+		{
+			hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "T_ExportDataLog");
+			Verblist = string.Join(",", hiddenVerb.ToList());
+		}
+		if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(16)))
+		{
+			 <script>HideVerbFromBR('@Verblist');</script>
+		}
+		}
+
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomT_ExportDataLog">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomT_ExportDataLog").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+<div class="tab-pane fade in" id="JournalEntryToT_ExportDataLogRelation">
+</div>
+ 	</div> <!-- /tab-content -->
+</div>
+</div>
+@{
+    if(ViewData["VerbHiddenForDetails"] !=null)
+    {
+        foreach (var verb in ViewData["VerbHiddenForDetails"] as Dictionary<string,string>)
+        {
+			<script>
+			$("#vrb" + '@verb.Value').remove();
+			$("#vrb1" + '@verb.Value').remove();
+			</script>
+
+        }
+    }
+}
+@if (ViewData["LockRecordMsg"] != null)
+{
+
+    var htmlstr = Convert.ToString(ViewData["LockRecordMsg"]);
+    <script>
+        $(document).ready(function () {
+        debugger;
+            var failuremsg = '@htmlstr';
+            $("#divDisplayLockRecord").removeAttr("style");
+            $("#divDisplayLockRecord").html(getMsgTableLockBR());
+            $("#ErrmsgLockRecord").html(failuremsg.replace(/,\s*$/, ""));
+            $("#divDisplayLockRecord1").html($("#divDisplayLockRecord").html());
+    });
+    </script>
+}
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_ExportDataLog','details',false,'Export Data Log')
+        //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_ExportDataLog','edit',false,'Export Data Log')
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+	</script>
+	
+ 

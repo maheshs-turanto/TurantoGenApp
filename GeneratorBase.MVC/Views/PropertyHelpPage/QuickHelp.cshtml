@@ -1,0 +1,449 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.PropertyHelpPage>
+@using PagedList.Mvc;
+
+@{
+    bool NoentHelp = false;
+    long NoBr = 0;
+    if (ViewBag.HasEntHelp != null)
+    {
+        NoentHelp = Convert.ToBoolean(ViewBag.HasEntHelp);
+    }
+    if (ViewBag.BRCount != null)
+    {
+        NoBr = Convert.ToInt64(ViewBag.BRCount);
+    }
+}
+
+@if (Model != null)
+{
+    var EntityReflectorForOnly = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.FirstOrDefault().EntityName);
+    var propNameName = ViewBag.propName;
+    var ObjectType = ViewBag.ObjectType;
+    bool NoentPropHelp = Convert.ToBoolean(ViewBag.HasProperyHelp);
+    bool NoentActionHelp = Convert.ToBoolean(ViewBag.HasActionHelp);
+    if (ObjectType != "Group" && ObjectType != "Verb")
+    {
+        propNameName = EntityReflectorForOnly.Properties.FirstOrDefault(p => p.Name == propNameName || p.PropName == propNameName).DisplayName;
+    }
+    Layout = null;
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            @{bool HasNoHelp = false;}
+            @if (Convert.ToInt64(ViewBag.SummaryTabCount) > 0 && !NoentHelp)
+            {
+                HasNoHelp = true;
+                <li id="sumli" class="nav-item ">
+                    <a class="nav-link active" data-toggle="tab" href="#tab-2" aria-expanded="false" id="SummaryTab"
+                       onclick="@Html.Raw("LoadTabEntityPage('dvEnt" + Model.FirstOrDefault().EntityName + "','" + Url.Action("QuickEntityHelp", "PropertyHelpPage", new { entName = Model.FirstOrDefault().EntityName }) + "')")">Summary</a>
+                </li>
+
+            }
+            @if (!NoentPropHelp)
+            {
+                HasNoHelp = true;
+                <li class="nav-item" id="propli"><a class="nav-link" data-toggle="tab" id="PropertyTab" href="#@Html.Raw(Model.FirstOrDefault().EntityName+"prop")" aria-expanded="true"> Properties</a></li>
+            }
+            @if (!NoentActionHelp)
+            {
+                HasNoHelp = true;
+                <li class="nav-item" id="actli"><a class="nav-link" data-toggle="tab" id="ActionTab" href="#@Html.Raw("Actions"+Model.FirstOrDefault().EntityName)" aria-expanded="true"> Actions</a></li>
+            }
+            @if (User.CanViewAdminFeature("BusinessRule") && NoBr > 0)
+            {
+                HasNoHelp = true;
+                <li class="nav-item" id="brli">
+                    <a class="nav-link" data-toggle="tab" id="BRTab" href="#tab-3" aria-expanded="false" onclick="@Html.Raw("LoadTabEntityBr('dvEntBR" + Model.FirstOrDefault().EntityName + "','" + Url.Action("QuickHelpBRRule", "PropertyHelpPage", new { entName = Model.FirstOrDefault().EntityName }) + "')")">Business Rules</a>
+                </li>
+            }
+            @if (!HasNoHelp)
+            {
+                <li class="nav-item">
+                    <span>No help available for @EntityReflectorForOnly.DisplayName.</span>
+                </li>
+            }
+        </ul>
+        @if (HasNoHelp)
+        {
+            <div class="tab-content">
+                <div id="tab-2" class="tab-pane container active">
+                    <div class="card-body" id='@Html.Raw("dvEnt"+Model.FirstOrDefault().EntityName)'>
+                    </div>
+                </div>
+                <div id="@Html.Raw(Model.FirstOrDefault().EntityName+"prop")" class="tab-pane container fade">
+                    <div class="card-body">
+                        <div class="row m-b-sm">
+                            <div class="col-md-12">
+                                <input type="text" id="txtProSearch" onkeyup="SearchFuncationForProperty('txtProSearch', 'dlProperty')" placeholder="Search Property" class="form-control">
+
+                            </div>
+                        </div>
+                        <div class="project-list">
+                            @{
+            var grouped = Model.Where(php => php.GroupId != 0).GroupBy(php => php.GroupId).OrderBy(g => g.Key);
+            var NonGroupProp = Model.Where(p => ((p.ObjectType == "Property" || p.ObjectType == "Association") && p.HelpText != null && p.GroupId == 0));
+            var GroupHeaderStr = "";
+                            }
+                            <div id="dlProperty">
+                                @foreach (var group in grouped)
+                                {
+                                    // if there is any help in this group, then display it
+                                    if (group.Any(php => !String.IsNullOrEmpty(php.HelpText)))
+                                    {
+                                        var groupPhp = group.FirstOrDefault(php => php.ObjectType == "Group");
+                                        if (groupPhp == null || String.IsNullOrEmpty(groupPhp.GroupName))
+                                        {
+
+                                            GroupHeaderStr = "<dt class='groupheader'>" + group.FirstOrDefault().GroupName + "</dt>";
+                                        }
+                                        else if (String.IsNullOrEmpty(groupPhp.HelpText) || String.IsNullOrEmpty(groupPhp.Tooltip))
+                                        {
+                                            GroupHeaderStr = "<dt class='groupheader'>" + groupPhp.GroupName + "</dt>";
+                                        }
+                                        else
+                                        {
+                                            if (!String.IsNullOrEmpty(groupPhp.HelpText))
+                                            {
+                                                GroupHeaderStr += "<dt class='groupheader'>" + groupPhp.GroupName + "</dt><dd class='groupheaderdeatils'>" + Html.Raw(groupPhp.HelpText) + "</dd>";
+                                            }
+                                            if (!String.IsNullOrEmpty(groupPhp.Tooltip))
+                                            {
+                                                GroupHeaderStr += "<dt class='groupheader'>" + groupPhp.GroupName + "</dt><dd class='groupheaderdeatils'>" + Html.Raw(groupPhp.Tooltip) + "</dd>";
+                                            }
+
+                                        }
+
+                                        var propertyPhps = group.Where(php => (php.ObjectType == "Property" || php.ObjectType == "Association") && !String.IsNullOrEmpty(php.HelpText));
+                                        <dl class="PropertyGroup" style="overflow-y:auto;">
+                                            @Html.Raw(GroupHeaderStr)
+                                            @foreach (var property in propertyPhps)
+                                            {
+                                                //display property help
+                                                var propname = EntityReflectorForOnly.Properties.FirstOrDefault(p => p.Name == property.PropertyName);
+                                                var PropertyName = property.PropertyName;
+                                                if (propname != null)
+                                                {
+                                                    PropertyName = propname.DisplayName;
+                                                }
+                                                <dt>@PropertyName</dt>
+                                                <dd>@Html.Raw(property.HelpText)</dd>
+                                                <dd>@Html.Raw(property.Tooltip)</dd>
+                                            }
+                                        </dl>
+                                    }
+                                                        }
+
+                                <dl class="PropertyGroup">
+                                    @if (NonGroupProp.Count() > 0)
+                                                    {
+                                        <dt class="groupheader">Non Group Property</dt>
+                                                }
+                                                @foreach (var item in NonGroupProp)
+                                                {
+                                                    var propname = EntityReflectorForOnly.Properties.FirstOrDefault(p => p.Name == item.PropertyName || p.PropName == item.PropertyName);
+                                                    var PropertyName = item.PropertyName;
+                                                    if (propname != null)
+                                                    {
+                                                        PropertyName = propname.DisplayName;
+                                                    }
+                                        <dt>@PropertyName</dt>
+                                        <dd>@Html.Raw(item.HelpText)</dd>
+                                        <dd>@Html.Raw(item.Tooltip)</dd>
+                                                }
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id='@Html.Raw("Actions"+Model.FirstOrDefault().EntityName)' class="tab-pane container fade">
+                    <div class="card-body">
+                        <div class="row m-b-sm">
+                            <div class="col-md-12">
+                                <input type="text" placeholder="Search Verb" id="txtActSearch" onkeyup="SearchFuncationForProperty('txtActSearch', 'dlAction')" class="form-control">
+                                @*<span class="input-group-btn">
+                            <button type="button" id="loading-example-btn" style="visibility:hidden;" class="btn btn-sm"><i class="fa fa-refresh"></i></button>
+                        </span>*@
+
+                            </div>
+                        </div>
+
+                        <div class="project-list">
+                            <div id="dlAction">
+                                @foreach (var item in Model.Where(p => p.ObjectType == "Verb"))
+                                {
+
+                                    var propname = EntityReflectorForOnly.Properties.FirstOrDefault(p => p.Name == item.PropertyName);
+                                    var PropertyName = item.PropertyName;
+                                    if (propname != null)
+                                    {
+                                        PropertyName = propname.DisplayName;
+                                    }
+                                    <dl class="PropertyGroup" style="overflow-y:auto;">
+                                        <dt>
+                                            @PropertyName
+                                        </dt>
+                                        <dd>
+                                            @Html.Raw(item.HelpText)
+                                        </dd>
+                                    </dl>
+
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-3" class="tab-pane container fade">
+                    <div class="project-list">
+                        <div class="card-body" id='@Html.Raw("dvEntBR"+Model.FirstOrDefault().EntityName)'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    if (HasNoHelp)
+    {
+        <script>
+            $(document).ready(function () {
+                try {
+                    debugger;
+                    var type = '@Html.Raw(ObjectType)'
+                    var propval = '@Html.Raw(propNameName)'
+                    if (type!='Verb' &&type!="" ) {
+                        debugger;
+                        $("#PropertyTab").click()
+                        $("#propli").attr("class","active");
+                        if(propval!="DispalyValue" &&type!="Verb")
+                        {
+                            $("#txtProSearch").val(propval);
+                            $("#txtProSearch").keyup()
+                        }
+                    }
+                    else if (type=="Verb") {
+                        debugger;
+                        $("#ActionTab").click()
+                        $("#actli").attr("class","active");
+                        $("#ActionTab")
+                        if(propval!="DispalyValue" && type=="Verb")
+                        {
+                            $("#txtActSearch").val(propval);
+                            $("#txtActSearch").keyup()
+                        }
+
+                    }
+                    else {
+                        if (@Convert.ToInt64(ViewBag.SummaryTabCount)>0  && '@NoentHelp'=='False')
+                        {
+                            debugger;
+                            $("#SummaryTab").click()
+                        }
+                        else if('@NoentPropHelp'=='False')
+                        {
+                            debugger;
+                            $("#PropertyTab").click()
+                            $("#propli").attr("class","active");
+                            $("#txtProSearch").val();
+                            $("#txtProSearch").keyup()
+                        }
+                        else if('@NoentActionHelp'=='False')
+                        {
+                            debugger;
+                            $("#ActionTab").click()
+                            $("#actli").attr("class","active");
+                            $("#txtActSearch").val();
+                            $("#txtActSearch").keyup()
+                        }
+                        else if('@User.CanViewAdminFeature("BusinessRule")'=='True' && @NoBr > 0)
+                        {
+                            debugger;
+                            $("#BRTab").click()
+                            $("#brli").attr("class","active");
+                        }
+                    }
+
+                }
+                catch (ex) { }
+            });
+            function SearchFuncationForProperty(inputtxt, divid) {
+                var input, filter, dl, dt, dd, dtCon, p, i, div;
+                input = document.getElementById(inputtxt);
+                filter = input.value.toUpperCase();
+                div = document.getElementById(divid);
+                dl = div.getElementsByTagName('dl')
+                dt = div.getElementsByTagName('dt');
+                dd = div.getElementsByTagName('dd');
+
+
+                for (i = 0; i < dl.length; i++) {
+                    var dlCon = dl[i];
+                    if (dlCon != "undefined") {
+                        $(dlCon).hide();
+                    }
+                }
+                for (i = 0; i < dd.length; i++) {
+                    var ddCon = dd[i];
+                    if (ddCon != "undefined") {
+                        $(ddCon).hide();
+                    }
+                }
+                for (i = 0; i < dt.length; i++) {
+                    var dtCon = dt[i];
+                    if (dtCon != "undefined") {
+                        $(dtCon).hide();
+
+                    }
+                }
+                for (i = 0; i < dt.length; i++) {
+                    var dtCon = dt[i];
+                    if (dtCon != "undefined") {
+                        if ($(dtCon).text().toUpperCase().indexOf(filter) > -1) {
+                            $(dtCon).show();
+                            $(dtCon).next().show()
+                            $(dtCon).parent().show();
+                            $(dtCon).prevAll("dt").each(function () {
+                                if ($(this).attr("class") != undefined && $(this).attr("class") == "groupheader")
+                                    $(this).show();
+                            });
+                            $(dtCon).prevAll("dd").each(function () {
+                                if ($(this).attr("class") != undefined && $(this).attr("class") == "groupheaderdeatils")
+                                    $(this).show();
+                            });
+
+                        }
+                    }
+                }
+            }
+        </script>
+    }
+}
+else
+{
+
+    var entityName = Request.QueryString["entName"];
+    Layout = null;
+    var cnt = ViewBag.EntityCount;
+    if (entityName != "Home" && cnt > 0)
+    {
+        <div class="tabs-container" style="margin:10px;">
+            <ul class="nav nav-tabs">
+                @{bool nohelp = false;}
+                @if (Convert.ToInt64(ViewBag.SummaryTabCount) > 0 && !NoentHelp)
+                {
+                    nohelp = true;
+                    <li class="nav-item ">
+                        <a class="nav-link active" data-toggle="tab" href="#tab-2" aria-expanded="false" id="SummaryTab"
+                           onclick="@Html.Raw("LoadTabEntityPage('dvEnt" + entityName + "','" + Url.Action("QuickEntityHelp", "PropertyHelpPage", new { entName = entityName }) + "')")">Summary</a>
+                    </li>
+                }
+                @if (User.CanViewAdminFeature("BusinessRule") && NoBr > 0)
+                {
+                    nohelp = true;
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" id="BRTab" href="#tab-3" aria-expanded="false" onclick="@Html.Raw("LoadTabEntityBr('dvEntBR" +entityName+ "','" + Url.Action("QuickHelpBRRule", "PropertyHelpPage", new { entName = entityName }) + "')")">Business Rules</a>
+                    </li>
+                }
+
+                @if (!nohelp)
+                {
+                    var EntityReflectorForOnly = ModelReflector.Entities.FirstOrDefault(p => p.Name == entityName);
+                    <li class="nav-link" id="brli">
+                        <span>No Help available for @EntityReflectorForOnly.DisplayName.</span>
+                    </li>
+                }
+            </ul>
+            <div class="tab-content">
+                @if (Convert.ToInt64(ViewBag.SummaryTabCount) > 0 && NoentHelp == false)
+                {
+                    <div id="tab-2" class="tab-pane container active">
+                        <div class="card-body" id='@Html.Raw("dvEnt" + entityName)'>
+                        </div>
+                    </div>
+                }
+                @if (User.CanViewAdminFeature("BusinessRule") && NoBr > 0)
+                {
+                    <div id="tab-3" class="tab-pane container fade">
+                        <div class="project-list">
+                            <div class="card-body" id='@Html.Raw("dvEntBR" + entityName)'>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                try {
+                    if (@Convert.ToInt64(ViewBag.SummaryTabCount)>0 && '@NoentHelp'=='False')
+                    {
+                        $("#SummaryTab").click()
+
+                    }
+                    else if('@User.CanViewAdminFeature("BusinessRule")'=='True' && @NoBr > 0)
+                    {
+                        $("#BRTab").click()
+                        $("#brli").attr("class","active");
+                    }
+                }
+                catch (ex) { }
+            });
+        </script>
+    }
+    else
+    {
+        int Count = ((SelectList)ViewBag.AllEntityForHelp).Count();
+        <div class="tabs-container" style="margin:10px">
+            @if (Count == 0)
+            {
+                <span>No Help available.</span>
+            }
+            else
+            {
+                <input class="form-control" id="EntityHelpInput" type="text" placeholder="Search.." style="margin-bottom:8px;">
+                <ul class="list-group" id="EntityHelpList">
+                    @foreach (var item in (SelectList)ViewBag.AllEntityForHelp)
+                    {
+                        if (User.CanView(item.Value))
+                        {
+                            <li class="list-group-item btn-icon-help" id='@Html.Raw("ahelp"+item.Value)' dataurl='@Url.Action("QuickHelp", "PropertyHelpPage")' onclick="GetHelp(this)" value="@item.Value" text="@item.Text">
+                                @item.Text
+                            </li>
+
+                            <script>
+                                $("#addPopupHelpLabelUni").html("Help: Entity List");
+                            </script>
+                            @*<script>
+                                    SetIconForHome('@item.Value', '@item.Text');
+                                </script>*@
+
+                        }
+                    }
+                </ul>
+                <script>
+                    $(document).ready(function () {
+                        $("#EntityHelpInput").on("keyup", function () {
+                            var value = $(this).val().toLowerCase();
+                            $("#EntityHelpList li").filter(function () {
+                                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                            });
+                        });
+                    });
+                </script>
+
+                <div style="clear:both"></div>
+            }
+        </div>
+        <script>
+            function GetHelp(obj) {
+                var url = $(obj).attr("dataurl")
+                var Selectedval = $(obj).attr("value")
+                var SelectedText = $(obj).attr("text")
+                OpenPopUpEntityHelp('addPopupHelpUni', 'dvPopupHelpUni', url, Selectedval, '', '', SelectedText);
+                if ($("#popHome") != undefined) {
+                    $("#popHome").show()
+                }
+            }
+        </script>
+
+    }
+}
+

@@ -1,0 +1,399 @@
+﻿@model GeneratorBase.MVC.Models.SelectEntityRolesViewModel
+@{
+    ViewBag.Title = "Permission Settings";
+}
+
+<style>
+    .header .sign:after {
+        display: inline-block;
+        content: '\f067';
+        font-family: 'Font Awesome 5 Free';
+    }
+
+    .header.expand .sign:after {
+        display: inline-block;
+        content: '\f068';
+        font-family: 'Font Awesome 5 Free';
+    }
+</style>
+<script language="JavaScript">
+    function toggleAdd(source) {
+        $('.fooAdd').each(function () { this.checked = source.checked; });
+    }
+    function toggleEdit(source) {
+        $('.fooEdit').each(function () { this.checked = source.checked; });
+    }
+    function toggleDelete(source) {
+        $('.fooDelete').each(function () { this.checked = source.checked; });
+    }
+    function toggleView(source) {
+        // checkboxes = $('.fooView');
+        $('.fooView').each(function () { this.checked = source.checked; });
+    }
+    function toggleAdd1(source) {
+        $('.fooAdd1').each(function () { this.checked = source.checked; });
+    }
+    function toggleEdit1(source) {
+        $('.fooEdit1').each(function () { this.checked = source.checked; });
+    }
+    function toggleDelete1(source) {
+        $('.fooDelete1').each(function () { this.checked = source.checked; });
+    }
+    function toggleView1(source) {
+        // checkboxes = $('.fooView');
+        $('.fooView1').each(function () { this.checked = source.checked; });
+    }
+</script>
+<script>
+    function CheckIsOwner(obj) {
+        var value = $(obj).val();
+        var entity = $(obj).attr("ent");
+        if (value != undefined && value.length > 0) {
+            $("#" + entity + "Owner").prop('checked', true);
+            $("#" + entity + "Ownertxt").val(value);
+        }
+        else {
+            $("#" + entity + "Owner").prop('checked', false);
+            $("#" + entity + "Ownertxt").val("");
+        }
+    }
+    //code for verb action security
+    function CheckIsVerbs(obj) {
+        var value = $(obj).val();
+        var Verbentity = $(obj).attr("Verbent");
+        if (value != undefined && value.length > 0) {
+            $("#" + Verbentity + "Verbstxt").val(value);
+        }
+        else {
+            $("#" + Verbentity + "Verbstxt").val("");
+        }
+    }
+    //
+</script>
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index", "Admin")">Admin</a>
+            <small class="EntityDisplayName">Permission - <span> @Html.DisplayFor(model => model.RoleName)  </span></small>
+        </strong>
+    </div>
+
+</div>
+<div class="card-sm-12">
+    <div class="card">
+        <div class="tabs-container">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a href="#Details" data-toggle="tab" class="nav-link active">Entity Permission</a></li>
+                @if (User.IsAdmin)
+                {
+                    <li class="nav-item"><a href="#AdminPrivileges" data-toggle="tab" class="nav-link">Admin Privileges</a></li>
+                }
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active" id="Details">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    @using (Html.BeginForm("SavePermission", "Permission", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="panel-body  AppForm">
+                                        <div class="form-horizontal">
+                                            @Html.ValidationSummary(true)
+                                            <div class="tabbable responsive">
+                                                @Html.HiddenFor(model => model.RoleName)
+                                                <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                                                    <table class="table table-bordered table-hover table-condensed">
+                                                        <tr>
+                                                            <th style="text-align:center">
+                                                                Entity
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                <input type="checkbox" onclick="toggleAdd(this)" />  Add
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                <input type="checkbox" onclick="toggleEdit(this)" /> Edit
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                <input type="checkbox" onclick="toggleDelete(this)" /> Delete
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                <input type="checkbox" onclick="toggleView(this)" /> View
+                                                            </th>
+                                                            @*code for verb action security*@
+                                                            <th style="text-align:center">
+                                                                Enable Verbs
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                Self Service Only
+                                                            </th>
+                                                            <th style="text-align:center">
+                                                                Auto Registration
+                                                            </th>
+                                                        </tr>
+                                                        @Html.EditorFor(model => model.Entities)
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row deletefix">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+
+                                @if (User.CanEditAdminFeature("RoleEntityPermission"))
+                                {
+                                    <input style="display:none;" id="btnPermissionSave" type="submit" value="Save" onclick="SetRolePermission(event);" class="btn btn-primary" />
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (User.IsAdmin)
+            {
+                <div class="tab-pane fade" id="AdminPrivileges">
+                    @using (Html.BeginForm("SaveAdminPrivilege", "Permission", FormMethod.Post, new { id = "adminform", encType = "multipart/form-data", name = "myform" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="panel-body  AppForm">
+                                        <div class="form-horizontal">
+                                            <div class="tabbable responsive">
+                                                <div id="Des_Table" class="table-responsive" style="overflow-x:inherit;">
+                                                    @Html.HiddenFor(model => model.RoleName)
+                                                    <table class="table table-hover table-striped default-bordered default-condensed">
+                                                        <tr>
+                                                            <th class="hidden"></th>
+                                                            <th>Admin Feature</th>
+                                                            <th><input type="checkbox" onclick="toggleAdd1(this)" /> Add</th>
+                                                            <th><input type="checkbox" onclick="toggleEdit1(this)" /> Edit</th>
+                                                            <th><input type="checkbox" onclick="toggleDelete1(this)" /> Delete</th>
+                                                            <th><input type="checkbox" onclick="toggleView1(this)" /> View</th>
+                                                        </tr>
+
+                                                        @for (int i = 0; i < Model.privileges.Count; i++)
+                                                        {
+                                                            var obj = (new GeneratorBase.MVC.Models.AdminFeaturesDictionary()).getDictionary().FirstOrDefault(p => p.Key == Model.privileges[i].AdminFeature);
+                                                            <tr>
+                                                                <td class="hidden">
+                                                                    @Html.HiddenFor(modelItem => Model.privileges[i].RoleName)
+
+                                                                </td>
+                                                                <td>
+                                                                    @Html.HiddenFor(modelItem => Model.privileges[i].AdminFeature)
+                                                                    @Html.DisplayFor(modelItem => Model.privileges[i].AdminFeature)
+                                                                    <p class="small" style="padding:0px;margin:0px;">@obj.Value</p>
+                                                                </td>
+                                                                <td>
+                                                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsAdd, new { @class = "fooAdd1" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsEdit, new { @class = "fooEdit1" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsDelete, new { @class = "fooDelete1" })
+                                                                </td>
+                                                                <td>
+                                                                    @Html.CheckBoxFor(modelItem => Model.privileges[i].IsAllow, new { @class = "fooView1" })
+                                                                </td>
+                                                            </tr>
+
+                                                        }
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            <div class="card ButtonFooter">
+                <div class="card-footer container-fluid">
+                    @if (Request.UrlReferrer != null)
+                    {
+                        <a href="@Request.UrlReferrer.PathAndQuery" class="btn btn-secondary" id="BackToRoleList">Back to Role List</a>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Back to Role List", "RoleList", "Account", null, new { @class = "btn btn-secondary", @id = "BackToRoleList" })
+                    }
+                    <input value="Save Permission" style="cursor:pointer;" onclick="submitForms()" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+
+    </div>
+</div>
+
+
+
+<script>
+    function submitForms() {
+        document.getElementById("btnPermissionSave").click();
+
+    }
+    $('.header').click(function () {
+        $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(500);
+    });
+
+    function ChangeViewPermissionOfEntity(source) {
+        var id = source.name.replace("Entities[", '').replace("].CanView", '');
+        $("#Entities_" + id + "__CanAdd").attr("checked", source.checked);
+        $("#Entities_" + id + "__CanEdit").attr("checked", source.checked);
+        $("#Entities_" + id + "__CanDelete").attr("checked", source.checked);
+    }
+    function SetRolePermission(e) {
+        var target;
+        if (e.srcElement) target = e.srcElement;
+        e = $.event.fix(e);
+        if (e.currentTarget) target = e.currentTarget;
+        e.preventDefault();
+        var form = $(target).closest('form');
+        //if (!form.valid()) return;
+        var fd = $(target).closest('form').serialize();
+        var url = $(target).closest('form').attr("action");
+        try {
+            fd = new FormData(form[0]);
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                data: fd,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                async: false,
+                //complete: function (result) {
+                //    $('a').each(function () {
+                //        if (($(this)).attr('id') != undefined) {
+                //            if (($(this)).attr('id') == "BackToRoleList") {
+                //                var href = ($(this)).attr('href');
+                //                window.location.href = href;
+                //            }
+                //        }
+                //    });
+                //},
+                success: function (result) {
+                    if (result == "FROMPAGE") {
+                        $('#adminform').submit();
+
+                    }
+                }
+            });
+        } catch (ex) {
+            fd = $(target).closest('form').serialize();
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                async: false,
+                data: fd,
+                //complete: function (result) {
+                //    $('a').each(function () {
+                //        if (($(this)).attr('id') != undefined) {
+                //            if (($(this)).attr('id') == "BackToRoleList") {
+                //                var href = ($(this)).attr('href');
+                //                window.location.href = href;
+                //            }
+                //        }
+                //    });
+                //},
+                success: function (result) {
+                    if (result == "FROMPAGE") {
+                        $('#adminform').submit();
+
+                    }
+                }
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select[multiple=multiple]').multiselect({
+            buttonWidth: '100%'
+        });
+        $('#trDefaultHeader').click();
+    });
+</script>
+<script>
+    function selectcheckbox(obj, entity) {
+        var eleRoles1 = $('select[multiple=multiple]', '#dvQAddquickadd' + entity);
+        var eleRoles = document.getElementById($(eleRoles1).attr("id"));
+        var ischecked = ($(obj).prop("checked"));
+        if (ischecked) {
+            var selectvalue = $(obj).attr("dataval");
+            if (eleRoles != undefined) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == selectvalue)
+                    { eleRoles.options[o].selected = true; }
+                } eleRoles1.trigger("change");
+                eleRoles1.multiselect("rebuild");
+            }
+        } else {
+            if (eleRoles != undefined) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    eleRoles.options[o].selected = false;
+                } eleRoles1.trigger("change");
+                eleRoles1.multiselect("rebuild");
+            }
+        }
+
+    }
+    function SetValue(obj,val,anchor)
+    {
+        var value = $(obj).val();
+        var name = $(obj).attr("name").replace("Custom", "");
+        var res = name.split(".");
+        if ($(obj).val() != undefined && $(obj).val().length > 0) {
+            $("#" + $(obj).attr('id').replace("Custom", "Value")).val(value);
+            $("[name='" + res[0] + "." + val + "']").attr("disabled", "disabled");
+            $("[name='" + res[0] + "." + val + "']").prop("checked", "true");
+            $("#" + anchor).removeAttr("class");
+            $("#" + anchor).attr("class", "btn btn-info btn-xs");
+            $("#" + anchor).attr("title", value);
+        }
+        else {
+            if ($("#" + $(obj).attr('id').replace("Custom", "")).val()== null || $("#" + $(obj).attr('id').replace("Custom", "")).val().length == 0)
+                $("#" + $(obj).attr('id').replace("Custom", "Value")).val("");
+
+            $("#" + anchor).removeAttr("title");
+            $("[name='" + res[0] + "." + val + "']").removeAttr("disabled", "disabled");
+            $("#" + anchor).removeAttr("class");
+            $("#" + anchor).attr("class", "btn btn-default btn-xs");
+        }
+    }
+    function disableCheckbox(obj, val, anchor) {
+        var value = $(obj).val();
+        $("#" + $(obj).attr('id') + "Value").val(value);
+        var name = $(obj).attr("name");
+        var res = name.split(".");
+        if ($(obj).val() != undefined) {
+            $("[name='" + res[0] + "." + val + "']").attr("disabled", "disabled");
+            $("[name='" + res[0] + "." + val + "']").prop("checked", "true");
+            $("#" + anchor).removeAttr("class");
+            $("#" + anchor).attr("class", "btn btn-info btn-xs");
+            $("#" + anchor).attr("title", value);
+        }
+        else {
+            $("#" + anchor).removeAttr("title");
+            $("[name='" + res[0] + "." + val + "']").removeAttr("disabled", "disabled");
+            $("#" + anchor).removeAttr("class");
+            $("#" + anchor).attr("class", "btn btn-default btn-xs");
+        }
+    }
+</script>
+

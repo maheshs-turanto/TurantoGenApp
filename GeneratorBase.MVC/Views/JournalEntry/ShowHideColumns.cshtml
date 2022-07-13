@@ -1,0 +1,66 @@
+﻿<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        var usrName = "@User.JavaScriptEncodedName";
+        var myCookie = usrName + "JournalEntry" + "@ViewData["AssociatedType"]";
+        var host = "#JournalEntry";
+        if ("@ViewData["AssociatedType"]".length > 0)
+        host = "#" + "@ViewData["AssociatedType"]";
+        if ($.cookie(myCookie) != null) {
+            var column = $.cookie(myCookie).split(',');
+            for (var i = 0; i < column.length; i++) {
+                if (column[i] == "col0")
+                    continue;
+                $('input[name=' + column[i] + ']', $(host)).attr('checked', false);
+                var index = column[i].substr(3)
+                //index--;
+                $('table tr', $(host)).each(function () {
+                    $('td:eq(' + index + ')', this).toggle();
+                });
+                $('th.' + column[i], $(host)).toggle();
+            }
+        }
+    });
+</script>
+<style>
+    input[type=checkbox], input[type=radio] {
+    margin-top: 4px;
+    margin-left: 5px;
+}
+</style>
+<div id="ColumnShowHideJournalEntry" class="collapse">
+    <div class="row">
+        <div class="col-sm-12 AppForm">
+            <div class="card card-default">
+                <div class="card-header clearfix">
+                    <h3 class="card-title">Show / Hide Table  Column </h3>
+                </div>
+                <div class="card-body">
+                    <p id="lblJournalEntry" class="label label-success " style="display:none; width:100%; padding:5px; text-align:left; font-size:13px">Table display format successfully saved.</p>
+                    <p id="lblWarningJournalEntry" class="label label-warning " style="display:none; width:100%; padding:5px; text-align:left; font-size:13px">Select at least one property to display on grid.</p>
+                    <div class='form-group'>
+                        <div style="margin-bottom:10px;">
+                            <input type="checkbox" name="col0" checked="checked" style="display:none;" />
+                            <input type="checkbox" name="col1" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> Entity
+                            <input type="checkbox" name="col2" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> Type
+                            <input type="checkbox" name="col3" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> DateTimeOfEntry
+                            <input type="checkbox" name="col4" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> RecordInfo
+                            <input type="checkbox" name="col5" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> UserName
+                            <input type="checkbox" name="col6" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> PropertyName
+                            <input type="checkbox" name="col7" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> OldValue
+                            <input type="checkbox" name="col8" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> NewValue
+                            <input type="checkbox" name="col9" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> RoleName
+                            <input type="checkbox" name="col10" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> Source
+                            <input type="checkbox" name="col11" checked="checked" onclick="ColumnClick(event,'JournalEntry')" /> BrowserInfo
+                        </div>
+                        <input type="button" id="btnSave" value="Set as Default" onclick="showhideSaveCookies(event, 'JournalEntry', '@User.JavaScriptEncodedName','@ViewData["AssociatedType"]');" class="btn btn-primary" />
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+                    
+               

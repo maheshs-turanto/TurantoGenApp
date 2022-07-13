@@ -1,0 +1,1156 @@
+﻿@model GeneratorBase.MVC.Models.CustomReports
+@using PagedList;
+@{
+    ViewBag.Title = "View CustomReports";
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CustomReports");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "CustomReports";
+}
+<script>
+    $(document).ready(function () {
+        if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+            $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+        }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CustomReportsIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.CustomReportsIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CustomReportsIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.CustomReportsIsSetValueUIRule);
+    }
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("CustomReports", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '80%' });
+        });
+
+    });
+</script>
+
+<script>
+
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+
+<script>
+    function LoadTabReports(Url) {
+        $("#ViewRepotsTab").html('');
+        var ReportName = '@Model.ReportName'
+
+        var EntityParm = $("#EntityName").val();
+        var reportsType = $('#ReportTypeDD option:selected').val();
+        var rowProp = "";
+        var ColProp = "";
+        var CrossTabPropertyVal = "";
+        var propertyParm = "";
+        if (reportsType == "Simple") {
+            propertyParm = $("#ResultProperty").val();
+            if (propertyParm == "") {
+                alert("Please Add Property")
+            }
+        }
+        if (reportsType == "CrossTab") {
+            rowProp = $('#CrossTabRowDD option:selected').val();
+            ColProp = $('#CrossTabColumnDD option:selected').val();
+            CrossTabPropertyVal = $('#CrossTabPropertyValues').val();
+            var msg = "";
+            if (rowProp == "") {
+                msg += "\nPlease Select Row of Cross Tab ";
+            }
+            if (ColProp == "") {
+                msg += "\nPlease Select Column of Cross Tab";
+            }
+            if (CrossTabPropertyVal == "") {
+                msg += "\nPlease add cross tab matrix";
+            }
+            if (msg != "") {
+                alert(msg);
+                return false;
+            }
+        }
+        if (EntityParm == "" && propertyParm == "") {
+            $("#errorContainer").show();
+            $("#errorsMsg").html("Please add entity or property.");
+            return false;
+        }
+        var QueryConditionValues = $("#QueryConditionValues").val();
+        var RelationsValues = $("#RelationsValues").val();
+        var url = Url + '?entityVal=' + EntityParm + '&properties=' + propertyParm + '&FilterCondition=' + QueryConditionValues + "&relationsValues=" + RelationsValues + "&reportsType=" + reportsType + "&rowProp=" + rowProp + "&ColProp=" + ColProp + "&CrossTabPropertyVal=" + CrossTabPropertyVal + "&ReportName=" + ReportName;
+
+        if ($.trim($("#ViewRepotsTab").html()).length == 0) {
+            $("#ViewRepotsTab").html('Please wait..');
+            $("#ViewRepotsTab").load(encodeURI(url));
+        }
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#ReportTypeDD').val('@Model.ReportType');
+        FillEntityGrid();
+        var rptType = '@Model.ReportType'
+        if (rptType == "Simple") {
+            $("#SimpleRpt").show();
+            $("#CrossTabrpt").hide();
+            FillPropertyGrid();
+        }
+        if (rptType == "CrossTab") {
+            FillCrossTab();
+            $("#SimpleRpt").hide();
+            $("#CrossTabrpt").show();
+        }
+        FillPropertyConditionGrid()
+        FillRelationsGridForEdit();
+        $("#ReportsTab").click();
+    });
+    //FillGrid
+    function FillCrossTab() {
+        var EntityValue = '@Model.EntityName';
+        if (EntityValue == "")
+            return false;
+        var resEntity = EntityValue.split(",");
+        for (i = 0; i < resEntity.length; i++) {
+            var ValueText = $("#EntityNameDD option[value='" + resEntity[i] + "']").text();
+            FillCrossPropertyDropDown(resEntity[i], ValueText);
+            FillPropertyQueryConditionDropDown(resEntity[i], ValueText);
+        }
+        var listItems = "";
+        for (i = 0; i < resEntity.length; i++) {
+            var ValueText = $("#EntityNameDD option[value='" + resEntity[i] + "']").text();
+            listItems += "<option  value='" + resEntity[i] + "'>" + ValueText + "</option>";
+        }
+        $('#AggregateEntityDD').append(listItems);
+
+        var CrossPrpertyValue = '@Model.CrossTabPropertyValues';
+        var resCrossProperty = CrossPrpertyValue.split(",");
+
+        //T_Executive-T_Executive.T_Salary-Sum;Count;Average;Min;Max
+        for (i = 0; i < resCrossProperty.length; i++) {
+            var resCrossPropertyval = resCrossProperty[i].split("-");
+            var EntityCrossTabText = $("#AggregateEntityDD option[value='" + resCrossPropertyval[0] + "']").text();
+            var EntityCrossTabValue = $("#AggregateEntityDD option[value='" + resCrossPropertyval[0] + "']").val();
+
+            var PropCrossTabText = $("#CrossTabRowDD option[value='" + resCrossPropertyval[1] + "']").text();
+            var PropCrossTabValue = $("#CrossTabRowDD option[value='" + resCrossPropertyval[1] + "']").val();
+
+            var FunCrossVal = resCrossPropertyval[2];
+            var FunCrossText = "";
+            if (FunCrossVal != "") {
+                var FunValue = FunCrossVal.split(';')
+                for (var k = 0; k < FunValue.length; k++) {
+                    FunCrossText += FunValue[k].toUpperCase() + ",";
+                }
+            }
+
+            value = EntityCrossTabValue + "-" + PropCrossTabValue + "-" + FunCrossVal;
+            var str = "<tr>";
+            str += "<td>" + EntityCrossTabText + "</td>";
+            str += "<td>" + PropCrossTabText + "</td>";
+            str += "<td>" + FunCrossText + "</td>";
+            $('#tblCrossTabList').show();
+            $('#tblCrossTabList').append(str) + "</tr>";
+        }
+    }
+    function FillCrossPropertyDropDown(grdEntity, grdEntityDisp) {
+
+        var CrosstabRow = '@Model.CrossTabRow';
+        var CrosstabColumn = '@Model.CrossTabColumn';
+
+        var entityName = "";
+        var entityDisplayName = "";
+        if (grdEntity == "")
+            entityName = $('#EntityNameDD option:selected').val();
+        else
+            entityName = grdEntity;
+        if (grdEntity == "")
+            entityDisplayName = $('#EntityNameDD option:selected').text();
+        else
+            entityDisplayName = grdEntityDisp;
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var listItems = "";
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#ResultPropertyDD').append(listItems);
+                $('#CrossTabRowDD').append(listItems);
+                $('#CrossTabColumnDD').append(listItems);
+                $("#CrossTabRowDD").val(CrosstabRow);
+                $("#CrossTabColumnDD").val(CrosstabColumn);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    function FillEntityGrid() {
+        $('#EntityNameDD').val("");
+        var EntityValue = '@Model.EntityName'
+        var res = EntityValue.split(",");
+        $("#EntityNameDD").val(res[res.length - 1]);
+        $('#tblEntityList').show();
+        for (i = 0; i < res.length; i++) {
+            var str = "<tr>";
+            var ValueText = $("#EntityNameDD option[value='" + res[i] + "']").text();
+            str += "<td>" + ValueText + "</td>";
+            $('#tblEntityList').append(str) + "</tr>";
+        }
+    }
+
+    function FillPropertyGrid() {
+        var EntityValue = '@Model.EntityName';
+        $('#GroupBy').prop('checked', false);
+        if (EntityValue == "")
+            return false;
+        var resEntity = EntityValue.split(",");
+        for (i = 0; i < resEntity.length; i++) {
+            var ValueText = $("#EntityNameDD option[value='" + resEntity[i] + "']").text();
+            FillPropertyDropDown(resEntity[i], ValueText);
+            FillPropertyQueryConditionDropDown(resEntity[i], ValueText);
+        }
+
+        var PrpertyValue = '@Model.ResultProperty';
+        var resProperty = PrpertyValue.split(",");
+        $('#tblPropertyList').show();
+        for (i = 0; i < resProperty.length; i++) {
+            var resPropertyval = resProperty[i].split("-");
+            var propText = $("#ResultPropertyDD option[value='" + resPropertyval[0] + "']").text();
+            var PropertyDispalyOrder = resPropertyval[1]
+            var propOrderByText = $("#OrderByDD option[value='" + resPropertyval[2] + "']").text();
+            var propGroupBy = resPropertyval[3];
+            var entNameId = resPropertyval[4];
+            var aggrValuestr = resPropertyval[5];
+            var aggrStr = "";
+            if (aggrValuestr != "") {
+                var aggrValue = aggrValuestr.split(';')
+                for (var k = 0; k < aggrValue.length; k++) {
+                    aggrStr += aggrValue[k].toUpperCase() + ",";
+                }
+            }
+            value = resPropertyval[0] + "-" + PropertyDispalyOrder + "-" + resPropertyval[2] + "-" + propGroupBy + "-" + entNameId + "-" + aggrValuestr;;
+            var str = "<tr>";
+            str += "<td>" + propText + "</td>";
+            //str += "<td>" + PropertyDispalyOrder + "</td>";
+            str += "<td>" + propOrderByText + "</td>";
+            str += "<td>" + propGroupBy + "</td>";
+            str += "<td>" + aggrStr + "</td>";
+            $('#tblPropertyList').append(str) + "</tr>";
+        }
+
+    }
+    function FillPropertyConditionGrid() {
+        var ConditionValue = '@Model.QueryConditionValues';
+        if (ConditionValue == "")
+            return false;
+        var resCondition = ConditionValue.split(",");
+        $('#tblFilterList').show();
+        for (i = 0; i < resCondition.length; i++) {
+            var resConditionval = resCondition[i].split("-");
+            var propText = $("#FilterPropertyDD option[value='" + resConditionval[0] + "']").text();
+            var propFilterConditionByText = $("#FilterConditionHiddenType option[value='" + resConditionval[1] + "']").text()
+            var propFilterType = $("#FilterTypeDD option[value='" + resConditionval[2] + "']").text();
+            var FilterValue = resConditionval[3];
+            var LogicalOperatorType = ""
+            if (resConditionval[4] != "0")
+                LogicalOperatorType = $("#LogicalOperatorDD option[value='" + resConditionval[4] + "']").text();
+
+            var value = resConditionval[0] + "-" + resConditionval[1] + "-" + resConditionval[2] + "-" + resConditionval[3] + "-" + resConditionval[4];
+            var str = "<tr>";
+            str += "<td>" + LogicalOperatorType + "</td>";
+            str += "<td>" + propText + "</td>";
+            str += "<td>" + propFilterConditionByText + "</td>";
+            str += "<td>" + propFilterType + "</td>";
+            str += "<td>" + FilterValue + "</td>";
+            $('#tblFilterList').append(str) + "</tr>";
+        }
+    }
+    function FillRelationsGridForEdit() {
+        var RelationsValue = '@Model.RelationsValues';
+        var resRelationSep = RelationsValue.split(",");
+        $('#tblrelationList').show();
+        for (i = 0; i < resRelationSep.length; i++) {
+            var resRelation = resRelationSep[i].split('-');
+            var sourceNameDis = $("#EntityNameDD option[value='" + resRelation[0] + "']").text();
+            var sourceName = resRelation[0];
+            var targetNameDisp = $("#EntityNameDD option[value='" + resRelation[1] + "']").text();
+            var targetName = resRelation[1];
+            var assocName = resRelation[2]
+            var value = sourceName + "-" + targetName + "-" + assocName;
+            var str = "<tr>";
+            str += "<td>" + sourceNameDis + "</td>";
+            str += "<td>" + targetNameDisp + "</td>";
+            str += "<td>" + assocName + "</td>";
+            $('#tblrelationList').append(str) + "</tr>";
+        }
+    }
+    function FillRelationsGrid() {
+        var entityName = $('#EntityNameDD option:selected').val();
+        var entityDisplayName = $('#EntityNameDD option:selected').text();
+        $.ajax({
+            url: '@Url.Action("GetAllAssotions", "CustomReports")' + '?entityName=' + entityName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                $('#tblrelationList').show();
+                for (i = 0; i < result.length; i++) {
+                    var value = "";
+                    var sourceName = result[i].SourceEntity;
+                    var targetName = result[i].TargetEntity;
+                    var targetNameDisp = result[i].TargetEntityDisp;
+                    var assocName = result[i].AssocName
+                    if ($("#RelationsValues").val() != "") {
+                        var hdnProperty = $("#RelationsValues").val()
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(hdnProperty + "," + sourceName + "-" + targetName + "-" + assocName);
+                    }
+                    else {
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(value)
+                    }
+                    var str = "<tr>";
+                    str += "<td>" + entityDisplayName + "</td>";
+                    str += "<td>" + targetNameDisp + "</td>";
+                    str += "<td>" + assocName + "</td>";
+                    $('#tblrelationList').append(str) + "</tr>";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+    function FillPropertyDropDown(grdEntity, grdEntityDisp) {
+        var reportName = $('#ReportTypeDD option:selected').val();
+        var entityName = "";
+        var entityDisplayName = "";
+        if (grdEntity == "")
+            entityName = $('#EntityNameDD option:selected').val();
+        else
+            entityName = grdEntity;
+        if (grdEntity == "")
+            entityDisplayName = $('#EntityNameDD option:selected').text();
+        else
+            entityDisplayName = grdEntityDisp;
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var listItems = "";
+                var PropObj = $('#ResultPropertyDD');
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#ResultPropertyDD').append(listItems);
+                $('#CrossTabRowDD').append(listItems);
+                $('#CrossTabColumnDD').append(listItems);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    //QueryConditions
+    function FillPropertyQueryConditionDropDown(grdEntity, grdEntityDisp) {
+        var entityName = "";
+        var entityDisplayName = "";
+        if (grdEntity == "")
+            entityName = $('#EntityNameDD option:selected').val();
+        else
+            entityName = grdEntity;
+        if (grdEntity == "")
+            entityDisplayName = $('#EntityNameDD option:selected').text();
+        else
+            entityDisplayName = grdEntityDisp;
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var listItems = "";
+                var PropObj = $('#FilterPropertyDD');
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#FilterPropertyDD').append(listItems);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+
+
+
+    function FillRelationsGrid() {
+        var entityName = $('#EntityNameDD option:selected').val();
+        var entityDisplayName = $('#EntityNameDD option:selected').text();
+        $.ajax({
+            url: '@Url.Action("GetAllAssotions", "CustomReports")' + '?entityName=' + entityName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                $('#tblrelationList').show();
+                for (i = 0; i < result.length; i++) {
+                    var value = "";
+                    var sourceName = result[i].SourceEntity;
+                    var targetName = result[i].TargetEntity;
+                    var targetNameDisp = result[i].TargetEntityDisp;
+                    var assocName = result[i].AssocName
+                    if ($("#RelationsValues").val() != "") {
+                        var hdnProperty = $("#RelationsValues").val()
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(hdnProperty + "," + sourceName + "-" + targetName + "-" + assocName);
+                    }
+                    else {
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(value)
+                    }
+                    str += "<td>" + entityDisplayName + "</td>";
+                    str += "<td>" + targetNameDisp + "</td>";
+                    str += "<td>" + assocName + "</td>";
+                    str += "<td style='display:none'><i id=\"lblrelationName" + value + "\" name=\"lblrelationName" + value + "\" onclick=\"deleterelationRow(this,'" + value + "');\" class=\"fa fa-trash\"></i></td>";
+                    $('#tblrelationList').append(str) + "</tr>";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+</script>
+<div class="content-heading">
+    <div class="TitleName"><a href="#">@EntityDisplayName</a><small>View - <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span></small></div>
+    <div class="ml-auto">
+        <a href="#" class="btn btn-secondary btn-sm closeall pull-right">
+            <i class="fa fa-chevron-up"></i> Collapse All
+        </a> <a href="#" class="btn btn-secondary btn-sm openall float-right" style="margin-right:5px;">
+            <i class="fa fa-chevron-down"></i> Expand All
+        </a>
+        <div class="btn-group pull-right fixactionbut">
+            <button data-toggle="dropdown" class="btn btn-secondary btn-sm dropdown-toggle mr-1 float-right ">
+                Action
+                
+            </button>
+            <ul class="dropdown-menu pull-left">
+                <li class="dropdown-item">
+                    @if (User.CanEdit("CustomReports"))
+                    {
+                        <a class="dropdown-link"  href="@Url.Action("Edit", "CustomReports", new { id = Model.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>
+                <li class ="dropdown-item">
+                    @if (User.CanDelete("CustomReports"))
+                    {
+                        <a class="dropdown-link" href="@Url.Action("Delete", "CustomReports", new { id = Model.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                    }
+                </li>
+                <li class="divider" style="clear:both"></li>
+                <li class="dropdown-submenu pull-left">
+                    <a class="dropdown-item" tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+                    <ul class="dropdown-menu pull-left">
+                        <li class="dropdown-item">
+                            <a class="dropdown-link" href="@Url.Action("FindFSearch", "Customer", new {sourceEntity="CustomReports",id=Model.Id}, null)">Customer</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        
+
+    </div>
+</div>
+
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Designer Details</a>
+        </li>
+        <li id="ViewReportsli" class="nav-item">
+            <a class="nav-link" href="#ViewRepotsTab" id="ReportsTab" onclick="LoadTabReports('@Html.Raw(Url.Action("ReportsResult", "CustomReports"))')" data-toggle="tab">
+                View Report
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active show" id="Details">
+            <div class="card-group" id="accordion">
+                <div class="card card-default AppForm">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+                                        <h3 class="card-title">
+                                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#detailsbody">
+                                                <span class="fa fa-chevron-down"></span>
+                                                Details
+                                            </a>
+                                        </h3>
+                                    </div>
+                                    <div class="card-body row show collapse" id="detailsbody">
+                                        @if (User.CanView("CustomReports", "ReportName"))
+                                        {
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12" style="display:none">
+                                                <select class="form-control" id="ReportTypeDD" required="required" onchange="SetReportType(this);">
+                                                    <option value="Simple">Simple</option>
+                                                    <option value="CrossTab">Cross Tab</option>
+                                                </select>
+                                                @Html.Hidden("ReportType")
+                                                @Html.ValidationMessageFor(model => model.ReportType)
+                                            </div>
+
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportName">
+                                                <div class='form-group' title="@Model.ReportName">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ReportName) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        <p class="viewlabel">@Model.ReportName</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.ReportName, new { @class = "form-control" })}
+                                        @if (User.CanView("CustomReports", "CreatedOn"))
+                                        {
+
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvCreatedOn">
+                                                <div class="form-group" title="Created On">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.CreatedOn) <span class="text-danger-reg">*</span></label>
+                                                    <div class='form-group' title="@String.Format("{0:MM/dd/yyyy}", Model.CreatedOn)">
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            <p class="viewlabel">@String.Format("{0:MM/dd/yyyy}", Model.CreatedOn)</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.CreatedOn, new { @class = "form-control" })}
+                                        @if (User.CanView("CustomReports", "ReportType"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportType">
+                                                <div class='form-group' title="Report Type">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportType)  <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        <p class="viewlabel">@Model.ReportType</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.ReportType, new { @class = "form-control" })}
+                                        @if (User.CanView("CustomReports", "CreatedByUserID"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvCreatedByUserID">
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.CreatedByUserID) <span class="text-danger-reg">*</span></label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @if (@Model.CreatedByUserID == "0" || @Model.CreatedByUserID == "" || @Model.createdbyuser == null)
+                                                        {
+                                                            <p class="viewlabel"></p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="viewlabel" title="@Model.createdbyuser.UserName">@Model.createdbyuser.UserName</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.CreatedByUserID, new { @class = "form-control" })}
+                                        @if (User.CanView("CustomReports", "Description"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                                <div class='form-group' title="Description">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        <p class="viewlabelmultiline">@Model.Description</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+
+                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#entitiesinreportbody"><span class="fa fa-chevron-down"></span> Entities In Report</a></h3>
+                                    </div>
+                                    <div class="card-body show collapse" id="entitiesinreportbody">
+                                        @if (User.CanView("CustomReports", "EntityName"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName" style="display:none">
+                                                <div class='form-group' title="Entity Name">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.EntityName)   </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        <p class="viewlabel" id="EntName"></p>
+                                                    </div>
+                                                    @Html.DropDownList("EntityNameDD", null, "-- Select --", new { @required = "Required", @class = "form-control" })
+                                                    @Html.Hidden("EntityName")
+                                                    @Html.ValidationMessageFor(model => model.EntityName)
+
+                                                </div>
+                                            </div>
+                                            <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                                <table id="tblEntityList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="col1">Entity Name</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tr></tr>
+                                                </table>
+                                            </div>
+
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="SimpleRpt">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+
+                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#resultpropertybody"><span class="fa fa-chevron-down"></span> Result Property</a></h3>
+                                    </div>
+                                    <div class="card-body show collapse" id="resultpropertybody">
+                                        <div style="display:none;">
+                                            @if (User.CanView("CustomReports", "ResultProperty"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvResultProperty">
+                                                    <div class='form-group' title="Result Property">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ResultProperty)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("ResultPropertyDD", null, "-- Select --", new { @onchange = "SetResultProperty(this);", @class = "form-control" })
+                                                            @Html.Hidden("ResultProperty")
+                                                            @Html.ValidationMessageFor(model => model.ResultProperty)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.ResultProperty, new { @class = "form-control" })}
+
+                                            @if (User.CanView("CustomReports", "ColumnOrder"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvColumnOrder" style="display:none;">
+                                                    <div class='form-group' title="Column Order">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ColumnOrder)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.TextBoxFor(model => model.ColumnOrder, getHtmlAttributes("ColumnOrder"))
+                                                            @Html.ValidationMessageFor(model => model.ColumnOrder)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.ColumnOrder, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "OrderBy"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvOrderBy">
+                                                    <div class='form-group' title="Order By">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.OrderBy)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            <select class="form-control" id="OrderByDD" required="required" onchange="SetOrderBy(this);">
+                                                                <option value="">none</option>
+                                                                <option value="asc">Ascending</option>
+                                                                <option value="desc">Descending</option>
+                                                            </select>
+                                                            @Html.Hidden("OrderBy")
+                                                            @Html.ValidationMessageFor(model => model.OrderBy)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.OrderBy, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "GroupBy"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvGroupBy">
+                                                    <div class="form-group" title="Group By">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">
+                                                            @Html.LabelFor(model => model.GroupBy)
+                                                        </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.CheckBox("GroupBy", Model.GroupBy.HasValue ? Model.GroupBy : false)
+                                                            @Html.ValidationMessageFor(model => model.GroupBy)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.GroupBy, new { @class = "form-control" })}
+                                            <div class='col-sm-6'>
+                                                <div class='form-group' style="float:right" name="dvAggregateFunctionSimple" id="dvAggregateFunctionSimple">
+                                                    <label>Aggregate Operators</label>
+                                                    <select class="form-control" id="AggregateDD" multiple="multiple" required="required">
+                                                        @*<option value="Sum">SUM</option>*@
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                            <table id="tblPropertyList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col1">Property Name</th>
+                                                        <th class="col1">Order By</th>
+                                                        <th class="col1">Group By</th>
+                                                        <th class="col1">Aggr.Operators</th>
+                                                    </tr>
+                                                </thead>
+                                                <tr></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*Cross Tab Start*@
+                        <div class="row" id="CrossTabrpt" style="display:none">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+                                        <div style="margin: 3px 0px 0px 0px;">
+
+                                            <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#crosstabpropertybody"><span class="fa fa-chevron-down"></span> Cross Tab</a></h3>
+                                        </div>
+                                    </div>
+                                    <div class="card-body show collapse" id="crosstabpropertybody">
+                                        <div style="display:none;">
+                                            @if (User.CanView("CustomReports", "CrossTabRow"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvCrossTabRow">
+                                                    <div class='form-group' title="Cross Tab Row">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">Row</label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("CrossTabRowDD", null, "-- Select --", new { @onchange = "SetCrossTabRow(this);", @class = "form-control" })
+                                                            @Html.Hidden("CrossTabRow")
+                                                            @Html.ValidationMessageFor(model => model.CrossTabRow)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.CrossTabRow, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "CrossTabColumn"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvCrossTabColumn">
+                                                    <div class='form-group' title="Cross Tab Column">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">Column</label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("CrossTabColumnDD", null, "-- Select --", new { @onchange = "SetCrossTabColumn(this);", @class = "form-control" })
+                                                            @Html.Hidden("CrossTabColumn")
+                                                            @Html.ValidationMessageFor(model => model.CrossTabColumn)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.CrossTabColumn, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "AggregateEntity"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvAggregateEntity">
+                                                    <div class='form-group' title="Aggregate Entity">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">Entity</label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("AggregateEntityDD", null, "-- Select --", new { @onchange = "SetAggregateEntity(this);", @class = "form-control" })
+                                                            @Html.Hidden("AggregateEntity")
+                                                            @Html.ValidationMessageFor(model => model.AggregateEntity)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.AggregateEntity, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "AggregateProperty"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvAggregateProperty">
+                                                    <div class='form-group' title="Aggregate Property">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">Property </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("AggregatePropertyDD", null, "-- Select --", new { @onchange = "SetAggregateProperty(this);", @class = "form-control" })
+                                                            @Html.Hidden("AggregateProperty")
+                                                            @Html.ValidationMessageFor(model => model.AggregateProperty)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.AggregateProperty, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "AggregateFunction"))
+                                            {
+                                                <div class='col-sm-6'>
+                                                    <div class='form-group' style="float:right;" name="dvAggregateFunction" id="dvAggregateFunction">
+                                                        <label>Function</label>
+                                                        <select class="form-control" id="AggregateFunctionDD" multiple="multiple" required="required"></select>
+                                                        @Html.Hidden("AggregateFunction")
+                                                        @Html.ValidationMessageFor(model => model.AggregateFunction)
+
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.AggregateFunction, new { @class = "form-control" })}
+                                        </div>
+                                        <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                            <table id="tblCrossTabList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col1">Entity Name</th>
+                                                        <th class="col1">Property Name</th>
+                                                        <th class="col1">Function Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tr></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.Hidden("CrossTabPropertyValues")
+                            </div>
+                        </div>
+                        @*Cross Tab End*@
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+
+                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#queryconditionbody"><span class="fa fa-chevron-down"></span> Filter Condition</a></h3>
+                                    </div>
+                                    <div class="card-body show collapse" id="queryconditionbody">
+                                        <div style="display:none;">
+                                            @if (User.CanView("CustomReports", "FilterProperty"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterProperty">
+                                                    <div class='form-group' title="Filter Property">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterProperty)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("FilterPropertyDD", null, "-- Select --", new { @onchange = "SetFilterProperty(this);", @class = "form-control" })
+                                                            @Html.Hidden("FilterProperty")
+                                                            @Html.ValidationMessageFor(model => model.FilterProperty)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.FilterProperty, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "FilterCondition"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterCondition">
+                                                    <div class='form-group' title="Filter Condition">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterCondition)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("FilterConditionDD", null, "-- Select --", new { @onchange = "SetFilterCondition(this);", @class = "form-control" })
+                                                            @Html.Hidden("FilterCondition")
+                                                            @Html.ValidationMessageFor(model => model.FilterCondition)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.FilterCondition, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "FilterType"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterType">
+                                                    <div class='form-group' title="Filter Type">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterType)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            <select class="form-control" id="FilterTypeDD" onchange="SetFilterType(this);">
+                                                                <option value="Value" selected="selected">Enter Value</option>
+
+                                                            </select>
+                                                            @Html.Hidden("FilterType")
+                                                            @Html.ValidationMessageFor(model => model.FilterType)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.FilterType, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "FilterValue"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterValue">
+                                                    <div class='form-group' title="Filter Value">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterValue)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.TextBoxFor(model => model.FilterValue, getHtmlAttributes("FilterValue"))
+                                                            @Html.ValidationMessageFor(model => model.FilterValue)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.FilterValue, new { @class = "form-control" })}
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectValueFromList">
+                                                <div class='form-group' title="Select Value From List">
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">Logical Operator</label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        <select class="form-control" id="LogicalOperatorDD" onchange="SetLogicalOperator(this);">
+                                                            <option value="AND">AND</option>
+                                                            <option value="OR">OR</option>
+                                                            @*<option value="Prompt">Prompt</option>*@
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if (User.CanView("CustomReports", "SelectValueFromList"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectValueFromList" style="display:none;">
+                                                    <div class='form-group' title="Select Value From List">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SelectValueFromList)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("SelectValueFromListDD", null, "-- Select --", new { @onchange = "SetSelectValueFromList(this);", @class = "form-control" })
+                                                            @Html.Hidden("SelectValueFromList")
+                                                            @Html.ValidationMessageFor(model => model.SelectValueFromList)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.SelectValueFromList, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "SelectProperty"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectProperty" style="display:none;">
+                                                    <div class='form-group' title="Select Property">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SelectProperty)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("SelectPropertyDD", null, "-- Select --", new { @onchange = "SetSelectProperty(this);", @class = "form-control" })
+                                                            @Html.Hidden("SelectProperty")
+                                                            @Html.ValidationMessageFor(model => model.SelectProperty)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.SelectProperty, new { @class = "form-control" })}
+                                            <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                <div class="form-group" title="Add">
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                            <table id="tblFilterList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col1">Logical Operator</th>
+                                                        <th class="col1">Property In Filter</th>
+                                                        <th class="col1">Condition</th>
+                                                        <th class="col1">Filter Type</th>
+                                                        <th class="col1">Filter Value</th>
+                                                    </tr>
+                                                </thead>
+                                                <tr></tr>
+                                            </table>
+                                        </div>
+                                        @Html.Hidden("QueryConditionValues")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <div class="card card-default">
+                                    <div class="card-header clearfix">
+
+                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#relationsbody"><span class="fa fa-chevron-down"></span> Relations</a></h3>
+                                    </div>
+                                    <div class="card-body show collapse" id="relationsbody">
+                                        <div style="display:none">
+                                            @if (User.CanView("CustomReports", "RelatedEntity"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvRelatedEntity">
+                                                    <div class='form-group' title="Related Entity">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RelatedEntity)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.TextBoxFor(model => model.RelatedEntity, getHtmlAttributes("RelatedEntity"))
+                                                            @Html.ValidationMessageFor(model => model.RelatedEntity)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.RelatedEntity, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "ForeignKeyEntity"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvForeignKeyEntity">
+                                                    <div class='form-group' title="ForeignKey Entity">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ForeignKeyEntity)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.TextBoxFor(model => model.ForeignKeyEntity, getHtmlAttributes("ForeignKeyEntity"))
+                                                            @Html.ValidationMessageFor(model => model.ForeignKeyEntity)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.ForeignKeyEntity, new { @class = "form-control" })}
+                                            @if (User.CanView("CustomReports", "RelationName"))
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvRelationName">
+                                                    <div class='form-group' title="Relation Name">
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RelationName)   </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                            @Html.TextBoxFor(model => model.RelationName, getHtmlAttributes("RelationName"))
+                                                            @Html.ValidationMessageFor(model => model.RelationName)
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                            else
+                                            { @Html.HiddenFor(model => model.RelationName, new { @class = "form-control" })}
+                                        </div>
+                                        <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                            <table id="tblrelationList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col1">Entity</th>
+                                                        <th class="col1">Related Entity</th>
+                                                        <th class="col1">Relation Name</th>
+                                                    </tr>
+                                                </thead>
+                                                <tr></tr>
+                                            </table>
+                                        </div>
+                                        @Html.Hidden("RelationsValues")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*Hidden Values*@
+                        @Html.Hidden("EntityValues")
+                        @Html.Hidden("OtherValues")
+                        @*End*@
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 mt-1">
+                    @Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer.PathAndQuery }, new { @class = "btn btn-default btn-sm mr-1 pull-left formbuttonfix" })
+                    @if (User.CanEdit("CustomReports"))
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="ViewRepotsTab">
+        </div>
+    </div> <!-- /tab-content --><br />
+    <select id="FilterConditionHiddenType" style="display:none">
+        <option value='1'>Greater Than</option>
+        <option value='2'>Greater Than Or Equal To</option>
+        <option value='3'>Equals To</option>
+        <option value='4'>Does Not Equal To</option>
+        <option value='5'>Less Than</option>
+        <option value='6'>Less Than Or Equal To</option>
+        <option value='3'>Equals To</option>
+        <option value='4'>Does Not Equal To</option>
+        <option value='7'>Contains</option>
+        <option value='8'>Begins With</option>
+        <option value='9'>Ends With</option>
+        <option value='10'>Equals To</option>
+        <option value='11'>Does Not Equal To</option>
+    </select>
+    <br />
+</div>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>

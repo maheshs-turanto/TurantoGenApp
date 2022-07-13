@@ -1,0 +1,161 @@
+﻿@model GeneratorBase.MVC.Models.DataSourceParameters
+@using PagedList;
+@{
+    ViewBag.Title = "View Data Source Parameters";
+}
+<style>
+    .dropdown-submenu.pull-left > .dropdown-menu {
+        left: auto;
+        right: 100%;
+    }
+</style>
+<div class="content-heading">
+    <div class="col-lg-8 p-0">
+        <strong>
+            <a href=""> Data Source Parameters </a>
+            <small>View</small>
+        </strong>
+        </div>
+        <div class="col-lg-4 p-0 text-right">
+           
+            <div class="btn-group pull-right fixactionbut">
+                <button data-toggle="dropdown" class="btn dropdown-toggle btn-default pull-right">
+                    Action                  
+                </button>
+                <ul class="dropdown-menu pull-left">
+                    <li class="dropdown-item">
+                        @if (User.CanEdit("DataSourceParameters"))
+                        {
+                            <a href="@Url.Action("Edit", "DataSourceParameters", new { id = Model.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-edit"></i>  Edit</a>
+                        }
+                    </li>
+                    <li class="dropdown-item">
+                        @if (User.CanDelete("DataSourceParameters"))
+                        {
+                            <a href="@Url.Action("Delete", "DataSourceParameters", new { id = Model.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                        }
+                    </li>
+                    <li class="divider" style="clear:both"></li>
+                    <li class="dropdown-submenu dropdown-item pull-left">
+                        <a tabindex="-1" href="#"><i class="fa fa-plus-circle"></i> Find Matching</a>
+                        <ul class="dropdown-menu pull-left">
+                            <li class="dropdown-item">
+                                <a href="@Url.Action("FindFSearch", "PropertyMapping", new {sourceEntity="DataSourceParameters",id=Model.Id}, null)">Property Mapping</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+       
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="card card-body">
+    <strong class="p-2" id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</strong>
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link active" href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+	    <div class="tab-content">
+		   <div class="tab-pane active" id="Details">
+				 <div class="card card-default AppForm">
+					<div class="card-body">
+                                  
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12">
+			<div class="row">
+@if(User.CanView("DataSourceParameters","ArgumentName"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.ArgumentName) </label>
+		<div class="input-group">
+		
+				<p class="viewlabel">@Model.ArgumentName</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("DataSourceParameters","ArgumentValue"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.ArgumentValue) </label>
+		<div class="input-group">
+		
+				<p class="viewlabel">@Model.ArgumentValue</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("DataSourceParameters","HostingEntity"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.HostingEntity) </label>
+		<div class="input-group">
+		
+				<p class="viewlabel">@Model.HostingEntity</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("DataSourceParameters","flag"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.flag) </label>
+		<div class="input-group">
+		
+				@Html.DisplayFor(model => model.flag)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("DataSourceParameters","other"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.other) </label>
+		<div class="input-group">
+		
+				<p class="viewlabel">@Model.other</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("DataSourceParameters","EntityDataSourceParametersID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12'>
+	<div class='form-group'>
+		<label class="">@Html.DisplayNameFor(model => model.EntityDataSourceParametersID)</label>
+		<div class="input-group">
+		@if (@Model.EntityDataSourceParametersID == 0 || @Model.EntityDataSourceParametersID == null || @Model.entitydatasourceparameters == null)
+		{
+	         <p class="viewlabel"></p>
+        }
+        else
+        {
+		     <p class="viewlabel">@Model.entitydatasourceparameters.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+		</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer.PathAndQuery }, new { @class = "btn btn-default " })
+					 @if ( User.CanEdit("DataSourceParameters"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary " })
+                     }
+				</div>
+			</div>    
+	</div>    
+	</div> <!-- /tab-content -->
+</div>
+ 

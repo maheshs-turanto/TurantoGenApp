@@ -1,0 +1,614 @@
+﻿@model GeneratorBase.MVC.Models.FooterSection
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Footer Section ";
+    var EditPermission = User.CanEditItem("FooterSection", Model, User);
+    //var DeletePermission = User.CanDeleteItem("FooterSection", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Footer Section ";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "FooterSection" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "FooterSection", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=wizard";
+    }
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("FooterSection");
+    var NonViewableProperties = User.CanNotView("FooterSection");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+
+
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "FooterSection", User, groupcontaininginlinegrid);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("FooterSection", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+        window.onload = function(){
+            JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+        }
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+            $("[inlinegrid]").each(function() {
+                //$(this).click();
+                eval($(this).attr('onclick'));
+                var targetpanel = $(this).attr('id').replace('dvGroup','');
+                $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionRestrictDropdownValueRule);
+    }
+}
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .formbuttonfix {
+            float: right !important;
+            margin-right: 5px !important;
+            padding: 4px 18px !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 20px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index")">@EntityDisplayName Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.DisplayFor(model => model.DisplayValue)
+            </small>
+        </strong>
+    </div>
+    @if (string.IsNullOrEmpty(wizardid))
+    {
+        <div class="ml-auto">
+            @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+            {
+                <div class="btn-group float-right" style="margin-left:8px;">
+                    <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Action
+                    </a>
+                    <ul class="dropdown-menu multi-level">
+                        @if (EditPermission)
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Edit","FooterSection", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                            </li>
+                        }
+                        @if (EditPermission && User.CanDelete("FooterSection"))
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Delete", "FooterSection", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityFooterSectionDisplayValueEdit != null && !HideAction)
+            {
+                <div class="pull-right">
+                    <button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('FooterSection',event,'hdnNextPrevId')")" alt="Next" title="Next" style="border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                    @Html.DropDownList("EntityFooterSectionDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('FooterSection','frmFooterSection','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+                    <button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('FooterSection',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+                Details
+            </a>
+        </li>
+
+    </ul>
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "FooterSection", new { UrlReferrer = Convert.ToString(ViewData["FooterSectionParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmFooterSection" }))
+            {
+                if (!string.IsNullOrEmpty(wizardid))
+                { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+                else { Html.ValidationSummary(true); }
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                if (NonViewableProperties != null)
+                {
+                    @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+                }
+                <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+                </div>
+                <div class="AppForm" @wizardid>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        <ol id="olwizard" class="bwizard-steps clearfix clickable d-none" role="tablist">
+                            <li role="tab" class="step-number" id="liGroupFooterSectionOther" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">Other</a>
+                            </li>
+                        </ol>
+                        <script>
+                            $(document).ready(function(){
+                                $(".formbuttonfix:not([dataurl]").hide();
+                                $(".pager").show();
+                                $(".pager.bwizard-buttons").show();
+                                $("ol#olwizard").removeClass("d-none");
+                                $("#tabcontent").removeClass("d-none");
+                            });
+                        </script>
+                        @Html.Hidden("wizardstep", ViewData["wizardstep"])
+                    }
+                    <div class="row bgwizard" id="wzGroupFooterSectionOther">
+                        @if (User.CanView("CompanyInformation") && !NonViewableProperties.Contains("CompanyInformationFooterSectionAssociationID") && !hiddenProperties.Contains("CompanyInformationFooterSectionAssociationID"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyInformationFooterSectionAssociationID">
+                                <div class='form-group'>
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                        @Html.LabelFor(model => model.CompanyInformationFooterSectionAssociationID)
+                                    </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                        <div class="input-group" style="width:100%;">
+                                            @if (User.CanEdit("FooterSection", "CompanyInformationFooterSectionAssociationID"))
+                                            {
+                                                @Html.DropDownList("CompanyInformationFooterSectionAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "CompanyInformation", @dataurl = Url.Action("GetAllValue", "CompanyInformation", new { caller = "CompanyInformationFooterSectionAssociationID" }) })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(model => model.CompanyInformationFooterSectionAssociationID, new { @class = "form-control" })
+                                                @Html.DropDownList("CompanyInformationFooterSectionAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @disabled = "disabled", @HostingName = "CompanyInformation", @dataurl = Url.Action("GetAllValue", "CompanyInformation", new { caller = "CompanyInformationFooterSectionAssociationID" }) })
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.CompanyInformationFooterSectionAssociationID)
+                            </div>
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("CompanyInformationFooterSectionAssociationID"))
+                            { @Html.HiddenFor(model => model.CompanyInformationFooterSectionAssociationID, new { @class = "form-control" })}
+                        }
+                        @if (!NonViewableProperties.Contains("Name") && !hiddenProperties.Contains("Name"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+                                <div class='form-group' title="Name">
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Name)  <span class="text-danger-reg">*</span> </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+
+                                </div>
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </div>
+
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("Name"))
+                            { @Html.HiddenFor(model => model.Name, new { @class = "form-control" })}
+                        }
+                        @if (User.CanView("FooterSectiontype") && !NonViewableProperties.Contains("AssociatedFooterSectionTypeID") && !hiddenProperties.Contains("AssociatedFooterSectionTypeID"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvAssociatedFooterSectionTypeID">
+                                <div class='form-group'>
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                        @Html.LabelFor(model => model.AssociatedFooterSectionTypeID) <span class="text-danger-reg">*</span>
+                                    </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                        <div class="input-group" style="width:100%;">
+                                            @if (User.CanEdit("FooterSection", "AssociatedFooterSectionTypeID"))
+                                            {
+                                                @Html.DropDownList("AssociatedFooterSectionTypeID", null, null, new { @required = "required", @class = "form-control", @HostingName = "FooterSectiontype" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(model => model.AssociatedFooterSectionTypeID, new { @class = "form-control" })
+                                                @Html.DropDownList("AssociatedFooterSectionTypeID", null, "-- Select --", new { @required = "required", @class = "form-control", @disabled = "disabled", @HostingName = "FooterSectiontype" })
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.AssociatedFooterSectionTypeID, "The Document Display field is required.")
+                            </div>
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("AssociatedFooterSectionTypeID"))
+                            { @Html.HiddenFor(model => model.AssociatedFooterSectionTypeID, new { @class = "form-control" })}
+                        }
+                        @if (!NonViewableProperties.Contains("WebLinkTitle") && !hiddenProperties.Contains("WebLinkTitle"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLinkTitle">
+                                <div class='form-group' title="Web Link Title">
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.WebLinkTitle)   </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                        @Html.TextBoxFor(model => model.WebLinkTitle, getHtmlAttributes("WebLinkTitle"))
+
+                                    </div>
+
+                                </div>
+                                @Html.ValidationMessageFor(model => model.WebLinkTitle)
+                            </div>
+
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("WebLinkTitle"))
+                            { @Html.HiddenFor(model => model.WebLinkTitle, new { @class = "form-control" })}
+                        }
+                        @if (!NonViewableProperties.Contains("WebLink") && !hiddenProperties.Contains("WebLink"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLink">
+                                <div class='form-group' title="Web Link">
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.WebLink)   </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                        @Html.TextBoxFor(model => model.WebLink, getHtmlAttributes("WebLink"))
+
+                                    </div>
+
+                                </div>
+                                @Html.ValidationMessageFor(model => model.WebLink)
+                            </div>
+
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("WebLink"))
+                            { @Html.HiddenFor(model => model.WebLink, new { @class = "form-control" })}
+                        }
+                        @if (User.CanView("FooterSection", "DocumentUpload") && User.CanView("Document"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentUpload">
+                                <div class='form-group' title="Document Upload">
+                                    @Html.TextBoxFor(model => model.DocumentUpload, new { @class = "d-none" })
+                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.DocumentUpload) </label>
+                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                        <div style="position:relative;">
+                                            <a class='btn btn-primary btnupload' href='javascript:;' style="float:left; margin-right:5px;">
+                                                Upload File
+                                                <input id="File_DocumentUpload" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_DocumentUpload" onchange='uploadedFileName("upload-file-infoFile_DocumentUpload",$(this).val());'>
+                                            </a>
+                                            @if (Model.DocumentUpload > 0)
+                                            {
+                                                <a href="@Url.Action("Download", "Document", new { id = Model.DocumentUpload })" class="small pull-left" style="vertical-align:middle;font-size: 11px;" id='@Html.Raw("adownloadEditDocumentUpload"+Model.Id)'></a>
+                                                if (User.CanEdit("FooterSection") && User.CanDelete("Document") && !isRecordReadOnly)
+                                                {
+                                                    <a id='@Html.Raw("aDeleteDocumentUpload"+Model.Id)' onclick="DocumentDeassociate('@Url.Action("DocumentDeassociate", "FooterSection", new { docid = Model.DocumentUpload })', '@Model.Id','DocumentUpload');"><i class="fa fa-times text-danger" style="margin-left:5px;"></i></a>
+                                                }
+                                                <script>
+                                                    displayDocumentNameEdit('@Url.Action("GetDocumentName", "Document", new { id = Model.DocumentUpload})', '@Model.Id','DocumentUpload')
+                                                </script>
+                                            }
+                                            <span class='label uploadlblFix pull-left' style="color: brown; vertical-align: middle; font-size: 10px;" id="upload-file-infoFile_DocumentUpload"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            if (!NonViewableProperties.Contains("DocumentUpload"))
+                            { @Html.HiddenFor(model => model.DocumentUpload, new { @class = "form-control" })}
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+
+                    }
+                </div>
+                <div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+                        @Html.AntiForgeryToken()
+                        @if (ViewBag.IsPartial == null)
+                        {
+                            <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index", "FooterSection")');" alt="Cancel" title="Cancel">Cancel</a>
+                        }
+                        @if (EditPermission)
+                        {
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                            }
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                                <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                            }
+                            <input type="hidden" name="hdncommand" value="" />
+                            <input type="hidden" name="hdnNextPrevId" value="" />
+                        }
+
+
+                        @{var dropmenubottom = false;}
+
+                        <div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomFooterSection">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                                Add
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1"></ul>
+                        </div>
+                        @if (!dropmenubottom || !EditPermission)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenubottomFooterSection").hide();
+                            </script>
+                        }
+                    </div>
+                </div>} @*end form*@
+                <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+                <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+                <div id="divDisplayBRmsgMandatory1"></div>
+                <div id="divDisplayLockRecord1"></div>
+                <div id="divDisplayBRReadOnly1"></div>
+                <div id="divDisplayCodeFragment1"></div>
+            </div>
+            @if (string.IsNullOrEmpty(wizardid))
+            {
+
+            }
+        </div> <!-- /tab-content -->
+    </div>
+    <script>
+        $(function () {
+            ApplyAreYouSure();
+        });
+    </script>
+    @{
+        var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "FooterSection").ToList();
+
+        var isbrrequired = false;
+        if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+        {
+            isbrrequired = true;
+        }
+    }
+    @{
+        if (ViewBag.IsPartial == true)
+        {
+            var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+            <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+            <script type="text/javascript">
+                var config = {
+                    '.chosen-select': {},
+                    '.chosen-select-deselect': { allow_single_deselect: true },
+                    '.chosen-select-no-single': { disable_search_threshold: 10 },
+                    '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                    '.chosen-select-width': { width: "95%" }
+                }
+                for (var selector in config) {
+                    $(selector).chosen(config[selector]);
+                }
+            </script>
+            <script>
+                function ApplyBusinessRule(form) {
+                    var flag = true;
+                    dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "FooterSection", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+                    if (flag) {
+                        $("#frmFooterSection").find(':input').removeAttr('disabled');
+                        $("#divDisplayBRmsgMandatory").hide();
+                        $("#divDisplayBRmsgBeforeSaveProp").hide();
+                        $("#divDisplayLockRecord").hide();
+                        $("#divDisplayBRReadOnly").hide();
+                    }
+                    return flag;
+                }
+            </script>
+        }
+    }
+    @{
+        var businessrule = User.businessrules.Where(p => p.EntityName == "FooterSection").ToList();
+        if ((businessrule != null && businessrule.Count > 0))
+        {
+            var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script>
+                $(document).ready(function () {
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmFooterSection");
+                    dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnEdit"})";
+                    ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "FooterSection", false, "ErrMsg", form);
+                    //business rules on inline associations
+                    if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                    {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                        $('.input-group-append').hide();
+                        $('.input-group-addon').hide();
+                    }
+                });
+            </script>
+            <script>
+                $("form").submit(function (event) {
+                    $('[businessrule="mandatory"]').each(function () {
+                        $(this).removeAttr('required');
+                    });
+                    if (!$("#frmFooterSection").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmFooterSection").serialize();
+                    dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "FooterSection", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+
+                    if (flag)
+                    {
+                        $('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+                        if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                            $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                        $("#frmFooterSection").find(':input').removeAttr('disabled');
+                    }
+                    return flag;
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                $("input[type='submit']").click(function (event) {
+                    if (!$("#frmFooterSection").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    var $this = $(this);
+                    var actionName = $this.attr("actionName")
+                    if (actionName == undefined)
+                        actionName = $this.val();
+                    $('input:hidden[name="hdncommand"]').val(actionName);
+                });
+            </script>
+        }
+    }
+
+    <script type='text/javascript'>
+        $(document).ready(function ()
+        {
+            try {
+                focusOnControl('frmFooterSection');
+            }
+            catch (ex) { }
+            ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FooterSection','edit',false,'Footer Section ')
+            //instruction feature
+            ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'FooterSection','edit',false,'Footer Section ')
+            var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+        });
+    </script>
+    @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityFooterSectionDisplayValueEdit != null)
+    {
+        <script type='text/javascript'>
+            $(document).ready(function () {
+                NextPrev("FooterSection");
+            });
+        </script>
+    }

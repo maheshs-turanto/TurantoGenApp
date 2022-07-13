@@ -1,0 +1,33 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackResource
+@{
+    ViewBag.Title = "Create Feedback Resource";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            @{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+            Feedback Resource
+            <small> Add Feedback Resource @hostingValue</small>
+
+        </strong>
+    </div>
+        <div class="col-lg-2">
+            @if (ViewData["HostingEntity"] == null)
+            {
+                <a href="@(Url.Action("SetFSearch", "FeedbackResource")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-secondary tip-top">Search</a>
+            }
+            <button class="btn btn-secondary tip-top" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "FeedbackResource") + "');") >
+                List
+            </button>
+
+            <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+        </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/FeedbackResource/CreatePartial.cshtml", Model)

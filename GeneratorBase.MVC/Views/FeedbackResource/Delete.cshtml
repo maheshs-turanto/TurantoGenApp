@@ -1,0 +1,76 @@
+﻿@model GeneratorBase.MVC.Models.FeedbackResource
+@{
+    ViewBag.Title = "Delete Feedback Resource";
+}
+<div class="content-heading">
+    <div class="col-sm-10">
+        <strong>
+            Delete Feedback Resource
+            <small>@Html.DisplayFor(model => model.DisplayValue)</small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ConcurrencyKey)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card AppForm">
+                    <div class="card-header text-white bg-danger clearfix">
+                        <h6>Are you sure you want to delete this? - <strong>@Html.DisplayNameFor(model => model.FirstName)</strong> </h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.ResourceId)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.ResourceId)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.FirstName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.FirstName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.LastName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.LastName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Email)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Email)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.PhoneNo)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.PhoneNo)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+                @if (User.CanDelete("FeedbackResource"))
+                {
+                    <input type="submit" value="Delete" class="btn btn-primary btn-sm" />
+                }
+            </div>
+        </div>
+    }
+</div>
+

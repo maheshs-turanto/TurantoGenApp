@@ -1,0 +1,511 @@
+﻿@model GeneratorBase.MVC.Models.VerbGroup
+@using PagedList;
+@{
+    ViewBag.Title = "View Verb Group";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Verb Group";
+	var modelproperties = EntityDisplayNameReflector.Properties;
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "VerbGroup", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+
+
+    var NonViewableProperties = User.CanNotView("VerbGroup");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+	List<string> groupcontaininginlinegrid = new List<string>();  
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "VerbGroup", User, groupcontaininginlinegrid);
+
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function () {
+            //$(this).click();
+            eval($(this).attr('onclick'));
+            var targetpanel = $(this).attr('id').replace('dvGroup', '');
+            $('#' + targetpanel).removeClass('fade in');
+        });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsGroupsHiddenRule))
+    {
+    <script>
+        var ResetBaseUrl = '@Url.Action("ResetToDefault", new { id = Model != null ? Model.Id : 0, groupName = "_groupname" })';
+    </script>
+    }
+   
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsHiddenRule))
+    {
+        <script>
+
+             var ResetBaseUrlField = '@Url.Action("ResetToDefaultField", new { id = Model != null ? Model.Id : 0, fieldName = "_fieldname" })';
+        </script>
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="VerbGroup"})">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("VerbGroup"))
+                    {
+                        <a href="@Url.Action("Edit","VerbGroup", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("VerbGroup"))
+                    {
+                        <a href="@Url.Action("Delete", "VerbGroup", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left" id="AddAssociationdropmenuVerbGroup">
+	 @{ var dropmenu = false; }
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if ( User.CanAdd("VerbsName"))
+				{ dropmenu = true;
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "VerbsName", 
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="VerbNameSelect", 
+							HostingEntityName = "VerbGroup",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="fa fa-plus"></i>  Verbs Name
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+@if(!dropmenu)
+{
+    <script>
+        $("#AddAssociationdropmenuVerbGroup").hide();
+    </script>
+}
+			</ul>
+   </div>
+</div>
+</div>
+	<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+
+ @if(User.CanView("VerbsName") )
+        {
+			<li class="nav-item">
+		 
+		 <a class="nav-link"    id="dvGroupVerbNameSelect" onclick="LoadTab('VerbNameSelect','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "VerbsName", new {RenderPartial=true, HostingEntity ="VerbGroup", HostingEntityID = @Model.Id, AssociatedType = "VerbNameSelect",TabToken = DateTime.Now.Ticks,}))')" href="#VerbNameSelect" data-toggle="tab" title="Verbs Name">
+		 Verbs Name
+		 <span class="badge bg-primary"><div id="dvcnt_VerbNameSelect">@ViewBag.VerbNameSelectCount</div></span>
+		 		 </a></li>
+		 		 }
+		 
+ @if (User.CanView("JournalEntry"))
+        {
+		 <li class="nav-item">
+		 <a class="nav-link" onclick="LoadTab('JournalEntryToVerbGroupRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "VerbGroup", HostingEntity = "VerbGroup", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToVerbGroupRelation" data-toggle="tab" title="Verb Group Journal">Verb Group Journal</a>
+		 </li>
+		 }
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupVerbGroupBasicInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Basic Information</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+@if(User.CanView("VerbGroup","Name")  && !hiddenProperties.Contains("Name") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+	<div class='form-group' title="@Model.Name">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.Name) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblName" class="viewlabel">@Model.Name</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","DisplayOrder")  && !hiddenProperties.Contains("DisplayOrder") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayOrder">
+	<div class='form-group' title="@Model.DisplayOrder">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.DisplayOrder) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblDisplayOrder" class="viewlabel">@Model.DisplayOrder</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","Flag1")  && !hiddenProperties.Contains("Flag1") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvFlag1">
+	<div class='form-group' title="@Model.Flag1">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.Flag1) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+				@Html.DisplayFor(model => model.Flag1)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","Icon")  && !hiddenProperties.Contains("Icon") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvIcon">
+	<div class='form-group' title="@Model.Icon">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.Icon) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblIcon" class="viewlabel">@Model.Icon</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","Description")  && !hiddenProperties.Contains("Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+	<div class='form-group' title="@Model.Description">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.Description)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="viewlabelmultiline">@Model.Description</p>
+		</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupVerbGroupInternalUse">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Internal Use</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+@if(User.CanView("VerbGroup","InternalName")  && !hiddenProperties.Contains("InternalName") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvInternalName">
+	<div class='form-group' title="@Model.InternalName">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.InternalName) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblInternalName" class="viewlabel">@Model.InternalName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","EntityInternalName")  && !hiddenProperties.Contains("EntityInternalName") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityInternalName">
+	<div class='form-group' title="@Model.EntityInternalName">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.EntityInternalName) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblEntityInternalName" class="viewlabel">@Model.EntityInternalName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","UIGroupInternalName")  && !hiddenProperties.Contains("UIGroupInternalName") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvUIGroupInternalName">
+	<div class='form-group' title="@Model.UIGroupInternalName">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.UIGroupInternalName) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblUIGroupInternalName" class="viewlabel">@Model.UIGroupInternalName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","GroupId")  && !hiddenProperties.Contains("GroupId") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvGroupId">
+	<div class='form-group' title="@Model.GroupId">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.GroupId) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblGroupId" class="viewlabel">@Model.GroupId</p>
+								</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupVerbGroupUIInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">UI Information</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+@if(User.CanView("VerbGroup","BackGroundColor")  && !hiddenProperties.Contains("BackGroundColor") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvBackGroundColor">
+	<div class='form-group' title="@Model.BackGroundColor">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.BackGroundColor) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblBackGroundColor" class="viewlabel">@Model.BackGroundColor</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("VerbGroup","FontColor")  && !hiddenProperties.Contains("FontColor") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvFontColor">
+	<div class='form-group' title="@Model.FontColor">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.FontColor) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblFontColor" class="viewlabel">@Model.FontColor</p>
+								</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+				</div>
+			</div>
+			<div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","VerbGroup")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("VerbGroup"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+@foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+{
+	if (item.T_DisplayType == "Button")
+	{
+        var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+        var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+        if (ispreview)
+                            {
+        <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "VerbGroup", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+            <i class="fa fa-file-pdf"></i> @item.T_Name
+        </a>
+                            }
+                            else
+                            {
+        
+	    <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick="@Html.Raw("GenerateDocumentFromButton(this,'"+isdownload + "');")" dataurl="@Url.Action("GenerateDocument", "VerbGroup", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+        }
+	}
+}
+@if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+{ 
+<div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                    @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                    {
+										var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                        <div class="col-sm-4">
+                                            <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload?"download=true":"download:false") dataurl='@Url.Action("GenerateDocument", "VerbGroup", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body row pull-right">
+								 <label id="lblGenerateDocument" class="text-primary"></label>
+                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                </div>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</div>
+<a class="btn btn-primary btn-sm pull-left formbuttonfix" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+}
+
+
+        @{List<string> hiddenVerb = new List<string>(); var Verblist = "";
+		if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && p.ActionTypeID.Contains(16)))
+		{
+			hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "VerbGroup");
+			Verblist = string.Join(",", hiddenVerb.ToList());
+		}
+		if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && p.ActionTypeID.Contains(16)))
+		{
+			 <script>HideVerbFromBR('@Verblist');</script>
+		}
+		}
+
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="" id="AddAssociationdropmenubottomVerbGroup">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+			@if (User.CanAdd("VerbsName"))
+            {
+			    dropmenubottom = true;
+                <li><a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "VerbsName",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="VerbNameSelect", 
+						HostingEntityName = "VerbGroup",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                   Add  Verbs Name
+                </a>
+				</li>
+            }
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomVerbGroup").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+<div class="tab-pane fade in" id="JournalEntryToVerbGroupRelation">
+</div>
+ <div class="tab-pane fade in" id="VerbNameSelect">
+</div>
+ 	</div> <!-- /tab-content -->
+</div>
+</div>
+@{
+    if(ViewData["VerbHiddenForDetails"] !=null)
+    {
+        foreach (var verb in ViewData["VerbHiddenForDetails"] as Dictionary<string,string>)
+        {
+			<script>
+			$("#vrb" + '@verb.Value').remove();
+			$("#vrb1" + '@verb.Value').remove();
+			</script>
+
+        }
+    }
+}
+@if (ViewData["LockRecordMsg"] != null)
+{
+
+    var htmlstr = Convert.ToString(ViewData["LockRecordMsg"]);
+    <script>
+        $(document).ready(function () {
+        debugger;
+            var failuremsg = '@htmlstr';
+            $("#divDisplayLockRecord").removeAttr("style");
+            $("#divDisplayLockRecord").html(getMsgTableLockBR());
+            $("#ErrmsgLockRecord").html(failuremsg.replace(/,\s*$/, ""));
+            $("#divDisplayLockRecord1").html($("#divDisplayLockRecord").html());
+    });
+    </script>
+}
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+    if('@ViewBag.EntityHelp' == 'True' || '@ViewBag.EntityHelp' == 'true')
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'VerbGroup','details',false,'Verb Group')
+        //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'VerbGroup','edit',false,'Verb Group')
+     }
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+               if (value.length > 0) $("#"+value).hide();
+            });
+    });
+	</script>
+	
+ 

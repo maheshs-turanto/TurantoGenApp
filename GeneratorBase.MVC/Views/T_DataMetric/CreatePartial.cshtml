@@ -1,0 +1,672 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    ViewBag.Title = "Create Data Metric";
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_DataMetric").Properties;
+    var NonViewableProperties = User.CanNotView("T_DataMetric");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_DataMetric", User);
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=wizard";
+    }
+}
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
+@{
+
+    if (ViewBag.IsPartial == true)
+    {
+        <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+    }
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 20px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_DataMetric", new { UrlReferrer = Convert.ToString(ViewData["T_DataMetricParentUrl"]), IsDDAdd = ViewBag.IsDDAdd, viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmT_DataMetric" }))
+{
+    @Html.AntiForgeryToken();
+    if (!string.IsNullOrEmpty(wizardid))
+    { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+else { Html.ValidationSummary(true); }
+Html.EnableClientValidation();
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainer" style="display: none">
+    <div id="errorsMsg"></div>
+    <div id="errors"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+        <div class="AppForm" @wizardid>
+            @if (!string.IsNullOrEmpty(wizardid))
+            {
+                <ol id="olwizard" class="bwizard-steps clearfix clickable" role="tablist">
+                    <li role="tab" class="step-number" id="liGroupT_DataMetricBasicInformation" onclick="bwizard_SaveOnClick(event);">
+                        <div></div><a class="hidden-phone">Basic Information</a>
+                    </li>
+                    <li role="tab" class="step-number" id="liGroupT_DataMetricMetricDisplayInformation" onclick="bwizard_SaveOnClick(event);">
+                        <div></div><a class="hidden-phone">Metric Display Information</a>
+                    </li>
+                    <li role="tab" class="step-number" id="liGroupT_DataMetricUIInformation" onclick="bwizard_SaveOnClick(event);">
+                        <div></div><a class="hidden-phone">UI Information</a>
+                    </li>
+                </ol>
+                <script>
+                    $(document).ready(function () {
+                        $(".formbuttonfix").hide();
+                        $(".pager").show();
+                        $(".pager.bwizard-buttons").show();
+                        $(".hidetools").hide();
+                    });
+                </script>
+                @Html.Hidden("wizardstep")
+            }
+            <div class="">
+                <div class="row bgwizard" id="wzGroupT_DataMetricBasicInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_DataMetricBasicInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_DataMetric", "T_Name"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Name)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Name)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_ToolTip"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_ToolTip)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ToolTip) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextAreaFor(model => model.T_ToolTip, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_ToolTip)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupT_DataMetricMetricDisplayInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_DataMetricMetricDisplayInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="Metric Display Information" title="Metric Display Information">Metric Display Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_DataMetric", "T_AssociatedDataMetricTypeID"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_AssociatedDataMetricTypeID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_AssociatedDataMetricTypeID) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+
+                                                    @Html.DropDownList("T_AssociatedDataMetricTypeID", null, "-- Select --", new { @onchange = "setgraphtype(this);", @required = "required", @class = "chosen-select form-control", @HostingName = "T_DataMetrictype", @dataurl = Url.Action("GetAllValue", "T_DataMetrictype", new { caller = "T_AssociatedDataMetricTypeID" }) })
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AssociatedDataMetricTypeID)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_GraphType"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_GraphType" style="display:none;">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_GraphType)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_GraphType) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @*@Html.TextBoxFor(model => model.T_Aggregate, new { @class = "form-control" })*@
+                                                <select id="T_GraphType" name="T_GraphType" class="form-control">
+                                                    <option value="bar">Bar</option>
+                                                    <option value="horizontalBar">HorizontalBar</option>
+                                                    <option value="pie">Pie</option>
+                                                    <option value="line">Line</option>
+                                                    <option value="doughnut">Doughnut</option>
+                                                    <option value="radar">Radar</option>
+                                                    <option value="polarArea">PolarArea</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_GraphType)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_AssociatedFacetedSearchID"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_AssociatedFacetedSearchID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_AssociatedFacetedSearchID) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+
+                                                    @Html.DropDownList("T_AssociatedFacetedSearchID", null, "-- Select --", new { @required = "required", @class = "chosen-select form-control", @HostingName = "T_FacetedSearch", @dataurl = Url.Action("GetAllValue", "T_FacetedSearch", new { caller = "T_AssociatedFacetedSearchID" }) })
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AssociatedFacetedSearchID)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_Aggregate"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Aggregate">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Aggregate)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_Aggregate) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @*@Html.TextBoxFor(model => model.T_Aggregate, new { @class = "form-control" })*@
+                                                <select id="T_Aggregate" name="T_Aggregate" class="form-control" onchange="SetAggregateProperty(this);">
+                                                    <option value="Count">Count</option>
+                                                    <option value="Sum">Sum</option>
+                                                    <option value="Average">Average</option>
+                                                    <option value="Max">Max</option>
+                                                    <option value="Min">Min</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Aggregate)
+                                    </div>
+                                }
+                                @*@if (User.CanView("T_DataMetric", "T_EntityName"))
+                                    {
+                                        <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_EntityName">
+                                            <div class='form-group' title="@Html.DisplayNameFor(model => model.T_EntityName)">
+                                                <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_EntityName) </label>
+                                                <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_EntityName, new { @class = "form-control" })
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_EntityName)
+                                        </div>
+                                    }*@
+                                @if (User.CanView("T_DataMetric", "T_AggregatePropertyName"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_AggregatePropertyName" style="display:none;">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_AggregatePropertyName)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_AggregatePropertyName) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @*@Html.TextBoxFor(model => model.T_AggregatePropertyName, new { @class = "form-control" })*@
+                                                <select id="T_AggregatePropertyName" name="T_AggregatePropertyName" class="form-control">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AggregatePropertyName)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_Roles"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Roles">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Roles)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_Roles) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+                                                @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                @Html.Hidden("T_Roles", null, new { @Value = "" })
+                                                @*@Html.TextBoxFor(model => model.T_Roles, new { @class = "form-control" })*@
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Roles)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupT_DataMetricUIInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_DataMetricUIInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_DataMetric", "T_BackGroundColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackGroundColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_BackGroundColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_BackGroundColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_BackGroundColor, new { @class = "form-control", @Value = "#1d5072" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvT_BackGroundColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_BackGroundColor)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_FontColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FontColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_FontColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_FontColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_FontColor, new { @class = "form-control", @Value = "#ffffff" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvT_FontColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_FontColor)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_Hide"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Hide">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_Hide)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_Hide)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_Hide", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Hide)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_ClassIcon"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ClassIcon">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_ClassIcon)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ClassIcon) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_ClassIcon, new { @class = "form-control", @Value = "fa fa-tag" })
+                                                <span class="input-group-addon btn btn-default" onclick="window.open(@GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri() +'/icons/Font-Awesome.pdf', '_blank');">
+                                                    <i class="fa fa-question"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_ClassIcon)
+                                    </div>
+
+                                }
+                                @if (User.CanView("T_DataMetric", "T_BackgroundImage") && User.CanView("Document"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackgroundImage" style="display:none;">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_BackgroundImage)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_BackgroundImage) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                <div style="position:relative;">
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Upload Image
+                                                        <input id="T_BackgroundImage" accept='image/*' type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="T_BackgroundImage" onchange='$("#upload-file-infoT_BackgroundImage").html($(this).val());'>
+                                                    </a>
+                                                    &nbsp;
+                                                    <span class='label uploadlblFix' id="upload-file-infoT_BackgroundImage"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_DisplayOrder"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayOrder">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_DisplayOrder)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DisplayOrder) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_DisplayOrder, new { @class = "form-control", @Value = "1" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_DisplayOrder)
+                                    </div>
+                                }
+                                @if (User.CanView("T_DataMetric", "T_DisplayOn"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayOn">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_DisplayOn)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DisplayOn) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @*@Html.TextBoxFor(model => model.T_DisplayOn, new { @class = "form-control" })*@
+                                                @Html.DropDownList("T_DisplayOnList", null, new { @multiple = "multiple" })
+                                                @Html.Hidden("T_DisplayOn", null, new { @Value = "" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_DisplayOn)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divDisplayThresholdLimit1">
+</div>
+<div id="divDisplayBRmsgMandatory1">
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp1">
+</div>
+<div id="divDisplayCodeFragment1">
+</div>
+<div class="@footerclassdiv1">
+    <div class="@footerclassdiv2">
+        @if (ViewBag.IsPartial == null)
+        {
+            <a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","T_DataMetric")');" alt="Cancel" title="Cancel">Cancel</a>
+        }
+        @if (ViewBag.IsPartial == null)
+        {
+            <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create" />
+        }
+        @if (ViewBag.IsPartial == null)
+        {
+            if (ViewBag.IsDDAdd == null && User.CanEdit("T_DataMetric"))
+            {
+                <input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue" />
+                <input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+            }
+        }
+        <input type="hidden" name="hdncommand" value="" />
+    </div>
+</div>
+<br />
+<br />
+}
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_DataMetric").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmT_DataMetric");
+                dataurl = "@Url.Action("businessruletype", "T_DataMetric", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "T_DataMetric", false, "ErrMsg", form);
+
+            });
+        </script>
+
+
+        <script>
+            $("form").submit(function (event) {
+                SetRoles();
+                //if (!$("#frmT_DataMetric").valid()) return;
+                var flag = true;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+                form = $("#frmT_DataMetric").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "T_DataMetric", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_DataMetric", false, "ErrMsg", form,"@typelist");
+                //business rules on inline associations
+                if (flag) {
+                    $('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+                    $("#frmT_DataMetric").find(':input').removeAttr('disabled');
+                }
+                else
+                    $("html, body").animate({ scrollTop: 0 }, "fast");
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                SetRoles();
+                if (!$("#frmT_DataMetric").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            focusOnControl('frmT_DataMetric');
+        }
+        catch (ex) { }
+        ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_DataMetric','create',false,'Data Metric')
+        //instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_DataMetric','create',false,'Data Metric')
+        var arrgroup = '@lstHiddenGroupFLS'.split(',');
+        $.each( arrgroup, function( index, value ){
+            $("#"+value).hide();
+        });
+    });
+</script>
+<script>
+    function SetRoles()
+    {
+        $('#T_Roles').val($('#RoleList').val());
+        $('#T_DisplayOn').val($('#T_DisplayOnList').val());
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+        $('select[name=T_DisplayOnList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    function setgraphtype(obj)
+    {
+        var selectedtext = $(obj).val();
+        $("#dvT_GraphType").hide();
+        $("#dvT_BackgroundImage").hide();
+        if(selectedtext == 3)
+            $("#dvT_GraphType").show();
+        if (selectedtext == 4) {
+            $("#dvT_BackgroundImage").show();
+            $("#dvT_Aggregate").hide();
+        }
+        else {
+            $("#dvT_Aggregate").show();
+        }
+    }
+    function SetAggregateProperty(obj)
+    {
+        var selectedtext = $(obj).val();
+        $("#dvT_AggregatePropertyName").hide();
+        if(selectedtext != 'Count')
+        {
+            $("#dvT_AggregatePropertyName").show();
+            var dataurl = '@Url.Action("GetAggregateProperties", new { id="_id"})'.replace("_id",$("#T_AssociatedFacetedSearchID").val());
+            $.ajax({
+                type: "GET",
+                url: dataurl,
+                contentType: "application/json; charset=utf-8",
+                global: false,
+                cache: false,
+                async: true,
+                dataType: "json",
+                success: function (jsonObj) {
+                    var result = jsonObj;
+                    var optionDOM = '<option value="">--Select Property--</option>';
+                    for (i = 0; i < result.length; i++) {
+                        optionDOM += '<option class="' + result[i].Name + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    }
+                    if (result.length == 0) {
+                        alert("No numeric property exists for aggregate function "+$("#T_AssociatedFacetedSearchID").val() + " in entity.");
+                        $("#T_AggregatePropertyName").val('');
+                        $("#dvT_AggregatePropertyName").hide('');
+                    }
+                    else{$("#" + "T_AggregatePropertyName").html(optionDOM);}
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
+        }else{$("#T_AggregatePropertyName").val('');}
+    }
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+
+

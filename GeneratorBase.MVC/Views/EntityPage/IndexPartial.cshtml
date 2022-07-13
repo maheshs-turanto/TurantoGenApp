@@ -1,0 +1,146 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.EntityPage>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "EntityPage");
+}
+<div id="EntityPage">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+        th.col1{
+            width:10%;
+        }
+        th.col2{
+            width:50%;
+        }
+         th.col3{
+            width:20%;
+            text-align:center;
+        }
+          th.col4{
+            width:20%;
+            text-align:center;
+        }
+    </style>
+    <div style="clear:both"></div>
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-hover default-bordered default-condensed">
+            <thead>
+                <tr>
+                    <th scope="col" class="col1" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("EntityPage", "EntityName"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "EntityName");
+                        <th scope="col" class="col2">
+                            @SortPropertyName.DisplayName
+                        </th>
+                    }
+                    <th scope="col" class="col3" alt="Enable Data Cache" title="Enable Data Cache" data-sort-ignore="true">Enable Data Caching</th>
+                    <th scope="col" class="col4" alt="Disable" title="Disable" data-sort-ignore="true">Disable Help</th>
+                </tr>
+            </thead>
+            @foreach (var item in Model)
+            {
+               var itemmodel = ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName);
+                <tr scope="row">
+                    <td>
+                        <div>
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" class="btn dropdown-toggle btn-secondary">
+                                    Action
+                                </button>
+                                <ul class="dropdown-menu pull-left">
+                                    @if ((User.CanEdit("EntityPage")))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit", "EntityPage", new { UrlReferrer = BackUrl, Description = item.Description, HostingEntityName = item.EntityName, Id = item.Id, Disable = item.Disable }, null)" alt="Edit" title="Edit">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                                Edit
+                                            </a>
+                                        </li>
+                                        <li>
+
+                                            @if (item.Id != 0)
+                                            {
+                                                var enabledatachache = item.EnableDataCache;
+                                                if (enabledatachache.HasValue && enabledatachache.Value)
+                                                {
+                                                    <a class="dropdown-item" href="@Url.Action("EnableDisableEntityCaching", "EntityPage", new { id = item.Id, HostingEntityName = item.EntityName }, null)" alt="Enable Caching" title="Enable Caching"><i class="glyphicon glyphicon-circle-arrow-up"></i> Disable Caching</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" href="@Url.Action("EnableDisableEntityCaching", "EntityPage", new { id = item.Id, HostingEntityName = item.EntityName }, null)" alt="Disable Caching" title="Disable Caching"><i class="glyphicon glyphicon-circle-arrow-down"></i> Enable Caching</a>
+                                                }
+                                            }
+                                            @if (item.Id != 0)
+                                            {
+                                                var disable = item.Disable;
+                                                if (disable == false)
+                                                {
+                                                    <a class="dropdown-item" href="@Url.Action("EnableDisableEntity", "EntityPage", new { id = item.Id }, null)" alt="Enable" title="Enable"><i class="glyphicon glyphicon-circle-arrow-up"></i> Disable Help</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item" href="@Url.Action("EnableDisableEntity", "EntityPage", new { id = item.Id }, null)" alt="Disable" title="Disable"><i class="glyphicon glyphicon-circle-arrow-down"></i> Enable Help</a>
+                                                }
+                                            }
+
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("EntityPage"))
+                    {
+                        <td>
+                            @itemmodel.DisplayName
+                        </td>
+                        <td class="text-center">
+                            @{
+                        var isdiable1 = item.EnableDataCache.HasValue && item.EnableDataCache.Value;
+                        var chk1 = isdiable1 ? "checked" : "";
+                            }
+                            <input type="checkbox" disabled name="chk1_@item.EntityName" @chk1 id="chk1_@item.EntityName" class="tcheckbox1" />
+                            @if (itemmodel.Associations.Count() == 0)
+                            {
+                                <i class="fa fa-circle"></i>
+                            }
+                        </td>
+    <td class="text-center">
+        @{var isdiable = item.Disable;
+        var chk = isdiable == true ? "checked" : "";
+        }
+
+        <input type="checkbox" disabled name="chk_@item.EntityName" @chk id="chk_@item.EntityName" class="tcheckbox" />
+    </td>
+
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+</div>

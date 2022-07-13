@@ -1,0 +1,207 @@
+﻿@model T_MenuBarIndexViewModel
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+var BackUrl = Request.Url.PathAndQuery;
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+var viewbagname = Convert.ToString(Model.TemplatesName);
+var inlinegrid = Request.QueryString["inlinegrid"];
+var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_Roster");
+var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Roster";
+
+}
+<div id="T_MenuBar">
+<script type="text/javascript">
+    $(document).ready(function () {
+	 $(".pagination a").click(function (e) {
+            //PaginationClick(e,'T_MenuBar')
+			PaginationClick(e, 'T_MenuBar','@User.JavaScriptEncodedName')
+        })
+		 $("#SearchStringT_MenuBar").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_MenuBarSearch").bind("click", (function () {
+                        }));
+                $('#T_MenuBarSearch').trigger("click");
+                return false;
+			}
+        })
+		 $('.dropdown-toggle').dropdown();
+	});
+	 function opendetails(url)
+        {
+            window.location.href=url;
+        }
+</script>
+   @helper PropertyHelper(string prop)
+{
+    if (prop.ToString().Length >= 13 && !prop.ToString().Contains(" "))
+    {
+        @Html.Raw("<span class='propertycss'>" + Html.Raw(prop.ToString().Substring(0, 9) + "..") + "</span>")
+    }
+   else if (prop.ToString().Length >= 25)
+    {
+        @Html.Raw("<span>" + Html.Raw(prop.ToString().Substring(0, 22) + "...") + "</span>")
+    }
+    else
+    {
+        @Html.Raw("<span class='propertycss'>" + @prop + "</span>");
+    }
+}
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = Model.CurrentSort,
+                IsAsc = Model.IsAsc,
+                currentFilter = Model.currentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				search=Request.QueryString["search"],
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                IsAsc = (Model.IsAsc == "ASC" ? "DESC" : ""),
+                page = Model.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+		search=Request.QueryString["search"],
+            };
+        }
+    }
+}
+
+<div class="content-heading">
+        <div class="TitleName float-left"><strong><a href="@Url.Action("Index")">Menu Bar</a><small>List</small></strong></div>
+        <div style="position:absolute; font-size:22px; right:15px">
+          <a data-toggle="collapse" id="searchAT_MenuBar" data-parent="#searchIconT_MenuBar" href="#searchIconT_MenuBar" class="badge badgesearch pull-right"><i class="fa fa-search"></i></a>
+		
+
+        </div>
+    </div>
+	
+	<div id="searchIconT_MenuBar" class="panel-collapse collapse ">
+	<div class="input-group">
+			@Html.TextBox("SearchStringT_MenuBar", Model.currentFilter as string, null, new { @class = "search-control", @placeholder = "Search" })
+				<div class="input-group-append">
+					<a id="T_MenuBarSearch" onclick="SearchClick(event, 'T_MenuBar', '@Html.Raw(Url.Action("Index", "T_MenuBar", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" class="btn btn-search"><span class="fa fa-search"></span></a>
+					<button id="T_MenuBarCancel" type="button"  onclick="CancelSearch('T_MenuBar','@Html.Raw(Url.Action("Index", "T_MenuBar", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')"  class="btn btn-search">
+                      <span class="fa fa-remove"></span>
+                    </button>
+				</div>
+    </div>
+</div>
+		<div class="list-group">
+            @foreach (var item in Model.list)
+            {
+			List<string> hiddenProperties = new List<string>();
+if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(6)))
+{
+	hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_MenuBar");
+}
+bool isRecordReadOnly = false;
+									if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && (p.ActionTypeID.Contains(1) ||  p.ActionTypeID.Contains(11))))
+									{
+										isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "T_MenuBar" && (p.ActionTypeID.Contains(1) ||  p.ActionTypeID.Contains(11))).ToList(), "T_MenuBar");
+									}
+									if (ViewData["HostingEntity"] != null && !isRecordReadOnly)
+									{
+										isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+									}
+									if(!isRecordReadOnly)
+									{
+										isRecordReadOnly = !User.CanEditItemInHierarchy("T_MenuBar", item, User);
+									}
+			 <div class="list-group-item">
+				<table class="list-table" width="100%">
+				  <tr>
+	       <td valign="top" onclick="opendetails('@Url.Action("Details", "T_MenuBar", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)')">
+	   <h4>
+       @Html.DisplayFor(modelItem =>item.DisplayValue)
+       </h4>
+				@if(User.CanView("T_MenuBar","T_Roles"))
+			{
+				 <p>
+                    @Html.DisplayFor(modelItem =>item.T_Roles)
+                 </p>
+			}
+						@if(User.CanView("T_MenuBar","T_AutoNo"))
+             {
+			   					<span class="badgeListIdcount">
+                     Auto No.: @Html.DisplayFor(modelItem => item.T_AutoNo)
+					 </span>
+             }
+            			@if(User.CanView("T_MenuBar","T_Disabled"))
+             {
+			   					<span class="badgeListtype">
+                      Disabled?:@Html.ValueFor(modelItem => item.T_Disabled)
+					 </span>
+             }
+            				  </td>
+				    <td style="width:5%; vertical-align:central">
+                            <div class="dropdown no-arrow">
+                                <button type="button" class="btn dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" style="border:0px; background:transparent">
+                                    <i class="fa fa-ellipsis-v" style="font-size:30px; color:#c9c9c9"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu2">
+                                    <li>
+                                        <a class="dropdown-item" role="menuitem" tabindex="-1" href='@Url.Action("Details", "T_MenuBar", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)' ><i class="fa fa-eye"></i> View</a>
+                                    </li><div class="dropdown-divider"></div>
+                                    <li>
+                                        <a class="dropdown-item" role="menuitem" tabindex="-1" href='@Url.Action("Edit", "T_MenuBar", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)'> <i class="fa fa-edit"></i> Edit</a>
+                                    </li><div class="dropdown-divider"></div>
+                                    <li>
+                                        <a class="dropdown-item" role="menuitem" tabindex="-1" href='@Url.Action("Delete", "T_MenuBar", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)'> <i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                    </li>
+
+
+                      </ul>
+                            </div>
+                        </td>
+				 </tr>
+				</table>
+			</div>
+			}
+			 @if (Model.list.Count > 0)
+                {
+                    <div id="pagination" style="margin: -15px 0px -5px 5px;">
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_MenuBar", getSortHtmlAttributes(null, true, page, false)))
+                    </div>
+                }
+		</div>
+</div>
+<br/>
+<br/>
+
+ 
+@if (User.Identity.IsAuthenticated && User != null && User.CanAdd("T_MenuBar") && !(inlinegrid == "true" || inlinegrid == "True"))
+			  {
+			  				<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_MenuBarT_MenuBar",
+				new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType=ViewData["AssociatedType"],
+				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")
+				  class="btn pmd-btn-fab pmd-ripple-effect btn-primary pmd-btn-raised" role="button"  title="Add Menu Bar" ><span class="fa fa-plus"></span></a>
+			          }
+
+<a style="display:none;" data-placement="top" id="addT_MenuBar" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+EntityDisplayName+"','dvPopup','" + Url.Action("CreateQuick", "T_MenuBar", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = viewbagname }) + "')")" alt="Quick Add" title="Quick Add">
+        <i class="fa fa-plus-circle"></i> Quick Add
+    </a>
+
+   	
+
+
+

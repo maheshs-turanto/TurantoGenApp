@@ -1,0 +1,206 @@
+﻿@model GeneratorBase.MVC.Models.FooterSection
+@using PagedList;
+@{
+    ViewBag.Title = "View Footer Section ";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Footer Section ";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "FooterSection" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "FooterSection", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function() {
+                $(this).click();
+            });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("Index")">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("FooterSection"))
+                    {
+                        <a href="@Url.Action("Edit","FooterSection", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("FooterSection"))
+                    {
+                        <a href="@Url.Action("Delete", "FooterSection", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+   </div>
+</div>
+</div>
+	<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container card card-body">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+			<div class="row">
+
+	@if(User.CanView("CompanyInformation") && User.CanView("FooterSection","CompanyInformationFooterSectionAssociationID") && !hiddenProperties.Contains("CompanyInformationFooterSectionAssociationID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyInformationFooterSectionAssociation">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyInformationFooterSectionAssociationID)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		@if (@Model.CompanyInformationFooterSectionAssociationID == 0 || @Model.CompanyInformationFooterSectionAssociationID == null || @Model.companyinformationfootersectionassociation == null)
+		{
+	         <p id="lblCompanyInformationFooterSectionAssociationID" class="viewlabel"></p>
+        }
+        else
+        {
+		     <p id="lblCompanyInformationFooterSectionAssociationID" class="viewlabel" title="@Model.companyinformationfootersectionassociation.DisplayValue">@Model.companyinformationfootersectionassociation.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("FooterSection","Name")  && !hiddenProperties.Contains("Name") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+	<div class='form-group' title="@Model.Name">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.Name) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblName" class="viewlabel">@Model.Name</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("FooterSection","WebLinkTitle")  && !hiddenProperties.Contains("WebLinkTitle") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLinkTitle">
+	<div class='form-group' title="@Model.WebLinkTitle">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.WebLinkTitle) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblWebLinkTitle" class="viewlabel">@Model.WebLinkTitle</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("FooterSection","WebLink")  && !hiddenProperties.Contains("WebLink") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLink">
+	<div class='form-group' title="@Model.WebLink">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.WebLink) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblWebLink" class="viewlabel">@Model.WebLink</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("FooterSection","DocumentUpload") && User.CanView("Document") && !hiddenProperties.Contains("DocumentUpload"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentUpload">
+	<div class='form-group' title="Document Upload">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.DocumentUpload)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="text-primary">
+		@if(Model.DocumentUpload > 0)
+		{
+			<a href="@Url.Action("Download", "Document", new { id = Model.DocumentUpload })" id='@Html.Raw("adownloadDetailDocumentUpload"+Model.Id)'></a>
+			<script>
+				displayDocumentNameDetail('@Url.Action("GetDocumentName", "Document", new { id = Model.DocumentUpload})', '@Model.Id','DocumentUpload')
+            </script>
+	    }
+		else{<label>NA</label>}
+		</p>
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","FooterSection")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("FooterSection"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomFooterSection">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomFooterSection").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+	</div> <!-- /tab-content -->
+</div>
+</div>
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FooterSection','details',false,'Footer Section ')
+    });
+	</script>
+	
+ 

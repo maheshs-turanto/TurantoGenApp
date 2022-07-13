@@ -1,0 +1,78 @@
+﻿@{
+    var FromHome = "false";
+    //if (Convert.ToBoolean(Convert.ToString(View
+    //    FromHome = "false";
+    //}
+
+}
+
+        <div class="row mt-2" >
+            @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+            {
+
+                var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                var isgroupby = metricquery["GroupByColumn"];
+                if (!string.IsNullOrEmpty(isgroupby))
+                {
+                    Html.RenderPartial("~/Views/Shared/_CrosstabMetric.cshtml", item, new ViewDataDictionary { { "FromHome", FromHome } });
+                }
+
+            }
+        </div>
+
+
+        <div class="row">
+            @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.Metrics)
+            {
+
+                var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                var isgroupby = metricquery["GroupByColumn"];
+                if (string.IsNullOrEmpty(isgroupby))
+                {
+                    Html.RenderPartial("~/Views/Shared/_NumberMetric.cshtml", item, new ViewDataDictionary { { "FromHome", FromHome } });
+                }
+            }
+        </div>
+        <div class="row mt-4">
+            @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.MetricsHyperlink)
+            {
+
+                var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+
+                Html.RenderPartial("~/Views/Shared/_HyperlinkMetric.cshtml", item, new ViewDataDictionary { { "FromHome", FromHome } });
+            }
+        </div>
+
+        <div class="row" style="padding:8px!important;">
+
+            @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.GraphMetrics)
+            {
+
+                var metricquery = HttpUtility.ParseQueryString(item.t_associatedfacetedsearch.T_LinkAddress);
+                var isgroupby = metricquery["GroupByColumn"];
+                if (!string.IsNullOrEmpty(isgroupby))
+                {
+                    Html.RenderPartial("~/Views/Shared/_GraphMetric.cshtml", item, new ViewDataDictionary { { "FromHome", FromHome } });
+                }
+            }
+
+        </div>
+        @foreach (var item in (List<GeneratorBase.MVC.Models.T_DataMetric>)ViewBag.ListMetrics)
+        {
+
+            <div style="clear:both"></div>
+            <div class="content-heading">
+                <div class="TitleName"><strong><a href="@Html.Raw("../"+item.t_associatedfacetedsearch.T_LinkAddress)">@item.T_Name</a><small>List</small></strong></div>
+            </div>
+            <div class="card">
+                <div class="card-body" id="Metric_@item.Id">
+                    <div id="@item.T_EntityName"><label class="label-info">Loading...</label></div>
+                    <script>
+                        $(document).ready(function () {
+                            ListFromHome('@item.T_EntityName', '@Html.Raw("../"+item.t_associatedfacetedsearch.T_LinkAddress)', '@User.Name', 'Metric_@item.Id', '@Url.Content("~/Home/Dashboard")');
+                            @*ListFromHome('@item.T_EntityName', '@Html.Raw("../"+item.t_associatedfacetedsearch.T_LinkAddress)', '@User.Name', 'Metric_@item.Id', '@Request.Url.PathAndQuery');*@
+                        });
+                    </script>
+                </div>
+            </div>
+        }

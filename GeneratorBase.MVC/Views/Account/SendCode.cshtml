@@ -1,0 +1,46 @@
+@using Microsoft.AspNet.Identity
+@model GeneratorBase.MVC.Models.SendCodeViewModel
+@{
+    ViewBag.Title = "Send Verification Code";
+}
+<div class="content-heading">
+    <div>
+        <h2 class="card-header">@ViewBag.Title</h2>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        @using (Html.BeginForm("SendCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmSendCode" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.UserId)
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+                        <div class="">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                    <div class="card card-default">
+                                        <div class="card-body row">
+                                            <div class='col-sm-6 col-md-6 col-xs-6'>
+                                                <label class="col-sm-7 col-md-7 float-left col-xs-12">Two Factor Authentication Provider : </label>
+                                                <div class="input-group col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btn-default btn-sm" href="@Url.Action("Index","Home")" alt="Cancel" title="Cancel">Cancel</a>
+                    <input type="submit" value="Submit" class="btn btn-primary btn-sm" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

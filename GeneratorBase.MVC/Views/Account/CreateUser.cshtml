@@ -1,0 +1,258 @@
+﻿@model GeneratorBase.MVC.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Create User";
+    Layout = null;
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    bool AlwaysUseEmailAsUsername = commonObj.AlwaysUseEmailAsUsername();
+}
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+<style>
+    .multiselect-container {
+        height: 250px !important;
+    }
+</style>
+<script type="text/javascript">
+    function bindForm() {
+        var selectedRoles = "";
+        $('#ulRoleId input:checked').each(function () {
+            selectedRoles += $(this).attr('name') + ",";
+        });
+        var val = $("#TenantList").val();
+        if (val != undefined && val != '0')
+            $("#TenantId").val(val);
+
+        $.ajax({
+            url: '@Url.Action("RegisterUser", "Account")' + '?selectedRoles=' + selectedRoles,
+            data: $('#createForm').serialize(),
+            type: 'post',
+            success: function (data) {
+                if (data.success) {
+                    var url = '@Url.Action("Index", "Account")';
+                    if (data.UrlReferrer != undefined && data.UrlReferrer.length > 0)
+                        window.location.href = data.UrlReferrer;
+                    else
+                        window.location.href = url;
+                }
+                else {
+                    fillErrorList(data.status);
+                    //fillErrorList(data);
+                    showValidationErrors(true);
+                }
+            },
+            error: function (xhr, status) {
+                //Display error message
+            }
+        });
+        return false;
+    }
+    function showValidationErrors(isShown) {
+        if (isShown) {
+            $("#errorContainer").show();
+        } else {
+            $("#errorContainer").hide();
+        }
+    }
+    function fillErrorList(errors) {
+        $("#errors").html("");
+        //islah
+        if (errors.includes("SMTP Issue")) {
+            var list = document.createElement('ul');
+            var item = document.createElement('li');
+            item.appendChild(document.createTextNode(errors + ": User has been created but email not sent."));
+            list.appendChild(item);
+        }
+        else {
+            var list = document.createElement('ul');
+            //for (var i = 0; i < errors.length; i++) {
+            var item = document.createElement('li');
+            item.appendChild(document.createTextNode(errors));
+            list.appendChild(item);
+            //}
+        }
+        $("#errors").html(list);
+    }
+
+      $(document).ready(function () {
+
+       // debugger;
+          $("#Password").keyup(function () {
+           // alert($(this).val());
+            $(".pwd-restrictions li").css("color", "black");
+            $.ajax({
+                url: '@Url.Action("CheckPasswordStrength", "Account")',
+                type: "GET",
+                //cache: false,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: false,
+                data: { strPassword: $("#Password").val() },
+
+                complete: function (data) {
+                   // debugger
+                },
+                success: function (data) {
+                    //alert("success");
+                    console.log(data);
+
+                    var result = data.Data;
+                    var htmlStr = '';
+
+                    $("#errors").html("");
+                    var list = document.createElement('ul');
+                    for (var index = 0; index < result.length; index++) {
+                        $("#errorContainer").hide();
+                        if (result[index].Value != "OK") {
+                           // debugger;
+                            
+                            //for (var i = 0; i < errors.length; i++) {
+                            var item = document.createElement('li');
+                            item.appendChild(document.createTextNode(result[index].Value));
+                            list.appendChild(item);
+
+                            $("#errors").html(list);
+                            $("#errorContainer").show();
+                        }
+                    }
+
+
+                },
+
+                error: function (jqXHR, textStatus, errorThrown) {
+                   // debugger;
+                    //alert("jqXHR.status:" + jqXHR.status);
+                    alert("jqXHR.ResponseText:" + jqXHR.responseText);
+                    //alert("jqXHR.statusText:" + jqXHR.statusText);
+
+                }
+            });
+        });
+
+    });
+</script>
+@using (Html.BeginForm("RegisterUser", "Account", FormMethod.Post, new { id = "createForm", enctype = "multipart/form-data", @autocomplete = "off" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div id="errorContainer" class="alert alert-danger" style="display: none">
+        <div id="errors"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <p>To create a new user, enter the information in the form below.</p>
+            <div class="card-deck">
+                @if (AlwaysUseEmailAsUsername)
+                {
+                    <div class="form-group col-md-12 col-sm-12 col-xs-12" style="display:none;" id="dvUserName">
+                        <label>Username</label>
+                        @Html.TextBoxFor(m => m.UserName, new { @autocomplete = "off", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                        <label>Email Address (UserName)</label>
+                        @Html.TextBoxFor(m => m.Email, new { onblur = "$('#UserName',$('#dvUserName')).val($(this).val());", @class = "form-control" })
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                        <label>Username</label>
+                        @Html.TextBoxFor(m => m.UserName, new { @autocomplete = "off", @class = "form-control" })
+                    </div>
+                }
+                <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                    @Html.CheckBoxFor(m => m.NotifyForEmail)
+                    @Html.LabelFor(m => m.NotifyForEmail)
+                </div>
+                <div id="dvPassword" class="form-group col-md-6 col-sm-6 col-xs-6">
+                    <label>Password</label>
+                    @Html.PasswordFor(m => m.Password, new { @autocomplete = "off", @class = "form-control" })
+                </div>
+                <div id="dvConfirmPassword" class="form-group col-md-6 col-sm-6 col-xs-6">
+                    <label>Confirm Password</label>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @autocomplete = "off", @class = "form-control" })
+                </div>
+                <div class="form-group col-md-6 col-sm-6 col-xs-6">
+                    <label>First Name</label>
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                </div>
+                <div class="form-group col-md-6 col-sm-6 col-xs-6">
+                    <label>Last Name</label>
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                </div>
+                @if (!AlwaysUseEmailAsUsername)
+                {
+                    <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                        <label>Email Address</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    </div>
+                }
+                <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                    <label>Phone Number</label>
+                    @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                </div>
+                @Html.Partial("~/Views/Account/ApplicationUserExtra.cshtml", Model, new ViewDataDictionary { { "view", "CreateUser" } })
+
+
+                @if (ViewBag.TenantList != null)
+                {
+                    <div class='form-group col-md-12 col-sm-12 col-xs-12'>
+                        <label>Select Tenant(s)</label>
+                        @Html.DropDownList("TenantList", null, null, new { @multiple = "multiple", })
+                    </div>
+                }
+                <div class="form-group col-md-12 col-sm-12 col-xs-12">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                    @if (User.CanAddAdminFeature("User"))
+                    {
+                        <input type="submit" value="Create" onclick="return bindForm();" class="btn btn-primary" />
+                    }
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-6">
+            <h4 class="dark-grey" style="margin-top:0px;">Assign Roles</h4>
+            <p>To <strong>assign roles</strong> to the user, Switch on corresponding to the new user.</p>
+            <ul id="ulRoleId" class="list-group" style="height:200px; overflow-y:auto;">
+                @foreach (var role in ViewBag.RoleList)
+                {
+                    <li class="list-group-item" style="border-top: 1px solid #c3ddec !important;">
+                        &nbsp; @role.Name | @role.RoleType
+                        <div class="material-switch pull-left">
+                            <input id="@role.Name" name="@role.Name" type="checkbox" />
+                            <label for="someSwitchOptionSuccess2" class="label-success"></label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    @Html.Hidden("UrlReferrer", ViewData["UrlReferrer"])
+    @Html.Hidden("TenantId", ViewData["TenantId"])
+}
+<script src="~/Scripts/Common3/jquery.maskedinput.js" type="text/javascript"></script>
+<script type='text/javascript'>$(document).ready(function () { $('#PhoneNumber').mask('999-999-9999'); });</script>
+<script>
+    $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'None'
+            });
+        });
+    });
+
+    $("#NotifyForEmail").click(function () {
+        var checked = $(this).prop("checked");
+        if (checked) {
+            $("#Password").val("");
+            $("#ConfirmPassword").val("");
+            $("#dvPassword").hide();
+            $("#dvConfirmPassword").hide();
+        }
+        else {
+            $("#dvPassword").show();
+            $("#dvConfirmPassword").show();
+        }
+    });
+</script>

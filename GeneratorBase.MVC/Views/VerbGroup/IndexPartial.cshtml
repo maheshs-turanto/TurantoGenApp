@@ -1,0 +1,776 @@
+﻿@model VerbGroupIndexViewModel
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+        if (!string.IsNullOrEmpty(Request.QueryString["backurlhome"]))
+        {
+            BackUrl = Request.QueryString["backurlhome"];
+        }
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbGroup");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Verb Group";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("VerbGroup");
+    var viewbagname = Convert.ToString(Model.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+    var nonbridgecontrol = true;
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.VerbGroupRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+
+<div id="VerbGroup">
+    @if (RecycleView)
+    {
+        <center><span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span></center>
+    }
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var divId = $("#dvGroup" + "@ViewData["AssociatedType"]" + "Pivot");
+        var divIdlist = $("#dvGroup" + "@ViewData["AssociatedType"]" + "PivotList");
+        if (divId != undefined) {
+            divId.show();
+        }
+        if (divIdlist != undefined)
+            divIdlist.hide();
+	if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+            $("#VerbGroupGridHeader").addClass('collapse in');
+             if ($("#dropdownMenuButtonMatrix") != undefined)
+            $("#dropdownMenuButtonMatrix").hide()
+    }
+
+
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'VerbGroup','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchVerbGroup").addClass('show');
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'VerbGroup');
+        }
+	    $("#SearchStringVerbGroup").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#VerbGroupSearch").bind("click", (function () {
+                        }));
+                $('#VerbGroupSearch').trigger("click");
+                return false;
+			}
+        })
+        var usrName = "@User.JavaScriptEncodedName";
+		var myCookie = usrName + "VerbGroup" + "@ViewData["AssociatedType"]";
+		if ($.cookie(myCookie) != null) {
+			$("#btnShowHideVerbGroup").click();
+            $("#dvShowHideVerbGroup").hide();
+		}
+		if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+              $(".float-left.actionbar").hide();
+			  if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+		        $(".inlinegridoption").hide();
+                divId.remove();
+                divIdlist.remove();
+
+		    }
+		}
+    });
+	$("input[datatype='Double']").addClass("pull-right text-right");
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = Model.CurrentSort,
+                    IsAsc = Model.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = Model.currentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+                    userdefinedverbgroupuigroupassociation = Request.QueryString["userdefinedverbgroupuigroupassociation"],
+                    DisplayOrderFrom = Request.QueryString["DisplayOrderFrom"],
+                    DisplayOrderFromhdn = Request.QueryString["DisplayOrderFromhdn"],
+                    DisplayOrderTo = Request.QueryString["DisplayOrderTo"],
+                    DisplayOrderTohdn = Request.QueryString["DisplayOrderTohdn"],
+                    Flag1 = Request.QueryString["Flag1"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+
+                    ShowDeleted = ViewData["ShowDeleted"],
+                    IsdrivedTab = ViewData["IsdrivedTab"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    IsAsc = (Model.IsAsc == "ASC" ? "DESC" : ""),
+                    page = Model.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+                    userdefinedverbgroupuigroupassociation = Request.QueryString["userdefinedverbgroupuigroupassociation"],
+                    DisplayOrderFrom = Request.QueryString["DisplayOrderFrom"],
+                    DisplayOrderFromhdn = Request.QueryString["DisplayOrderFromhdn"],
+                    DisplayOrderTo = Request.QueryString["DisplayOrderTo"],
+                    DisplayOrderTohdn = Request.QueryString["DisplayOrderTohdn"],
+                    Flag1 = Request.QueryString["Flag1"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+                    ShowDeleted = ViewData["ShowDeleted"],
+                    IsdrivedTab = ViewData["IsdrivedTab"]
+
+                };
+            }
+        }
+    }
+    <div id="VerbGroupGridHeader" class="">
+        @if (Model.IsdrivedTab == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="float-left actionbar">
+                    @if (User.CanAdd("VerbGroup"))
+                    {
+                        <a id="addInlineRowVerbGroup" style="display:none;"
+                           onclick="@Html.Raw("OpenInlineEntity(this,'VerbGroup','" + Url.Action("CreateInline", "VerbGroup", new {AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+                        </a>
+                        <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_VerbGroup'>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus-circle"></i> Add <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                    @if (User.CanAdd("VerbGroup"))
+                                    {
+                                        if (Model.IsDivRender == true)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Create", "VerbGroup", new { RenderPartial = true, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname ,}))')" alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "VerbGroup", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null) + "');") alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        if (Model.IsDivRender != true)
+                                        {
+                                            <a style='display:none;' data-placement="top" id="addVerbGroup" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+EntityDisplayName+"','dvPopup','" + Url.Action("CreateQuick", "VerbGroup", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = viewbagname }) + "')")" alt="Quick Add" title="Quick Add">
+                                            </a>
+                                        }
+
+
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+
+                    @if (Model.IsDivRender == null || Model.IsDivRender == false)
+                    {
+                        if (nonbridgecontrol && (((User.CanEdit("VerbGroup") && User.CanUseVerb("BulkUpdate", "VerbGroup", User)) || (User.CanDelete("VerbGroup") && User.CanUseVerb("BulkDelete", "VerbGroup", User)) || User.CanUseVerb("BulkDocumentDownload", "VerbGroup", User))))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanEdit("VerbGroup") && User.CanUseVerb("BulkUpdate", "VerbGroup", User))
+                                        {
+                                            <a class="dropdown-item" data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                               onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update "+EntityDisplayName+"','dvPopup','" + Url.Action("BulkUpdate", "VerbGroup", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','VerbGroup')")">
+                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                                Update
+                                            </a>
+                                        }
+
+                                        @if (User.CanDelete("VerbGroup") && User.CanUseVerb("BulkDelete", "VerbGroup", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'VerbGroup','Bulk Delete','@Url.Action("DeleteBulk", "VerbGroup")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                        @if (ViewBag.ExportDataTemplates != null)
+                                        {
+                                            foreach (var item in (List<GeneratorBase.MVC.Models.T_ExportDataConfiguration>)ViewBag.ExportDataTemplates)
+                                            {
+                                                <a class="dropdown-item" style="cursor:pointer;" data-original-title="@item.T_Name" data-target="#dvPopup" onclick="PerformBulkOperationExportData(this,'VerbGroup','@item.T_Name','@Url.Action("ExportDataNote", "VerbGroup", new { btnid = item.Id, Ids = "IDSLST", TS = DateTime.Now })',true);">
+                                                    <i class="fa fa-file-export" aria-hidden="true"></i> @item.T_Name
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+                    @if (Model.IsDivRender == null || Model.IsDivRender == false)
+                    {
+                        <div class="btn-group mb-1">
+                            <div class="dropdown">
+                                <div class="dropdown-menu multi-level" role="menu">
+                                    @if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+                                    {
+                                        <a class="dropdown-item" id="showAssociateBtn" data-placement="top" data-original-title="Associate Verb Group with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','"+EntityDisplayName+"','dvPopupBulkOperation','" + Url.Action("Index", "VerbGroup", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = viewbagname }) + "')")">
+                                            <i class="fa fa-plus-circle"></i> Bulk Associate
+                                        </a>
+                                        <script>
+                                            if ($("#HostingEntityDisplayValue").attr('id') == undefined)
+                                                $("#showAssociateBtn").hide();
+                                        </script>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            }
+
+
+        }
+        <div class="float-right" style="">
+            <div class="input-group">
+                @Html.TextBox("SearchStringVerbGroup", Model.currentFilter as string, null, new { @class = "form-control listsearchbox", @value = Model.HomeVal, @placeholder = "Search" })
+                <div class="input-group-btn">
+                    <a id="VerbGroupSearch" onclick="SearchClick(event, 'VerbGroup', '@Html.Raw(Url.Action("Index", "VerbGroup", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname,IsdrivedTab= ViewData["IsdrivedTab"] }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                    <a id="VerbGroupDeepSearch" onclick="SearchClick(event, 'VerbGroup', '@Html.Raw(Url.Action("Index", "VerbGroup", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = true, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString() ,viewtype = viewbagname,IsdrivedTab= ViewData["IsdrivedTab"]}))','@User.JavaScriptEncodedName');" data-original-title="Deep Search" class="btn btn-secondary tip-top" alt="Deep Search" title="Search deep"><span class="fa fa-search-plus"></span></a>
+                    <a id="VerbGroupCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('VerbGroup','@Html.Raw(Url.Action("Index", "VerbGroup", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname,IsdrivedTab= ViewData["IsdrivedTab"] }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                    <a id="VerbGroupSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('VerbGroup','@Html.Raw(Url.Action("Index", "VerbGroup", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(Model.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname,IsdrivedTab= ViewData["IsdrivedTab"]}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                        <span class="fa fa-sync-alt"></span>
+                    </a>
+                    <a id="VerbGroupRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('VerbGroup','@Html.Raw(Url.Action(ActionNameUrl, "VerbGroup", getSortHtmlAttributes(Model.CurrentSort, false,null, false)))','@User.Name')"></a>
+                </div>
+            </div>
+        </div>
+
+        <div style="clear:both"></div>
+
+
+    </div>
+    <div class="row">
+
+        <div class="col" style="width:200px; float:left; ">
+            @if (Model.SearchResult != "" && Model.IsdrivedTab == null)
+            {
+                <div id="fsearchVerbGroup" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                    <div class="col-sm-6">  @Html.Raw(Html.Encode(Model.SearchResult).Replace(Environment.NewLine, ""))</div>
+                    <div class="col-sm-6 text-right">
+                        @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            <a class="btn btn-primary btn-sm ExpandAllOpen">Expand All</a>
+                        }
+                        @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                        {
+                            <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "VerbGroup",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        <a href="@(Url.Action("SetFSearch", "VerbGroup")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                        @if (User.CanAdd("T_FacetedSearch"))
+                        {
+                            if (!string.IsNullOrEmpty(Model.FsearchId))
+                            {
+                                <a id='aBtnQuickEditT_FacetedSearch_@Convert.ToInt32(Model.FsearchId)' onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit FacetedSearch','dvPopup','" + Url.Action("EditQuick", "T_FacetedSearch", new
+																			{
+																				id = Convert.ToInt32(Model.FsearchId),
+																				 UrlReferrer = Html.Raw(Request.Url.PathAndQuery),
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                                                                                FsearchId=Model.FsearchId
+																			}) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Edit</a>
+                            }
+                            else
+                            {
+                                <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="VerbGroup",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "VerbGroup", getSortHtmlAttributes(null, true, page, false)),
+                        new PagedListRenderOptions
+                        {
+                            FunctionToTransformEachPageLink = (liTag, aTag) =>
+                            {
+                                aTag.Attributes.Add("class", "page-link");
+                                liTag.InnerHtml = aTag.ToString();
+                                return liTag;
+                            },
+                            LiElementClasses = new[] { "page-item" },
+                            UlElementClasses = new[] { "pagination pagination-sm" }
+                        })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistVerbGroup",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'VerbGroup','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "VerbGroup",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistVerbGroup"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            }
+            @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+            {
+                <script>
+                    $(document).ready(function () {
+                        $('.hideTr').slideUp(600);
+                        $('[data-toggle="toggle"]').click(function () {
+                            var tag = $(this).find("p").attr("id");
+                            if ($(this).parents().next(".hideTr").is(':visible')) {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideUp(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('+');
+                                $(this).css('background-color', 'white');
+                            }
+                            else {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideDown(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('-');
+                                $(this).css('background-color', '#c1eaff');
+                            }
+                        });
+                        $('.ExpandAllOpen').click(function () {
+                            var link = $(this);
+                            if (link.text() == "Expand All") {
+                                $('.hideTr').slideDown(600);
+                                link.text('Collapse All');
+                                $("[class^='plusminus_']").text('-');
+                            }
+                            else {
+                                $('.hideTr').slideUp(600);
+                                link.text('Expand All');
+                                $("[class^='plusminus_']").text('+');
+                            }
+
+                        });
+                    });
+                </script>
+            }
+
+            <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                <table class="table table-hover default-bordered default-condensed newlist">
+                    <thead id="theaderVerbGroup">
+                        <tr>
+                            @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("VerbGroup") && User.CanUseVerb("BulkUpdate", "VerbGroup", User)) || (User.CanDelete("VerbGroup") && User.CanUseVerb("BulkDelete", "VerbGroup", User))))
+                            {
+                                <th class="col0" style="width:30px" scope="col" data-sort-ignore="true">
+                                    <div style="width:10px">
+                                        <div class="CheckboxHeaderFix">
+                                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this,'VerbGroup');" />
+                                            @Html.Hidden("SelectedItems")
+                                            <div>
+                                                <div>
+                                </th>
+                            }
+                            else
+                            {
+                                <th class="col0" style="display:none">
+                                </th>
+                            }
+                            <th scope="col" class="col1" alt="Actions" title="Actions" data-sort-ignore="true">
+                                <div style="width: 65px;"><span class="ActionsHeaderFix">Actions </span></div>
+                            </th>
+
+                            @if (User.CanView("VerbGroup") && User.CanView("VerbGroup", "EntityInternalName"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "EntityInternalName");
+                                <th scope="col" class="col3">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("EntityInternalName", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "EntityInternalName")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "EntityInternalName")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+
+                            }
+                            @if (User.CanView("VerbGroup", "Name"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "Name");
+                                <th scope="col" class="col3">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("Name", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "Name")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "Name")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("VerbGroup", "GroupId"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "GroupId");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("GroupId", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "GroupId")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "GroupId")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("VerbGroup", "DisplayOrder"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "DisplayOrder");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("DisplayOrder", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "DisplayOrder")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "DisplayOrder")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("VerbGroup", "Flag1"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "Flag1");
+                                <th scope="col" class="col5">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("Flag1", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "Flag1")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "Flag1")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("VerbGroup", "Description"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "Description");
+                                <th scope="col" class="col6">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "VerbGroup", getSortHtmlAttributes("Description", false, null, false), new { @onclick = "SortLinkClick(event,'VerbGroup');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "Description")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "Description")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                        </tr>
+                        <tr id="trInlineVerbGroup" style="display:none; padding:0px!important">
+                            <th id="tdInlineVerbGroup" colspan="7" style="padding: 0px!important;">
+
+                            </th>
+                        </tr>
+                    </thead>
+                    @{
+                        var RowCounter = 0;
+                        var RowCounter1 = 0;
+                    }
+                    @{ bool isFirst = true; string oldKey = null; }
+                    @foreach (var item in Model.list)
+                    {
+                        List<string> hiddenProperties = new List<string>();
+                        if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && p.ActionTypeID.Contains(6)))
+                        {
+                            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "VerbGroup");
+                        }
+                        if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && p.ActionTypeID.Contains(12)))
+                        {
+                            hiddenProperties = item.ApplyHiddenGroupRule(User.businessrules, "VerbGroup");
+                        }
+                        bool isRecordReadOnly = false;
+                        if (User.businessrules.Any(p => p.EntityName == "VerbGroup" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))))
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "VerbGroup" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), "VerbGroup");
+                        }
+                        if (ViewData["HostingEntity"] != null && !isRecordReadOnly && ViewBag.HostingEntityIDData != null)
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+                        }
+                        if (!isRecordReadOnly)
+                        {
+                            isRecordReadOnly = !User.CanEditItemInHierarchy("VerbGroup", item, User);
+                        }
+                        if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            var groupKey = item.m_DisplayValue;
+                            if (oldKey != groupKey)
+                            {
+                                isFirst = true;
+                                oldKey = item.m_DisplayValue;
+                            }
+                            if (isFirst || oldKey == null)
+                            {
+                                isFirst = false;
+                                string groupString = string.Empty;
+
+                                <tr data-toggle="toggle">
+                                    <td colspan="7" style="background: #EDF5FA; font-weight:bold; cursor: pointer;">
+                                        <p id="@(++RowCounter)">
+                                            <b>
+                                                <span class="plusminus_@(++RowCounter1)">+</span>
+
+                                            </b> @groupKey @groupString
+
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        <tbody class="hideTr" tag="@RowCounter1">
+                            <tr scope="row">
+                                @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("VerbGroup") && User.CanUseVerb("BulkUpdate", "VerbGroup", User)) || (User.CanDelete("VerbGroup") && User.CanUseVerb("BulkDelete", "VerbGroup", User))))
+                                {
+                                    <td>
+                                        <div class="CheckboxrowFix">
+                                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id','VerbGroup');" autocomplete="off" />
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td style="display:none;">
+                                        <div class="CheckboxrowFix">
+                                            <input type="checkbox" id="@item.Id" autocomplete="off" />
+                                        </div>
+                                    </td>
+
+                                }
+                                <td class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                                    <div style="display:none;">
+                                        <div class="btn-group tdDoubleClickGroup">
+                                            <a onclick="SavePropertiesValue(this,'VerbGroup',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                                <i class="fa fa-save"></i>
+                                            </a>
+                                            <a onclick="$('#VerbGroupRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div id="DivbutEdit" class="DivbutEditFix" style="width: 65px;">
+                                        <div class="btn-group">
+                                            @if (User.CanEdit("VerbGroup"))
+                                            {
+                                                var editIconClass = isRecordReadOnly ? "fa fa-eye" : "fas fa-pencil-alt";
+                                                var edittitle = isRecordReadOnly ? "View" : "Edit";
+                                                if (Model.IsDivRender == true)
+                                                {
+                                                    <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "VerbGroup", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = Model.IsDivRender, viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  }, null))')" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("Edit","VerbGroup", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  },null)" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                                        <i class="@editIconClass"></i>
+                                                    </a>
+                                                }
+                                            }
+                                            @if (!User.CanEdit("VerbGroup"))
+                                            {
+                                                <a href="@Url.Action("Details", "VerbGroup", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            }
+                                            <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                                <span class="sr-only"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @if (User.CanEdit("VerbGroup") && isRecordReadOnly)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Edit","VerbGroup", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly },null)"><i class="fa fa-eye"></i>  View</a>
+                                                    </li>
+
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Details", "VerbGroup", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" alt="View" title="View"><i class="fa fa-eye"></i>  View</a>
+                                                    </li>
+                                                }
+                                                @if (User.CanEdit("VerbGroup") && !isRecordReadOnly)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Edit","VerbGroup", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname },null)"><i class="fa fa-edit"></i>  Edit</a>
+                                                    </li>
+
+                                                }
+                                                <div class="dropdown-divider"></div>
+                                                @if (nonbridgecontrol && User.CanDelete("VerbGroup") && !isRecordReadOnly)
+                                                {
+                                                    <li class="divider" style="clear:both"></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Delete", "VerbGroup", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                                @if (User.CanView("VerbGroup"))
+                                {
+
+                                    <td title="@item.EntityInternalName">
+                                        @Html.DisplayFor(modelItem => ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityInternalName).DisplayName)
+                                    </td>
+                                }
+                                @if (User.CanView("VerbGroup", "Name"))
+                                {
+
+                                    <td title="@item.Name">
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                }
+                                @if (User.CanView("VerbGroup", "GroupId"))
+                                {
+                                    if (item.GroupId == 1)
+                                    {
+                                        <td title="@item.GroupId">
+                                            Single
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td title="@item.GroupId">
+                                            Bulk
+                                        </td>
+                                    }
+                                }
+                                @if (User.CanView("VerbGroup", "DisplayOrder"))
+                                {
+
+                                    <td title="@item.DisplayOrder">
+
+                                        @Html.DisplayFor(modelItem => item.DisplayOrder)
+                                    </td>
+                                }
+                                @if (User.CanView("VerbGroup", "Flag1"))
+                                {
+
+                                    <td title="@item.Flag1">
+
+                                        @Html.ValueFor(modelItem => item.Flag1)
+                                    </td>
+                                }
+                                @if (User.CanView("VerbGroup", "Description"))
+                                {
+
+                                    <td title="@item.Description">
+
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "VerbGroup", getSortHtmlAttributes(null, true, page, false)),
+                          new PagedListRenderOptions
+                          {
+                              FunctionToTransformEachPageLink = (liTag, aTag) =>
+                              {
+                                  aTag.Attributes.Add("class", "page-link");
+                                  liTag.InnerHtml = aTag.ToString();
+                                  return liTag;
+                              },
+                              LiElementClasses = new[] { "page-item" },
+                              UlElementClasses = new[] { "pagination pagination-sm" }
+                          })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistVerbGroup",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'VerbGroup','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "VerbGroup",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistVerbGroup"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @Html.DropDownList("EntityVerbGroupDisplayValue", null, null, new { @Style = "display:none;" })
+</div>
+

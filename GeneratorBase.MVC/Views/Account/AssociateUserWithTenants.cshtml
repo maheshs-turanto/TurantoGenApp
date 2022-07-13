@@ -1,0 +1,85 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationUser
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index", "Admin")">Admin</a>
+            <small class="EntityDisplayName"><span> User - @Html.DisplayFor(model => model.UserName)  </span></small>
+        </strong>
+    </div>
+
+</div>
+<div class="card-sm-12">
+    <div class="card">
+
+        <div class="tab-content">
+
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @using (Html.BeginForm("AssociateUserWithTenants", "Account", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="">
+                                <div class="panel-body  AppForm">
+                                    <div class="form-horizontal">
+                                        @Html.ValidationSummary(true)
+
+                                        @Html.HiddenFor(model => model.Id)
+                                        @if (ViewBag.TenantList != null)
+                                        {
+                                            <div class='form-group col-md-12 col-sm-12 col-xs-12'>
+                                                <label>Select Tenant(s)</label>
+                                                @Html.DropDownList("TenantList", null, null, new { @multiple = "multiple", })
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                        @Html.ActionLink("Back to User List", "Index", "Account", null, new { @class = "btn btn-secondary" })
+
+                        
+                            <input type="submit" value="Save" style="cursor:pointer;" onclick="bindForm();" class="btn btn-primary" />
+                      
+                    </div>
+    @Html.Hidden("TenantId", ViewData["TenantId"])
+                }
+            </div>
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var resHideColumns = '@ViewBag.SelectedTenantList'.split(",");
+        var eleHideColumns = document.getElementById("TenantList");
+        for (i = 0; i < resHideColumns.length; i++) {
+            for (var o = 0; o < eleHideColumns.options.length; o++) {
+                if (eleHideColumns.options[o].value == resHideColumns[i])
+                    eleHideColumns.options[o].selected = true;
+            }
+        }
+
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'None'
+            });
+        });
+    });
+
+    function bindForm() {
+       
+        var val = $("#TenantList").val();
+        if (val != undefined && val != '0')
+            $("#TenantId").val(val);
+        return true;
+    }
+</script>
+

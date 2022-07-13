@@ -1,0 +1,54 @@
+@using Microsoft.AspNet.Identity
+@model GeneratorBase.MVC.Models.VerifyCodeViewModel
+@{
+    ViewBag.Title = "Enter Verification Code";
+}
+<div class="content-heading">
+    <div>
+        <h2 class="card-header">@ViewBag.Title</h2>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        @using (Html.BeginForm("VerifyCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmVerifyCode", @autocomplete = "off" }))
+        {
+            @Html.AntiForgeryToken()
+            Html.ValidationSummary(true);
+            Html.EnableClientValidation();
+            @Html.HiddenFor(model => model.UserId)
+            @Html.Hidden("provider", @Model.Provider)
+            <h4>@ViewBag.Status</h4>
+            <div class="row">
+                @ViewBag.errorMessage
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+                        <div class="">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                    <div class="card card-default">
+                                        <div class="card-body row">
+                                            <div class='col-sm-4 col-md-4 col-xs-4'>
+                                                <label class="col-sm-12 col-md-12 float-left col-xs-12">@Html.LabelFor(m => m.Code) <span class="text-danger-reg">*</span></label>
+                                                <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                                    @Html.TextBoxFor(m => m.Code, new { @class = "form-control", @maxlength = "6" })
+                                                   
+                                                </div>
+                                                @Html.ValidationMessageFor(m => m.Code)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btn-default btn-sm" href="@Url.Action("Index","Home")" alt="Cancel" title="Cancel">Cancel</a>
+
+                    <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

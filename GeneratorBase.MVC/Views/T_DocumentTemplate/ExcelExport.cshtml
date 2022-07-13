@@ -1,0 +1,193 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_DocumentTemplate>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"Document Template.xls\"");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_DocumentTemplate","T_AutoNo"))
+{
+		<th>Auto No.</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_Name"))
+{
+		<th>Name</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_DocumentType"))
+{
+		<th>Document Type</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_ActionType"))
+{
+		<th>Action Type</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_DefaultOutputFormat"))
+{
+		<th>Default Output Format</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_AllowedRoles"))
+{
+		<th>Allowed Roles</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_AttachDocumentTo"))
+{
+		<th>Attach Document  To</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_DisplayType"))
+{
+		<th>Display Type</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_DisplayOrder"))
+{
+		<th>Display Order</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_ToolTip"))
+{
+		<th>ToolTip</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_BackGroundColor"))
+{
+		<th>Background Color</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_FontColor"))
+{
+		<th>Font Color</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_Disable"))
+{
+		<th>Disable?</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_RecordAdded"))
+{
+		<th>Record On</th>
+}
+@if(User.CanView("T_DocumentTemplate","T_RecordAddedUser"))
+{
+		<th>Record On</th>
+}
+    </tr>
+@foreach (var item in Model) {
+List<string> hiddenProperties = new List<string>();
+if (User.businessrules.Any(p => p.EntityName == "T_DocumentTemplate" && p.ActionTypeID.Contains(6)))
+{
+	hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_DocumentTemplate");
+}
+    <tr>
+	@if(User.CanView("T_DocumentTemplate","T_AutoNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_AutoNo)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EntityName)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_Name"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Name)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Description)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_DocumentType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_DocumentType)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_ActionType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_ActionType)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_DefaultOutputFormat"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_DefaultOutputFormat)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_AllowedRoles"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_AllowedRoles)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_AttachDocumentTo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_AttachDocumentTo)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_DisplayType"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_DisplayType)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_DisplayOrder"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_DisplayOrder)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_ToolTip"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_ToolTip)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_BackGroundColor"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_BackGroundColor)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_FontColor"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_FontColor)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_Disable"))
+{
+		<td>
+            @item.T_Disable
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_RecordAdded"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_RecordAdded)
+        </td>
+}
+@if(User.CanView("T_DocumentTemplate","T_RecordAddedUser"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_RecordAddedUser)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               
+			   

@@ -1,0 +1,23 @@
+﻿@model T_ExportDataConfigurationIndexViewModel
+@{
+    ViewBag.Title = "Export Data Configuration List";
+}
+<div id="dvT_ExportDataConfigurationFilter"></div>
+@{Html.RenderAction("Index", "T_ExportDataConfiguration", new {RenderPartial=true});} 
+
+<a style="display:none;" href="@Url.Action("SwitchView", "Account", new { mobile = false, returnUrl = Request.Url.PathAndQuery })" id="ShowPCView">
+    <span class="glyphicon glyphicon-globe" style="color:white;"></span> D<span class="icon"></span>
+</a>
+<script>
+    window.onresize = function (event) {
+        if (SetWidthHeight() != undefined)
+            SetWidthHeight()
+    }
+</script>
+<script>
+    function SetWidthHeight() {
+        if ($(window).width() > 767) {
+            $("#ShowPCView")[0].click();
+        }
+    }
+</script>

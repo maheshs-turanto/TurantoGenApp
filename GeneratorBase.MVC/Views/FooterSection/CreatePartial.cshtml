@@ -1,0 +1,381 @@
+﻿@model GeneratorBase.MVC.Models.FooterSection
+@{
+    ViewBag.Title = "Create Footer Section ";
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection").Properties;
+    var NonViewableProperties = User.CanNotView("FooterSection");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "FooterSection", User);
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=wizard";
+    }
+}
+@{
+
+    if (ViewBag.IsPartial == true)
+    {
+        <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+    }
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 20px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "FooterSection", new { UrlReferrer = Convert.ToString(ViewData["FooterSectionParentUrl"]), IsDDAdd = ViewBag.IsDDAdd, viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmFooterSection" }))
+{
+    @Html.AntiForgeryToken();
+                                if (!string.IsNullOrEmpty(wizardid))
+                                { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+                                else { Html.ValidationSummary(true); }
+                                Html.EnableClientValidation();
+                                <input type="hidden" id="ErrMsg" />
+                                <div id="errorContainer" style="display: none">
+                                    <div id="errorsMsg"></div>
+                                    <div id="errors"></div>
+                                </div>
+                                @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+                                        <div class="AppForm" @wizardid>
+                                            @if (!string.IsNullOrEmpty(wizardid))
+                                            {
+                                                <ol id="olwizard" class="bwizard-steps clearfix clickable" role="tablist">
+                                                    <li role="tab" class="step-number" id="liGroupFooterSectionOther" onclick="bwizard_SaveOnClick(event);">
+                                                        <div></div><a class="hidden-phone">Other</a>
+                                                    </li>
+                                                </ol>
+                                                <script>
+                                                    $(document).ready(function(){
+                                                        $(".formbuttonfix").hide();
+                                                        $(".pager").show();
+                                                        $(".pager.bwizard-buttons").show();
+                                                        $(".hidetools").hide();
+                                                    });
+                                                </script>
+                                                @Html.Hidden("wizardstep")
+                                            }
+                                            <div class="">
+                                                <div class="row bgwizard" id="wzGroupFooterSectionOther">
+
+                                                    @if (User.CanView("FooterSection", "CompanyInformationFooterSectionAssociationID"))
+                                                    {
+                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyInformationFooterSectionAssociationID">
+                                                            <div class='form-group'>
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyInformationFooterSectionAssociationID) </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                    <div class="input-group" style="width:100%;">
+
+                                                                        @Html.DropDownList("CompanyInformationFooterSectionAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "CompanyInformation", @dataurl = Url.Action("GetAllValue", "CompanyInformation", new { caller = "CompanyInformationFooterSectionAssociationID" }) })
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.CompanyInformationFooterSectionAssociationID)
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("FooterSection", "Name"))
+                                                    {
+                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+                                                            <div class='form-group' title="@Html.DisplayNameFor(model => model.Name)">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.Name)
+                                                        </div>
+                                                    }
+                                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvAssociatedFooterSectionTypeID">
+                                                        <div class='form-group'>
+                                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.AssociatedFooterSectionTypeID) <span class="text-danger-reg">*</span></label>
+                                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                <div class="input-group" style="width:100%;">
+                                                                    @Html.DropDownList("AssociatedFooterSectionTypeID", null,null, new { @required = "required", @class = "form-control", @HostingName = "FooterSectiontype"})
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @Html.ValidationMessageFor(model => model.AssociatedFooterSectionTypeID, "The Document Display field is required.")
+                                                    </div>
+                                                    @if (User.CanView("FooterSection", "WebLinkTitle"))
+                                                    {
+                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLinkTitle">
+                                                            <div class='form-group' title="@Html.DisplayNameFor(model => model.WebLinkTitle)">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.WebLinkTitle) </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                                    @Html.TextBoxFor(model => model.WebLinkTitle, new { @class = "form-control" })
+
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.WebLinkTitle)
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("FooterSection", "WebLink"))
+                                                    {
+                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvWebLink">
+                                                            <div class='form-group' title="@Html.DisplayNameFor(model => model.WebLink)">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.WebLink) </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                                    @Html.TextBoxFor(model => model.WebLink, new { @class = "form-control" })
+
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.WebLink)
+                                                        </div>
+                                                    }
+                                                    @if (User.CanAdd("Document"))
+                                                    {
+                                                        if (User.CanView("FooterSection", "DocumentUpload") && User.CanView("Document"))
+                                                        {
+                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentUpload">
+                                                                <div class='form-group' title="@Html.DisplayNameFor(model => model.DocumentUpload)">
+                                                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.DocumentUpload) </label>
+                                                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                        <div style="position:relative;">
+                                                                            <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                                Upload File
+                                                                                <input id="DocumentUpload" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="DocumentUpload" onchange='$("#upload-file-infoDocumentUpload").html($(this).val());'>
+                                                                            </a>
+                                                                            &nbsp;
+                                                                            <span class='label uploadlblFix' id="upload-file-infoDocumentUpload"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divDisplayThresholdLimit1">
+                                </div>
+                                <div id="divDisplayBRmsgMandatory1">
+                                </div>
+                                <div id="divDisplayBRmsgBeforeSaveProp1">
+                                </div>
+                                <div id="divDisplayCodeFragment1">
+                                </div>
+                                <div class="@footerclassdiv1">
+                                    <div class="@footerclassdiv2">
+                                        @if (ViewBag.IsPartial == null)
+                                        {
+                                            <a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","FooterSection")');" alt="Cancel" title="Cancel">Cancel</a>
+                                        }
+                                        @if (ViewBag.IsPartial == null)
+                                        {
+                                            <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create" />
+                                        }
+                                        @if (ViewBag.IsPartial == null)
+                                        {
+                                            if (ViewBag.IsDDAdd == null && User.CanEdit("FooterSection"))
+                                            {
+                                                <input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue" />
+                                                <input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+                                            }
+                                        }
+                                        <input type="hidden" name="hdncommand" value="" />
+                                    </div>
+                                </div>
+                                <br /><br />
+}
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "FooterSection").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmFooterSection");
+                dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "FooterSection", false, "ErrMsg", form);
+
+            });
+        </script>
+
+
+        <script>
+            $("form").submit(function (event) {
+                //if (!$("#frmFooterSection").valid()) return;
+                var flag = true;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+                form = $("#frmFooterSection").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "FooterSection", false, "ErrMsg", form,"@typelist");
+                //business rules on inline associations
+                if (flag) {
+                    $('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+                    $("#frmFooterSection").find(':input').removeAttr('disabled');
+                }
+                else
+                    $("html, body").animate({ scrollTop: 0 }, "fast");
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmFooterSection").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            focusOnControl('frmFooterSection');
+        }
+        catch (ex) { }
+        ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FooterSection','create',false,'Footer Section ')
+        //instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'FooterSection','create',false,'Footer Section ')
+        var arrgroup = '@lstHiddenGroupFLS'.split(',');
+        $.each( arrgroup, function( index, value ){
+            $("#"+value).hide();
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+

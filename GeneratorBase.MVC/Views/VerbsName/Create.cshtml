@@ -1,0 +1,42 @@
+﻿@model GeneratorBase.MVC.Models.VerbsName
+@{
+    ViewBag.Title = "Create Verbs Name";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbsName");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Verbs Name";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+
+<div class="content-heading">
+@{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+    <strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="VerbsName"})">@EntityDisplayName</a><small>Create - Add @EntityDisplayName @hostingValue @Html.DisplayFor(model => model.DisplayValue)</small></strong>
+   
+    <div class="ml-auto hidetools">
+			 
+			             
+
+
+@if (ViewBag.IsPartial == null)
+{
+			<a class="btn btn-secondary btn-sm"  data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "VerbsName") + "');") alt="Search" title="List">
+				<i class="fa fa-list"></i> List
+			</a>
+}
+	
+        
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+
+
+@Html.Partial("~/Views/VerbsName/CreatePartial.cshtml", Model)
+
+     

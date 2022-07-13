@@ -1,0 +1,37 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.Document>
+@{
+    ViewBag.Title = "Document List";
+	
+	string templatename = ("~/Views/Document/" + "IndexPartial" + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "Document");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
+}
+@*<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title" >
+            <i class="glyphicon glyphicon-thumbs-up text-primary" style="margin-bottom:-20px;"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i>  <span>List</span>
+</h1>
+    </div>
+</div>*@
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="Document"})">@EntityDisplayName</a><small>List</small></strong></div>
+</div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+        $('.edit').find('input[type=text]').hover(function () {
+            $(this).attr("title", $(this).val());
+
+        });
+    });
+</script>
+
+<div class="card">
+    <div class="card-body">
+        <div id="dvDocumentFilter"></div>@Html.Partial(templatename, Model)
+    </div>
+</div>
+
+@*<div id="dvDocumentFilter"></div>
+@Html.Partial(templatename, Model)*@
+

@@ -1,0 +1,806 @@
+﻿@model T_ExportDataLogIndexViewModel
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+	var BackUrl =  Request.Url.PathAndQuery;
+	if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+	{
+		BackUrl =  Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+	}
+	if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+        if (!string.IsNullOrEmpty(Request.QueryString["backurlhome"]))
+        { 
+			BackUrl = Request.QueryString["backurlhome"];
+        }
+    }
+    var MatrixAsoocation = Request.QueryString["MatrixAsoocation"];
+	var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+	var EntityReflectorProperties = EntityReflector.Properties;
+	var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+	var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Export Data Log";
+	var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_ExportDataLog");
+	var viewbagname = Convert.ToString(Model.TemplatesName);
+	var inlinegrid = Request.QueryString["inlinegrid"];
+	var nonbridgecontrol = true;
+	
+}
+@{
+        if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogRestrictDropdownValueRuleInLIneEdit))
+        {
+            @Html.Raw(ViewBag.T_ExportDataLogRestrictDropdownValueRuleInLIneEdit);
+        }
+    }
+
+<div id="T_ExportDataLog">
+	@if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    } @if (MatrixAsoocation == "T_AssociatedExportDataLogStatus")
+    {
+        <script>
+    $(document).ready(function () {
+        var divId = $("#dvGroup" + "@ViewData["AssociatedType"]" + "Pivot");
+        var divIdlist = $("#dvGroup" + "@ViewData["AssociatedType"]" + "PivotList");
+        if (divId != undefined) {
+            divId.hide();
+        }
+        if (divIdlist != undefined)
+            divIdlist.show();
+    });
+        </script>
+    }
+<script type="text/javascript">
+    $(document).ready(function () {
+
+	if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+            $("#T_ExportDataLogGridHeader").addClass('collapse in');
+    }
+
+	
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'T_ExportDataLog','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_ExportDataLog").addClass('show');
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_ExportDataLog');
+        }
+	    $("#SearchStringT_ExportDataLog").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_ExportDataLogSearch").bind("click", (function () {
+                        }));
+                $('#T_ExportDataLogSearch').trigger("click");
+                return false;
+			}
+        })
+                //$("#btnShowHideT_ExportDataLog").mouseup(function () {
+        //    if (document.getElementById('ColumnShowHideT_ExportDataLog').className == 'collapse') {
+        //        $('#lblT_ExportDataLog').css('display', 'none');
+        //    }
+        //})
+        var usrName = "@User.JavaScriptEncodedName";
+		var myCookie = usrName + "T_ExportDataLog" + "@ViewData["AssociatedType"]";
+		if ($.cookie(myCookie) != null) {
+			$("#btnShowHideT_ExportDataLog").click();
+            $("#dvShowHideT_ExportDataLog").hide();
+		}
+
+		if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+              $(".float-left.actionbar").hide();
+			  if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+		        $(".inlinegridoption").hide();
+		    }
+		}
+    });
+	$("input[datatype='Double']").addClass("pull-right text-right");
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = Model.CurrentSort,
+                IsAsc = Model.IsAsc,
+				searchString = Request.QueryString["searchString"],
+				 inlinegrid = Request.QueryString["inlinegrid"],
+                currentFilter = Model.currentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                HostingEntityID = ViewData["HostingEntityID"],
+				IsExport = IsExport,
+				ExportType = ExportType,
+				FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+				 IsDivRender = Model.IsDivRender,
+                
+t_exportdataconfigurationexportdatalogassociation = Request.QueryString["t_exportdataconfigurationexportdatalogassociation"],
+t_associatedexportdatalogstatus = Request.QueryString["t_associatedexportdatalogstatus"],
+  T_AutoNoFrom = Request.QueryString["T_AutoNoFrom"],
+  T_AutoNoFromhdn = Request.QueryString["T_AutoNoFromhdn"],
+  T_AutoNoTo = Request.QueryString["T_AutoNoTo"],
+  T_AutoNoTohdn = Request.QueryString["T_AutoNoTohdn"],
+				search=Request.QueryString["search"],
+				SortOrder = Request.QueryString["SortOrder"],
+				viewtype = "PivotMatrix",
+				HideColumns = ViewData["HideColumns"],
+				 GroupByColumn = Model.GroupByColumn,
+				 FilterCondition = Model.FilterCondition,
+			 MatrixAsoocation = Request.QueryString["MatrixAsoocation"],
+				 ShowDeleted = ViewData["ShowDeleted"]
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+				 inlinegrid = Request.QueryString["inlinegrid"],
+                searchString = Request.QueryString["searchString"],
+                IsAsc = (Model.IsAsc == "ASC" ? "DESC" : ""),
+                page = Model.Pages,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+				IsExport = IsExport,
+				ExportType = ExportType,
+				FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+				IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+				IsDivRender = Model.IsDivRender,
+ t_exportdataconfigurationexportdatalogassociation = Request.QueryString["t_exportdataconfigurationexportdatalogassociation"],
+ t_associatedexportdatalogstatus = Request.QueryString["t_associatedexportdatalogstatus"],
+  T_AutoNoFrom = Request.QueryString["T_AutoNoFrom"],
+  T_AutoNoFromhdn = Request.QueryString["T_AutoNoFromhdn"],
+  T_AutoNoTo = Request.QueryString["T_AutoNoTo"],
+  T_AutoNoTohdn = Request.QueryString["T_AutoNoTohdn"],
+		search=Request.QueryString["search"],
+		SortOrder = Request.QueryString["SortOrder"],
+		viewtype = "PivotMatrix",
+		HideColumns = ViewData["HideColumns"],
+		 GroupByColumn = Model.GroupByColumn,
+		 FilterCondition = Model.FilterCondition,
+		          MatrixAsoocation = Request.QueryString["MatrixAsoocation"],
+		 ShowDeleted = ViewData["ShowDeleted"]
+            };
+        }
+    }
+}
+   <div id="T_ExportDataLogGridHeader" class="">
+@if (ViewData["IsdrivedTab"]==null)
+{
+	    if (!RecycleView)
+        { 
+            <div class="float-left actionbar">
+			@if (User.CanAdd("T_ExportDataLog"))
+			{
+			<a id="addInlineRowT_ExportDataLog" style="display:none;"
+			 onclick="@Html.Raw("OpenInlineEntity(this,'T_ExportDataLog','" + Url.Action("CreateInline", "T_ExportDataLog", new {MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+			</a>
+                 <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_T_ExportDataLog'>
+				 <div class="dropdown">
+				  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				  <i class="fa fa-plus-circle"></i> Add <span class="caret"></span>
+				  </button>
+                      <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+					 @if (User.CanAdd("T_ExportDataLog"))
+					 {
+				if (Model.IsDivRender != true)
+			{
+					<a style='display:none;'  data-placement="top" id="addT_ExportDataLog" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+EntityDisplayName+"','dvPopup','" + Url.Action("CreateQuick", "T_ExportDataLog", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = viewbagname }) + "')")" alt="Quick Add" title="Quick Add">
+                    </a>
+			}
+	
+
+}		
+  </ul>
+ </div>
+</div>
+	  }
+	  
+                   
+	@if (Model.IsDivRender == null || Model.IsDivRender == false)
+	{
+if (nonbridgecontrol && (((User.CanEdit("T_ExportDataLog") && User.CanUseVerb("BulkUpdate", "T_ExportDataLog", User)) || (User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete", "T_ExportDataLog", User)) || User.CanUseVerb("BulkDocumentDownload", "T_ExportDataLog", User) || User.CanUseVerb("T_RestoreData","T_ExportDataLog",User) || User.CanUseVerb("T_PurgeData","T_ExportDataLog",User))))
+{
+<div class="btn-group mb-1">
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+           <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+     </button>
+        <div class="dropdown-menu" role="menu">
+			 @if (User.CanUseVerb("T_RestoreData","T_ExportDataLog",User) && User.CanEdit("T_ExportDataLog"))
+     {
+		<a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Restore Data','@Url.Action("T_RestoreData", "T_ExportDataLog")');">Restore Data </a>
+	 } 
+	 @if (User.CanUseVerb("T_PurgeData","T_ExportDataLog",User) && User.CanEdit("T_ExportDataLog"))
+     {
+		<a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Purge Data','@Url.Action("T_PurgeData", "T_ExportDataLog")');">Purge Data </a>
+	 } 
+	@if ( User.CanEdit("T_ExportDataLog")&&  User.CanUseVerb("BulkUpdate","T_ExportDataLog",User))
+	{
+		<a class="dropdown-item" data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+			onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update "+EntityDisplayName+"','dvPopup','" + Url.Action("BulkUpdate", "T_ExportDataLog", new { UrlReferrer = BackUrl, MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','T_ExportDataLog')")"> <i class="fa fa-edit" aria-hidden="true"></i> 
+Update</a>
+	}
+ 
+	 @if ( User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete","T_ExportDataLog",User))
+     {
+		<a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Bulk Delete','@Url.Action("DeleteBulk", "T_ExportDataLog")','@ViewData["AssociatedType"]');">
+		<i class="fa fa-trash" aria-hidden="true"></i>
+ Delete
+ </a>
+	 }
+                        </div>
+</div>
+                    </div>
+  }
+}
+@if (Model.IsDivRender == null || Model.IsDivRender == false)
+{
+<div class="btn-group mb-1">
+<div class="dropdown">
+                          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu5" data-original-title="View As" data-toggle="dropdown" href="#">
+                            <span class="fa fa fa-table"></span> View As
+                       </button>
+                        <div class="dropdown-menu multi-level" role="menu">
+                                    <li class="dropdown-item">
+                                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "T_ExportDataLog") + "');") alt="Search" title="List">
+                                            List
+                                        </a>
+                                    </li>
+				<li class="dropdown-item">
+                                @Html.ActionLink("KanBan (Status)", "KanBan", new {UrlReferrer = BackUrl, AssociatedType = "T_AssociatedExportDataLogStatus", HostingEntity = "T_ExportDataLogstatus", TS = DateTime.Now, viewtype = "CardIndexPartial" })
+                </li>
+                        </div>
+                        </div>
+                    </div>
+	}
+@if (Model.IsDivRender == null || Model.IsDivRender == false)
+{
+<div class="btn-group mb-1">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Matrix View
+                    </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "T_ExportDataLog") + "');") alt="List" title="List">
+                                            List
+                                        </a>
+                                @if (User.CanEdit("T_ExportDataLog", "T_AssociatedExportDataLogStatusID"))
+								 {
+                    @Html.ActionLink("Pivot Matrix(Status)", "Index", new {UrlReferrer = BackUrl, MatrixAsoocation = "T_AssociatedExportDataLogStatus", TS = DateTime.Now, viewtype = "PivotMatrix" },new{ @class="dropdown-item" })
+}
+                </div>
+              </div>
+</div>
+}
+								
+
+
+@if (Model.IsDivRender == null || Model.IsDivRender == false)
+{
+<div class="btn-group mb-1">
+<div class="dropdown">
+	   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-original-title="Filter-Groupby" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Tools
+            </button>
+                            <div class="dropdown-menu multi-level" role="menu">
+		@if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+			{
+				<a class="dropdown-item" id="showAssociateBtn"  data-placement="top" data-original-title="Associate Export Data Log with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','"+EntityDisplayName+"','dvPopupBulkOperation','" + Url.Action("Index", "T_ExportDataLog", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = viewbagname }) + "')")">
+					<i class="fa fa-plus-circle" ></i> Bulk Associate
+				</a>
+			<script>
+				if($("#HostingEntityDisplayValue").attr('id')==undefined)
+				$("#showAssociateBtn").hide();
+			</script>
+			}
+        
+			@if ( User.CanAdd("T_ExportDataLog") && User.CanUseVerb("ImportExcel", "T_ExportDataLog", User))
+			{
+				 <a  class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_ExportDataLog", new { filetype = "xls", MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl }) + "');") alt="Import Excel" title="Import Excel">
+                        <i class="fa fa-upload"></i> Import Excel
+                 </a>
+			}
+             @if (User.CanAdd("T_ExportDataLog") && User.CanUseVerb("ImportExcelAdvanced", "T_ExportDataLog", User))
+            {
+                <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_ExportDataLog", new { filetype = "xls", MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl,ImportType= "adv"}) + "');") alt="Import Excel(Advanced)" title="Import Excel(Advanced)">
+                    <i class="fa fa-upload"></i> Import Excel(Advanced)
+                </a>
+            }
+			@if ( User.CanAdd("T_ExportDataLog") && User.CanUseVerb("ImportCSV", "T_ExportDataLog", User))
+			{
+				 <a  class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_ExportDataLog", new { filetype = "csv", MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl }) + "');") alt="Import CSV" title="Import CSV">
+                        <i class="fa fa-upload"></i> Import CSV
+                 </a>
+			}
+             @if (User.CanAdd("T_ExportDataLog") && User.CanUseVerb("ImportCSVAdvanced", "T_ExportDataLog", User))
+            {
+                <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_ExportDataLog", new { filetype = "csv", MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl,ImportType= "adv" }) + "');") alt="Import CSV(Advanced)" title="Import CSV(Advanced)">
+                    <i class="fa fa-upload"></i> Import CSV(Advanced)
+                </a>
+            }
+
+	     		@if (User.CanView("T_ExportDataLog") && User.CanUseVerb("ExportExcel", "T_ExportDataLog", User))
+                {
+					<a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_ExportDataLog",getSortHtmlAttributes(null, false, null, true, "xls"), null) + "');") alt="Export Excel" title="Export Excel">
+						<i class="fa fa-download"></i> Export Excel
+					</a>
+				}
+				@if (User.CanView("T_ExportDataLog") && User.CanUseVerb("ExportCSV", "T_ExportDataLog", User))
+                {
+					<a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_ExportDataLog",getSortHtmlAttributes(null, false, null, true, "csv"), null) + "');") alt="Export CSV" title="Export CSV">
+						<i class="fa fa-download"></i> Export CSV
+					</a>
+				}
+		         </div>
+        </div>
+       </div>
+}
+
+</div>				
+}
+
+
+				<div class="float-right" style="">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringT_ExportDataLog", Model.currentFilter as string, null, new { @class = "form-control listsearchbox", @value = Model.HomeVal, @placeholder = "Search" })
+                            <div class="input-group-btn">
+                              <a id="T_ExportDataLogSearch" onclick="SearchClick(event, 'T_ExportDataLog', '@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid,  MatrixAsoocation = Request.QueryString["MatrixAsoocation"],ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top"   alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+								<a id="T_ExportDataLogCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid,  MatrixAsoocation = Request.QueryString["MatrixAsoocation"],ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top"  alt="Clear Search" title="Clear Search">
+                                    <span class="fa fa-minus-circle"></span>
+                                </a>
+                                <a id="T_ExportDataLogSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid,  MatrixAsoocation = Request.QueryString["MatrixAsoocation"],ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(Model.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top"  alt="Refresh Grid" title="Refresh Grid">
+                                    <span class="fa fa-sync-alt"></span>
+                                </a>
+								<a id="T_ExportDataLogRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(Model.CurrentSort, false,null, false)))','@User.Name')"></a>
+	@if (ViewData["HostingEntity"]==null)
+	{ 
+					<a data-toggle="dropdown" data-original-title="Queries" class="btn btn-secondary tip-top" alt="Queries" title="Queries"><span class="fa fa-binoculars"> <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-item">
+                                <a href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" data-placement="top" alt="Define new query" title="Define new query">
+                                    <span class="fa fa-plus" style="margin-right:3px;"></span> New Query
+                                </a>
+                            </li>
+
+							
+	@if (User.CanView("T_ExportDataConfiguration") || User.CanView("T_ExportDataLogstatus"))
+	{ 
+	<li>
+ <a class="dropdown-item" data-toggle="collapse" id="T_ExportDataLogSetFSearchGridbtn" onclick="@Html.Raw("LoadSetFSearchGridfun(this,'"+Url.Action("SetFSearchGrid", "T_ExportDataLog", new { MatrixAsoocation = Request.QueryString["MatrixAsoocation"],HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType= @Convert.ToString(ViewData["AssociatedType"]) })+"','T_ExportDataLog');")">
+                <i class="fa fa-filter"> </i> Filter </a></li>
+
+	} 
+<li style="border-bottom: 1px solid #ddd;
+    color: #194969!important;
+    padding-left: 15px;
+    font-weight: bold;
+    font-size: 16px!important; 
+    background: #f3f5f9;
+    border-top: 1px solid #ddd; margin-top:5px; margin-bottom:5px">Saved Queries</li>
+                            <li class="dropdown-item">
+                                @foreach (var fsearch in User.GetFacetedSearch("T_ExportDataLog", User))
+                                {
+                                    <a href="~/@fsearch.T_LinkAddress&FsearchId=@fsearch.Id&ShowDeleted=@Convert.ToString(ViewData["ShowDeleted"])" data-placement="top" alt="@fsearch.T_Description" title="@fsearch.T_Description">
+                                        <span class="fa fa-filter" style="margin-right:3px;"></span> @fsearch.T_Name
+                                    </a>
+                                }
+                            </li>
+                        </ul>
+	}
+                            </div>
+                        </div>
+                    </div>
+}
+			 <div style="clear:both"></div>
+	
+	
+</div>
+<div class="row">
+ 
+ <div id="LoadT_ExportDataLogSetFSearchGrid" class="collapse">
+        </div>
+@*@{Html.RenderPartial("~/Views/T_ExportDataLog/SetFSearchGrid.cshtml", new GeneratorBase.MVC.Models.T_ExportDataLog());}*@
+<div class="col" style="width:200px; float:left; ">
+@if (Model.SearchResult != "" )
+                            {
+			<div id="fsearchT_ExportDataLog" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row" >
+                        <div class="col-sm-6">  @Html.Raw(Html.Encode(Model.SearchResult).Replace(Environment.NewLine, ""))</div>
+						<div class="col-sm-6 text-right">
+						@if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                                    {
+						 <a class="btn btn-primary btn-sm ExpandAllOpen">Expand All</a>
+						 }
+						@if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+						{
+							<a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+						}
+						else
+						{ 
+							<a href="@Url.Action("Index", "T_ExportDataLog",new{ MatrixAsoocation = Request.QueryString["MatrixAsoocation"],ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+						}
+						 <a href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+						 @if (User.CanAdd("T_FacetedSearch"))
+                         { 
+                         if (!string.IsNullOrEmpty(Model.FsearchId))
+                            {
+                                <a id='aBtnQuickEditT_FacetedSearch_@Convert.ToInt32(Model.FsearchId)' onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit FacetedSearch','dvPopup','" + Url.Action("EditQuick", "T_FacetedSearch", new
+																			{
+																				id = Convert.ToInt32(Model.FsearchId),
+																				 UrlReferrer = Html.Raw(Request.Url.PathAndQuery),
+																				MatrixAsoocation = Request.QueryString["MatrixAsoocation"],AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                                                                                FsearchId=Model.FsearchId
+																			}) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Edit</a>
+                          }
+                         else
+                            {
+						 <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="T_ExportDataLog",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                          }
+						 }
+            </div>
+			</div>
+	}
+	  @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+      {
+                    <div id="pagination">
+					@if(Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+					{
+						   @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(null, true, page, false)),
+						   new PagedListRenderOptions
+						   {
+							   FunctionToTransformEachPageLink = (liTag, aTag) =>
+							   {
+								   aTag.Attributes.Add("class", "page-link");
+								   liTag.InnerHtml = aTag.ToString();
+								   return liTag;
+							   },
+							   LiElementClasses = new[] { "page-item" },
+							   UlElementClasses = new[] { "pagination pagination-sm" }
+						   })
+					}
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 }  }, "Value", "Key")
+							, new {@class="ignorefield", @id = "pagesizelistT_ExportDataLog",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataLog','"
+							 + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataLog",
+							 getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_ExportDataLog"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+					<div style="clear:both"></div>
+        }
+@if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+{
+<script>
+    $(document).ready(function(){
+        $('.hideTr').slideUp(600);
+        $('[data-toggle="toggle"]').click(function () {
+            var tag = $(this).find("p").attr("id");
+            if ($(this).parents().next(".hideTr").is(':visible')) {
+                $(this).parents().nextAll('.hideTr[tag="'+tag+'"]').slideUp(600);
+                $(".plusminus_" + $(this).children().children().attr("id")).text('+');
+                $(this).css('background-color', 'white');
+            }
+            else {
+                  $(this).parents().nextAll('.hideTr[tag="'+tag+'"]').slideDown(600);
+                $(".plusminus_" + $(this).children().children().attr("id")).text('-');
+                $(this).css('background-color', '#c1eaff');
+            }
+        });
+        $('.ExpandAllOpen').click(function(){
+            var link = $(this);
+            if(link.text() == "Expand All")
+            {
+                $('.hideTr').slideDown(600);
+                link.text('Collapse All');
+                $( "[class^='plusminus_']" ).text('-'); 
+            }
+            else
+            {
+                $('.hideTr').slideUp(600);
+                link.text('Expand All');
+                $( "[class^='plusminus_']" ).text('+'); 
+            }
+            
+        });
+    });
+</script>
+ }
+ 
+	  <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                            <table class="table table-hover table-bordered newlist">
+                              <thead id="theaderT_ExportDataLog">
+                                 <tr>
+                            @{ 
+                                Dictionary<long, string> selectlist = null;
+                                var Ids = "";
+                        foreach (var item in Model.list)
+                        {
+                        List<string> hiddenProperties = new List<string>();
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(6)))
+                        {
+                            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_ExportDataLog");
+                        }
+                        bool isRecordReadOnly = false;
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))))
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), "T_ExportDataLog");
+                        }
+                        if (ViewData["HostingEntity"] != null && !isRecordReadOnly)
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+                        }
+                        if (!isRecordReadOnly)
+                        {
+                            isRecordReadOnly = !User.CanEditItemInHierarchy("T_ExportDataLog", item, User);
+                        }
+                                     var IsLockReadOnlyT_AssociatedExportDataLogStatus = User.CanEdit("T_ExportDataLog") && User.CanEdit("T_ExportDataLog", "T_AssociatedExportDataLogStatus") && !hiddenProperties.Contains("T_AssociatedExportDataLogStatus") && !isRecordReadOnly ? true : false;
+                                    if (IsLockReadOnlyT_AssociatedExportDataLogStatus)
+                                    {
+                                        Ids += item.Id + ",";
+                                    }
+                         }
+                                    Ids = Ids.TrimEnd(',');
+                    }
+
+                            @if (User.CanView("T_ExportDataLog"))
+                            {
+                           
+                            if (User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog", "T_AssociatedExportDataLogStatusID") && MatrixAsoocation == "T_AssociatedExportDataLogStatus")
+                            {
+                                 selectlist = (Dictionary<long, string>)GeneratorBase.MVC.Models.EntityComparer.GetDisplayValuesForPivotMatrix("T_ExportDataLogstatus", "T_AssociatedExportDataLogStatusID");
+                                var SortPropertyNameT_AssociatedExportDataLogStatus = "Export Data Log";
+                                <th scope="col" class="col2">
+                                    @Html.ActionLink(SortPropertyNameT_AssociatedExportDataLogStatus , ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("DisplayValue", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "DisplayValue")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "DisplayValue")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                                if (selectlist != null && selectlist.Count > 0)
+                                {
+                                    foreach (var item in selectlist)
+                                    {
+                                        <th scope="col" class="col4">
+                                            <input type="checkbox" onclick="SelectAllRadio(this,'T_AssociatedExportDataLogStatusID',@item.Key,'T_ExportDataLog','@Url.Action("SavePropertiesValuebulk")','@Ids')" id="@Html.Raw("T_AssociatedExportDataLogStatusID"+ @item.Key)" name="@Html.Raw("T_AssociatedExportDataLogStatusID"+ @item.Key)" value="pivotmatirx"> @item.Value
+                                        </th>
+                                         <script>
+                                            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                                             if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                                                     $("#" +'@Html.Raw("T_AssociatedExportDataLogStatusID"+ @item.Key)').attr("disabled", "disabled");
+                                                }
+                                            }   
+                                            </script>
+                                    }
+                                }
+                            }
+                       
+                         }  
+    
+                        </tr>
+                     </thead>
+                    @foreach (var item in Model.list)
+                    {
+                        List<string> hiddenProperties = new List<string>();
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(6)))
+                        {
+                            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_ExportDataLog");
+                        }
+                        bool isRecordReadOnly = false;
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))))
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), "T_ExportDataLog");
+                        }
+                        if (ViewData["HostingEntity"] != null && !isRecordReadOnly)
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+                        }
+                        if (!isRecordReadOnly)
+                        {
+                            isRecordReadOnly = !User.CanEditItemInHierarchy("T_ExportDataLog", item, User);
+                        }
+                        <tbody class="hideTr" tag="@item.Id">
+                            <tr scope="row">
+                                <td class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))' style="display:none;">
+                                    <div style="display:none;">
+                                        <div class="btn-group tdDoubleClickGroup">
+                                            <a onclick="SavePropertiesValue(this,'T_ExportDataLog',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                                <i class="fa fa-save"></i>
+                                            </a>
+                                            <a onclick="$('#T_ExportDataLogRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                       
+                                @if (User.CanView("T_ExportDataLog"))
+                                  {
+                                    <td title="@item.DisplayValue">
+                                        <div class="row fixrowStyle">
+                                            <div class="col-sm-1">
+                                                <div class="round hollow">
+                                                    <p id="@item.Id"> @Html.DisplayFor(modelItem => item.DisplayValue)</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-11 pl-3 PivotDisplayValue">@Html.DisplayFor(modelItem => item.DisplayValue)</div>
+                                        </div>
+
+                                    </td>
+                                }
+                                                           @if (User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog", "T_AssociatedExportDataLogStatusID") && MatrixAsoocation == "T_AssociatedExportDataLogStatus")
+                                {
+                                    var rbdisableT_AssociatedExportDataLogStatus = User.CanEdit("T_ExportDataLog") && User.CanEdit("T_ExportDataLog", "T_AssociatedExportDataLogStatus") && !hiddenProperties.Contains("T_AssociatedExportDataLogStatus") && !isRecordReadOnly ? "" : "disabled";
+                                    if (selectlist != null)
+                                    {
+                                        foreach (var itemopt in selectlist)
+                                        {
+                                            if (itemopt.Key == item.T_AssociatedExportDataLogStatusID)
+                                            {
+                                                <td title="@itemopt.Value"><input type="radio" @rbdisableT_AssociatedExportDataLogStatus  id="@Html.Raw(item.Id+"_"+ itemopt.Key)" name="@Html.Raw("T_AssociatedExportDataLogStatus"+item.Id)" checked data-col="@Html.Raw(item.Id+"_"+ itemopt.Key)"></td>
+                                            }
+                                            else
+                                            {
+                                                <td title="@itemopt.Value" id="@Html.Raw("T_AssociatedExportDataLogStatus"+itemopt.Key)">
+                                                        <input type="radio" id="@Html.Raw(item.Id+"_"+ itemopt.Key)"
+                                                               oldvalue=""
+                                                               @rbdisableT_AssociatedExportDataLogStatus 
+                                                               controlname="T_AssociatedExportDataLogStatusID"
+                                                               value="@itemopt.Key"
+                                                               onkeydown="tdNextAction(this,event,'T_ExportDataLog');"
+                                                               HostingName="T_ExportDataLogstatus"
+                                                               onclick="SelectRadio(this,'T_AssociatedExportDataLogStatusID',@itemopt.Key,'T_ExportDataLog','@Url.Action("SavePropertiesValuebulk")','@item.Id')"
+                                                               name="@Html.Raw("T_AssociatedExportDataLogStatusID"+itemopt.Key)" data-col="@Html.Raw("T_AssociatedExportDataLogStatusID"+itemopt.Key)">
+                                                </td>
+                                            }
+                                        }
+                                    }
+                                }
+                                                        </tr>
+                        </tbody>
+                    }
+                           </table>
+                    </div>
+				
+   			    @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+                {
+                    <div id="pagination">
+					@if(Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+					{
+						 @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(null, true, page, false)),
+						   new PagedListRenderOptions
+						   {
+							   FunctionToTransformEachPageLink = (liTag, aTag) =>
+							   {
+								   aTag.Attributes.Add("class", "page-link");
+								   liTag.InnerHtml = aTag.ToString();
+								   return liTag;
+							   },
+							   LiElementClasses = new[] { "page-item" },
+							   UlElementClasses = new[] { "pagination pagination-sm" }
+						   })
+				}
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+							, new {@class="ignorefield", @id = "pagesizelistT_ExportDataLog",
+							 @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataLog','"
+							 + @User.JavaScriptEncodedName + "')"),
+							 @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataLog",
+							 getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+							 null, false), null)) })
+							<span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+							<script>
+                                    $(document).ready(function () {
+                                        $.validator.setDefaults({
+                                            ignore: "#pagesizelistT_ExportDataLog"
+                                        })
+                                    }); 
+                                </script>
+                        </div>
+                    </div>
+                }
+				</div>
+				</div>
+				@Html.DropDownList("EntityT_ExportDataLogDisplayValue", null,null, new { @Style = "display:none;" })
+
+</div>
+<script>
+    var color = ["#337ab8", "#ec5b46", "#fb9e2c", "#09a5b9", "#f7368c", "#337ab8", "#ec5b46", "#fb9e2c", "#09a5b9", "#f7368c"]
+    var j = 0;
+    $("#Des_Table .round").each(function (i) {
+        if (i%10==0)
+            j = 0;
+        $(this).css('background', color[j])
+        j++;
+    })
+</script>
+<style>
+    #Des_Table .newlist thead th {
+        text-align: center !important;
+        color: #1b1b1b;
+    }
+    .fixrowStyle {
+        width:300px;
+        font-weight:bold;
+    }
+
+    .PivotDisplayValue {
+        padding-top: 2px;
+        text-align: left; 
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+    }
+
+    #Des_Table .newlist td {
+        text-align: center !important;
+    }
+
+
+        #Des_Table .newlist td:nth-child(1) {
+            text-align: left !important;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        #Des_Table .newlist th:nth-child(1) {
+            text-align: left!important;
+           
+            
+        }
+
+    
+  
+    .round.hollow {
+        display: inline-block;
+        height: 25px;
+        width: 25px;
+        line-height: 25px;
+        -moz-border-radius: 15px;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin: auto;
+        padding: 0px 6px;
+    }
+
+    .round p {
+        display: block;
+        visibility: hidden;
+        width: 25px !important;
+        text-align: center !important;
+        font-weight: bold;
+        font-size: 16px;
+        margin: auto;
+    }
+
+        .round p:first-letter {
+            visibility: visible;
+            width: 25px !important;
+            text-align: center !important;
+        }
+
+</style>
+
+ 

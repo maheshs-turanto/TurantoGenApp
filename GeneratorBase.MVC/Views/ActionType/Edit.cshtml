@@ -1,0 +1,190 @@
+﻿@model GeneratorBase.MVC.Models.ActionType
+
+
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Action Type";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("ActionType", Property))
+        {
+            return new { @class = "form-control", @readonly = "readonly" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+</style>
+
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="ActionType"})">Action Type Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.DisplayFor(model => model.DisplayValue)
+            </small>
+        </strong>
+    </div>
+</div>
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlActionType" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "ActionType")).ToHtmlString()"></a>
+<div class="tabs-container">
+
+    <div id="tabcontent" class=" ">
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "ActionType", new { UrlReferrer = Convert.ToString(ViewData["ActionTypeParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+
+
+                @Html.ValidationSummary(true)
+                @Html.HiddenFor(model => model.Id)
+                @Html.Hidden("OriginalTemplate", Model.OriginalTemplate);
+
+                <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+                </div>
+                <div class="AppForm tabs-container">
+
+                    <div>
+                        <div class="row bgwizard" id="wzGroupActionTypeBasicInformation">
+                            <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                <div class="card card-default" id="dvGroupActionTypeBasicInformation">
+                                    <div class="card-header clearfix">
+                                        <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                        <h3 class="card-title" alt="Basic Information" title="Basic Information">
+                                            Basic Information
+
+
+
+                                        </h3>
+                                    </div>
+                                    <div class="card-body row">
+
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                            <div class='form-group' title="Auto No.">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.TypeNo)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.TypeNo, getHtmlAttributes("TypeNo"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.TypeNo)
+                                        </div>
+
+
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group' title="ActionTypeName">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.ActionTypeName)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.ActionTypeName, getHtmlAttributes("ActionTypeName"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ActionTypeName)
+                                        </div>
+                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+                                                    @Html.ValidationMessageFor(model => model.Description)
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-12 col-md-12 col-xs-12'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Template) </label>
+                                                <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                                    @*@Html.TextAreaFor(model => model.Template, getHtmlAttributes("Template"))*@
+                                                    @Html.TextAreaFor(model => model.Template, new { @placeholder = "Custom alert message for Business Rule", @class = "form-control", @row = "50" })
+                                                    @Html.ValidationMessageFor(model => model.Template)
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*<div class='col-sm-6 col-md-6 col-xs-12' style="display:none">
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OriginalTemplate) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                        @Html.TextAreaFor(model => model.OriginalTemplate, getHtmlAttributes("OriginalTemplate"))
+                                                        @Html.ValidationMessageFor(model => model.OriginalTemplate)
+
+
+                                                    </div>
+                                                </div>
+                                            </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+                <div class="">
+                    <div class="">
+                        @Html.AntiForgeryToken()
+
+                        <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "ActionType")');" alt="Cancel" title="Cancel">Cancel</a>
+
+
+                        <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+
+                        @if (ViewBag.IsPartial == null)
+                        {
+                            <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                            <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                        }
+
+
+
+
+
+
+
+                    </div>
+                </div>} @*end form*@
+
+            </div>
+
+        </div> <!-- /tab-content -->
+    </div>
+    <script>
+        $(function () {
+            ApplyAreYouSure();
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#Template').summernote();
+        })
+    </script>
+

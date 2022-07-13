@@ -1,0 +1,235 @@
+﻿@model GeneratorBase.MVC.Models.VerbGroup
+@{
+ ViewBag.Title = "Bulk Update Verb Group";
+    Layout = null;
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbGroup");
+	var businessrule = User.businessrules.Where(p => p.EntityName == "VerbGroup").ToList();
+    bool IsAlwaysHidden = false;
+    bool IsAlwaysSetValue = false;
+    bool IsAlwaysReadOnly = false;
+    if (businessrule != null && businessrule.Count() > 0)
+    {
+        var lstBR = businessrule;
+        foreach (var BR in lstBR)
+        {
+            foreach (var objcond in BR.ruleaction)
+            {
+                long? _raid = objcond.AssociatedActionTypeID;
+                var objConditionList = BR.ruleconditions.Where(con => con.RuleConditionsID == objcond.RuleActionID).Where(p=>p.PropertyName=="Id"  && p.Operator == ">" && p.Value == "0") ;
+                foreach (var BRCon in objConditionList)
+                {
+                    if (_raid == 6)
+                    {
+                            IsAlwaysHidden = true;
+                    }
+                    if (_raid == 7)
+                    {
+                            IsAlwaysSetValue = true;
+                    }
+                    if (_raid == 4)
+                    {
+                            IsAlwaysReadOnly = true;
+                    }
+                }
+            }
+        }
+    }
+}
+@if (IsAlwaysHidden)
+{ 
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsHiddenRule);
+    }
+ }
+<script>
+    $(document).ready(function () {
+       LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.form-control:input').change(function () {
+            var $this = $(this);
+            $("input[type=checkbox][value=" + $this.attr('id') + "]").prop("checked", $this.val() != '' ? true : false);
+            var ChildDDids = $this.attr('ChildDDids');
+            if (ChildDDids != undefined) {
+                var ids = ChildDDids.split(",");
+                for (var i = 0; i < ids.length; i++) {
+                    $("input[type=checkbox][value=" + ids[i] + "]").prop("checked", $this.val() != '' ? true : false);
+                }
+            }
+        })
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("BulkUpdate", "VerbGroup", new { UrlReferrer = Convert.ToString(ViewData["VerbGroupParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmVerbGroup" }))
+{
+   @Html.AntiForgeryToken();
+   @Html.Hidden("BulkUpdate", (object)ViewBag.BulkUpdate);
+	<div class="alert alert-danger" style="margin-top:-10px;">
+        <strong>Warning!</strong> This action updates all the selected records.
+        Select the desired properties from the checkbox list in the pop-up window.
+        Click "Update" to proceed with modification action of the selected properties.
+    </div>
+	<div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="AppForm">
+               
+                   <table class="table table-striped default-bordered table-hover default-condensed">
+                        <thead>
+                            <tr>
+                                <th style="width:70px">Select to update property</th>
+                                <th>Property Name</th>
+                                <th>Set Value of Property</th>
+                            </tr>
+							 @if(User.CanView("VerbGroup","Name"))
+								{
+<tr id="dvName">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="Name" /></td>
+                <td>@Html.LabelFor(model => model.Name)</td>
+				<td> @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","DisplayOrder"))
+								{
+<tr id="dvDisplayOrder">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="DisplayOrder" /></td>
+                <td>@Html.LabelFor(model => model.DisplayOrder)</td>
+				<td> @Html.TextBoxFor(model => model.DisplayOrder, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","InternalName"))
+								{
+<tr id="dvInternalName">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="InternalName" /></td>
+                <td>@Html.LabelFor(model => model.InternalName)</td>
+				<td> @Html.TextBoxFor(model => model.InternalName, new { @class = "form-control" })
+				</td></tr>
+				}
+@if(User.CanView("VerbGroup","Flag1"))
+								{
+<tr id="dvFlag1">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="Flag1" /></td>
+                <td>@Html.LabelFor(model => model.Flag1)</td>
+ <td>@Html.CheckBox("Flag1", false) (Value of property is "true" if checkbox is checked else "false" it it's unchecked.)
+ 
+ </td></tr>
+ }
+ @if(User.CanView("VerbGroup","Icon"))
+								{
+<tr id="dvIcon">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="Icon" /></td>
+                <td>@Html.LabelFor(model => model.Icon)</td>
+				<td> @Html.TextBoxFor(model => model.Icon, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","EntityInternalName"))
+								{
+<tr id="dvEntityInternalName">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="EntityInternalName" /></td>
+                <td>@Html.LabelFor(model => model.EntityInternalName)</td>
+				<td> @Html.TextBoxFor(model => model.EntityInternalName, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","Description"))
+								{
+<tr id="dvDescription">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="Description" /></td>
+                <td>@Html.LabelFor(model => model.Description)</td>
+ <td>@Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+ </td></tr>
+ }
+ @if(User.CanView("VerbGroup","UIGroupInternalName"))
+								{
+<tr id="dvUIGroupInternalName">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="UIGroupInternalName" /></td>
+                <td>@Html.LabelFor(model => model.UIGroupInternalName)</td>
+				<td> @Html.TextBoxFor(model => model.UIGroupInternalName, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","GroupId"))
+								{
+<tr id="dvGroupId">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="GroupId" /></td>
+                <td>@Html.LabelFor(model => model.GroupId)</td>
+				<td> @Html.TextBoxFor(model => model.GroupId, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","BackGroundColor"))
+								{
+<tr id="dvBackGroundColor">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="BackGroundColor" /></td>
+                <td>@Html.LabelFor(model => model.BackGroundColor)</td>
+				<td> @Html.TextBoxFor(model => model.BackGroundColor, new { @class = "form-control" })
+				</td></tr>
+				}
+ @if(User.CanView("VerbGroup","FontColor"))
+								{
+<tr id="dvFontColor">
+                <td align="center"><input type="checkbox" name="chkUpdate" value="FontColor" /></td>
+                <td>@Html.LabelFor(model => model.FontColor)</td>
+				<td> @Html.TextBoxFor(model => model.FontColor, new { @class = "form-control" })
+				</td></tr>
+				}
+                        </thead>
+                    </table>
+
+ </div>
+  </div>
+   </div>
+   <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    if (ViewBag.IsDDAdd == null && User.CanEdit("VerbGroup"))
+    {
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+    }
+    <br /><br />
+	}
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+
+@{
+    if ((businessrule != null && businessrule.Count > 0 && IsAlwaysReadOnly))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmVerbGroup");
+                dataurl = "@Url.Action("businessruletype", "VerbGroup", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "VerbGroup", false, "ErrMsg", form);
+
+            });
+        </script>
+    }
+if (IsAlwaysSetValue)
+    {
+     if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsSetValueUIRule))
+		{
+        @Html.Raw(ViewBag.VerbGroupIsSetValueUIRule);
+		}
+    }
+}
+
+    

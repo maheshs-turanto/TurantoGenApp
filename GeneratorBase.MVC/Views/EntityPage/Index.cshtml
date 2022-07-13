@@ -1,0 +1,53 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EntityPage>
+@{
+    ViewBag.Title = "Entity Page List";
+    string templatename = "~/Views/EntityPage/IndexPartial.cshtml";
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "EntityPage");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Entity Page";
+}
+<div class="content-heading">
+    <div class="col-lg-4">
+
+        <strong>
+            <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")"> @EntityDisplayName</a>
+            <small>List </small>
+        </strong>
+
+
+    </div>
+    <div class="col-lg-8">
+        <div class="btn-group pull-right">
+            <a data-toggle="dropdown" class="btn btn-primary text-white dropdown-toggle" alt="Action" title="Action">
+                Action
+            </a>
+            <ul class="dropdown-menu pull-left">
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("EnableCachingforAll")"><i class="glyphicon glyphicon-list"></i>  Enable Caching for All</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("DisableCachingforAll")"><i class="glyphicon glyphicon-list-alt"></i>  Disable Caching for All</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("RefreshCaching")"><i class="glyphicon glyphicon-refresh"></i>  Refresh Data Caching</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvEntityPageFilter"></div>
+                    @Html.Partial(templatename, Model)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

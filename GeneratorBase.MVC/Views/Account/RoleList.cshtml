@@ -1,0 +1,260 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EditRoleViewModel>
+@{
+    ViewBag.Title = "Role List";
+    var userrolelist = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetRolesForUser(User.Name);
+    var PageUrl = HttpUtility.ParseQueryString(Request.Url.Query);
+    if (PageUrl["RenderPartial"] != null)
+    {
+        Layout = null;
+    }
+    var isGlobalRole = true;
+    if (!User.IsAdmin)
+    {
+        isGlobalRole = Model.Where(p => User.userroles.Contains(p.Name)).Any(p => p.RoleType == "Global");
+    }
+}
+<style>
+    .midal-fade-inline {
+        background: rgba(0,0,0,0.5);
+        margin-top: 3em;
+    }
+</style>
+@if (PageUrl["RenderPartial"] == null)
+{
+
+    <div class="content-heading">
+        <strong>
+            <a href="@Url.Action("Index","Admin")"> Admin </a>
+            <small>Role List</small>
+        </strong>
+
+        <div class="col-lg-2">
+        </div>
+    </div>
+}
+<div class="">
+    <div class="card">
+        <div class="card-body">
+            <div class="">
+                <div class="mb-2">
+                    @if (User.CanAddAdminFeature("Role"))
+                    {
+                        <button class="btn btn-secondary" data-placement="top" data-original-title="Create Role" data-toggle="modal" data-target="#quickaddRole" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddRole');")>
+                            <span class="fa fa-plus-circle"> </span> Create Role
+                        </button>
+
+                    }
+                    @if (User.CanViewAdminFeature("DynamicRoles"))
+                    {
+                        <button class="btn btn-secondary" data-placement="top" data-original-title="Create Dynamic Role" data-toggle="modal" data-target="#quickaddRuleBasedRole" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddRuleBasedRole');")>
+                            <span class="fa fa-plus-circle"> </span> Create Dynamic Role
+                        </button>
+                    }
+					 @if (User.IsAdmin)
+                    {
+                        <div class="btn-group">
+
+                            <a class="btn btn-secondary dropdown-toggle" data-original-title="Tools" data-toggle="dropdown" href="#">
+                                <span class="fa fa-file"></span> Tools
+                            </a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuButton">
+                                <li class="dropdown-item">
+                                    <a class="btn" href="@Url.Action("ExportConfiguration")" data-original-title="Export Rules" data-placement="top" alt="Export Rules" title="Export Rules">
+                                        <span class="fa fa-download"></span> Export (Json)
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a class="btn" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("ImportConfiguration", "Account") + "');") alt="Import JSON" title="Import JSON">
+                                        <i class="fa fa-upload"></i> Import (Json)
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    }
+                    <span class="pull-right">
+                        <u><b>@ViewBag.DefaultRoleForNewUser</b></u>
+                        is set as default for new user
+                    </span>
+                </div>
+                <div class="AppForm">
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table class="table table-hover default-bordered default-condensed">
+                           <thead>
+                            <tr>
+                                <th style="width:80px;">Actions</th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.RoleType)
+                                </th>
+                            </tr></thead>
+                            @foreach (var item in Model)//.Where(m => m.Name != System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"]))
+                            {
+                                if (!User.IsAdmin && item.Name == System.Configuration.ConfigurationManager.AppSettings["AdministratorRoles"]) { continue; }
+                                if (PageUrl["TenantId"] != null)
+                                {
+                                    long tenantid;
+                                    if (!item.TenantId.HasValue || (Int64.TryParse(Convert.ToString(PageUrl["TenantId"]), out tenantid) && item.TenantId.HasValue && tenantid != item.TenantId.Value))
+                                    {
+                                        continue;
+                                    }
+                                }
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <div class="btn-group dropdown">
+                                                <button class="btn btn-secondary pull-right dropdown-toggle" data-toggle="dropdown" type="button">
+                                                    Action
+                                                </button>
+                                                <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                    @if (!(!isGlobalRole && item.RoleType == "Global"))
+                                                    {
+
+                                                        if (User.CanEditAdminFeature("Role"))
+                                                        {
+                                                            if (item.RoleType != "RuleBased")
+                                                            {
+                                                                <li class="dropdown-item">
+                                                                    @Html.ActionLink("Edit", "EditRole", new { id = item.id })
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li class="dropdown-item">
+                                                                    @Html.ActionLink("Edit", "EditRuleBasedRole", new { id = item.Name })
+                                                                </li>
+                                                            }
+                                                        }
+                                                        if (User.CanViewAdminFeature("RoleEntityPermission") && !userrolelist.Contains(item.Name))
+                                                        {
+                                                            <li class="dropdown-item">
+                                                                @Html.ActionLink("Permission", "Index", "Permission", new { RoleName = item.Name }, null)
+                                                            </li>
+                                                        }
+                                                        if (User.CanViewAdminFeature("FieldLevelSecurity") && !userrolelist.Contains(item.Name))
+                                                        {
+                                                            <li class="dropdown-item">
+                                                                @Html.ActionLink("Field Level Security", "Fls", "Permission", new { RoleName = item.Name }, null)
+                                                            </li>
+                                                        }
+                                                        if (User.CanDeleteAdminFeature("Role") && !userrolelist.Contains(item.Name))
+                                                        {
+                                                            <li class="dropdown-item">
+                                                                @Html.ActionLink("Delete", "DeleteRole", new { id = item.id })
+                                                            </li>
+                                                        }
+                                                        if (User.CanViewAdminFeature("AssignUserRole") && item.RoleType != "RuleBased")
+                                                        {
+                                                            <li class="dropdown-item">
+                                                                @Html.ActionLink("Assign Users", "UsersInRole", new { id = item.id })
+                                                            </li>
+                                                        }
+                                                        if (User.IsAdmin && item.RoleType != "RuleBased")
+                                                        {
+                                                            <li class="dropdown-item">
+                                                                @Html.ActionLink("Set this as Default Role for New User", "SetDefaultRole", "Admin", new { RoleName = item.Name }, null)
+                                                            </li>
+                                                        }
+
+                                                    }
+                                                </ul>
+                                                </div>
+                                        </div>
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RoleType)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="clear:both; margin-bottom:20px;"></div>
+<div class="modal fade fade midal-fade-inline" id="quickaddRole" tabindex="-1" role="dialog" aria-labelledby="quickaddUserRole" aria-hidden="true" data-keyboard="false" data-backdrop="">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="quickaddUserLabel">  Create Role</h4>
+
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @if (PageUrl["TenantId"] != null)
+            {
+                <div id="dvQAddquickaddRole" class="modal-body" data-url="@Url.Action("CreateRole", "Account", new {  UrlReferrer = Request.UrlReferrer.PathAndQuery, TenantId = PageUrl["TenantId"] })">
+
+                </div>
+            }
+            else
+            {
+                <div id="dvQAddquickaddRole" class="modal-body" data-url="@Url.Action("CreateRole", "Account")">
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade fade midal-fade-inline" id="quickaddRuleBasedRole" tabindex="-1" role="dialog" aria-labelledby="quickaddRuleBasedRole" aria-hidden="true" data-keyboard="false" data-backdrop="">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="quickaddRuleBasedLabel">  Create Dynamic Role</h4>
+
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @if (PageUrl["TenantId"] != null)
+            {
+                <div id="dvQAddquickaddRuleBasedRole" class="modal-body" data-url="@Url.Action("CreateRuleBasedRole", "Account", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, TenantId = PageUrl["TenantId"] })">
+
+                </div>
+            }
+            else
+            {
+                <div id="dvQAddquickaddRuleBasedRole" class="modal-body" data-url="@Url.Action("CreateRuleBasedRole", "Account")">
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

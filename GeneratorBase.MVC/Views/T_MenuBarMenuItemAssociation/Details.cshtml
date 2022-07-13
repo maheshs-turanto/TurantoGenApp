@@ -1,0 +1,319 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBarMenuItemAssociation
+@using PagedList;
+@{
+    ViewBag.Title = "View Menu Bar Menu Item Association";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBarMenuItemAssociation");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Menu Bar Menu Item Association";
+	var modelproperties = EntityDisplayNameReflector.Properties;
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_MenuBarMenuItemAssociation" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_MenuBarMenuItemAssociation", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+
+
+    var NonViewableProperties = User.CanNotView("T_MenuBarMenuItemAssociation");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+	List<string> groupcontaininginlinegrid = new List<string>();  
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_MenuBarMenuItemAssociation", User, groupcontaininginlinegrid);
+
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function() {
+                $(this).click();
+            });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("Index")">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("T_MenuBarMenuItemAssociation"))
+                    {
+                        <a href="@Url.Action("Edit","T_MenuBarMenuItemAssociation", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("T_MenuBarMenuItemAssociation"))
+                    {
+                        <a href="@Url.Action("Delete", "T_MenuBarMenuItemAssociation", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+   </div>
+</div>
+</div>
+	<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+			<div class="row">
+
+	@if(User.CanView("T_MenuBar") && User.CanView("T_MenuBarMenuItemAssociation","T_MenuBarID") && !hiddenProperties.Contains("T_MenuBarID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_MenuBar">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_MenuBarID)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+ @if (Model.t_menubar!=null && !string.IsNullOrEmpty(Model.t_menubar.DisplayValue))
+        {
+		 <p class="DisplayCard_T_MenuBar viewlabel" id="lblT_MenuBar">
+		@Html.ActionLink(Html.Raw(Model.t_menubar.DisplayValue).ToString(), "Details", "T_MenuBar", new { Id = Html.DisplayFor(model => model.t_menubar.Id).ToString() }, null)
+		<script>
+																	var timer;
+																	$('.DisplayCard_T_MenuBar').hover(function () {
+																	PopupLinkToCard(this, '@Html.Raw(Url.Action("PopupCard", "T_MenuBar", new {id = Model.t_menubar.Id}))','@Model.Id')
+																	clearTimeout(timer);
+																	timer = setTimeout(function () {
+																	$('.DisplayCardOpenClose').show();
+																	}, 4000);
+																	}, function () {
+																	$('.DisplayCardOpenClose').remove();
+																	});
+																	</script>
+		</p>
+		}
+		</div>
+	</div>
+</div>
+}
+	@if(User.CanView("T_MenuItem") && User.CanView("T_MenuBarMenuItemAssociation","T_MenuItemID") && !hiddenProperties.Contains("T_MenuItemID"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_MenuItem">
+	<div class='form-group' >
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_MenuItemID)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+ @if (Model.t_menuitem!=null && !string.IsNullOrEmpty(Model.t_menuitem.DisplayValue))
+        {
+		 <p class="DisplayCard_T_MenuItem viewlabel" id="lblT_MenuItem">
+		@Html.ActionLink(Html.Raw(Model.t_menuitem.DisplayValue).ToString(), "Details", "T_MenuItem", new { Id = Html.DisplayFor(model => model.t_menuitem.Id).ToString() }, null)
+		<script>
+																	var timer;
+																	$('.DisplayCard_T_MenuItem').hover(function () {
+																	PopupLinkToCard(this, '@Html.Raw(Url.Action("PopupCard", "T_MenuItem", new {id = Model.t_menuitem.Id}))','@Model.Id')
+																	clearTimeout(timer);
+																	timer = setTimeout(function () {
+																	$('.DisplayCardOpenClose').show();
+																	}, 4000);
+																	}, function () {
+																	$('.DisplayCardOpenClose').remove();
+																	});
+																	</script>
+		</p>
+		}
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_MenuBarMenuItemAssociation","T_OrderNumber")  && !hiddenProperties.Contains("T_OrderNumber") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OrderNumber">
+	<div class='form-group' title="@Model.T_OrderNumber">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_OrderNumber) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblT_OrderNumber" class="viewlabel">@Model.T_OrderNumber</p>
+								</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+			<div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","T_MenuBarMenuItemAssociation")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("T_MenuBarMenuItemAssociation"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+@foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+{
+	if (item.T_DisplayType == "Button")
+	{
+        var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+        var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+        if (ispreview)
+                            {
+        <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "T_MenuBarMenuItemAssociation", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+            <i class="fa fa-file-pdf"></i> @item.T_Name
+        </a>
+                            }
+                            else
+                            {
+        
+	    <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick="@Html.Raw("GenerateDocumentFromButton(this,'"+isdownload + "');")" dataurl="@Url.Action("GenerateDocument", "T_MenuBarMenuItemAssociation", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+        }
+	}
+}
+@if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+{ 
+<div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                    @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                    {
+										var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                        <div class="col-sm-4">
+                                            <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload?"download=true":"download:false") dataurl='@Url.Action("GenerateDocument", "T_MenuBarMenuItemAssociation", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body row pull-right">
+								 <label id="lblGenerateDocument" class="text-primary"></label>
+                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                </div>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</div>
+<a class="btn btn-primary btn-sm pull-left formbuttonfix" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+}
+
+
+        @{List<string> hiddenVerb = new List<string>(); var Verblist = "";
+		if (User.businessrules.Any(p => p.EntityName == "T_MenuBarMenuItemAssociation" && p.ActionTypeID.Contains(16)))
+		{
+			hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "T_MenuBarMenuItemAssociation");
+			Verblist = string.Join(",", hiddenVerb.ToList());
+		}
+		if (User.businessrules.Any(p => p.EntityName == "T_MenuBarMenuItemAssociation" && p.ActionTypeID.Contains(16)))
+		{
+			 <script>HideVerbFromBR('@Verblist');</script>
+		}
+		}
+
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomT_MenuBarMenuItemAssociation">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomT_MenuBarMenuItemAssociation").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+	</div> <!-- /tab-content -->
+</div>
+</div>
+@{
+    if(ViewData["VerbHiddenForDetails"] !=null)
+    {
+        foreach (var verb in ViewData["VerbHiddenForDetails"] as Dictionary<string,string>)
+        {
+			<script>
+			$("#vrb" + '@verb.Value').remove();
+			$("#vrb1" + '@verb.Value').remove();
+			</script>
+
+        }
+    }
+}
+@if (ViewData["LockRecordMsg"] != null)
+{
+
+    var htmlstr = Convert.ToString(ViewData["LockRecordMsg"]);
+    <script>
+        $(document).ready(function () {
+        debugger;
+            var failuremsg = '@htmlstr';
+            $("#divDisplayLockRecord").removeAttr("style");
+            $("#divDisplayLockRecord").html(getMsgTableLockBR());
+            $("#ErrmsgLockRecord").html(failuremsg.replace(/,\s*$/, ""));
+            $("#divDisplayLockRecord1").html($("#divDisplayLockRecord").html());
+    });
+    </script>
+}
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_MenuBarMenuItemAssociation','details',false,'Menu Bar Menu Item Association')
+        //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_MenuBarMenuItemAssociation','edit',false,'Menu Bar Menu Item Association')
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+	</script>
+	
+ 

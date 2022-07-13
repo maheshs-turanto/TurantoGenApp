@@ -1,0 +1,78 @@
+.multiselect-container{position:absolute;list-style-type:none;margin:0;padding:0; width:100%; min-width: 250px!important;}
+.multiselect-container .input-group{padding: 5px 10px 5px 10px; }
+.multiselect-container>li{padding:0; }
+.multiselect-container>li>a.multiselect-all label{font-weight:700}
+.multiselect-container>li>label.multiselect-group{margin:0;padding:3px 20px;font-weight:700}
+.multiselect-container>li>a{padding-left:10px}
+.multiselect-container>li>a>label{margin:0;height:100%;cursor:pointer;font-weight:400;padding:3px 20px 3px 40px}
+.multiselect-container>li>a>label.radio,.multiselect-container>li>a>label.checkbox{
+    margin: 0;
+    width: 100%;
+    text-align: left !important;
+    padding-left: 15px !important;}
+
+.multiselect-container>li>a>label>input[type=checkbox]{
+   margin-bottom: 9px;
+    margin-left: -15px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+@media (min-width: 980px) and (max-width: 1152px) {
+    
+ .fsearch  #T_AcceptsTDO select  {
+    min-width: 185px;
+    max-width: 185px; 
+}
+
+}
+
+@media (min-width: 1280px) {
+    
+     .fsearch  #T_AcceptsTDO select  {
+   min-width: 245px;
+    max-width: 245px; 
+}
+   
+}
+
+@media (min-width: 1440px) {
+  
+    .fsearch  #T_AcceptsTDO select  {
+   min-width: 280px;
+    max-width: 280px;
+}
+   
+   
+}
+
+@media (min-width: 1360px) {
+   
+    .fsearch #T_AcceptsTDO select  {
+   min-width: 250px;
+    max-width: 250px;
+}
+   
+   
+}
+
+
+@media (min-width: 1366px) {
+  
+
+.fsearch #T_AcceptsTDO select  {
+   min-width: 250px;
+    max-width: 250px;
+}
+
+}
+
+.multiselect {
+   background-color: #fff !important;
+    height: 1.675rem;
+    border-radius: 0;
+    width: 100% !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

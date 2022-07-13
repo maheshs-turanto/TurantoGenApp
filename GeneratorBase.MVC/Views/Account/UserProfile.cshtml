@@ -1,0 +1,429 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationUser
+@using PagedList;
+@{
+	ViewBag.Title = "Edit User";
+	var EditPermission =  User.CanEdit("ApplicationUser");
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "User");
+	var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "User";
+	//var modelproperties = EntityDisplayNameReflector.Properties;
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+	{
+		Layout = null;
+	}
+	
+	List<string> hiddenProperties = new List<string>();
+
+	bool isRecordReadOnly = false;
+	if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"])==true)
+	{
+		isRecordReadOnly = true;
+		ViewData["RecordReadOnly"]=true;
+	}
+	 var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("User");
+var ProfilePic = Url.Content("~/Content/images/user.png");
+		
+}
+@functions {
+	object getHtmlAttributes(string Property)
+	{
+		if (User.CanEdit("ApplicationUser", Property))
+		{
+			return new { @class = "form-control", @title = "title" };
+		} 
+		return new { @class = "form-control", @readonly = "readonly", @title = "title" };
+	}
+}
+@functions {
+	object getDataFormatString( string prop)
+	{
+		Type currentType = Type.GetType("GeneratorBase.MVC.Models." + "ApplicationUser" + ", GeneratorBase.MVC.Models");
+		CustomDisplayFormat currentDisplayFormatAttribute;
+		string currentDataFormatString = "{0}";
+		if (currentType != null)
+		{
+			System.Reflection.PropertyInfo property = currentType.GetProperty(prop);
+			currentDisplayFormatAttribute = (CustomDisplayFormat)property.GetCustomAttributes(typeof(CustomDisplayFormat), true).FirstOrDefault();
+			if (currentDisplayFormatAttribute != null)
+			{
+				currentDataFormatString = currentDisplayFormatAttribute.DataFormatString;
+			}
+		}
+
+		return currentDataFormatString;
+	}
+}
+@functions {
+	object getUIDisplayFormat(string prop)
+	{
+		Type currentType = Type.GetType("GeneratorBase.MVC.Models." + "ApplicationUser" + ", GeneratorBase.MVC.Models");
+		CustomDisplayFormat currentDisplayFormatAttribute;
+		string currentDataFormatString = "{0}";
+		if (currentType != null)
+		{
+			System.Reflection.PropertyInfo property = currentType.GetProperty(prop);
+			currentDisplayFormatAttribute = (CustomDisplayFormat)property.GetCustomAttributes(typeof(CustomDisplayFormat), true).FirstOrDefault();
+			if (currentDisplayFormatAttribute != null)
+			{
+				currentDataFormatString = currentDisplayFormatAttribute.uidisplayformat;
+			}
+		}
+
+		return currentDataFormatString;
+	}
+}
+<script>
+window.onload = function(){
+	JumpToTab('@User.JavaScriptEncodedName@Model.Id'); 
+}
+</script>
+
+<script>
+	$(document).ready(function () {
+		try {
+          LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+		}
+		catch (ex) { }
+	});
+</script>
+@{
+	if (!string.IsNullOrEmpty(ViewBag.UserIsHiddenRule))
+	{
+		@Html.Raw(ViewBag.UserIsHiddenRule);
+	}
+}
+@{
+	if (!string.IsNullOrEmpty(ViewBag.UserIsGroupsHiddenRule))
+	{
+		@Html.Raw(ViewBag.UserIsGroupsHiddenRule);
+	}
+}
+@{
+	if (!string.IsNullOrEmpty(ViewBag.UserIsSetValueUIRule))
+	{
+		@Html.Raw(ViewBag.UserIsSetValueUIRule);
+	}
+}
+	
+<style>
+.formbuttonfix {
+	margin-right: 4px;
+   
+}
+
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+
+<div class="content-heading">
+	<div class="TitleName">
+	<strong><a href="@Url.Action("Index")">User Profile</a>
+	<small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)"> @Html.DisplayFor(model => model.DisplayValue)</small>
+	</strong></div>
+		
+</div>
+
+
+	<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+			<div id="errorsMsgEdit"></div>
+			<div id="errorsEdit"></div>
+		</div>
+   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+	<div class="tabs-container" style="margin-top:20px;">
+	@*<ul class="nav nav-tabs">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+	 Details</a>
+	 </li>
+	 
+
+		
+	</ul>*@
+		<div class="tab-content">
+		<div class="tab-pane fade show active" id="Details">
+@using (Html.BeginForm("UserProfile","Account",new {UrlReferrer =Convert.ToString(ViewData["UserParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data",@id="frmUser" }))
+{
+	 Html.ValidationSummary(true);
+	 Html.EnableClientValidation();
+	 @Html.HiddenFor(model => model.Id)
+
+
+	<div class="profile_ctn col-md-12">
+		<div class="row">
+			<div class="col-lg-3">
+				<aside class="prof_left">
+			<figure class="avtar"><img src="~/Content/images/user.png" style="width:100%; height:100%"></figure>
+				<h5>@Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)</h5>
+						<h5>@Html.DisplayFor(model => model.UserName)</h5>
+						<h5> <a href="mailto:@Html.DisplayFor(model => model.Email)">@Html.DisplayFor(model => model.Email)</a></h5>
+				</aside>
+						
+				</div>
+					<div class="col-lg-9">
+						<aside class="prof_right">
+
+							<div class="prof_hdr clearfix">
+								@*<a href="#" class="btn edt-btn">Edit Profile</a>*@
+								Personal Information
+							</div>
+			   
+							<div class="AppForm">
+						
+
+
+				<div class='col-md-12' id="dvFirstName">
+							<div class='form-group row' title="">
+								<label  >@Html.LabelFor(model => model.FirstName)  <span class="text-danger-reg">*</span> </label>
+								
+											
+									@Html.TextBoxFor(model => model.FirstName,  getHtmlAttributes("FirstName"))
+									
+								
+							 </div>
+							 @Html.ValidationMessageFor(model => model.FirstName)
+						</div>
+				
+
+				<div class='col-md-12' id="dvLastName">
+							<div class='form-group row' title="">
+								<label  >@Html.LabelFor(model => model.LastName)   </label>
+								
+											
+									@Html.TextBoxFor(model => model.LastName,  getHtmlAttributes("LastName"))
+									
+								
+							 </div>
+							 @Html.ValidationMessageFor(model => model.LastName)
+						</div>
+				
+	   </div>
+					
+					 
+							<div class='col-md-12' id="dvEmail">
+								<div class='form-group row' title="User No">
+									<label class="col-md-2">Email </label>
+									<div class="input-group col-md-9">
+										<p class="viewlabel">@Model.Email</p>
+									</div>
+								</div>
+							</div>
+							<div class='col-md-12' id="dvUserName">
+								<div class='form-group row' title="User No">
+									<label class="col-md-2">User Name </label>
+									<div class="input-group col-md-9">
+										<p class="viewlabel">@Model.UserName</p>
+									</div>
+								</div>
+							</div>
+							<div class='col-md-12' id="dvPhoneNumber">
+								<div class='form-group row' title="Phone Number">
+									<label class="col-md-2">Phone Number </label>
+									<div class="input-group col-md-9">
+										<p class="viewlabel">@Model.PhoneNumber</p>
+									</div>
+							</div>
+							</div>
+							<div class='col-md-12' id="dvRoles">
+								<div class='form-group row' title="User No">
+									<label class="col-md-2">Roles  </label>
+									<div class="input-group col-md-9">
+										<p class="viewlabel">@ViewData["Roles"]</p>
+									</div>
+								</div>
+							</div>
+</aside>
+
+						</div>
+					</div> 
+		</div>
+		<div id="divDisplayBRmsgBeforeSaveProp1"></div>
+		<div id="divDisplayBRmsgMandatory1"></div>
+		<div id="divDisplayLockRecord1"></div>
+		<div id="divDisplayBRReadOnly1"></div>
+		<div id="divDisplayCodeFragment1"></div>
+		 @Html.AntiForgeryToken();
+				if (ViewBag.IsPartial == null)
+				{
+					<a class="btn btn-default btn-sm pull-left formbuttonfix ml-20" Onclick="goBack('@Url.Action("Index", "User")');" alt="Cancel" title="Cancel">Cancel</a>
+				}
+		 @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["UserParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix", @alt="Cancel", @title="Cancel" })*@
+		 if (EditPermission)
+		 {
+ 				if (ViewBag.IsPartial == null)
+				{
+					<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix"  alt="Save" title="Save"/>
+				}
+			if (ViewBag.IsPartial == null)
+			{
+				<input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev"/>
+				<input type="submit" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+			}
+				<input type="hidden" name="hdncommand" value="" />
+				<input type="hidden" name="hdnNextPrevId" value="" />
+}
+}
+ @{ 
+ var dropmenubottom = false; 
+ }
+<div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomUser">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+			Add 
+			<span class="caret"></span>
+		</button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom || !EditPermission)
+{
+	<script>
+		$("#AddAssociationdropmenubottomUser").hide();
+	</script>
+}
+<div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+</div>
+</div> <!-- /tab-content --><br />
+<br/>
+</div>
+	<script>
+	$(function () {
+		ApplyAreYouSure();
+	});
+</script>
+@{
+	var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "User").ToList();
+  
+	var isbrrequired = false;
+	if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+	{
+		isbrrequired = true;
+	}
+}
+@{
+	if (ViewBag.IsPartial == true)
+	{
+	 var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+		<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+		<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+		<script type="text/javascript">
+	var config = {
+		'.chosen-select': {},
+		'.chosen-select-deselect': { allow_single_deselect: true },
+		'.chosen-select-no-single': { disable_search_threshold: 10 },
+		'.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+		'.chosen-select-width': { width: "95%" }
+	}
+	for (var selector in config) {
+		$(selector).chosen(config[selector]);
+	}
+	</script>
+	<script>
+					 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "User", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "User", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+					$("#frmUser").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+			$("#divDisplayBRmsgBeforeSaveProp").hide();
+			$("#divDisplayLockRecord").hide();
+			$("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+</script>
+}
+}
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "User").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+	<script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+				var dataurl = "";
+				var form = "";
+				var inlinecount = "0";
+ form = $("#frmUser");
+				dataurl = "@Url.Action("businessruletype", "User", new { ruleType = "OnEdit"})";
+				ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "User", false, "ErrMsg", form);
+				//business rules on inline associations
+				if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+				  {
+						$(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+				  }
+	});
+</script>
+<script>
+	$("form").submit(function (event) {
+	 $('[businessrule="mandatory"]').each(function () {
+	   $(this).removeAttr('required');
+	   });
+	if (!$("#frmUser").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+			var flag = true;
+			var dataurl = "";
+			var form = "";
+			var inlinecount = "0";
+ form = $("#frmUser").serialize();
+				 dataurl = "@Url.Action("businessruletype", "User", new { ruleType = "OnEdit"})";
+				 flag = ApplyBusinessRuleOnSubmit(dataurl, "User", false, "ErrMsg", form,"@typelist");
+				 //business rules on inline associations
+				  
+			 if (flag)
+				{
+									$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+					 $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+					 $("#frmUser").find(':input').removeAttr('disabled');
+					}
+			return flag;
+		});
+</script>
+}
+ else
+	{
+	   <script>
+	$("input[type='submit']").click(function (event) {
+	if (!$("#frmUser").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+		var $this = $(this);
+				var actionName = $this.attr("actionName")
+				if (actionName == undefined)
+					actionName = $this.val();
+				$('input:hidden[name="hdncommand"]').val(actionName);
+	});
+	</script>
+	}
+}
+
+<script type='text/javascript'>
+	$(document).ready(function () 
+	{
+			try {
+		focusOnControl('frmUser');
+		}
+		catch (ex) { }
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'User','edit',true,'User')
+	});
+	</script>
+	@if(ViewBag.IsPartial == null && EditPermission && ViewBag.EntityUserDisplayValueEdit != null)
+	{
+	<script type='text/javascript'>
+		 $(document).ready(function () {
+			NextPrev("User");
+		});
+	 </script>
+	}
+	

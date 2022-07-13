@@ -1,0 +1,16 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.FeedbackResource>
+@{
+    ViewBag.Title = "Feedback Resource List";
+	
+}
+<div class="content-heading">
+    <div class="col-lg-12">
+        <strong>
+          Feedback Resource  
+         <small>List</small>
+            </strong>
+</div>
+</div>
+<div id="dvFeedbackResourceFilter"></div>
+@Html.Partial("~/Views/FeedbackResource/IndexPartial.cshtml", Model)
+

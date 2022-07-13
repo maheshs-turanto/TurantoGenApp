@@ -1,0 +1,385 @@
+﻿@model GeneratorBase.MVC.Models.DefaultEntityPage
+@{
+    ViewBag.Title = "Create Default Entity Page";
+    Layout = null;
+}
+
+<style>
+    .WellContainer {
+        min-height: 20px;
+        padding: 5px 10px;
+        margin-bottom: 0;
+        background-color: #f5f5f5;
+        border: 1px solid #e3e3e3;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+        margin-bottom: 5px;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $("#dv" + hostingEntityName + "ID").hide();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "DefaultEntityPage", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+
+    <div class='form-group'>
+        <label>@Html.LabelFor(model => model.EntityName)<span class="text-danger-reg">*</span></label>
+        @Html.DropDownList("EntityName", null, "-- Select --", new { @dataurl = Url.Action("BindtemplatesIndex", "DefaultEntityPage", null), @required = "required", @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.EntityName)
+    </div>
+
+    <div class='form-group' id="dvRole" name="dvRoles">
+        <label>@Html.LabelFor(model => model.Roles) <span class="text-danger-reg">*</span></label>
+        <br />
+        @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+        @Html.Hidden("Roles", null, new { @Value = "" })
+        @Html.ValidationMessageFor(model => model.Roles)
+    </div>
+
+    <div class='form-group'>
+        <label>@Html.LabelFor(model => model.PageType) </label>
+        <select id="PageType" required="required" name="PageType" class="form-control">
+            <option value="">--Select Type--</option>
+            <option value="Default">Built In Pages</option>
+            <option value="Favorite">A Page Saved as Favorite</option>
+            <option value="Url">Internal URL</option>
+            <option value="Home">Home</option>
+
+        </select>
+        @Html.ValidationMessageFor(model => model.PageType)
+    </div>
+
+    <div id="SelectUrl" style="display:none;">
+        <div class='form-group'>
+            <label> Select landing page  <small style="color:#808080; font-size:10px; font-weight:normal;">select page which will open first when cilck on entity/home/layouts.</small></label>
+            <select id="DefaultUrl" style="display:none;" name="DefaultUrl" class="form-control">
+                <option value="">--Select Type--</option>
+                <option value="Index">List Page</option>
+                <option value="SetFSearch">Faceted Search</option>
+                <option value="Create">Add New Record</option>
+                <option value="Home">Home Page</option>
+            </select>
+            @Html.DropDownList("Favorites", null, "-- Select --", new { @style = "display:none;", @class = "form-control" })
+            @Html.TextBox("DirectUrl", null, new { @style = "display:none;", @class = "form-control", @required = "required", @placeholder = "Provide Internal Url" })
+        </div>
+    </div>
+    <div class='hidden well' style="display:none;">
+        <div class='form-group'>
+            <label>@Html.LabelFor(model => model.PageUrl) </label>
+            @Html.TextBoxFor(model => model.PageUrl, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.PageUrl)
+        </div>
+    </div>
+    <div id="dvListEntityPage" style="display:none;" class="WellContainer">
+        <label>Entity List Page</label>
+        <div class='form-group'>
+            <select id="ListEntityPage" name="ListEntityPage" class="form-control">
+                <option value="">--Select List--</option>
+            </select>
+        </div>
+    </div>
+    <div id="dvViewEntityPage" style="display:none;" class="WellContainer">
+        <label>
+            Entity View Page
+        </label>
+        <div class='form-group'>
+            <select id="ViewEntityPage" name="ViewEntityPage" class="form-control">
+                <option value="">--Select Details--</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="dvCreateEntityPage" style="display:none;" class="WellContainer">
+        <label>
+            Entity Create Page
+        </label>
+        <div class='form-group'>
+            <select id="CreateEntityPage" name="CreateEntityPage" class="form-control">
+                <option value="">--Select Create--</option>
+            </select>
+        </div>
+    </div>
+    <div id="dvEditEntityPage" style="display:none;" class="WellContainer">
+        <label>
+            Entity Edit Page
+        </label>
+        <div class='form-group'>
+            <select id="EditEntityPage" name="EditEntityPage" class="form-control">
+                <option value="">--Select Edit--</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="dvSearchEntityPage" style="display:none;" class="WellContainer">
+        <label>Entity Search Page</label>
+        <div class='form-group'>
+            <select id="SearchEntityPage" name="SearchEntityPage" class="form-control">
+                <option value="">--Select Search--</option>
+            </select>
+        </div>
+    </div>
+    <div id="dvHomePage" style="display:none;" class="WellContainer">
+        <label id="lblsetlayout">Set Default Page</label>
+        <div class='form-group'>
+            <select id="HomePage" name="HomePage" class="form-control">
+                <option value="">--Select Default--</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="padding:8px;display:block;"></div>
+
+    @Html.HiddenFor(model => model.Other)
+    <button id="CancelQuickAdd" type="button" class="btn btn-default  pull-right" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "DefaultEntityPage").ToList();
+    if (ViewBag.IsAddPop != null)
+    {
+        <input type="submit" value="Create" class="btn btn-primary pull-left" onclick="QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+    }
+    else
+    {
+        <input type="submit" value="Create" class="btn btn-primary pull-left" />
+    }
+    <script>
+        $("input[type='submit']").click(function (event) {
+            var pageType = $("#PageType").val();
+            var defaultUrl = $("#DefaultUrl").val()
+            if ($("#HomePage").val() == "" && pageType == "Home") {
+                alert('Please select default page')
+                return false;
+            }
+            if (pageType == "Default" && defaultUrl == "Home") {
+
+                var homePage = $("#HomePage").val();
+                if (homePage.length == 0) {
+                    alert('Please select default page')
+                    return false;
+                }
+            }
+            var selectedval = ($("#PageType").val());
+            //
+            SaveDefaultPage(event, selectedval, $("#DefaultUrl"), $("#PageUrl"), $("#Other"), $("#Favorites"), $("#DirectUrl"), $("#EntityName"), $("#RoleList"), $("#Roles"), $("#HomePage"));
+            //
+
+        });
+    </script>
+}
+
+
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+
+
+</script>
+<script>
+    $("#EntityName").change(function () {
+        var valEntity = $(this).val();
+        debugger;
+        if (valEntity == "Home") {
+            $("#SelectUrl").hide();
+            $("#DefaultUrl").show();
+            $("#DefaultUrl").val("Home");
+            $('#PageType option').each(function () {
+                if ($(this).val() != "Home")
+                    $(this).hide();
+                else if ($(this).val().toLowerCase() == "layouts") {
+                    $(this).remove();
+                }
+            });
+            $('#DefaultUrl option').each(function () {
+                if ($(this).val() != "Home")
+                    $(this).hide();
+                else if ($(this).val().toLowerCase().startsWith("views"))
+                    $(this).remove()
+            });
+            $("#dvHomePage").show();
+            $("#PageType").val("Home");
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+            bindpages(this, 'ViewEntityPage', 'ListEntityPage', 'EditEntityPage', 'SearchEntityPage', 'CreateEntityPage', 'HomePage')
+        }
+        else if (valEntity.toLowerCase() == "layout" || valEntity.toLowerCase() == "sidebar" || valEntity.toLowerCase() == "topnavbar") {
+            $("#SelectUrl").show();
+            $("#DefaultUrl").show();
+            $('#PageType option').each(function () {
+                 if ($(this).val().toLowerCase() == "layouts")
+                     $(this).remove();
+                  else
+                    $(this).hide();
+            });
+            $('#DefaultUrl option').each(function () {
+                 if ($(this).val().toLowerCase().startsWith("views"))
+                     $(this).remove()
+                else
+                     $(this).hide();
+
+            });
+            var url = '@Url.Action("GetViewNames", "DefaultEntityPage", null)';
+            BindViewNames(url, 'DefaultUrl');
+            $("#PageType").append("<option value = 'Layouts' selected='selected' >Layouts</option>");
+            $("#PageType").val("Layouts");
+            $("#DefaultUrl").val("Default");
+            $("#DirectUrl").hide();
+            $("#dvHomePage").show();
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+        }
+        else {
+            $("#SelectUrl").show();
+            $("#DefaultUrl").show();
+            $("#DefaultUrl").val('');
+            $('#PageType option').each(function () {
+                if ($(this).val() == "Home")
+                    $(this).hide();
+                else if ($(this).val().toLowerCase() == "layouts")
+                    $(this).remove();
+                else
+                    $(this).show();
+            });
+            $('#DefaultUrl option').each(function () {
+                if($(this).text().toLowerCase().startsWith("views"))
+                    $(this).remove()
+                else
+                    $(this).show();
+            });
+            $("#dvHomePage").show();
+            $("#PageType").val('');
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+            $("#SelectUrl").hide();
+            $("#dvHomePage").hide();
+            bindpages(this, 'ViewEntityPage', 'ListEntityPage', 'EditEntityPage', 'SearchEntityPage', 'CreateEntityPage', 'HomePage')
+        }
+    });
+
+    $("#PageType").change(function () {
+        var selectedval = ($(this).val());
+        var entvalue = $("#EntityName").val();
+        if (selectedval == "Home") {
+            $("#dvHomePage").show();
+            $("#SelectUrl").show();
+            $("#DefaultUrl").val("Home");
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+        }
+        else {
+            $("#DefaultUrl").val('');
+            $("#SelectUrl").show();
+            $("#dvHomePage").hide();
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+            $("#HomePage").val('')
+        }
+        SelectPageType(selectedval, $("#SelectUrl"), $("#DirectUrl"), $("#DefaultUrl"), $("#Favorites"))
+    });
+    $("#DefaultUrl").change(function () {
+        debugger;
+        var entvalue = $("#EntityName").val();
+        var defval = $(this).val();
+        if ($("#PageType").val().toLowerCase() == "layouts") {
+            defval = "layouts";
+        }
+        if (defval == "Home") {
+            $("#dvHomePage").show();
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+        }
+        else if (defval == "layouts") {
+
+            $("#dvHomePage").show();
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+             var url = '@Url.Action("GetPageNamesofLayouts", "DefaultEntityPage", null)';
+            BindPageNamesofLayouts("DefaultUrl", url, "HomePage");
+        }
+        else if (defval == "") {
+            $("#dvHomePage").hide();
+            $("#dvListEntityPage").hide();
+            $("#dvViewEntityPage").hide();
+            $("#dvCreateEntityPage").hide();
+            $("#dvEditEntityPage").hide();
+            $("#dvSearchEntityPage").hide();
+        }
+        else {
+            $("#SelectUrl").show();
+            $("#dvHomePage").hide();
+            $("#dvListEntityPage").show();
+            $("#dvViewEntityPage").show();
+            $("#dvCreateEntityPage").show();
+            $("#dvEditEntityPage").show();
+            $("#dvSearchEntityPage").show();
+            $("#HomePage").val('')
+        }
+    });
+
+    $(document).ready(function () {
+        try {
+            $('#EntityName option:first').after("<option value='Home'>Home</option><option value='Layout'>Layout</option><option value='TopNavbar'>TopNavbar</option><option value='Sidebar'>Sidebar</option>");
+        }
+        catch (ex) { }
+    });
+    $("#Favorites").change(function () {
+        var fav = $(this).val();
+        if (fav.length > 0) {
+            $("#PageUrl").val($(this).val());
+        }
+        else {
+            $("#PageUrl").val('');
+        }
+    });
+</script>
+
+

@@ -1,0 +1,232 @@
+﻿@model GeneratorBase.MVC.Models.T_FacetedSearch
+@using PagedList;
+@{
+    ViewBag.Title = "View FacetedSearch";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_FacetedSearch");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "FacetedSearch";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsSetValueUIRule);
+    }
+}
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-6">
+        <ol class="breadcrumb">
+            <li>
+               <strong><a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li class="active">
+                Details
+            </li>
+			<li class="active">
+              <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-6">
+			<div class="btn-group pull-right fixactionbut" style="margin-left:8px;">
+            <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("T_FacetedSearch"))
+                    {
+                        <a href="@Url.Action("Edit", "T_FacetedSearch", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("T_FacetedSearch"))
+                    {
+                        <a href="@Url.Action("Delete", "T_FacetedSearch", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+   </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+                                  
+			<div class="row">
+@if(User.CanView("T_FacetedSearch","T_Name")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+	<div class='form-group' title="@Model.T_Name">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Name) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblT_Name" class="viewlabel">@Model.T_Name</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+	<div class='form-group' title="@Model.T_Description">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Description)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_Description</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_EntityName")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EntityName">
+	<div class='form-group' title="@Model.T_EntityName">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_EntityName) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblT_EntityName" class="viewlabel">@Model.T_EntityName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_Roles")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Roles">
+	<div class='form-group' title="@Model.T_Roles">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Roles) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.T_Roles)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_Disable")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+	<div class='form-group' title="@Model.T_Disable">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Disable) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.T_Disable)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_LinkAddress"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_LinkAddress">
+	<div class='form-group' title="@Model.T_LinkAddress">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_LinkAddress)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_LinkAddress</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_TargetEntity")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_TargetEntity">
+	<div class='form-group' title="@Model.T_TargetEntity">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_TargetEntity) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblT_TargetEntity" class="viewlabel">@Model.T_TargetEntity</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_AssociationName")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AssociationName">
+	<div class='form-group' title="@Model.T_AssociationName">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_AssociationName) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblT_AssociationName" class="viewlabel">@Model.T_AssociationName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_OtherInfo")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OtherInfo">
+	<div class='form-group' title="@Model.T_OtherInfo">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_OtherInfo) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblT_OtherInfo" class="viewlabel">@Model.T_OtherInfo</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_FacetedSearch","T_Flag")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Flag">
+	<div class='form-group' title="@Model.T_Flag">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.T_Flag) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+				@Html.DisplayFor(model => model.T_Flag)
+		</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+				<a class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","T_FacetedSearch")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("T_FacetedSearch"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomT_FacetedSearch">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomT_FacetedSearch").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+	</div> <!-- /tab-content --><br />
+<br/>
+</div>
+</div>
+ 

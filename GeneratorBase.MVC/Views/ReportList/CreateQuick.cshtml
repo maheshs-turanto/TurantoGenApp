@@ -1,0 +1,179 @@
+﻿@model GeneratorBase.MVC.Models.ReportList
+@{
+    ViewBag.Title = "Create SSRS Report";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "ReportList",FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsgQuickAdd" />
+	@*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+	<div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+		    <div class="row">
+	@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+	@Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+    @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               					<div class="row">
+				        
+								@if(User.CanView("ReportList","ReportNo"))
+						{
+				<div class='col-sm-6' id="dvReportNo">
+                                <div class='form-group' title="Report No">
+                                    <label>@Html.LabelFor(model => model.ReportNo) </label>
+									 
+                                    @Html.TextBoxFor(model => model.ReportNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ReportNo)
+									
+                                </div>
+					</div>
+						}
+								@if(User.CanView("ReportList","DisplayName"))
+						{
+				<div class='col-sm-6' id="dvDisplayName">
+                                <div class='form-group' title="Display Name">
+                                    <label>@Html.LabelFor(model => model.DisplayName) </label>
+									 
+                                    @Html.TextBoxFor(model => model.DisplayName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DisplayName)
+									
+                                </div>
+					</div>
+						}
+					@if(User.CanView("ReportList","Description"))
+						{
+							<div class='col-sm-6' id="dvDescription">
+                                <div class='form-group' title="Description">
+                                    <label>@Html.LabelFor(model => model.Description) </label>
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description)
+                                </div>
+							</div>
+							}
+								@if(User.CanView("ReportList","Name"))
+						{
+				<div class='col-sm-6' id="dvName">
+                                <div class='form-group' title="Name">
+                                    <label>@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+									 
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Name)
+									
+                                </div>
+					</div>
+						}
+       </div>
+		@if (Convert.ToString(ViewData["AssociatedType"]) == "ReportsGroupSSRSReportAssociation")
+		{
+			@Html.HiddenFor(model => model.ReportsGroupSSRSReportAssociationID, new {@class = "form-control", Value = @ViewData["HostingEntityID"] })
+		}
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+		var busineesrule = User.businessrules.Where(p => p.EntityName == "ReportList").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+        if (ViewBag.IsAddPop != null)
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'ReportList','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+ <input type="submit"  value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'ReportList','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+		else
+		{
+			<input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'ReportList','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+ <input type="submit" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'ReportList','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+			  if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+				var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500);
+			var ctrlReadonly = $("#dvPopup").find('input[type=text][readonly],textarea[readonly]');
+            $(ctrlReadonly).each(function () {
+                $(ctrlReadonly).attr("tabindex", "-1");
+            });
+        }
+        catch (ex) { }
+			 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'ReportList','createquick',false,'SSRS Report')
+    });
+</script>
+

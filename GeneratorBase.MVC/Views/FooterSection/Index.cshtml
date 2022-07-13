@@ -1,0 +1,28 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.FooterSection>
+@{
+    ViewBag.Title = "Footer Section  List";
+	string templatename = ("~/Views/FooterSection/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Footer Section ";
+}
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("Index")">@EntityDisplayName</a><small>List</small></strong></div>
+    
+</div>
+
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+		  $('.edit').find('input[type=text]').hover(function () {
+            $(this).attr("title", $(this).val());
+
+        });
+    });
+</script>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvFooterSectionFilter"></div>@Html.Partial(templatename, Model)
+                </div>
+            </div>
+ 

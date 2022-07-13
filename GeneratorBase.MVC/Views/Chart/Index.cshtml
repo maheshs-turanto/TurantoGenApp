@@ -1,0 +1,87 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_Chart>
+@{
+    ViewBag.Title = "Application Charts";
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@if (appTheme == "Default")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">Application Charts</a>
+                <small>Add Chart</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a class="btn btn-primary pull-right text-white" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Chart','dvPopup','" + Url.Action("CreateQuick", "Chart", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Chart</a>
+
+        </div>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Chart/IndexPartial.cshtml", Model)
+    </div>
+
+}
+@if (appTheme == "Default1")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">Application Charts</a>
+                <small>Add Chart</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a class="btn btn-primary pull-right text-white" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Chart','dvPopup','" + Url.Action("CreateQuick", "Chart", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Chart</a>
+
+        </div>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Chart/IndexPartial.cshtml", Model)
+    </div>
+
+}
+@if (appTheme == "Angular")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index")">Application Charts</a>
+                <small>Add Chart</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a class="btn btn-primary pull-right text-white" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Chart','dvPopup','" + Url.Action("CreateQuick", "Chart", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Chart</a>
+
+        </div>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Chart/IndexPartial.cshtml", Model)
+    </div>
+
+}
+@if (appTheme == "Default_BS_5_x")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">Application Charts</a>
+                <small>Add Chart</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a class="btn btn-primary float-end text-white" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Chart','dvPopup','" + Url.Action("CreateQuick", "Chart", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Chart</a>
+
+        </div>
+    </div>
+
+    <div>
+        @Html.Partial("~/Views/Chart/IndexPartial.cshtml", Model)
+    </div>
+
+}

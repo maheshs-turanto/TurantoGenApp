@@ -1,0 +1,91 @@
+﻿@model GeneratorBase.MVC.Models.ImportConfiguration
+@{
+    ViewBag.Title = "Delete Import Configuration";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            Delete Import Configuration
+            <small>@Html.DisplayFor(model => model.DisplayValue)</small>  
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ConcurrencyKey)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card AppForm">
+                    <div class="card-header text-white bg-danger clearfix">
+                        <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.TableColumn)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.TableColumn)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.SheetColumn)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.SheetColumn)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.UniqueColumn)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.UniqueColumn)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.LastUpdate)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.LastUpdate)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.LastUpdateUser)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.LastUpdateUser)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Name)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Name)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.MappingName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.MappingName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.IsDefaultMapping)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.IsDefaultMapping)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default btn-sm" })
+                <input type="submit" value="Delete" class="btn btn-primary btn-sm " />
+            </div>
+        </div>
+    }
+</div>
+

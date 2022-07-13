@@ -1,0 +1,87 @@
+﻿@{
+}
+<div class="content-heading">
+    
+        <div class="col-lg-10">
+            <strong>
+                <a href="@Url.Action("Index","Admin")">Admin</a>
+
+                <small> @ViewBag.Title</small>
+            </strong>
+</div>      
+    
+</div>
+<br />
+@if (ViewBag.ImportError != null)
+{
+    if (ViewBag.ImportError == "success")
+    {
+        <div class="row">
+            <div class='col-sm-12'>
+                <div class="card card-default">
+                    <div class="card-body" style="margin:0px; padding:8px;">
+                         Configuration imported successfully.
+                    </div>
+                </div>
+				<a href="@Url.Action("Index", "Admin")" class="btn btn-primary btn-sm">Return to admin</a>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-sm">Return to Home</a>
+            </div>
+        </div>
+    }
+}
+
+@if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
+{
+    using (Html.BeginForm("ImportConfiguration", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row">
+            <div class='col-sm-12'>
+                <div class="card card-default">
+                    <div class="card-header clearfix">
+                        <h3 class="card-title">Upload File (Valid File Extensions : .json)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class='col-sm-12 row'>
+
+                            <div class='col-sm-6'>
+                                <input type="file" id="FileUpload" name="FileUpload" required data-val="true" data-val-required="please select a file" onchange="uploadOnChange(this);" /><span id="IEFileName"></span>
+                            </div>
+                            <div class='col-sm-6'>
+                                <input type="submit" id="impData" value="Upload" title="Click to upload file" onclick="return CheckFileName();" class="btn btn-primary " style="text-align:left;" />
+                                <a class="btn btn-secondary collapse-data-btn" data-placement="top" style="display:inline-block" href="@Url.Action("Index","Admin")">Cancel</a>
+                            </div>
+                            <script type="text/javascript">
+                                function uploadOnChange(fileid) {
+                                    if (navigator.userAgent.indexOf('Trident') != -1 || navigator.userAgent.indexOf('MSIE') != -1) {
+                                        var filename = fileid.value;
+                                        var lastIndex = filename.lastIndexOf("\\");
+                                        if (lastIndex >= 0) {
+                                            filename = filename.substring(lastIndex + 1);
+                                        }
+                                        $("#IEFileName").html(filename);
+                                    }
+                                }
+                                function CheckFileName() {
+                                    var fileName = document.getElementById("FileUpload").value;
+                                    if (fileName == "") {
+                                        alert("Browse to upload a valid File with json extension");
+                                        return false;
+                                    }
+                                    else if (fileName.split(".")[fileName.split('.').length - 1].toUpperCase() == "JSON") {
+                                        return true;
+                                    }
+                                    else {
+                                        alert("File with " + fileName.split(".")[fileName.split('.').length - 1].toUpperCase() + " is invalid. Upload a validfile with json extension");
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br /><br />
+    }
+}

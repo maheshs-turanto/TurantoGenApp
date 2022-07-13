@@ -1,0 +1,32 @@
+﻿@model GeneratorBase.MVC.Models.EntityDataSource
+@{
+    ViewBag.Title = "Create Entity Data Source";
+}
+<div class="content-heading">
+    <div class="col-lg-8">
+        <strong>
+            @{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+            Entity Data Source 
+            <small> Add Entity Data Source @hostingValue</small>
+            
+        </strong>
+        <div class="col-lg-4">
+        @if (ViewData["HostingEntity"] == null)
+        {
+            <a href="@(Url.Action("SetFSearch", "EntityDataSource")+Request.Url.Query)" data-original-title="Faceted Search" class=" btn btn-secondary">Search</a>
+        }
+        <button class="btn btn-xs  btn-default tip-top pull-right" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "EntityDataSource") + "');") style="padding:4px 10px 7px 10px; height:25px !important; margin:2px 3px 0px 0px; text-align:left;">
+            List
+        </button>
+        </div>
+    
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/EntityDataSource/CreatePartial.cshtml", Model)

@@ -1,0 +1,191 @@
+﻿
+@model GeneratorBase.MVC.Models.T_ExportDataLog
+@{
+    ViewBag.Title = "Add Multipul Files";
+    Layout = null;
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog").Properties;
+    //var allowedfileextensionsStr = "";
+    //var allowedfileextensions = "";
+    //var FileSize = "";
+    //var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    //allowedfileextensionsStr = commonObj.fileTypes;
+    //FileSize = commonObj.fileSize;
+    //string[] split = allowedfileextensionsStr.Split(',');
+    //foreach (string item in split)
+    //{
+    //    allowedfileextensions += "'." + item + "',";
+
+    //}
+    //allowedfileextensions = allowedfileextensions.TrimEnd(',');
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+@Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+@Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+@Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+
+      <div class="col-md-12 col-sm-12 col-xs-12 m-0 p-0">
+        <div class="">
+            <div class="card-body" style="padding:0px">
+                <div class="row">
+					                </div>
+            </div>
+        </div>
+    </div>
+   
+    <input id="upload" class="btn btn-primary btn-sm" type="button" value="Upload Dropped Files" style="border-radius: .2rem!important;"/>
+    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick='$(".close").click()' id="uplT_ExportDataLog" aria-hidden="true" style="border-radius: .2rem!important;">Cancel</button>
+
+<script>
+     var selectedFiles;
+    var fd = new FormData();
+    $(document).ready(function () {
+					    });
+    </script>
+<script>
+    $("#upload").click(function () {
+        var url = '@Url.Action("MultipleFileUpload")' + '?HostingEntityName=' + $("#HostingEntityName").val() + '&HostingEntityID=' + $("#HostingEntityID").val() + '&AssociatedType=' + $("#AssociatedEntity").val()
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: false,
+            processData: false,
+            enctype: 'multipart/form-data',
+            data: fd,
+            success: function (result) {
+                $('#' + result.entName + 'SearchCancel').click();
+                $("#upl" + result.entName).click();
+                 $(".close").click()
+            },
+            error: function () {
+                alert("There was error uploading files!");
+            }
+        });
+    });
+	 $(".close").click(function () {
+        $(".modal-backdrop").remove();
+    });
+	function removeLi(clt,id,fileElid)
+    {
+        var files = fd.getAll(fileElid);
+            files.splice($("[type='file']").index(files[id]), 1);
+            fd.delete(fileElid);
+            $.each(files, function (i, v) {
+                fd.append(fileElid, v);
+            });
+            $("#" + clt).remove();
+            if (files.length == 0) {
+                $("#spnUpl" + fileElid).show();
+                $('#uL' + fileElid).hide();
+            }
+    }
+	function getDocIconOrThumbnail(filename,type,cnt)
+    {
+        var icon='file';
+        if(type=='file')
+        {
+            debugger;
+            var ext = (filename.name).substr((filename.name).lastIndexOf('.') + 1).toLowerCase();
+            switch (ext) {
+                case 'xls':
+                case 'xlsx':
+				case 'csv':
+                    icon = 'file-excel';
+                    break;
+                case 'png':
+                case 'jpeg':
+                case 'jpg':
+                case 'gif':
+                    icon = 'file-image';
+                    break;
+                case 'zip':
+                case 'rar':
+                    icon = 'file-zip-o';
+                    break;
+                case 'pdf':
+                    icon = 'file-pdf';
+                    break;
+                case 'txt':
+                    icon = 'file-text';
+                    break;
+                case 'doc':
+                case 'docx':
+				    icon = 'file-word';
+                    break;
+                case 'html':
+                    icon = 'file-code';
+                    break;
+                case 'ppt':
+                    icon = "file-powerpoint";
+                    break;
+                default:
+                    icon = 'file';
+            }
+            return icon;
+        }
+        else
+        {
+            readURL(filename, cnt);
+        }
+    }
+    function readURL(filename, cnt) {
+        debugger;
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#img'+cnt).attr('src', e.target.result);
+            }
+            reader.readAsDataURL(filename); // convert to base64 string
+    }
+</script>
+ 
+<style>
+    .boxMyImages {
+        background-color: #FAFAFA;
+        border: dashed;
+        border-width: medium;
+        height: 220px;
+        border-color: #DDDDDD;
+        padding: 5px;
+    }
+    .boxMyImages:hover {
+        border-color: #1d5072 !important;
+    }
+    #DocName {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 96%;
+        display: inline-block;
+    }
+
+    .boxMyImages ul {
+        list-style: none;
+        width: 100%;
+        /* margin-left: 0px; */
+        padding: 0px;
+        height: 200px;
+        overflow: auto;
+    }
+
+    .boxMyImages li {
+        /* height: 30px; */
+        margin: 0 0 0px 0;
+        text-align: left;
+        background: #f3f5f9;
+        border: 1px solid #e7eaec;
+        padding: 5px;
+        color: #1a9bf1;
+        font-size: 16px;
+        display: block;
+    }
+        .boxMyImages li:hover {
+            /* height: 30px; */
+            background: #d6dae2;
+            color: #1d5072 !important;
+            cursor: pointer;
+        }
+      
+
+</style>
+
+
+

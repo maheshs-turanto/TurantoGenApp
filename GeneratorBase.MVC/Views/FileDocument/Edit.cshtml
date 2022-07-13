@@ -1,0 +1,782 @@
+﻿@model GeneratorBase.MVC.Models.FileDocument
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Document";
+	var EditPermission = User.CanEditItem("FileDocument", Model, User);
+	//var DeletePermission = User.CanDeleteItem("FileDocument", Model, User);
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FileDocument");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
+	var modelproperties = EntityDisplayNameReflector.Properties;
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+	
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "FileDocument" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "FileDocument", true);
+    }
+	bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"])==true)
+    {
+        isRecordReadOnly = true;
+		ViewData["RecordReadOnly"]=true;
+    }
+	var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+	string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+		footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+ var BackUrl =  Request.Url.PathAndQuery;
+    
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+	var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("FileDocument");
+	var NonViewableProperties = User.CanNotView("FileDocument");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+	List<string> groupcontaininginlinegrid = new List<string>();   
+
+
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "FileDocument", User, groupcontaininginlinegrid);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("FileDocument", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly"};
+    }
+   object getHtmlAttributesForCheckBox(string Property)
+    {
+        if (User.CanEdit("FileDocument", Property))
+        {
+            return null;
+        }
+        return new {@disabled = "@disabled" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+<script>
+window.onload = function(){
+	JumpToTab('@User.JavaScriptEncodedName@Model.Id'); 
+}
+</script>
+}
+<script>
+    $(document).ready(function () {
+        try {
+     LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+			$("[inlinegrid]").each(function() {
+                //$(this).click();
+				 eval($(this).attr('onclick'));
+			    var targetpanel = $(this).attr('id').replace('dvGroup','');
+			    $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+$(".responsive-tabs").removeClass("open").addClass(" ");
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+    <script>
+        var ResetBaseUrl = '@Url.Action("ResetToDefault", new { id = Model != null ? Model.Id : 0, groupName = "_groupname" })';
+    </script>
+    }
+   
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
+    {
+        <script>
+
+             var ResetBaseUrlField = '@Url.Action("ResetToDefaultField", new { id = Model != null ? Model.Id : 0, fieldName = "_fieldname" })';
+        </script>
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FileDocumentRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.FileDocumentRestrictDropdownValueRule);
+    }
+}
+@{
+    List<string> hiddenVerb = new List<string>(); var Verblist = "";
+    if (User.businessrules.Any(p => p.EntityName == "FileDocument" && p.ActionTypeID.Contains(16)))
+    {
+        hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "FileDocument");
+        Verblist = string.Join(",", hiddenVerb.ToList());
+    }
+}
+
+    
+
+	<style>
+.formbuttonfix {
+    margin-right: 4px;
+	
+   
+}
+
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+    {
+<style>
+.formbuttonfix {
+    
+	float:right!important;
+	margin-right:5px !important; 
+	padding:4px 18px!important; 
+   
+}
+    .hide {
+        display: none !important;
+    }
+
+    .show {
+        display: block !important;
+    }
+
+    .pager li {
+        display: inline;
+    }
+
+	.pager {
+    padding-left: 0;
+    margin: 8px 0;
+    list-style: none;
+    text-align: center;
+	}
+
+	.nav-tabs .nav-item {
+		margin-bottom: -0px!important;
+	}
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+    .next a {
+        float: right;
+    }
+
+    .previous a {
+        float: left;
+    }	
+.vrbButtons {
+    padding:4px 40px!important;
+	font-size:20px;
+    margin-top: -40px;
+    }
+@@media (max-width: 767px) {
+
+
+            .arrowCount {
+                background-color: #1d5072 !important;
+            }
+
+            #dvGroupT_StudentPersonalInformation {
+                margin-top: 10px!important;
+            }
+
+            .nav-tabs .nav-item.active a {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+
+            .nav-tabs .nav-item.active a:hover {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+            .sw-theme-arrows > ul.step-anchor {
+                border-top-right-radius: 0!important;
+            }
+
+                .sw-theme-arrows > ul.step-anchor > li.active > a {
+                    display: block!important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
+                    display: none!important;
+                    color: #1d5072!important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor.open > li > a {
+                    display: block !important;
+                }
+
+            .responsive-tabs .dropdown-arrow {
+                border-color: #fff!important;
+                display: block!important;
+                z-index:1000;
+                position:absolute;
+            }
+
+            #WizardBtnCancel {
+                margin-top: unset !important;
+                float: unset !important;
+                display: block !important;
+                margin-right: 8px !important;
+                margin-top: 3px !important;
+            }
+        }
+</style>
+}
+
+<div class="content-heading">
+    <div class="TitleName">
+	<strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="FileDocument"})">@EntityDisplayName Edit</a>
+	<small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+	     @Html.DisplayFor(model => model.DisplayValue)
+    	</small></strong></div>
+	 @if (string.IsNullOrEmpty(wizardid))
+        { 
+	    <div class="ml-auto">
+       @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+	 {
+			   <div class="btn-group float-right" style="margin-left:8px;">
+			              <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Action
+            </a>
+			<ul class="dropdown-menu multi-level">
+ @if (EditPermission)
+                    {
+				<li class="dropdown-item">
+                   
+                        <a href="@Url.Action("Edit","FileDocument", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    
+                </li> 
+				}            
+ @if (EditPermission && User.CanDelete("FileDocument"))
+                    {
+				<li class="dropdown-item">
+                   
+                        <a href="@Url.Action("Delete", "FileDocument", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                    
+                </li>
+				}
+  @if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+                {
+                    <li class="dropdown-item">
+                    <a data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+                        </li>
+                }
+			</ul>
+		</div>
+}
+			@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityFileDocumentDisplayValueEdit != null && !HideAction)
+			{	
+				<div class="pull-right">
+					<button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('FileDocument',event,'hdnNextPrevId')")" alt="Next" title="Next" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+					@Html.DropDownList("EntityFileDocumentDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('FileDocument','frmFileDocument','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+					<button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('FileDocument',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+				</div>
+			}
+    </div>
+	}
+</div>
+
+
+	<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+    <a id="seturlFileDocument" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "FileDocument")).ToHtmlString()"></a>
+    <div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+	 Details</a>
+	 </li>
+
+    </ul>
+		<div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+@using (Html.BeginForm("Edit","FileDocument",new {UrlReferrer =Convert.ToString(ViewData["FileDocumentParentUrl"]), viewmode = viewmode}, FormMethod.Post, new { enctype = "multipart/form-data",@id="frmFileDocument" }))
+{
+    if (!string.IsNullOrEmpty(wizardid))
+	{ @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+	else { Html.ValidationSummary(true);}
+	Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+	if (NonViewableProperties != null) 
+	{ 
+	@Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+	}
+<div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+</div>
+<div class="AppForm tabs-container" @wizardid>
+	@if (!string.IsNullOrEmpty(wizardid))
+    {
+        <ul id="olwizard" class="nav nav-tabs responsive-tabs" role="tablist">
+           		<li role="tab" class="nav-item" id="liGroupFileDocumentOther">
+		 <a href="#wzGroupFileDocumentOther" class="hidden-phone">Other</a>
+		</li>
+
+           
+            
+        </ul>
+        <script>
+            $(document).ready(function(){
+                $(".formbuttonfix:not([dataurl]").hide();
+                $(".pager").show();
+                $(".pager.bwizard-buttons").show();
+				$("ol#olwizard").removeClass("d-none");
+				$("#tabcontent").removeClass("d-none");
+            });
+        </script>
+		@Html.Hidden("wizardstep", ViewData["wizardstep"])
+    }
+	<div>		
+					<div class="row bgwizard" id="wzGroupFileDocumentOther">
+				@if(!NonViewableProperties.Contains("DocumentName") && !hiddenProperties.Contains("DocumentName"))
+{
+				<div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
+							<div class='form-group' title="">
+								<label  >@Html.LabelFor(model => model.DocumentName)  <span class="text-danger-reg">*</span> </label>
+                                
+											
+									@Html.TextBoxFor(model => model.DocumentName,  getHtmlAttributes("DocumentName"))
+									
+								
+								
+                             </div>
+							 @Html.ValidationMessageFor(model => model.DocumentName)
+						</div>
+			
+				} else {if(!NonViewableProperties.Contains("DocumentName")){ @Html.HiddenFor(model => model.DocumentName, new { @class = "form-control" })}}
+@if(!NonViewableProperties.Contains("Description") && !hiddenProperties.Contains("Description"))
+{
+				<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+							<div class='form-group' title="">
+								<label  >@Html.LabelFor(model => model.Description)   </label>
+                                
+											
+									@Html.TextBoxFor(model => model.Description,  getHtmlAttributes("Description"))
+									
+								
+								
+                             </div>
+							 @Html.ValidationMessageFor(model => model.Description)
+						</div>
+			
+				} else {if(!NonViewableProperties.Contains("Description")){ @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}}
+				@if(User.CanView("FileDocument","AttachDocument") && User.CanView("Document"))
+				{
+								 <div class='col-sm-6 col-md-6 col-xs-12' id="dvAttachDocument">
+                            <div class='form-group' title="">
+							@Html.TextBoxFor(model => model.AttachDocument, new { @class = "d-none" })
+                                   <label  >@Html.LabelFor(model => model.AttachDocument) </label>
+                                     
+									 <div style="position:relative;">
+                                       
+                                       
+										 <a class='btn btn-primary btnupload' href='javascript:;' style="float:left; margin-right:5px;">
+											 Upload File
+										  <input id="File_AttachDocument"     type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_AttachDocument" onchange='uploadedFileName("upload-file-infoFile_AttachDocument",$(this).val());'>
+										</a>
+
+ 
+                                                
+													                                                @if (!string.IsNullOrEmpty(Model.AttachDocument))
+												{
+												@Html.ActionLink(Model.AttachDocument, "Download", new { filename = Model.AttachDocument }, new { @Class = "mt-1 pull-left", @Style = "vertical-align:middle;"}) 
+												 
+                                                }
+                                                <span class='label uploadlblFix pull-left' id="upload-file-infoFile_AttachDocument"></span>  
+                                            																			</div> 
+									
+                            </div>
+                   </div>
+				} else { if(!NonViewableProperties.Contains("AttachDocument")){ @Html.HiddenFor(model => model.AttachDocument, new { @class = "form-control" })}}
+@if(!NonViewableProperties.Contains("DateCreated") && !hiddenProperties.Contains("DateCreated"))
+{
+						 <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateCreated">
+							  <div class="form-group" title="">
+                                <label  >@Html.LabelFor(model => model.DateCreated) <span class="text-danger-reg">*</span></label>
+								
+								
+                                    <div class="input-group date" id="datetimepickerDateCreated">
+ @Html.TextBoxFor(model => model.DateCreated, modelproperties.FirstOrDefault(p => p.Name == "DateCreated").DisplayFormat, User.CanEdit("FileDocument", "DateCreated") ? (object)new {@class = "form-control" , @readonly="readonly",@format = modelproperties.FirstOrDefault(p => p.Name == "DateCreated").UIDisplayFormat} : (object)new { @class = "form-control", @readonly="readonly",@format = modelproperties.FirstOrDefault(p => p.Name == "DateCreated").UIDisplayFormat })
+									<span class="input-group-addon btn btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateCreated)
+								
+                                </div>
+                            </div>
+						} else { if(!NonViewableProperties.Contains("DateCreated")){ @Html.HiddenFor(model => model.DateCreated, new { @class = "form-control" })}}
+@if(!NonViewableProperties.Contains("DateLastUpdated") && !hiddenProperties.Contains("DateLastUpdated"))
+{
+						 <div class='col-sm-6 col-md-6 col-xs-12' id="dvDateLastUpdated">
+							  <div class="form-group" title="">
+                                <label  >@Html.LabelFor(model => model.DateLastUpdated) <span class="text-danger-reg">*</span></label>
+								
+								
+                                    <div class="input-group date" id="datetimepickerDateLastUpdated">
+ @Html.TextBox("DateLastUpdated",DateTime.Now, modelproperties.FirstOrDefault(p => p.Name == "DateLastUpdated").DisplayFormat, User.CanEdit("FileDocument", "DateLastUpdated") ? (object)new {@class = "form-control",@readonly="readonly" ,@format = modelproperties.FirstOrDefault(p => p.Name == "DateLastUpdated").UIDisplayFormat} : (object)new { @class = "form-control", @readonly="readonly",@format = modelproperties.FirstOrDefault(p => p.Name == "DateLastUpdated").UIDisplayFormat})
+									<span class="input-group-addon btn btn-default calendar">
+                                           <i class="fa fa-calendar"></i>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.DateLastUpdated)
+								
+                                </div>
+                            </div>
+						} else { if(!NonViewableProperties.Contains("DateLastUpdated")){ @Html.HiddenFor(model => model.DateLastUpdated, new { @class = "form-control" })}}
+       </div>
+
+                   
+	@if (!string.IsNullOrEmpty(wizardid))
+    {
+       
+    }    
+		</div>	
+		</div>
+		<div class="@footerclassdiv1">
+		<div class="@footerclassdiv2">	
+		 @Html.AntiForgeryToken()
+                
+                    <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "FileDocument")');" alt="Cancel" title="Cancel">Cancel</a>
+                
+		 @if (EditPermission)
+         {
+ 				
+					<input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix"  alt="Save" title="Save"/>
+				
+			if (ViewBag.IsPartial == null)
+			{
+				<input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev"/>
+				<input type="submit"  id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+			}
+				<input type="hidden" name="hdncommand" value="" />
+				<input type="hidden" name="hdnNextPrevId" value="" />
+}
+@foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+{
+	if (item.T_DisplayType == "Button")
+	{
+        var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+        var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+
+        if (!string.IsNullOrEmpty(item.T_DefaultOutputFormat) && item.T_DefaultOutputFormat.ToLower() == "docx")
+        {
+            isdownload = true;
+            ispreview = false;
+        }
+        if (ispreview)
+        {
+            <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "FileDocument", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+                <i class="fa fa-file-pdf"></i> @item.T_Name
+            </a>
+        }
+        else
+        {
+	        <a class="btn btn-primary btn-sm pull-left formbuttonfix vrbButtons" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick="@Html.Raw("GenerateDocumentFromButton(this,'"+isdownload + "');")" dataurl="@Url.Action("GenerateDocument", "FileDocument", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+        }
+	}
+}
+                    @if (ViewBag.ExportDataTemplates != null)
+                    {
+                        foreach (var item in (List<GeneratorBase.MVC.Models.T_ExportDataConfiguration>)ViewBag.ExportDataTemplates)
+                        {
+                            <a class="btn btn-primary btn-sm pull-left formbuttonfix" data-placement="top" data-original-title="@item.T_Name" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Note','dvPopup','" + Url.Action("ExportDataNote", "FileDocument", new { btnid = item.Id, Ids = Model.Id, UrlReferrer = BackUrl, TS = DateTime.Now }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+                                @item.T_Name
+                            </a>
+                        }
+                    }
+
+
+@if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+{ 
+<div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+               <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                    @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                    {
+										var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                        <div class="col-sm-4">
+                                            <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload?"download=true":"download:false") dataurl='@Url.Action("GenerateDocument", "FileDocument", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body row pull-right">
+								 <label id="lblGenerateDocument" class="text-primary"></label>
+                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                    <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                </div>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </div>
+</div>
+<a class="btn btn-primary btn-sm pull-left formbuttonfix vrbButtons" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+}
+		 
+            @if (User.businessrules.Any(p => p.EntityName == "FileDocument" && p.ActionTypeID.Contains(16)))
+                    {
+                    <script>HideVerbFromBR('@Verblist');</script>
+                    <script>
+                    var array = '@Verblist'.split(',');
+                    for (var i = 0; i < array.length; i++) {
+                    var verbId = array[i];
+                    $("#" + verbId).remove();
+                    }
+                    </script>
+                    }  
+
+
+@{var dropmenubottom = false;}          
+
+<div class="pull-left formbuttonfix dropup" style="display:none" id="AddAssociationdropmenubottomFileDocument">
+<button type="button" class="btn btn-primary btn-sm" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+          <span class="fa fa-plus"></span> Add 
+            
+        </button>
+		 <ul class="dropdown-menu BtnVerb" role="menu" aria-labelledby="dropdownMenu1" style="padding:0px; margin-bottom:5px;">
+</ul>
+</div>
+@if(!dropmenubottom || !EditPermission)
+{
+    <script>
+        $("#AddAssociationdropmenubottomFileDocument").hide();
+    </script>
+}
+</div></div>} @*end form*@
+<div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+<div id="divDisplayBRmsgBeforeSaveProp1"></div>
+<div id="divDisplayBRmsgMandatory1"></div>
+<div id="divDisplayLockRecord1"></div>
+<div id="divDisplayBRReadOnly1"></div>
+<div id="divDisplayCodeFragment1"></div>
+</div>
+@if (string.IsNullOrEmpty(wizardid))
+{
+
+}
+</div> <!-- /tab-content -->
+</div>
+	<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+$('#printButton').click(function (evt) {
+                evt.preventDefault();
+                $('body').append('<iframe src="@Url.Action("Details", "FileDocument", new { id = Model.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" id="printIFrame" name="printIFrame" style="display:none;"></iframe>');
+                $('#printIFrame').bind('load',
+                    function () {
+                        window.frames['printIFrame'].focus();
+                        window.frames['printIFrame'].print();
+
+                    }
+                 );
+
+            });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+	if (ViewBag.IsPartial == true)
+	{
+	 var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+	 
+		<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    </script>
+	<script>
+					 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "FileDocument", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+					$("#frmFileDocument").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+            $("#divDisplayBRmsgBeforeSaveProp").hide();
+            $("#divDisplayLockRecord").hide();
+            $("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+</script>
+}
+}
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "FileDocument").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+    <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmFileDocument");
+				dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "FileDocument", false, "ErrMsg", form);
+				//business rules on inline associations
+				if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+						$("a.btnupload").each(function(index) {$(this).remove() });
+                  }
+    });
+</script>
+<script>
+   $("form input[type=submit]").click(function() {
+		var actionName = $(this).attr("actionName")
+        if (actionName == undefined)
+            actionName = $(this).val();
+        $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+    $("form").submit(function (event) {
+	 $('[businessrule="mandatory"]').each(function () {
+       $(this).removeAttr('required');
+       });
+	if (!$("#frmFileDocument").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmFileDocument").serialize();
+				 dataurl = "@Url.Action("businessruletype", "FileDocument", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "FileDocument", false, "ErrMsg", form,"@typelist");
+  				 //business rules on inline associations
+				  
+			 if (flag)
+				{
+				                    
+					 $("#frmFileDocument").find(':input').removeAttr('disabled');
+					}
+					else
+					{
+						}
+            return flag;
+		});
+</script>
+}
+ else
+    {
+       <script>
+    $("input[type='submit']").click(function (event) {
+	if (!$("#frmFileDocument").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+        var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+	</script>
+    }
+}
+
+<script type='text/javascript'>
+$("input[datatype='Double']").addClass("pull-right text-right");
+    $(document).ready(function () 
+	{
+				try {
+		focusOnControl('frmFileDocument');
+        }
+        catch (ex) { }
+    if('@ViewBag.EntityHelp' == 'True' || '@ViewBag.EntityHelp' == 'true')
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FileDocument','edit',true,'Document')
+		 //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'FileDocument','edit',false,'Document')
+    }
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+              if (value.length > 0)  $("#"+value).hide();
+            });
+    });
+	</script>
+	@if(ViewBag.IsPartial == null && EditPermission && ViewBag.EntityFileDocumentDisplayValueEdit != null)
+	{
+	<script type='text/javascript'>
+		 $(document).ready(function () {
+			NextPrev("FileDocument");
+		});
+	 </script>
+	}
+	

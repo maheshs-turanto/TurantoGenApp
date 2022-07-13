@@ -1,0 +1,133 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_DataMetric>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"Data Metric.xls\"");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_DataMetric","T_Name"))
+{
+		<th>Name</th>
+}
+@if(User.CanView("T_DataMetric","T_ToolTip"))
+{
+		<th>ToolTip</th>
+}
+@if(User.CanView("T_DataMetric","T_AssociatedDataMetricTypeID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "T_DataMetrictype"?"hidden":"")>Data Metric Type</th>
+}
+@if(User.CanView("T_DataMetric","T_Aggregate"))
+{
+		<th>Aggregate</th>
+}
+@if(User.CanView("T_DataMetric","T_EntityName"))
+{
+		<th>Entity Name</th>
+}
+@if(User.CanView("T_DataMetric","T_AggregatePropertyName"))
+{
+		<th>Aggregate Property Name</th>
+}
+@if(User.CanView("T_DataMetric","T_Roles"))
+{
+		<th>Roles</th>
+}
+@if(User.CanView("T_DataMetric","T_BackGroundColor"))
+{
+		<th>Background Color</th>
+}
+@if(User.CanView("T_DataMetric","T_FontColor"))
+{
+		<th>Font Color</th>
+}
+@if(User.CanView("T_DataMetric","T_Hide"))
+{
+		<th>Hide?</th>
+}
+@if(User.CanView("T_DataMetric","T_ClassIcon"))
+{
+		<th>Class Icon</th>
+}
+    </tr>
+@foreach (var item in Model) {
+List<string> hiddenProperties = new List<string>();
+if (User.businessrules.Any(p => p.EntityName == "T_DataMetric" && p.ActionTypeID.Contains(6)))
+{
+	hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_DataMetric");
+}
+    <tr>
+	@if(User.CanView("T_DataMetric","T_Name"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Name)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_ToolTip"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_ToolTip)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_AssociatedDataMetricTypeID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "T_DataMetrictype"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.t_associateddatametrictype.DisplayValue)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_Aggregate"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Aggregate)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_EntityName)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_AggregatePropertyName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_AggregatePropertyName)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_Roles"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Roles)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_BackGroundColor"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_BackGroundColor)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_FontColor"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_FontColor)
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_Hide"))
+{
+		<td>
+            @item.T_Hide
+        </td>
+}
+@if(User.CanView("T_DataMetric","T_ClassIcon"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_ClassIcon)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               
+			   

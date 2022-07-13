@@ -1,0 +1,222 @@
+﻿@model GeneratorBase.MVC.Models.FooterSection
+@{
+    ViewBag.Title = "Create Footer Section ";
+    Layout = null;
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection").Properties;
+    var NonViewableProperties = User.CanNotView("FooterSection");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "FooterSection", User);
+}
+<script>
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.FooterSectionRestrictDropdownValueRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "FooterSection", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+                            Html.ValidationSummary(true);
+                            Html.EnableClientValidation();
+                            <input type="hidden" id="ErrMsgQuickAdd" />
+                            @*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+                            <div id="errorContainerQuickAdd" style="display: none">
+                                <div id="errorsMsgQuickAdd"></div>
+                                <div id="errorsQuickAdd"></div>
+                            </div>
+                            @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+                            <div class="row">
+                                @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                                @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+                                @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="AppForm">
+                                        <div>
+                                            <div class="row">
+
+                                                @if (User.CanView("FooterSection", "CompanyInformationFooterSectionAssociationID"))
+                                                {
+                                                    <div class='col-sm-6' id="dvCompanyInformationFooterSectionAssociationID">
+                                                        <div class='form-group'>
+                                                            <label>@Html.LabelFor(model => model.CompanyInformationFooterSectionAssociationID) </label>
+                                                            <div class="input-group" style="width: 100%;">
+                                                                @Html.DropDownList("CompanyInformationFooterSectionAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "CompanyInformation", @dataurl = Url.Action("GetAllValue", "CompanyInformation", new { caller = "CompanyInformationFooterSectionAssociationID" }) })
+
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.CompanyInformationFooterSectionAssociationID)
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                                @if (User.CanView("FooterSection", "Name"))
+                                                {
+                                                    <div class='col-sm-6' id="dvName">
+                                                        <div class='form-group' title="Name">
+                                                            <label>@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+
+                                                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+
+                                                            @Html.ValidationMessageFor(model => model.Name)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                <div class='col-sm-6' id="dvAssociatedFooterSectionTypeID">
+                                                    <div class='form-group'>
+                                                        <label>@Html.LabelFor(model => model.AssociatedFooterSectionTypeID) <span class="text-danger-reg">*</span></label>
+                                                        <div class="input-group" style="width: 100%;">
+                                                            @Html.DropDownList("AssociatedFooterSectionTypeID", null,null, new { @required = "required", @class = "form-control", @HostingName = "FooterSectiontype" })
+
+                                                        </div>
+                                                        @Html.ValidationMessageFor(model => model.AssociatedFooterSectionTypeID, "The Document Display field is required.")
+                                                    </div>
+                                                </div>
+                                                @if (User.CanView("FooterSection", "WebLinkTitle"))
+                                                {
+                                                    <div class='col-sm-6' id="dvWebLinkTitle">
+                                                        <div class='form-group' title="Web Link Title">
+                                                            <label>@Html.LabelFor(model => model.WebLinkTitle) </label>
+
+                                                            @Html.TextBoxFor(model => model.WebLinkTitle, new { @class = "form-control" })
+
+                                                            @Html.ValidationMessageFor(model => model.WebLinkTitle)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("FooterSection", "WebLink"))
+                                                {
+                                                    <div class='col-sm-6' id="dvWebLink">
+                                                        <div class='form-group' title="Web Link">
+                                                            <label>@Html.LabelFor(model => model.WebLink) </label>
+
+                                                            @Html.TextBoxFor(model => model.WebLink, new { @class = "form-control" })
+
+                                                            @Html.ValidationMessageFor(model => model.WebLink)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanAdd("Document"))
+                                                {
+                                                    if (User.CanView("FooterSection", "DocumentUpload"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvDocumentUpload">
+                                                            <div class='form-group' title="Document Upload">
+                                                                <label>@Html.LabelFor(model => model.DocumentUpload) </label>
+                                                                <div style="position:relative;">
+                                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                        Upload File
+                                                                        <input id="DocumentUpload" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="DocumentUpload" onchange='$("#upload-file-infoDocumentUpload").html($(this).val());'>
+                                                                    </a>
+                                                                    &nbsp;
+                                                                    <span class='label uploadlblFix' id="upload-file-infoDocumentUpload"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                                                var busineesrule = User.businessrules.Where(p => p.EntityName == "FooterSection").ToList();
+                                                var lstinlineentityname = "";
+                                                var lstinlineassocdispname = "";
+                                                var lstinlineassocname = "";
+                                                var typelist = string.Join(",", busineesrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+                                                if (ViewBag.IsAddPop != null)
+                                                {
+                                                    <input type="submit" value="Create" caller="@Request.QueryString["caller"]" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'FooterSection','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+                                                    <input type="submit" caller="@Request.QueryString["caller"]" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'FooterSection','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'FooterSection','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+                                                    <input type="submit" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'FooterSection','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+                                                }
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "FooterSection").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsgQuickAdd").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmFooterSection");
+                dataurl = "@Url.Action("businessruletype", "FooterSection", new { ruleType = "OnCreate" })";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "FooterSection", false, "ErrMsgQuickAdd", form);
+
+            });
+        </script>
+    }
+}
+
+
+
+
+
+
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        IgnoreReadOnlyCtrlFocus();
+        ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'FooterSection','createquick',false,'Footer Section ')
+    });
+    var arrgroup = '@lstHiddenGroupFLS'.split(',');
+    $.each( arrgroup, function( index, value ){
+        $("#"+value).hide();
+    });
+</script>
+

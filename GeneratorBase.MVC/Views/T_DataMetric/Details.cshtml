@@ -1,0 +1,369 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@using PagedList;
+@{
+    ViewBag.Title = "View Data Metric";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_DataMetric");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Data Metric";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_DataMetric" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_DataMetric", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function() {
+                $(this).click();
+            });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_DataMetricIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("Index")">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("T_DataMetric"))
+                    {
+                        <a href="@Url.Action("Edit","T_DataMetric", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("T_DataMetric"))
+                    {
+                        <a href="@Url.Action("Delete", "T_DataMetric", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+			</ul>
+   </div>
+</div>
+</div>
+	<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container card card-body">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+
+		 <li class="nav-item" @(!User.CanView("JournalEntry")?"style=display:none;":"")>
+		 <a class="nav-link" onclick="LoadTab('JournalEntryToT_DataMetricRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "T_DataMetric", HostingEntity = "T_DataMetric", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToT_DataMetricRelation" data-toggle="tab" title="Data Metric Journal">Data Metric Journal</a></li>
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupT_DataMetricBasicInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Basic Information</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+@if(User.CanView("T_DataMetric","T_Name")  && !hiddenProperties.Contains("T_Name") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+	<div class='form-group' title="@Model.T_Name">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Name) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblT_Name" class="viewlabel">@Model.T_Name</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_DataMetric","T_ToolTip")  && !hiddenProperties.Contains("T_ToolTip"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+	<div class='form-group' title="@Model.T_ToolTip">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_ToolTip)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="viewlabelmultiline">@Model.T_ToolTip</p>
+		</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupT_DataMetricMetricDisplayInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">Metric Display Information</h3>
+								</div>
+                                <div class="card-body row">
+                                  
+
+	@if(User.CanView("T_DataMetrictype") && User.CanView("T_DataMetric","T_AssociatedDataMetricTypeID") && !hiddenProperties.Contains("T_AssociatedDataMetricTypeID"))
+{
+<div class='col-sm-12 col-md-12 col-xs-12' id="dvT_AssociatedDataMetricType">
+	<div class='form-group' >
+		<label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_AssociatedDataMetricTypeID)</label>
+		<div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+		@if (@Model.T_AssociatedDataMetricTypeID == 0 || @Model.T_AssociatedDataMetricTypeID == null || @Model.t_associateddatametrictype == null)
+		{
+	         <p id="lblT_AssociatedDataMetricTypeID" class="viewlabel"></p>
+        }
+        else
+        {
+		     <p id="lblT_AssociatedDataMetricTypeID" class="viewlabel" title="@Model.t_associateddatametrictype.DisplayValue">@Model.t_associateddatametrictype.DisplayValue</p>
+        }
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_DataMetric","T_Aggregate")  && !hiddenProperties.Contains("T_Aggregate") )
+{
+<div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Aggregate">
+	<div class='form-group' title="@Model.T_Aggregate">
+		<label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Aggregate) </label>
+		<div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+		
+						<p id="lblT_Aggregate" class="viewlabel">@Model.T_Aggregate</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_DataMetric","T_EntityName")  && !hiddenProperties.Contains("T_EntityName") )
+{
+<div class='col-sm-12 col-md-12 col-xs-12' id="dvT_EntityName">
+	<div class='form-group' title="@Model.T_EntityName">
+		<label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_EntityName) </label>
+		<div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+		
+						<p id="lblT_EntityName" class="viewlabel">@Model.T_EntityName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_DataMetric","T_AggregatePropertyName")  && !hiddenProperties.Contains("T_AggregatePropertyName") )
+{
+<div class='col-sm-12 col-md-12 col-xs-12' id="dvT_AggregatePropertyName">
+	<div class='form-group' title="@Model.T_AggregatePropertyName">
+		<label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_AggregatePropertyName) </label>
+		<div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+		
+						<p id="lblT_AggregatePropertyName" class="viewlabel">@Model.T_AggregatePropertyName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("T_DataMetric","T_Roles")  && !hiddenProperties.Contains("T_Roles") )
+{
+<div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Roles">
+	<div class='form-group' title="@Model.T_Roles">
+		<label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Roles) </label>
+		<div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+		
+						<p id="lblT_Roles" class="viewlabel">@Model.T_Roles</p>
+								</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupT_DataMetricUIInformation">
+                <div class="card-header clearfix">
+					
+											
+									<h3 class="card-title">UI Information</h3>
+								</div>
+                <div class="card-body row">
+                    <div class='col-sm-12'>
+
+                        <hr>
+                    </div>
+
+                    @if (User.CanView("T_DataMetric", "T_BackGroundColor") && !hiddenProperties.Contains("T_BackGroundColor"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackGroundColor">
+                            <div class='form-group' title="@Model.T_BackGroundColor">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_BackGroundColor) </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    <p id="lblT_BackGroundColor" class="viewlabel">@Model.T_BackGroundColor</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_FontColor") && !hiddenProperties.Contains("T_FontColor"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FontColor">
+                            <div class='form-group' title="@Model.T_FontColor">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_FontColor) </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    <p id="lblT_FontColor" class="viewlabel">@Model.T_FontColor</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Hide") && !hiddenProperties.Contains("T_Hide"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Hide">
+                            <div class='form-group' title="@Model.T_Hide">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_Hide) </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    @Html.DisplayFor(model => model.T_Hide)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_ClassIcon") && !hiddenProperties.Contains("T_ClassIcon"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ClassIcon">
+                            <div class='form-group' title="@Model.T_ClassIcon">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.T_ClassIcon) </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    <p id="lblT_ClassIcon" class="viewlabel">@Model.T_ClassIcon</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_BackgroundImage") && User.CanView("Document") && !hiddenProperties.Contains("T_BackgroundImage"))
+                    {
+                        if (!string.IsNullOrEmpty(Html.DisplayFor(model => model.T_BackgroundImage).ToString()))
+                        {
+                            <div class="col-sm-2 col-md-2 col-md-offset-5 " id="dvT_BackgroundImage" style="display:none;" >
+                                <a class="" href="#" data-image-id=""
+                                   data-toggle="modal"
+                                   onclick="OpenPopUpEntityImage('@Html.Raw("image-galleryT_BackgroundImage" + Model.Id)','@Html.DisplayNameFor(model => model.T_BackgroundImage)','dv_@Html.Raw("image-galleryT_BackgroundImage"+Model.Id)','@Url.Action("DisplayImageAfterhover", "Document", new { id = Model.T_BackgroundImage })');"
+                                   data-target="#image-galleryT_BackgroundImage">
+                                    <img src="@Url.Action("DisplayImageMobile", "Document", new { id = Model.T_BackgroundImage, maxSize = 30 })" alt="T_BackgroundImage" class="picupload" />
+                                </a>
+                                <div class="caption">
+                                    <h5 class="text-center mt-2">@Html.DisplayNameFor(model => model.T_BackgroundImage)</h5>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="image-galleryT_BackgroundImage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="image-gallery-title">@Html.DisplayNameFor(model => model.T_BackgroundImage)</h4>
+                                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="fa fa-close"></span><span class="sr-only">Close</span></button>
+
+                                        </div>
+                                        <div class="modal-body">
+                                            <img id="dv_@Html.Raw("image-galleryT_BackgroundImage"+Model.Id)" class="img-fluid" src="#">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-2 col-md-2" id="dvT_BackgroundImage" style="display:none;">
+                                <div>
+                                    <img src="~/logo/metrics_dummy.jpg" alt="" class="img-thumbnail">
+                                    <div class="caption" style="margin: -31px 0px -15px 0">
+                                        <h5 class="text-center">@Html.DisplayNameFor(model => model.T_BackgroundImage)</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+        </div>
+	</div>
+	</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","T_DataMetric")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("T_DataMetric"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomT_DataMetric">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomT_DataMetric").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+<div class="tab-pane fade in" id="JournalEntryToT_DataMetricRelation">
+</div>
+ 	</div> <!-- /tab-content -->
+</div>
+</div>
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+        if (@Model.T_AssociatedDataMetricTypeID== 4) {
+            $("#dvT_BackgroundImage").show();
+            $("#dvT_Aggregate").hide();
+            $("#dvT_AggregatePropertyName").hide();
+        }
+            ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"), 'T_DataMetric', 'details', false, 'Data Metric')
+    });
+	</script>
+	
+ 

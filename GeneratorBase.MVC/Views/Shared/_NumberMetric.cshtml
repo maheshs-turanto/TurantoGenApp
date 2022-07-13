@@ -1,0 +1,82 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    var linkPrefix = Url.Content("~/");
+    if (Convert.ToBoolean(ViewData["FromHome"]))
+    {
+        linkPrefix = "";
+    }
+}
+@*<div class="card mt-4" id="Metric_@Model.Id" style="margin-top:0px !important">
+        <a title="@Model.T_ToolTip" class="card-content" href="@linkPrefix@Model.t_associatedfacetedsearch.T_LinkAddress">
+            <div class="media align-items-stretch">
+                <div class="p-3 media-body text-left" style="background-color:@Model.T_BackGroundColor">
+                    <span style="font-weight:600; font-size:16px; color:@Model.T_FontColor">@Model.T_Name</span>
+                    <h3 class="text-bold-400 mb-0" style="color:@Model.T_FontColor">loading...</h3>
+                </div>
+                <div class="p-3 text-center bg-primary" style="background-color:@Model.T_BackGroundColor !important;vertical-align:middle">
+                    <i class="@Model.T_ClassIcon font-large-2" style="color: @Model.T_FontColor"></i>
+                </div>
+            </div>
+        </a>
+    </div>*@
+
+<style>
+    #overlay {
+        position: absolute;
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.29); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+        border-top-left-radius: .35rem !important;
+        border-bottom-left-radius: .35rem !important;
+    }
+</style>
+
+
+
+<div class="col-12 col-sm-6 col-lg-3 px-2 mb-2 mb-lg-0  px-1 mt-2 mb-2 MetricsView" id="Metric_@Model.Id">
+
+    <a class="ccard h-100 d-flex align-items-center p-3" title="@Model.T_ToolTip" href="@linkPrefix@Model.t_associatedfacetedsearch.T_LinkAddress">
+       
+        <div>
+            <span class="d-inline-block  p-3 radius-round text-center border-4 MatricSqure" style="background-color: @Model.T_BackGroundColor!important;
+        border-color: rgba(239, 239, 239, 1)!important; width:65px; height:65px">
+                <i class="@Model.T_ClassIcon text-white text-170 w-4 h-4" style="color:@Model.T_FontColor; z-index:3; font-size:22px;color:#333333"></i>
+            </span>
+        </div>
+        <div class="ml-1 flex-grow-1">
+            <div class="text-dark-tp4 text-110 pl-2">
+                <h3 class="text-uppercase" style="color:@Model.T_BackGroundColor; font-weight:bolder!important; font-size:2rem">loading...</h3>
+                <span style="color: @Model.T_FontColor; font-size:14px; color:#333333; font-weight:bolder">@Model.T_Name</span>
+            </div>
+        </div>
+
+
+    </a>
+</div>
+
+
+
+
+<style>
+    #Metric_@Model.Id a{
+    text-decoration:none;
+    }
+</style>
+<script>
+$(document).ready(function () {
+    LoadMetricResult('Metric_@Model.Id', '@Html.Raw(linkPrefix + Model.t_associatedfacetedsearch.T_LinkAddress)', '@Model.T_Aggregate', '@Model.T_AggregatePropertyName');
+
+    //var color = ["#67b667", "#4c91e6", "#8176bd", "#dc5b44", "#fd9c25", "#5dc7fe", "#17a2b8", "#ffc107", "#e83e8c","#6610f2"]
+    //color.forEach((c, i) => $(`.MatricSqure:eq(${i})`).css('background', c))sss
+});
+   
+    
+
+
+</script>

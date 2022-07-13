@@ -1,0 +1,7 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.PropertyHelpPage>
+@{
+    ViewBag.Title = "Property Help Page List";
+    string templatename = "~/Views/PropertyHelpPage/IndexPartial.cshtml";
+
+}
+@Html.Partial(templatename, Model)

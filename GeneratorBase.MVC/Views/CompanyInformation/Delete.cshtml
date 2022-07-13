@@ -1,0 +1,255 @@
+﻿@model GeneratorBase.MVC.Models.CompanyInformation
+@{
+    ViewBag.Title = "Delete CompanyInformation";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+      <strong> 	  
+		CompanyInformation         
+		<small>Delete - @Html.DisplayFor(model => model.DisplayValue)</small>
+      </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+				<div>
+               
+ </div>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+<label id="ErrMsg" style="color:brown;vertical-align:middle;font-size:90%;"></label>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+								  <div class='col-sm-12'>
+							   <div class="row">
+                                  
+<div class="col-sm-2 col-md-2">
+<div class="thumbnail">
+	<a href="@Url.Action("DisplayImage", "Document", new { id = Model.LoginBg , maxSize=30 })" title="" style="margin: 0px; padding: 0px;"><img src="@Url.Action("DisplayImage", "Document", new { id = Model.LoginBg })" alt="" /></a>
+    <div class="caption">
+        <h5 class="text-center">@Html.DisplayNameFor(model => model.LoginBg)</h5>
+    </div>
+</div>
+</div>
+<div class="col-sm-2 col-md-2">
+<div class="thumbnail">
+	<a href="@Url.Action("DisplayImage", "Document", new { id = Model.Logo , maxSize=30 })" title="" style="margin: 0px; padding: 0px;"><img src="@Url.Action("DisplayImage", "Document", new { id = Model.Logo })" alt="" /></a>
+    <div class="caption">
+        <h5 class="text-center">@Html.DisplayNameFor(model => model.Logo)</h5>
+    </div>
+</div>
+</div>
+<div class="col-sm-2 col-md-2">
+<div class="thumbnail">
+	<a href="@Url.Action("DisplayImage", "Document", new { id = Model.Icon , maxSize=30 })" title="" style="margin: 0px; padding: 0px;"><img src="@Url.Action("DisplayImage", "Document", new { id = Model.Icon })" alt="" /></a>
+    <div class="caption">
+        <h5 class="text-center">@Html.DisplayNameFor(model => model.Icon)</h5>
+    </div>
+</div>
+</div>
+				</div>
+		</div>
+		<div style="clear:both"></div>
+	<div class="row">	
+        <div class="col-md-12 col-sm-12 col-xs-12">	
+            <div class="card AppForm">	
+                <div class="card-header text-white bg-danger clearfix">	
+                    <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>	
+                </div>	
+                <div class="card-body">
+    <dl class="dl-horizontal">
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.AboutCompany)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.AboutCompany)
+			@Html.HiddenFor(model => model.AboutCompany)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.Disclaimer)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.Disclaimer)
+			@Html.HiddenFor(model => model.Disclaimer)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyName)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyName)
+			@Html.HiddenFor(model => model.CompanyName)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.SMTPUser)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.SMTPUser)
+			@Html.HiddenFor(model => model.SMTPUser)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.SMTPServer)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.SMTPServer)
+			@Html.HiddenFor(model => model.SMTPServer)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyEmail)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyEmail)
+			@Html.HiddenFor(model => model.CompanyEmail)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.LoginBackgroundWidth)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.LoginBackgroundWidth)
+			@Html.HiddenFor(model => model.LoginBackgroundWidth)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.SMTPPassword)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.SMTPPassword)
+			@Html.HiddenFor(model => model.SMTPPassword)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyAddress)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyAddress)
+			@Html.HiddenFor(model => model.CompanyAddress)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.LoginBackgroundHeight)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.LoginBackgroundHeight)
+			@Html.HiddenFor(model => model.LoginBackgroundHeight)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.SMTPPort)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.SMTPPort)
+			@Html.HiddenFor(model => model.SMTPPort)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyCountry)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyCountry)
+			@Html.HiddenFor(model => model.CompanyCountry)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.SSL)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.SSL)
+			@Html.HiddenFor(model => model.SSL)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyState)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyState)
+			@Html.HiddenFor(model => model.CompanyState)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.LogoWidth)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.LogoWidth)
+			@Html.HiddenFor(model => model.LogoWidth)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.LogoHeight)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.LogoHeight)
+			@Html.HiddenFor(model => model.LogoHeight)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyCity)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyCity)
+			@Html.HiddenFor(model => model.CompanyCity)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.CompanyZipCode)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.CompanyZipCode)
+			@Html.HiddenFor(model => model.CompanyZipCode)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.ContactNumber1)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.ContactNumber1)
+			@Html.HiddenFor(model => model.ContactNumber1)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.IconWidth)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.IconWidth)
+			@Html.HiddenFor(model => model.IconWidth)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.ContactNumber2)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.ContactNumber2)
+			@Html.HiddenFor(model => model.ContactNumber2)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.IconHeight)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.IconHeight)
+			@Html.HiddenFor(model => model.IconHeight)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.UseAnonymous)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.UseAnonymous)
+			@Html.HiddenFor(model => model.UseAnonymous)
+        </dd>
+    </dl>
+
+	  </div>	
+                </div>	
+            </div>	
+        </div>
+	<br/>
+        <div class="row deletefix">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+         <a class="btn btn-default btn-sm" Onclick="goBack('@Url.Action("Index","CompanyInformation")');">Back</a>
+ 
+	@if ( User.CanDelete("CompanyInformation"))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>
+
+<script>
+    $("input[type='submit']").click(function (event) {
+        var returnvalue = true;
+        var alertmsg = "";
+        if (alertmsg.length > 0)
+            OpenAlertPopUp("Warning!", alertmsg);
+        return returnvalue;
+    });
+</script>
+
+ 

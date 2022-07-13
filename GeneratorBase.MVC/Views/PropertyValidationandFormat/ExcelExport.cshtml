@@ -1,0 +1,132 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.PropertyValidationandFormat>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"Property Validation and Format.xls\"");
+}
+<table>
+    <tr>
+        @if (User.CanView("PropertyValidationandFormat", "EntityName"))
+        {
+            <th>Entity Name</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "PropertyName"))
+        {
+            <th>Property Name</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "RegExPattern"))
+        {
+            <th>RegEx Pattern</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "MaskPattern"))
+        {
+            <th>Mask Pattern</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "ErrorMessage"))
+        {
+            <th>Error Message</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "LowerBound"))
+        {
+            <th>Lower Bound</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "UpperBound"))
+        {
+            <th>Upper Bound</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "DisplayFormat"))
+        {
+            <th>Display Format</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "IsEnabled"))
+        {
+            <th>Is Enabled</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "Other1"))
+        {
+            <th>Other1</th>
+        }
+        @if (User.CanView("PropertyValidationandFormat", "Other2"))
+        {
+            <th>Other2</th>
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+        List<string> hiddenProperties = new List<string>();
+        if (User.businessrules.Any(p => p.EntityName == "PropertyValidationandFormat" && p.ActionTypeID.Contains(6)))
+        {
+            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "PropertyValidationandFormat");
+        }
+        <tr>
+            @if (User.CanView("PropertyValidationandFormat", "EntityName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.EntityName)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "PropertyName"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.PropertyName)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "RegExPattern"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.RegExPattern)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "MaskPattern"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaskPattern)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "ErrorMessage"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.ErrorMessage)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "LowerBound"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.LowerBound)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "UpperBound"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpperBound)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "DisplayFormat"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.DisplayFormat)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "IsEnabled"))
+            {
+                <td>
+                    @item.IsEnabled
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "Other1"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other1)
+                </td>
+            }
+            @if (User.CanView("PropertyValidationandFormat", "Other2"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Other2)
+                </td>
+            }
+        </tr>
+    }
+</table>

@@ -1,0 +1,82 @@
+﻿@model GeneratorBase.MVC.Models.TemplateEvents
+@{
+    Layout = null;
+}
+<div class="panel panel-default AppForm">
+    <div class="panel-body">
+        <br />
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              
+                <div class="col-sm-6 col-md-6 col-xs-6">
+                    <div class='form-group'>
+                        <div class="input-group newradiocontainer">
+                            <div class="radio" style="margin-top:-4px;">
+
+
+                                <input type="radio" title="Edit @ViewData["MeetingLabel"]" Value="2" onclick="Selection(this);" />
+                                <span>Edit @ViewData["MeetingLabel"]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-xs-6">
+                    <div class='form-group'>
+                        <div class="input-group newradiocontainer">
+                            <div class="radio" style="margin-top:-4px;">
+
+                                <input type="radio" title="Edit @ViewData["MeetingLabel"] Event" Value="1" onclick="Selection(this);" />
+                                <span>Edit @ViewData["MeetingLabel"] Event</span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (ViewBag.buttons != null)
+                {
+
+                    foreach (var btn in (List<GeneratorBase.MVC.Controllers.UpdateButton>)ViewBag.buttons)
+                    {
+                        <div class="col-sm-6 col-md-6 col-xs-6">
+                            <div class='form-group'>
+                                <div class="input-group newradiocontainer">
+                                    <div class="radio" style="margin-top:-4px;">
+                                        @if (btn.Type == "Meeting")
+                                        {
+                                            <input type="radio" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("$('#closePopupBulkOperation').click();OpenPopUpEntity('addPopup','" + btn.ButtonText + "','dvPopup','" + Url.Action("CreateQuick", btn.Target, new { UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = btn.AssociatedType, HostingEntityName = btn.HostingEntityName, HostingEntityID = Model.MainMeetingID, TS = DateTime.Now, viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+                                            <span>@Html.Raw(btn.ButtonText)</span>
+
+                                        }
+                                        else
+                                        {
+                                            <input type="radio" data-placement="top" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("$('#closePopupBulkOperation').click();OpenPopUpEntity('addPopup','" + btn.ButtonText + "','dvPopup','" + Url.Action("CreateQuick", btn.Target, new { UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = btn.AssociatedType, HostingEntityName = btn.HostingEntityName, HostingEntityID = Model.Id, TS = DateTime.Now, viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+                                            <span>@Html.Raw(btn.ButtonText)</span>
+
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+
+            </div>
+        </div>
+
+        @*<button id="CancelQuickAdd1" type="button" class="btn btn-default btn-sm pull-right" data-dismiss="modal" aria-hidden="true">Cancel</button>*@
+    </div>
+</div>
+<script>
+    function Selection(obj) {
+        var $obj = $(obj);
+        var value = $obj.val();
+        if (value == "1") {
+            location.href = '@Url.Action("Edit", Model.EntityName + "Events", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), id = Model.Id })';
+        }
+        if (value == "2") {
+            location.href = '@Url.Action("Edit", Model.EntityName, new { UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), id = Model.MainMeetingID })';
+        }
+    }
+</script>

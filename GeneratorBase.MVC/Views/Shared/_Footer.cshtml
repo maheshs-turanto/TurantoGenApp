@@ -1,0 +1,89 @@
+﻿@model CompanyProfile
+@{
+    DisplayModeProvider.Instance.RequireConsistentDisplayMode = true;
+    var commonObj = CommonFunction.Instance;
+    var CompanyProfile = Model;
+	} 
+@if (CompanyProfile.LegalInformation != null || CompanyProfile.PrivacyPolicy != null
+                || CompanyProfile.TermsOfService != null || CompanyProfile.ThirdParty != null || CompanyProfile.CookieInformation != null || CompanyProfile.Emailto != null
+                || CompanyProfile.CreatedBy != null)
+{
+    var baseUri = commonObj.getBaseUri();
+    <div class="container-fluid">
+        <span class="float-left">
+            @CompanyProfile.CreatedBy <a href="@CompanyProfile.CreatedByLink" target="_blank" alt="" title="">@CompanyProfile.CreatedByName</a> |
+            @CompanyProfile.Emailto: <a href="@Html.Encode("mailto:" + CompanyProfile.EmailtoAddress)" target="_blank" alt="" title="">@CompanyProfile.EmailtoAddress</a>
+        </span>
+        <span class="float-right">
+            @{var cntPipe = 0;}
+            @if (CompanyProfile.LegalInformationDisplay == "1" || CompanyProfile.LegalInformationDisplay == "3")
+                        {
+                            cntPipe++;
+                        <a href="@Html.Encode(baseUri + CompanyProfile.LegalInformationLink)" target="_blank" alt="Legal Information" title="Legal Information">@CompanyProfile.LegalInformation</a>
+                        }
+            @if (CompanyProfile.TermsOfServiceDisplay == "1" || CompanyProfile.TermsOfServiceDisplay == "3")
+                        {
+                            if (cntPipe > 0)
+                            {
+                        <span>|</span>;
+                            }
+                            else
+                            {
+                                cntPipe++;
+                            }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.TermsOfServiceLink)" target="_blank" alt="Terms Of Service" title="Terms Of Service">
+                            @CompanyProfile.TermsOfService
+                        </a>
+                        }
+            @if (CompanyProfile.PrivacyPolicyDisplay == "1" || CompanyProfile.PrivacyPolicyDisplay == "3")
+                        {
+                            if (cntPipe > 0)
+                            {
+                        <span>|</span>;
+                            }
+                            else
+                            {
+                                cntPipe++;
+                            }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.PrivacyPolicyLink)" target="_blank" alt="Privacy Policy" title="Privacy Policy">
+                            @CompanyProfile.PrivacyPolicy
+                        </a>
+                        }
+            @if (CompanyProfile.ThirdPartyDisplay == "1" || CompanyProfile.ThirdPartyDisplay == "3")
+                        {
+                            if (cntPipe > 0)
+                            {
+                        <span>|</span>;
+                            }
+                            else
+                            {
+                                cntPipe++;
+                            }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.ThirdPartyLink)" target="_blank" alt="@CompanyProfile.ThirdParty" title="@CompanyProfile.ThirdParty">
+                            @CompanyProfile.ThirdParty
+                        </a>
+                        }
+            @if (CompanyProfile.CookieInformationDisplay == "1" || CompanyProfile.CookieInformationDisplay == "3")
+                        {
+                            if (cntPipe > 0)
+                            {
+                        <span>|</span>;
+                            }
+                            else
+                            {
+                                cntPipe++;
+                            }
+                        <a href="@Html.Encode(baseUri + CompanyProfile.CookieInformationLink)" target="_blank" alt="@CompanyProfile.CookieInformation" title="@CompanyProfile.CookieInformation">
+                            @CompanyProfile.CookieInformation
+                        </a>
+                        }
+        </span>
+    </div>
+}
+else
+{
+    <div id="footer">
+        <li>Created With <a href="http://www.turanto.com" target="_blank">Turanto</a></li>&nbsp;&nbsp; | &nbsp;&nbsp;
+        <li>Email: <a href="mailto:contact@turanto.com" alt="Email:contact@turanto.com" title="Email:contact@turanto.com">contact@turanto.com</a></li>
+    </div>
+}

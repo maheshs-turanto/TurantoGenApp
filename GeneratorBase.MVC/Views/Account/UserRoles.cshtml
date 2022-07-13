@@ -1,0 +1,75 @@
+﻿@model GeneratorBase.MVC.Models.SelectUserRolesViewModel
+@{
+    ViewBag.Title = "User Roles";
+
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+
+        <strong>
+            <a href="@Url.Action("Index")"> Admin </a>
+            <small>
+            Roles for user @Html.DisplayFor(model => model.UserName)
+                </small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="">
+    @using (Html.BeginForm("UserRoles", "Account", FormMethod.Post, new { encType = "multipart/form-data", id = "frmUserRoles", name = "myform" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card card-default AppForm">
+                    <div class="card-header clearfix">
+
+                        <h3 class="card-title">Select Role Assignments</h3>
+                    </div>
+                    <div class="card-body" style="padding:8px; margin:0px;">
+                        @Html.HiddenFor(model => model.UserName)
+                        <table class="table table-hover table-striped default-bordered default-condensed">
+                            <tr>
+                                <th style="width:50px; text-align:center;">
+                                    Select
+                                </th>
+                                <th>
+                                    Role
+                                </th>
+                            </tr>
+                            @Html.EditorFor(model => model.Roles)
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both; margin-bottom:20px;"></div>
+        @Html.Hidden("UrlReferrer", Request.UrlReferrer)
+        <div class="card ButtonFooter">
+            <div class="card-footer container-fluid">
+                @if (Request.UrlReferrer != null)
+                {
+                    <a class="btn btn-secondary" href="@Request.UrlReferrer.PathAndQuery">Cancel</a>
+                }
+                else
+                {
+                    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+                }
+                @if (User.CanEditAdminFeature("AssignUserRole"))
+                {
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                }
+            </div>
+        </div>
+    }
+</div>
+     
+            <script>
+
+                $("input[type='submit']").click(function (event) {
+                    $("#frmUserRoles").find(':input').removeAttr('disabled');
+                });
+            </script>
+

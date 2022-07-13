@@ -1,0 +1,117 @@
+﻿@model GeneratorBase.MVC.Models.EntityPage
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Entity Page";
+    var EditPermission = User.CanEditItem("EntityPage", Model, User);
+    var DeletePermission = User.CanDeleteItem("EntityPage", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "EntityPage");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Entity Page";
+
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+    var isdiable = Model.Disable.HasValue ? Model.Disable : false;
+    var isdiabledc = Model.EnableDataCache.HasValue ? Model.EnableDataCache : false;
+    var url = Url.Action("EnableDisableEntityAndSave", "EntityPage", new { Description = Model.Description, HostingEntityName = Model.EntityName, Id = Model.Id, Disable = isdiable, EnableDataCache = isdiabledc });
+}
+<div class="content-heading">
+    <div class="col-lg-6">
+        <strong>
+            <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")"> @EntityDisplayName</a>
+            <small>Edit - <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.DisplayValue).DisplayName">@ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.DisplayValue).DisplayName</span></small>
+        </strong>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight ecommerce" id="DivEnt">
+    <div class="">
+        <ul class="nav nav-tabs">
+
+            <li class="nav-item" @(!User.CanView("EntityHelpPage") ? "style=display:none;" : "")>
+                <a class="nav-link active"  id="EntityDetailTab" href="#EntitDetail" data-toggle="tab" alt="Entity" title="Entity">
+                    Entity Details
+                </a>
+            </li>
+            <li class="nav-item" @(!User.CanView("EntityHelpPage") ? "style=display:none;" : "")>
+                @if (Model.Id != 0 && isdiable != true)
+                {
+                    <a class="nav-link"  id="EntityTab" onclick="LoadTab('EntityOfEntityHelp','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "EntityHelpPage", new {RenderPartial=true, HostingEntity ="EntityPage", HostingEntityID = @Model.Id, AssociatedType = "EntityOfEntityHelp",TabToken = DateTime.Now.Ticks,}))')" href="#EntityOfEntityHelp" data-toggle="tab" alt="Entity Help" title="Entity Help">
+                        Entity Help
+                        <span class="badge bg-blue"><div id="dvcnt_EntityOfEntityHelp">@ViewBag.EntityOfEntityHelpCount</div></span>
+                    </a>
+                }
+                else
+                {
+                    <a class="nav-link" id="EntityTab" href="#EntityOfEntityHelp" data-toggle="tab" alt="Entity Help" title="Entity Help">
+                        Entity Help
+                        <span class="badge bg-blue"><div id="dvcnt_EntityOfEntityHelp">@ViewBag.EntityOfEntityHelpCount</div></span>
+                    </a>
+                }
+
+            </li>
+
+            <li class="nav-item" @(!User.CanView("PropertyHelpPage") ? "style=display:none;" : "")>
+                @if (Model.Id != 0 && isdiable != true)
+                {
+                    <a class="nav-link" id="PropertyTab" onclick="LoadTab('PropertyHelpOfEntity','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "PropertyHelpPage", new {RenderPartial=true, HostingEntity ="EntityPage", HostingEntityID = @Model.Id, AssociatedType = "PropertyHelpOfEntity",TabToken = DateTime.Now.Ticks,}))')" href="#PropertyHelpOfEntity" data-toggle="tab" alt="Property Help" title="Property Help">
+                        Property Help
+                    </a>
+                }
+                else
+                {
+                    <a class="nav-link" id="PropertyTab" href="#PropertyHelpOfEntity" data-toggle="tab" alt="Property Help" title="Property Help">
+                        Property Help
+                    </a>
+                }
+
+            </li>
+
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="EntitDetail">
+                <label>Entity Name:</label>
+                @ModelReflector.Entities.FirstOrDefault(p => p.Name == Model.DisplayValue).DisplayName
+                <br />
+                <label>Is Disabled? : </label>
+                @if (isdiable == true)
+                {
+                    @Html.CheckBox("chk_" + Model.EntityName, new { @checked = "checked", onclick = "window.location = '" + url + "&from=help'" })
+                }
+                else
+                {
+                    @Html.CheckBox("chk_" + Model.EntityName, new { onclick = "window.location = '" + url + "&from=help'" })
+                }
+                <br />
+                <label>Enabled Data Caching : </label>
+                @if (isdiabledc == true)
+                {
+                    @Html.CheckBox("chk1_" + Model.EntityName, new { @checked = "checked", onclick = "window.location = '" + url + "&from=caching'" })
+                }
+                else
+                {
+                    @Html.CheckBox("chk1_" + Model.EntityName, new { onclick = "window.location = '" + url + "&from=caching'" })
+                }
+            </div>
+            <div class="tab-pane fade" id="EntityOfEntityHelp">
+            </div>
+            <div class="tab-pane fade" id="PropertyHelpOfEntity">
+            </div>
+
+
+            @*<input type="checkbox" onclick="" name="chk_@Model.EntityName" checked="@isdiable" id="chk_@Model.EntityName" class="tcheckbox" />*@
+        </div> <!-- /tab-content -->
+
+        <br />
+
+        <br />
+    </div>
+</div>
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        $("#EntityDetailTab").click();
+    });
+</script>
+

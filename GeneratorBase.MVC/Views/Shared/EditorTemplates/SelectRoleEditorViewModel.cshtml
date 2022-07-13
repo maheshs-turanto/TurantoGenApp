@@ -1,0 +1,23 @@
+﻿@model GeneratorBase.MVC.Models.SelectRoleEditorViewModel
+@{
+    var adminRoles = (new GeneratorBase.MVC.Models.CustomPrincipal(User)).GetAdminRoles().Split(",".ToCharArray());
+    var checkboxHtmlAttributes = new Dictionary<string, object>
+    {{"attibute1", "value1"},
+    {"attribute2", "value2"}};
+    if (adminRoles.Contains(Model.RoleName) && (!User.IsAdmin || Model.Selected))
+    {
+        checkboxHtmlAttributes.Add("disabled", "disabled");
+        checkboxHtmlAttributes.Add("readonly", "readonly");
+        checkboxHtmlAttributes.Add("onclick", "return false;");
+    }
+}
+    @Html.HiddenFor(model => model.RoleName)
+    <tr>
+        <td style="text-align:center">
+            @Html.CheckBoxFor(model => model.Selected, checkboxHtmlAttributes)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.DisplayValue)
+        </td>
+    </tr>
+   

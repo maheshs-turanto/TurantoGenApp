@@ -1,0 +1,343 @@
+﻿@model GeneratorBase.MVC.Models.ReportList
+@using PagedList;
+@{
+    ViewBag.Title = "Edit SSRS Report";
+    var EditPermission = User.CanEditItem("ReportList", Model, User);
+    var DeletePermission = User.CanDeleteItem("ReportList", Model, User);
+    Layout = null;
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("ReportList", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            if ($('#EntityReportListDisplayValue').has('option').length > 0) {
+                var RecId = $("#Id").val()
+                $("#ReportListDD").append($("#EntityReportListDisplayValue").html());
+                $("#ReportListDD").val(RecId);
+                var text = $("option:selected", $("#ReportListDD")).text();
+                $("#ReportListDD").attr('data-toggle', 'tooltip')
+                $("#ReportListDD").attr('title', text);
+                var lastOptionVal = $('#ReportListDD option:last-child').val();
+                var fristOptionVal = $('#ReportListDD option:first-child').val();
+                if (lastOptionVal == RecId)
+                {
+                    $('#next').hide();
+                    $('#SaveAndContinue').hide();
+                }
+                if (fristOptionVal == RecId)
+                    $('#prev').hide();
+            } else {  $('#dvsavenext').hide(); $('#SaveAndContinue').hide(); }
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                if( '@Convert.ToBoolean(ViewData["IsFilter"])'!="False")
+                    $('#' + hostingEntityName + 'ID').attr("lock","true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+                $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-lg-12 row" style="margin-top:-5px;">
+        @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+        <input type="hidden" id="ErrMsg" />
+        <div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+        <div class="col-sm-6 col-md-6 col-xs-12">
+            <h4>
+                <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue)</span>
+            </h4>
+        </div>
+        @if (EditPermission)
+        {
+            <div class="col-sm-6 col-md-6 col-xs-12" id="dvsavenext">
+                <button class="btn btn-default btn-xs pull-right" id="next" onclick="@Html.Raw("nextFun('ReportList')")">Next >></button>
+                @Html.DropDownList("ReportListDD", null, null, new { @onchange = "FillDisplayValueQEdit('ReportList')", @required = "required", @class = "pull-right", @Style = "height: 22px;width: 170px;" })
+                <button class="btn btn-default btn-xs pull-right" id="prev" onclick="@Html.Raw("prevFun('ReportList')")"><< Prev</button>
+            </div>
+        }
+    </div>
+
+    <!-- /.col-lg-12 -->
+    <div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+    </div>
+    <div id="divDisplayBRmsgMandatory" style="display:none;">
+    </div>
+    <div id="divDisplayLockRecord" style="display:none;">
+    </div>
+    <div id="divDisplayBRReadOnly" style="display:none;">
+    </div>
+    <br />
+</div>
+@using (Html.BeginForm("EditQuick", "ReportList", new { UrlReferrer = Convert.ToString(ViewData["ReportListParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditReportList" }))
+{
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+  
+  
+        <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:10px 0px 0px 0px;">
+            <div class="panel panel-default AppForm" >
+                <div class="panel-body">
+                    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                    <div class="row" >
+                        
+                        <div class='col-sm-12 col-md-12 col-xs-12' id="dvReportID" style="display:none;">
+                            <div class='form-group' title="ReportID">
+                                <label>@Html.LabelFor(model => model.Name)   </label>
+                                @Html.ValueFor(model => model.Name)
+                                <br />
+                                <label>@Html.LabelFor(model => model.ReportID)   </label>
+                                @Html.ValueFor(model => model.ReportID)
+                                <br />
+                                <label>@Html.LabelFor(model => model.ReportPath) </label>
+                                @Html.ValueFor(model => model.ReportPath)
+                                <br />
+                                <label>@Html.LabelFor(model => model.Type) </label>
+                                @Html.ValueFor(model => model.Type)
+                            </div>
+                        </div>
+                       @if (User.CanView("ReportsGroup") && User.CanView("ReportList", "ReportsGroupSSRSReportAssociationID"))
+                       {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportsGroupSSRSReportAssociationID">
+                            <div class='form-group'>
+                                <label>@Html.LabelFor(model => model.ReportsGroupSSRSReportAssociationID) </label>
+
+                                <div class="input-group" style="width:100%;">
+                                    @if (User.CanEdit("ReportList", "ReportsGroupSSRSReportAssociationID"))
+                                    {
+                                        @Html.DropDownList("ReportsGroupSSRSReportAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "ReportsGroup", @dataurl = Url.Action("GetAllValue", "ReportsGroup", new { caller = "ReportsGroupSSRSReportAssociationID" }) })
+                                    }
+                                    else
+                                    {
+                                        @Html.HiddenFor(model => model.ReportsGroupSSRSReportAssociationID, new { @class = "form-control" })
+                                        @Html.DropDownList("ReportsGroupSSRSReportAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @disabled = "disabled", @HostingName = "ReportsGroup", @dataurl = Url.Action("GetAllValue", "ReportsGroup", new { caller = "ReportsGroupSSRSReportAssociationID" }) })
+                                    }
+                                    @Html.ValidationMessageFor(model => model.ReportsGroupSSRSReportAssociationID)
+                                </div>
+
+                            </div>
+                        </div>
+                       }
+                       else
+                       { @Html.HiddenFor(model => model.ReportsGroupSSRSReportAssociationID, new { @class = "form-control" })}
+                       
+                        @if (User.CanView("ReportList", "ReportNo"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportNo">
+                                <div class='form-group' title="Report No">
+                                    <label>@Html.LabelFor(model => model.ReportNo)  (Display Order)</label>
+
+
+                                    @Html.TextBoxFor(model => model.ReportNo, getHtmlAttributes("ReportNo"))
+                                    @Html.ValidationMessageFor(model => model.ReportNo)
+
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.ReportNo, new { @class = "form-control" })}
+                        @if (User.CanView("ReportList", "DisplayName"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayName">
+                                <div class='form-group' title="Display Name">
+                                    <label>@Html.LabelFor(model => model.DisplayName)   </label>
+
+
+                                    @Html.TextBoxFor(model => model.DisplayName, getHtmlAttributes("DisplayName"))
+                                    @Html.ValidationMessageFor(model => model.DisplayName)
+
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.DisplayName, new { @class = "form-control" })}
+                        @if (User.CanView("ReportList", "Description"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                <div class='form-group' title="Description">
+                                    <label>@Html.LabelFor(model => model.Description) </label>
+
+                                    @Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+                                    @Html.ValidationMessageFor(model => model.Description)
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+                       
+                          
+                        
+                       
+                        @if (User.CanView("ReportList", "EntityName"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                <div class='form-group' title="Entity Name">
+                                    <label>@Html.LabelFor(model => model.EntityName)   </label>
+
+
+                                    @Html.TextBoxFor(model => model.EntityName, getHtmlAttributes("EntityName"))
+                                    @Html.ValidationMessageFor(model => model.EntityName)
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                        @if (User.CanView("ReportList", "IsHidden"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvIsHidden">
+                                <div class="form-group" title="Is Hidden">
+                                    <label >
+                                        @Html.LabelFor(model => model.IsHidden)
+                                    </label>
+                                   <br/>
+                                        @Html.CheckBox("IsHidden", Model.IsHidden.HasValue ? Model.IsHidden : false)
+                                        @Html.ValidationMessageFor(model => model.IsHidden)
+                                    
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.IsHidden, new { @class = "form-control" })}
+                       
+                    </div>
+                    @Html.HiddenFor(model => model.ReportID, new { @class = "form-control" })
+                    @Html.HiddenFor(model => model.ReportPath, new { @class = "form-control" })
+                    @Html.HiddenFor(model => model.Name, new { @class = "form-control" })
+                    @Html.HiddenFor(model => model.Type, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+   
+    @Html.AntiForgeryToken();
+    var businessrule1 = User.businessrules.Where(p => p.EntityName == "ReportList").ToList();
+    var lstinlineentityname = "";
+    var lstinlineassocdispname = "";
+    var lstinlineassocname = "";
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    if (EditPermission)
+    {
+        <input type="submit" id="command" name="command" value="Save & Close" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'ReportList','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                <input type="submit" id="sevranBtn" style="display:none;" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'ReportList','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','True');" />
+                <button type="button" id="SaveAndContinue" name="SaveAndContinue" class="btn btn-primary btn-sm" onclick="@Html.Raw("SaveAndContinueEdit('ReportList',event)")">Save & Next</button>
+                <input type="hidden" name="hdncommand" value="" /> }
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script>
+    $("input[type='submit']").click(function (event) {
+        if (!$("#frmQEditReportList").valid()) return;
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "ReportList").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var ruleids = businessrule.Select(q => q.Id).ToList();
+        var typelist = "";
+        using (var ruledb = new GeneratorBase.MVC.Models.RuleActionContext())
+        {
+            typelist = string.Join(",", ruledb.RuleActions.Where(p => ruleids.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+        }
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmQEditReportList");
+                dataurl = "@Url.Action("businessruletype", "ReportList", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "ReportList", false, "ErrMsg", form);
+                //business rules on inline associations
+            });
+        </script>
+        <script>
+            $("form").submit(function (event) {
+                if (!$("#frmQEditReportList").valid()) return;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var form = $("#frmQEditReportList").serialize();
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])')
+            var cltid = "";
+            $(cltcoll).each(function () {
+                if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+        ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'ReportList','editquick',false,'SSRS Report')
+    });
+</script>

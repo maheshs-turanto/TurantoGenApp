@@ -1,0 +1,24 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.BusinessRule>
+@{
+    ViewBag.Title = "Business Rule List";
+}
+
+<div class="content-heading">
+    <div class="col-lg-10">
+
+        <strong>
+            <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")"> Business Rule</a>
+            <small> List </small>
+        </strong>
+
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+     
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvBusinessRuleFilter"></div>
+                    @Html.Partial("~/Views/BusinessRule/IndexPartial.cshtml", Model)
+                </div>
+            </div>   

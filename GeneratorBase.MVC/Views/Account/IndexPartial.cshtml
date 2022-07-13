@@ -1,0 +1,391 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.EditUserViewModel>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && Request.QueryString["TabToken"] != null)
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    ApplicationContext db = new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser());
+    var adminroles = ((GeneratorBase.MVC.Models.CustomPrincipal)User).GetAdminRoles().Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+    var adminUsersCount = 0;
+    var dbusersContext = (new GeneratorBase.MVC.Models.ApplicationDbContext(true));
+    using (var usersContext = new GeneratorBase.MVC.Models.ApplicationDbContext(true))
+    {
+        var adminUsersId = usersContext.Roles.Where(p => adminroles.Contains(p.Name)).SelectMany(p => p.Users).Select(p => p.UserId).Distinct();
+        adminUsersCount = usersContext.Users.Where(p => adminUsersId.Contains(p.Id) && (!p.LockoutEndDateUtc.HasValue || p.LockoutEndDateUtc < DateTime.UtcNow)).Count();
+    }
+    string IsVerifyUserEmail = System.Configuration.ConfigurationManager.AppSettings["VerifyUserEmail"];
+}
+<div id="Account">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+
+        .table > tbody > tr > th {
+            color: #3784b1;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'Account', '@User.JavaScriptEncodedName')
+            })
+            $("#SearchStringAccount").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#AccountSearch").bind("click", (function () {
+                    }));
+                    $('#AccountSearch').trigger("click");
+                    return false;
+                }
+            })
+
+        });
+    </script>
+
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    IsExport = IsExport,
+                    search = Request.QueryString["search"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    IsExport = IsExport,
+                    search = Request.QueryString["search"],
+                };
+            }
+        }
+
+    }
+
+    <div class='pull-right'>
+        <div class='form-group'>
+            <div class="input-group">
+                @Html.TextBox("SearchStringAccount", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search" })
+                <div class="btn-group">
+                    <a id="AccountSearch" onclick="SearchClick(event, 'Account', '@Html.Raw(Url.Action("Index", "Account", new {searchString = "_SearchString",SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');"
+                       data-original-title="Grid Search" class="btn btn-secondary"><span class="fa fa-search"></span></a>
+                    <button id="AccountCancel" type="button"
+                            class="btn btn-secondary collapse-data-btn"
+                            onclick="CancelSearch('Account','@Html.Raw(Url.Action("Index", "Account", new { ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top">
+                        <span class="fa fa-minus-circle"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <div class="">
+            <div class="">
+                <div class="mb-2">
+                    @if (User.CanAddAdminFeature("User"))
+                    {
+                        <button class="btn btn-secondary" data-placement="top" data-original-title="Add New User" data-toggle="modal" data-target="#quickaddUser" onclick=@Html.Raw("OpenQuickQddPopUp('dvQAddquickaddUser');")>
+                            <span class="fa fa-plus-circle"></span> Create User
+                        </button>
+                        <button class="btn btn-secondary" data-original-title="Import Users" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("UploadUser", "Account") + "');")>
+                            <span class="fa fa-upload"></span> Import Excel
+                        </button>
+                        if (GeneratorBase.MVC.Models.CommonFunction.Instance.NeedSharedUserSystem() == "yes")
+                        {
+                            <a href="http://@GeneratorBase.MVC.Models.CommonFunction.Instance.Server()/Authentication/Account/Register?AppName=@Url.Action("Login","Account",null,Url.RequestContext.HttpContext.Request.Url.Scheme)" class="btn">Create User in Shared User System</a>
+                        }
+                    }
+                </div>
+
+                <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                    <table class="table table-hover default-bordered default-condensed">
+                        <tr>
+                            <th style="width:100px">Action</th>
+                            <th class="col2">
+                                @Html.ActionLink("User Name", ActionNameUrl, "Account", getSortHtmlAttributes("UserName", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "UserName")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "UserName")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                            <th class="col3">
+                                @Html.ActionLink("First Name", ActionNameUrl, "Account", getSortHtmlAttributes("FirstName", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "FirstName")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "FirstName")
+                                {<i class="fa fa-sort-asc"></i>}
+
+                            </th>
+                            <th class="col4">
+                                @Html.ActionLink("Last Name", ActionNameUrl, "Account", getSortHtmlAttributes("LastName", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "LastName")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "LastName")
+                                {<i class="fa fa-sort-asc"></i>}
+
+                            </th>
+                            <th class="col5">
+                                @Html.ActionLink("Email", ActionNameUrl, "Account", getSortHtmlAttributes("Email", false, null, false), new { @onclick = "SortLinkClick(event,'Account');" })
+                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Email")
+                                {<i class="fa fa-sort-desc"></i>}
+                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Email")
+                                {<i class="fa fa-sort-asc"></i>}
+                            </th>
+                            <th>Api Token</th>
+                            <th>User's Status</th>
+                            @if (IsVerifyUserEmail != null)
+                            {
+                                <th>Email Confirmed?</th>
+                            }
+                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            var userId = item.Id;
+                            var token = db.ApiTokens.FirstOrDefault(p => p.T_UsersID == userId);
+                            var twofactor = dbusersContext.Users.FirstOrDefault(p => p.Id == userId);
+                            <tr>
+                                <td style="width:100px">
+
+                                    <div style="width:80px">
+                                        <div class="btn-group" style="position:absolute; margin-top:-5px">
+                                            <button class="btn btn-secondary pull-right dropdown-toggle" data-toggle="dropdown" type="button">
+                                                Action
+                                            </button>
+                                            @if (User.Name != item.UserName && !((GeneratorBase.MVC.Models.CustomPrincipal)User).IsAdminUserAD(item.UserName))
+                                            {
+                                                <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                   
+                                                    @if (User.CanViewAdminFeature("AssignUserRole"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="fa fa-eye"></i>  Roles</a>
+                                                        </li>
+                                                    }
+                                                    @if (User.CanEditAdminFeature("User"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="fa fa-edit"></i>  Edit</a>
+                                                        </li>
+                                                    }
+                                                    @if (ViewData["userprofile"] != null && User.CanEditAdminFeature("User"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("UserProfile", "Account", new { UrlReferrer = Request.Url.PathAndQuery, userid = item.Id }, null)"><i class="fa fa-user-slash"></i>  User Profile</a>
+                                                        </li>
+                                                    }
+                                                    @if (User.CanDeleteAdminFeature("User"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("Delete", "Account", new { id = item.Id }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                                                        </li>
+                                                    }
+                                                    @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
+                                                    {
+                                                        if (User.CanEditAdminFeature("User"))
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="fa fa-lock-open"></i>  UnLock User</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (User.CanEditAdminFeature("User"))
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="fa fa-lock"></i>  Lock User</a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (IsVerifyUserEmail != null)
+                                                    {
+                                                        if (User.CanEditAdminFeature("User"))
+                                                        {
+                                                            <li>
+                                                                @if (!item.EmailConfirmed)
+                                                                {
+
+                                                                    <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("ConfirmEmail", "Account", new { id = item.Id, confirm = true }, null)"><i class="fa fa-envelope-open"></i> Confirm Email?</a>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("ConfirmEmail", "Account", new { id = item.Id, confirm = false }, null)"><i class="fa fa-envelope-open"></i> Confirm Email?</a>
+                                                                }
+                                                            </li>
+                                                        }
+                                                    }
+                                                    @if (ViewData["tenant"] != null)
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("AssociateUserWithTenants", "Account", new { id = item.Id })"><i class="fa fa-eye"></i>  Tenants</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                if (User.IsAdmin)
+                                                {
+                                                    <ul class="dropdown-menu pull-left">
+                                                        <li>
+                                                            <a class="dropdown-item" href="@Url.Action("UserRoles", "Account", new { id = item.Id})"><i class="fa fa-eye"></i>  Roles</a>
+                                                        </li>
+                                                        @if (User.Name == item.UserName)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item" href="@Url.Action("Edit", "Account", new { id = item.Id }, null)"><i class="fa fa-edit"></i>  Change email address of Admin</a>
+                                                            </li>
+                                                        }
+                                                        @if (item.LockoutEndDateUtc > DateTime.UtcNow || item.LockoutEndDateUtc != null)
+                                                        {
+
+
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=false }, null)"><i class="fa fa-lock-open"></i>  UnLock User</a>
+                                                            </li>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            if (adminUsersCount > 1)
+                                                            {
+                                                                <li>
+                                                                    <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("LockUnLockUser", "Account", new { id = item.Id,lockuser=true }, null)"><i class="fa fa-lock"></i>  Lock User</a>
+                                                                </li>
+                                                            }
+                                                        }
+                                                        @if (IsVerifyUserEmail != null)
+                                                        {
+                                                            <li>
+                                                                @if (!item.EmailConfirmed)
+                                                                {
+                                                                    <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("ConfirmEmail", "Account", new { id = item.Id, confirm = true }, null)"><i class="fa fa-envelope-open"></i> Confirm Email?</a>
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item" onclick="return confirm('Are you sure?')" href="@Url.Action("ConfirmEmail", "Account", new { id = item.Id, confirm = false }, null)"><i class="fa fa-envelope-open"></i> Confirm Email?</a>
+                                                                }
+                                                            </li>
+                                                        }
+                                                        @if (ViewData["tenant"] != null)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item" href="@Url.Action("AssociateUserWithTenants", "Account", new { id = item.Id })"><i class="fa fa-eye"></i>  Tenants</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.UserName)
+                                    @if (twofactor.TwoFactorEnabled)
+                                    {
+                                        <span class="badge bg-primary" title="Two Factor Enabled">2FA</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+                                <td>
+                                    @if (token != null)
+                                    {
+                                        <label>@token.T_AuthToken</label>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.LockoutEndDateUtc.HasValue && item.LockoutEndDateUtc > DateTime.UtcNow)
+                                    {
+                                        @Html.Label("Locked")
+                                    }
+                                    else
+                                    {
+                                        @Html.Label("UnLocked")
+                                    }
+                                </td>
+                                @if (IsVerifyUserEmail != null)
+                                {
+                                    <td>
+                                        @if (item.EmailConfirmed)
+                                        {
+                                            @Html.Label("Yes")
+                                        }
+                                        else
+                                        {
+                                            @Html.Label("No")
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </table>
+                </div>
+
+            </div>
+            @if (Model.Count > 0)
+            {
+                <div id="pagination" class="MyPagination1">
+                    @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "Account", getSortHtmlAttributes(null, true, page, false)))
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelisAccount",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'Account','"
+                                 + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "Account",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                        <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+
+</div>

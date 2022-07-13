@@ -1,0 +1,33 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.CompanyInformation>
+@{
+    ViewBag.Title = "CompanyInformation List";
+	string templatename = ("~/Views/CompanyInformation/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CompanyInformation");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "CompanyInformation";
+}
+<div class="content-heading">
+    <div class="TitleName">
+    <strong><a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">@EntityDisplayName</a><small>List</small></strong></div>
+    
+</div>
+
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+		  $('.edit').find('input[type=text]').hover(function () {
+            $(this).attr("title", $(this).val());
+
+        });
+    });
+</script>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col" style="width:200px; float:left;">
+                            <div id="dvCompanyInformationFilter"></div>@Html.Partial(templatename, Model)
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+

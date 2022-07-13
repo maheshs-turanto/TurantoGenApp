@@ -1,0 +1,499 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_FacetedSearch>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_FacetedSearch");
+}
+<div id="T_FacetedSearch">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        function LoadDivInsideTab(dvName, username, url) {
+            if (dvName.length > 0)
+                $.cookie(username + "TabCookie", dvName);
+            $("#" + dvName).empty();
+            if ($.trim($("#" + dvName).html()).length == 0) {
+                $("#" + dvName).html('Please wait..');
+                $("#" + dvName).load(url);
+            }
+        }
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'T_FacetedSearch')
+                PaginationClick(e, 'T_FacetedSearch', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchT_FacetedSearch").addClass('in');
+                if ('@ViewData["HostingEntity"]'.length > 0) {
+                    $("#" + "@ViewData["HostingEntity"]" + "_T_FacetedSearch").hide();
+                }
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_FacetedSearch');
+            }
+            $("#SearchStringT_FacetedSearch").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#T_FacetedSearchSearch").bind("click", (function () {
+                    }));
+                    $('#T_FacetedSearchSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideT_FacetedSearch").mouseup(function () {
+                if (document.getElementById('ColumnShowHideT_FacetedSearch').className == 'collapse') {
+                    $('#lblT_FacetedSearch').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".pull-left.actionbar").hide();
+            }
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+
+                    T_Roles = Request.QueryString["T_Roles"],
+                    T_Disable = Request.QueryString["T_Disable"],
+                    T_Flag = Request.QueryString["T_Flag"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    T_Roles = Request.QueryString["T_Roles"],
+                    T_Disable = Request.QueryString["T_Disable"],
+                    T_Flag = Request.QueryString["T_Flag"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria
+                };
+            }
+        }
+    }
+    @if (ViewData["IsdrivedTab"] == null)
+    {
+        <div class="float-left actionbar">
+            @*<div class="btn-group mb-1" id='@ViewData["HostingEntity"]_T_FacetedSearch'>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-plus-circle"></i> Add
+                    </button>
+                    <div class="dropdown-menu" role="menu">
+
+                        @if (User.CanAdd("T_FacetedSearch"))
+                        {
+
+                            if (ViewBag.IsDivRender != true)
+                            {
+                                <a class="dropdown-item" href="#" data-placement="top" id="addT_FacetedSearch" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','FacetedSearch','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")" alt="Quick Add" title="Quick Add">
+                                    <i class="fa fa-plus-circle"></i> Quick Add
+                                </a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>*@
+
+            @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+            {
+                if ((User.CanEdit("T_FacetedSearch") && User.CanUseVerb("BulkUpdate", "T_FacetedSearch", User)) || (User.CanDelete("T_FacetedSearch") && User.CanUseVerb("BulkDelete", "T_FacetedSearch", User)))
+                {
+                    <div class="btn-group mb-1">
+                        <div class="dropdown">
+                            <a class="btn  btn-secondary dropdown-toggle" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                <span class="fa fa-wrench"></span> Bulk
+                            </a>
+                            <div class="dropdown-menu" role="menu">
+                                @if (User.CanDelete("T_FacetedSearch") && User.CanUseVerb("BulkDelete", "T_FacetedSearch", User))
+                                {
+                                    <a class="dropdown-item" onclick="PerformBulkOperation(this,'T_FacetedSearch','Bulk Delete','@Url.Action("DeleteBulk", "T_FacetedSearch")');">
+                                        <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+            {
+                <div class="btn-group mb-1">
+                    <div class="dropdown">
+                        <a class="btn btn-secondary  dropdown-toggle tip-top" data-toggle="dropdown" alt="Tools" title="Tools" href="#">
+                            Tools
+
+                        </a>
+
+                        <div class="dropdown-menu" role="menu">
+
+
+                            @if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+                            {
+                                <a class="dropdown-item" id="showAssociateBtn" data-placement="top" data-original-title="Associate FacetedSearch with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','FacetedSearch','dvPopupBulkOperation','" + Url.Action("Index", "T_FacetedSearch", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+                                    <i class="fa fa-plus-circle"></i> Add Association
+                                </a>
+                                <script>
+                                    if ($("#HostingEntityDisplayValue").attr('id') == undefined)
+                                        $("#showAssociateBtn").hide();
+                                </script>
+                            }
+                            @if (User.CanView("T_FacetedSearch") && User.CanUseVerb("ExportExcel", "T_FacetedSearch", User))
+                            {
+                                <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_FacetedSearch",getSortHtmlAttributes(null, false, null, true), null) + "');") alt="Export Excel" title="Export Excel">
+                                    <i class="fa fa-download" style="margin-right:3px"></i>  Export Excel
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="float-right">
+            <div class="input-group">
+                @Html.TextBox("SearchStringT_FacetedSearch", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                <div class="input-group-btn">
+                    <a id="T_FacetedSearchSearch" onclick="SearchClick(event, 'T_FacetedSearch', '@Html.Raw(Url.Action("Index", "T_FacetedSearch", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+
+                    <a id="T_FacetedSearchCancel" class="btn collapse-data-btn btn-secondary tip-top" onclick="CancelSearch('T_FacetedSearch','@Html.Raw(Url.Action("Index", "T_FacetedSearch", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                    <a id="T_FacetedSearchSearchCancel" class="btn collapse-data-btn btn-secondary tip-top" onclick="CancelSearch('T_FacetedSearch','@Html.Raw(Url.Action("Index", "T_FacetedSearch", new {IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                        <span class="fa fa-refresh"></span>
+                    </a>
+                    <a id="T_FacetedSearchRefresh" class="d-none" onclick="CancelSearch('T_FacetedSearch','@Html.Raw(Url.Action("Index", "T_FacetedSearch", getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,null, false)))','@User.Name')"></a>
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        <a href="@(Url.Action("SetFSearch", "T_FacetedSearch")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-secondary tip-top" alt="Faceted Search" title="Faceted Search"><span class="fa fa-binoculars"></span></a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    <div style="clear:both"></div>
+    @if (ViewData["HostingEntity"] == null)
+    {
+        if (ViewBag.SearchResult != "")
+        {
+            <div id="fsearchT_FacetedSearch" class="collapse alert alert-warning" style="margin-top:5px">
+                @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))
+                <div class="pull-right" style="margin-top:-6px;">
+                    <a href="@Url.Action("Index", "T_FacetedSearch",new{viewtype = Convert.ToString(ViewBag.TemplatesName)})" class="btn btn-primary btn-sm"><span class="fa fa-remove-sign"></span> Clear</a>
+                    <a href="@(Url.Action("SetFSearch", "T_FacetedSearch")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                </div>
+            </div>
+        }
+    }
+
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto; margin-top:3px">
+        <table class="table table-hover table-striped default-bordered default-condensed">
+            <thead>
+                <tr>
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("T_FacetedSearch", "T_Name"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Name");
+                        <th scope="col" class="col2">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_Name", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Name")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Name")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Description"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Description");
+                        <th scope="col" class="col3">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_Description", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Description")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Description")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_EntityName"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_EntityName");
+                        <th scope="col" class="col4">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_EntityName")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_EntityName")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Roles"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Roles");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_Roles", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Roles")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Roles")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Disable"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_Disable");
+                        <th scope="col" class="col6">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_Disable", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Disable")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Disable")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_LinkAddress"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "T_LinkAddress");
+                        <th scope="col" class="col7">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes("T_LinkAddress", false, null, false), new { @onclick = "SortLinkClick(event,'T_FacetedSearch');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_LinkAddress")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_LinkAddress")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+
+                </tr>
+            </thead>
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                if (!User.IsAdmin && !string.IsNullOrEmpty(item.T_Roles) && !User.IsInRole(User.userroles, item.T_Roles.Split(",".ToCharArray())))
+                {
+                    continue;
+                }
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="12" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row" ondblclick="DoubleClickRow(@item.Id,'@Url.Action(User.CanEdit("T_FacetedSearch") ? "Edit" : "Details", "T_FacetedSearch", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        <td>
+                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                        </td>
+                    }
+                    <td>
+                        <div style="width:42px; margin-top:-2px;">
+                            <div class="btn-group" style="position:absolute;">
+                                @if (User.CanEdit("T_FacetedSearch"))
+                                {
+                                    @*if (ViewBag.IsDivRender == true)
+                                        {
+                                            <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "T_FacetedSearch", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = ViewBag.IsDivRender, viewtype = Convert.ToString(ViewBag.TemplatesName) }, null))')" class="btn btn-xs dropdown-toggle btn-primary2" alt="Edit" title="Edit">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Edit","T_FacetedSearch", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)" class="btn btn-xs dropdown-toggle btn-primary2" alt="Edit" title="Edit">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        }*@
+                                    <a onclick="$('#aBtnQuickEditT_FacetedSearch_@item.Id').click();" class="btn btn-primary btn-xs" alt="Edit" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                }
+
+                                <a data-toggle="dropdown" class="btn dropdown-toggle btn-secondary btn-xs" style="padding-left:6px; padding-right:6px" alt="More Options" title="More Options">
+
+                                </a>
+                                <ul class="dropdown-menu pull-left">
+
+                                    @if (User.CanEdit("T_FacetedSearch"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" id='aBtnQuickEditT_FacetedSearch_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit FacetedSearch','dvPopup','" + Url.Action("EditQuick", "T_FacetedSearch", new
+																			{
+																				id = item.Id,
+																				UrlReferrer = Request.Url,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")"><i class="fa fa-edit"></i>Quick Edit</a>
+                                        </li>
+                                    }
+
+                                    @if (User.CanDelete("T_FacetedSearch"))
+                                    {
+                                        <li class="divider" style="clear:both"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Delete", "T_FacetedSearch", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="fa fa-trash"></i> Delete</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("T_FacetedSearch", "T_Name"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.T_Name)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Description"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.T_Description)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_EntityName"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.T_EntityName)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Roles"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            @Html.ValueFor(modelItem => item.T_Roles)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_Disable"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            @Html.ValueFor(modelItem => item.T_Disable)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch", "T_LinkAddress"))
+                    {
+                        <td onclick="OpenQuickEdit('T_FacetedSearch','@item.Id',event);">
+                            <a target="_blank" href="@Html.DisplayFor(modelItem => item.T_LinkAddress)"> Click </a>
+                        </td>
+                    }
+
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0)
+    {
+        <div id="pagination" class="MyPagination1">
+            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_FacetedSearch", getSortHtmlAttributes(null, true, page, false)),
+
+               new PagedListRenderOptions
+               {
+                   FunctionToTransformEachPageLink = (liTag, aTag) =>
+                   {
+                       aTag.Attributes.Add("class", "page-link");
+                       liTag.InnerHtml = aTag.ToString();
+                       return liTag;
+                   },
+                   LiElementClasses = new[] { "page-item" },
+                   UlElementClasses = new[] { "pagination pagination-sm" }
+
+               }
+)
+
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistT_FacetedSearch",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'T_FacetedSearch','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_FacetedSearch",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistT_FacetedSearch"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityT_FacetedSearchDisplayValue", null, null, new { @Style = "display:none;" })
+</div>

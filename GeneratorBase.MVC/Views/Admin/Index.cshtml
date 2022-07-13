@@ -1,0 +1,296 @@
+﻿@{
+    ViewBag.Title = "Admin Page";
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+	bool SoftDeleteEnabled = false;
+    string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+    var ElmahUrl = Url.Content("~/elmah");
+    var ApiHelp = Url.Content("~/APIhelp");
+    var SwaggerDoc = Url.Content("~/swagger");
+}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<style>
+.content-wrapper {
+background-color: #fff;
+}
+.container-settings {
+margin: 5px auto;
+padding: 5px 0px !important;
+border: 1px solid rgba(195,221,236,.60);
+border-radius: 4px;
+box-shadow: 0 6px 12px rgba(0,0,0,.175);
+list-style: none;
+}
+.container-settings li {
+    display: flex;
+}
+.category-box{
+margin-bottom: 5px;
+padding: 0px 5px;
+
+}
+.category-box ul h4 {
+color: #62a8d1;
+background-color: #f3f5f9;
+padding: 10px 10px;
+font-size: 14px;
+}
+.category-box ul li a {
+text-decoration: none;
+color:gray;
+padding: 4px;
+display: block;
+width: 100%;
+}
+.category-box ul li a:hover {
+text-decoration: none;
+color: #444;
+background-color: #f5f5f5;
+display: block;
+padding: 4px;
+}
+.category-box.top-row ul {
+height: auto;
+border: 1px solid #f3f5f9;
+width: 100%;
+}
+.category-box.bottom-row ul {          
+height: auto;
+border: 1px solid #f3f5f9;
+
+width: 100%;
+}
+</style>
+
+<div class="content-heading">
+        <div class="col-md-10">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a>
+                <small>Page</small>
+            </strong>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary pull-right" data-placement="top" data-toggle="modal" data-target="#ShowAboutApp" onclick=@Html.Raw("OpenDashBoard('dvAboutApp');") alt="About Application" title="About Application">
+                About App
+            </button>
+      </div>
+</div>
+
+<ul class="row container-settings">
+        @if (User.CanViewAdminFeature("ApplicationConfiguration") || User.CanViewAdminFeature("UserInterfaceSetting") || User.CanView("EntityPage"))
+        {
+		<li class="col-sm-3 category-box top-row">
+                <ul class="list-unstyled">
+                    <h4  alt="Application Configuration" title="Application Configuration">
+                        <i class="fa fa-object-group fa-lg"></i>
+                        Application Configuration
+                    </h4>
+                    <p class="p-2"><i>Use this area to set your organization specific security, infrastructure and other settings</i></p>
+                    @if (User.CanViewAdminFeature("ApplicationConfiguration"))
+                    {
+                        <li><a href="@Url.Action("Index", "AppSetting")" data-toggle="tooltip" data-placement="top" title="Manage advanced settings such as report server, AD server, analytics, maintenance mode and security policies"><i class="fa fa-gears mx-2"></i> Application Settings </a></li>
+                    }
+                    @if (User.CanViewAdminFeature("UserInterfaceSetting"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", "CompanyInformation")" data-toggle="tooltip" data-placement="top" title=" Manage the login page as well as the set application specific information like logos, about application, contact email etc. on the homepage">
+                                <i class="mx-2 fa fa-user">    </i> Manage Company Profile
+                            </a>
+                        </li>
+                    }
+                    @if (User.CanView("EntityPage"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", "EntityPage")" data-toggle="tooltip" data-placement="top" title="Enable data Caching, or add instructional text that is displayed next to each property, group or entity">
+                                <i class="mx-2 fa fa-info-circle">
+                                </i> Entity Data Caching & Help Text
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+	         @if (User.CanViewAdminFeature("UserInterfaceSetting") || User.CanAddAdminFeature("BulkEmail") || User.CanViewAdminFeature("ApplicationConfiguration"))
+        {
+            <li class="col-sm-3 category-box top-row">
+                <ul class="list-unstyled">
+                    <h4  alt="Application Guide" title=" Developer Tools">
+                        <i class="fa fa-bullhorn fa-lg" aria-hidden="true"></i> Notifications
+                    </h4>
+                    <p class="p-2"><i>Use this area to send/alert notifications,manage them and view all the journal entries recorded by the system</i></p>
+                    @if (User.CanViewAdminFeature("UserInterfaceSetting"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", "CompanyInformation")" data-toggle="tooltip" data-placement="top" title="Set SMTP Details"><i class="mx-2 fa fa-envelope"></i> Set SMTP Details </a>
+                        </li>
+                    }
+                    @if (User.CanViewAdminFeature("ApplicationConfiguration"))
+                    {
+                        <li><a href="@Url.Action("Index", "EmailTemplate")" data-toggle="tooltip" data-placement="top" title="Manage email templates that are used when the system sends notification emails to end users"><i class="mx-2 fa fa-pencil-square-o"></i> Manage Email Templates</a></li>
+                    }
+                    @if (User.CanAddAdminFeature("BulkEmail"))
+                    {
+                        <li><a href="@Url.Action("BulkEmail", "CompanyProfile")" data-toggle="tooltip" data-placement="top" title="Email to Application Users"><i class="mx-2 fa fa-envelope"></i> Email to Application Users </a></li>
+                    }
+					                </ul>
+            </li>
+        }
+	  
+@if (User.CanViewAdminFeature("BusinessRule"))
+        {
+            <li class="col-sm-3 category-box top-row">
+                <ul class="list-unstyled">
+                    <h4  alt="Business Rules" title="Business Rules">
+                        <i class="fa fa-suitcase fa-lg" aria-hidden="true"></i> Business Rules
+                    </h4>
+                    <p class="p-2"><i>Use this area to Manage rules that execute when certain conditions are met</i></p>
+                    <li>
+                        <a href="@Url.Action("Index", "BusinessRule")" data-toggle="tooltip" data-placement="top" title="Create new business rules. Create a set of triggers that execute certain actions">
+                            <i class="fa fa-briefcase mx-2"> </i> Manage Business Rules
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        }
+
+
+		@if (User.CanView("JournalEntry"))
+        {
+            <li class="col-sm-3 category-box top-row">
+                <ul class="list-unstyled">
+                    <h4  alt="Application Guide" title=" Developer Tools ">
+                        <i class="fa fa-line-chart fa-lg" aria-hidden="true"></i> Performance & Auditing
+                    </h4>
+                    <p class="p-2"><i>Use this area to view users activity (user actions) logs.</i></p>
+                    <li><a href="@Url.Action("Index", "JournalEntry")" data-toggle="tooltip" data-placement="top" title="view all the journal entries captured by the system"><i class="fa fa-eye mx-2"></i>  View Journal Entries </a></li>
+                </ul>
+            </li>
+        }
+ @if (User.CanViewAdminFeature("User") || User.CanViewAdminFeature("Role") || User.CanViewAdminFeature("UserBasedSecurity") || User.CanViewAdminFeature("DynamicRoles") || User.CanViewAdminFeature("ApplicationConfiguration") || (User.IsAdmin && SoftDeleteEnabled))
+        {
+            <li class="col-sm-3 category-box bottom-row">
+                <ul class="list-unstyled">
+                    <h4  alt="User Permissions & Security" title="Users, Roles and Permissions">
+                        <i class="fa fa-user fa-lg" aria-hidden="true"></i> Users, Roles and Permissions
+                    </h4>
+                    <p class="p-2">
+                        <i> Use this area to manage who is authorized to access the system and their permission levels </i>
+                    </p>
+                    @if (User.CanViewAdminFeature("User"))
+                    {
+                        <li>
+                            <a href="@Url.Action("Index", "Account")" data-toggle="tooltip" data-placement="top" title="Add new users and manage existing users">
+                                <i class=" fa fa-users mx-2">
+                                </i> Users
+                            </a>
+                        </li>
+                    }
+                    @if (User.CanViewAdminFeature("Role"))
+                    {
+                        <li>
+                            <a href="@Url.Action("RoleList", "Account")" data-toggle="tooltip" data-placement="top" title=" Add new roles as well as manage existing roles">
+                                <i class=" fa fa-check mx-2">
+                                </i> Roles
+                            </a>
+                        </li>
+                    }
+                    @if (GeneratorBase.MVC.ModelReflector.Entities.Where(p => p.Associations.Where(q => q.Target == "IdentityUser").Count() > 0).Count() > 0)
+                    {
+                        if (User.CanViewAdminFeature("UserBasedSecurity"))
+                        {
+                            <li>
+                                <a href="@Url.Action("UserBasedSecurity", "Permission")" data-toggle="tooltip" data-placement="top" title="Set permissions based on specific users">
+                                    <i class=" fa fa-user-secret mx-2"></i>
+                                    User Based Security
+                                </a>
+                            </li>
+                        }
+                    }
+                   
+           @if (User.CanViewAdminFeature("ApplicationConfiguration"))
+            {
+						            }
+	
+            @if (User.IsAdmin && SoftDeleteEnabled)
+            {
+
+                <li>
+                    <a href="@Url.Action("PurgeAll", "Account")" data-toggle=" tooltip" data-placement="top" title=" Recycle Bin">
+                        <i class="fa fa-recycle  mx-2">
+                        </i> Recycle Bin
+                    </a>
+                </li>
+            }	
+
+
+
+        </ul>
+    </li>
+	}
+        @if (User.CanViewAdminFeature("UserInterfaceSetting"))
+        {
+            <li class="col-sm-3 category-box bottom-row">
+                <ul class="list-unstyled">
+                    <h4  title="User Interface Customization">
+                        <i class="fa fa-paint-brush fa-lg" aria-hidden="true"></i> User Interface Customization
+                    </h4>
+                    <p class="p-2"><i>Use this area to customize the looks & feels of the application</i></p>
+                    <li><a href="@Url.Action("ThemeChange", "Theme")" data-toggle="tooltip" data-placement="top" title=" Choose a different Template for the application"><i class=" fa fa-th-large mx-2"></i> Change Template</a></li>
+                    @* <li><a href="@Url.Action("Create", "Theme")" data-toggle="tooltip" data-placement="top" title="Select color scheme there is more scheme(s) are defined/listed"><i class="fa fa-paint-brush mx-2"></i> Select color scheme </a></li>
+                        <li><a href="@Url.Action("Create", "Theme")" data-toggle="tooltip" data-placement="top" title=" Design your own homepages for specific roles"><i class="fa fa-file"></i> Design custom homepages </a></li>
+                    *@
+                    <li><a href="@Url.Action("Index", "ResourceLocalization")" data-toggle="tooltip" data-placement="top" title="Change the labels of the entity names and properties"><i class="fa fa-tag mx-2"></i> Change Display Labels  </a></li>
+                    <li><a href="@Url.Action("Index", "PropertyValidationandFormat")" data-toggle="tooltip" data-placement="top" title="Manange property validation, format and masking"><i class="fa fa-code mx-2"></i> Property validation and format</a></li>
+                    <li><a href="@Url.Action("Index", "DefaultEntityPage")" data-toggle="tooltip" data-placement="top" title="Set redirect URL when the end user clicks on any of the entities"><i class="fa fa-globe mx-2"></i> Set Default Pages </a></li>
+                    <li><a href="@Url.Action("Index", "CompanyInformation")" data-toggle="tooltip" data-placement="top" title="Change Icons and Footer"><i class="fa fa-list-alt mx-2"></i> Change Icons and Footer</a></li>
+                    <li><a href="@Url.Action("Index", "Chart")" data-toggle="tooltip" data-placement="top" title="Application Charts"><i class="fa fa-pie-chart mx-2"></i> Application Charts</a></li>
+					<li><a href="@Url.Action("Index", "T_DataMetric")" data-toggle="tooltip" data-placement="top" title="Data Metrics"><i class="fa fa-line-chart mx-2"></i> Data Metrics</a></li>
+                </ul>
+            </li>
+        }
+        @if (User.CanViewAdminFeature("ApplicationDocuments"))
+        {
+            <li class="col-sm-3 category-box bottom-row">
+                <ul class="list-unstyled">
+                    <h4  alt="Application Guide" title=" Training Material ">
+                        <i class="fa fa-graduation-cap fa-lg" aria-hidden="true"></i> Training and Documentation
+                    </h4>
+                    <p class="p-2"><i>Use this area to download training material to learn more about the general usage as well as administrative tasks</i></p>
+                    @if (ViewBag.FileList != null)
+                    {
+                        foreach (dynamic docs in ViewBag.FileList)
+                        {
+                            string docName = ((docs.GetType()).GetProperty("Name")).GetValue(docs, null);
+                            int id = ((docs.GetType()).GetProperty("id")).GetValue(docs, null);
+                            <li><a href="@Url.Action("GenerateDocument", "Template", new {id = @id})" data-toggle="tooltip" data-placement="top" title="@docName" style="text-transform :capitalize;"><i class="fa fa-file-word-o mx-2"></i> @docName</a></li>
+                        }
+                    }
+                </ul>
+            </li>
+        }        <li class="col-sm-3 category-box bottom-row">
+            <ul class="list-unstyled">
+                <h4  alt="Application Guide" title=" Developer Tools ">
+                    <i class="fa fa-code fa-lg" aria-hidden="true"></i> Developer Tools
+                </h4>
+                <p class="p-2"><i>Use this area to explore advanced tools for developers like .NET documentation, error logs and other manuals </i> </p>
+            <li><a href="@ElmahUrl" data-toggle="tooltip" target="_blank" data-placement="top" title=".NET error logs provided by elmah"><i class="fa fa-exclamation-triangle mx-2"></i> Application Error Logs </a></li>
+            <li><a href="~/Documentation/index.html" target="_blank" data-toggle="tooltip" data-placement="top" title="Link to the SandCastle generated .NET Documentation for the application"><i class="fa fa-code mx-2"></i> Code Documentation </a></li>
+           @if (User.IsAdmin)
+            {
+                <li><a href="@Url.Action("DownloadSQLScript", "Admin")" data-toggle="tooltip" data-placement="top" title="Download default SQL scripts to create the application database, tenant based views and other commonly used functions"><i class="fa fa-download mx-2"></i> Download SQL scripts</a></li>
+            }
+            @*<li><a href="" data-toggle="tooltip" data-placement="top" title="Instructions on how to download this code and deploy it on the cloud or Windows server"><i class="fa fa-file-word-o"></i> Deployment Guide </a></li>
+            <li><a href="" data-toggle="tooltip" data-placement="top" title="Instructions on how to generate Code Documentation "><i class="fa fa-download"></i> Download ASP .NET Documentation Instructions </a></li>*@
+            @if (User.CanViewAdminFeature("ApplicationDocuments"))
+            {
+                <li><a href="@Url.Action("DownloadTestScript", "Admin")" data-toggle="tooltip" data-placement="top" title="Download Selenium file with automated test cases for commonly encountered scenarios"><i class="fa fa-check mx-2"></i> Selenium Test Cases</a></li>
+            }
+				        </ul>
+    </li>
+	
+
+

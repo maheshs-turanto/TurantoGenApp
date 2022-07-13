@@ -1,0 +1,820 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuItem
+@{
+    ViewBag.Title = "Create Menu Item";
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuItem").Properties;
+    var NonViewableProperties = User.CanNotView("T_MenuItem");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_MenuItem", User);
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@{
+
+    if (ViewBag.IsPartial == true)
+    {
+        <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        if (appTheme == "Default1")
+        {
+            <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+        }
+        else
+        {
+            <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        }
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+    }
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 8px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -0px !important;
+        }
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+
+        @@media (max-width: 767px) {
+
+
+            .arrowCount {
+                background-color: #1d5072 !important;
+            }
+
+            #dvGroupT_StudentPersonalInformation {
+                margin-top: 10px !important;
+            }
+
+            .nav-tabs .nav-item.active a {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+
+                .nav-tabs .nav-item.active a:hover {
+                    display: block !important;
+                    border-color: #1d5072 !important;
+                    color: #fff !important;
+                    background: #1d5072 !important;
+                }
+
+            .sw-theme-arrows > ul.step-anchor {
+                border-top-right-radius: 0 !important;
+            }
+
+                .sw-theme-arrows > ul.step-anchor > li.active > a {
+                    display: block !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
+                    display: none !important;
+                    color: #1d5072 !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor.open > li > a {
+                    display: block !important;
+                }
+
+            .responsive-tabs .dropdown-arrow {
+                border-color: #fff !important;
+                display: block !important;
+                z-index: 1000;
+                position: absolute;
+            }
+
+            #WizardBtnCancel {
+                margin-top: unset !important;
+                float: unset !important;
+                display: block !important;
+                margin-right: 8px !important;
+                margin-top: 3px !important;
+            }
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuItemIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuItemIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuItemIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuItemIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuItemIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_MenuItemIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuItemRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_MenuItemRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_MenuItem", new { UrlReferrer = Convert.ToString(ViewData["T_MenuItemParentUrl"]), IsDDAdd = ViewBag.IsDDAdd, viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmT_MenuItem" }))
+{
+    @Html.AntiForgeryToken();
+    if (!string.IsNullOrEmpty(wizardid))
+    { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+else { Html.ValidationSummary(true); }
+Html.EnableClientValidation();
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainer" style="display: none">
+    <div id="errorsMsg"></div>
+    <div id="errors"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlT_MenuItem" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuItem")).ToHtmlString()"></a>
+<div class="row">
+    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+    @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+    @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+    <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+        <div class="AppForm tabs-container" @wizardid>
+            @if (!string.IsNullOrEmpty(wizardid))
+            {
+                <ul id="olwizard" class="nav nav-tabs responsive-tabs" role="tablist">
+                    <li role="tab" class="nav-item" id="liGroupT_MenuItemBasicInformation">
+                        <a href="#wzGroupT_MenuItemBasicInformation" class="hidden-phone">Basic Information</a>
+                    </li>
+                    <li role="tab" class="nav-item" id="liGroupT_MenuItemMenuItemDisplayInformation">
+                        <a href="#wzGroupT_MenuItemMenuItemDisplayInformation" class="hidden-phone">Menu Item Display Information</a>
+                    </li>
+                    <li role="tab" class="nav-item" id="liGroupT_MenuItemUIInformation">
+                        <a href="#wzGroupT_MenuItemUIInformation" class="hidden-phone">UI Information</a>
+                    </li>
+                </ul>
+                <script>
+                    $(document).ready(function () {
+                        $(".formbuttonfix").hide();
+                        $(".pager").show();
+                        $(".pager.bwizard-buttons").show();
+                        $(".hidetools").hide();
+                    });
+                </script>
+                @Html.Hidden("wizardstep")
+            }
+            <div class="">
+                <div class="row bgwizard" id="wzGroupT_MenuItemBasicInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_MenuItemBasicInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_MenuItem", "T_AutoNo"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_AutoNo)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_AutoNo, new { @class = "form-control", @readonly = "readonly" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_Name"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Name)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Name)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_ToolTip"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_ToolTip)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ToolTip) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextAreaFor(model => model.T_ToolTip, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_ToolTip)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupT_MenuItemMenuItemDisplayInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_MenuItemMenuItemDisplayInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="Menu Item Display Information" title="Menu Item Display Information">Menu Item Display Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_MenuItem", "T_MenuItemMenuItemAssociationID"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_MenuItemMenuItemAssociationID">
+                                        <div class='form-group'>
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_MenuItemMenuItemAssociationID) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+
+                                                    @Html.DropDownList("T_MenuItemMenuItemAssociationID", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllValue", "T_MenuItem", new { caller = "T_MenuItemMenuItemAssociationID" }) })
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_MenuItemMenuItemAssociationID)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_Entity"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Entity">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Entity)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_Entity) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_Entity, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Entity)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_Action"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_Action">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Action)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_Action) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_Action, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Action)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_LinkAddress"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_LinkAddress">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_LinkAddress)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_LinkAddress) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_LinkAddress, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_LinkAddress)
+                                    </div>
+                                }
+
+                                @if (User.CanView("T_MenuItem", "T_EntityValue"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_EntityValue">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_EntityValue)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_EntityValue) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_EntityValue, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_EntityValue)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_SavedSearch"))
+                                {
+                                    <div class='col-sm-12 col-md-12 col-xs-12' id="dvT_SavedSearch">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_SavedSearch)">
+                                            <label class="col-sm-2 col-md-2 float-left col-xs-12">@Html.LabelFor(model => model.T_SavedSearch) </label>
+                                            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_SavedSearch, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_SavedSearch)
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupT_MenuItemUIInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_MenuItemUIInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_MenuItem", "T_DisplayOrder"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayOrder">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_DisplayOrder)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DisplayOrder) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_DisplayOrder, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_DisplayOrder)
+                                    </div>
+                                }
+                                @if (User.CanView("T_MenuItem", "T_ClassIcon"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ClassIcon">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_ClassIcon)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ClassIcon) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_ClassIcon, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_ClassIcon)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divDisplayThresholdLimit1">
+</div>
+<div id="divDisplayBRmsgMandatory1">
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp1">
+</div>
+<div id="divDisplayCodeFragment1">
+</div>
+<div class="@footerclassdiv1">
+    <div class="@footerclassdiv2">
+
+        <a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","T_MenuItem")');" alt="Cancel" title="Cancel">Cancel</a>
+
+
+        <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create" />
+
+        @if (ViewBag.IsPartial == null)
+        {
+            if (ViewBag.IsDDAdd == null && User.CanEdit("T_MenuItem"))
+            {
+                <input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue" />
+                <input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+            }
+        }
+        <input type="hidden" name="hdncommand" value="" />
+    </div>
+</div>
+<br />
+<br />
+}
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuItem").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				form = $("#frmT_MenuItem");
+				dataurl = "@Url.Action("businessruletype", "T_MenuItem", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "T_MenuItem", false, "ErrMsg", form);
+
+    });
+        </script>
+
+
+        <script>
+			$("input[type='submit']").click(function() {
+                $('input:hidden[name="hdncommand"]').val($(this).val());
+            });
+            $("form").submit(function (event) {
+			//if (!$("#frmT_MenuItem").valid()) return;
+			var flag = true;
+				document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+ form = $("#frmT_MenuItem").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "T_MenuItem", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuItem", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+                    //$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					 $("#frmT_MenuItem").find(':input').removeAttr('disabled');
+                }
+				else
+					  $("html, body").animate({ scrollTop: 0 }, "fast");
+				return flag;
+			 });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmT_MenuItem").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+
+		 focusOnControl('frmT_MenuItem');
+        }
+        catch (ex) { }
+			 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_MenuItem','create',false,'Menu Item')
+		//instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_MenuItem','create',false,'Menu Item')
+		var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+		});
+</script>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+
+<div id="tmpEntities" style="display:none;">
+    @Html.DropDownList("EntityList", null, "--Select--", new { @required = "required", @class = "form-control", @onchange = "SetEntity();FillActionType(this);" })
+    @Html.Hidden("T_Entity", null, new { @Value = "" })
+</div>
+
+<div id="tmpLinkAddress" style="display:none;">
+    @Html.Hidden("T_LinkAddress", null, new { @Value = "" })
+</div>
+
+<div id="tmpAction" style="display: none;">
+    <select class="form-control" id="drpAction" onchange="SetAction();SetLinkAddress();FillEntityValue();FillSavedSearch();">
+        <option value="" disabled selected>--Select--</option>
+    </select>
+    @Html.Hidden("T_Action", null, new { @Value = "" })
+</div>
+
+<div id="tmpEntityValue" style="display: none;">
+    <select class="form-control" id="drpEntityValue" onchange="SetLinkAddress();">
+        <option value="" disabled selected>--Select--</option>
+    </select>
+</div>
+
+<div id="tmpSavedSearch" style="display: none;">
+    <select class="form-control" id="drpSavedSearch" onchange="SetLinkAddress();">
+        <option value="" disabled selected>--Select--</option>
+    </select>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("input[id$='T_Entity']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpEntities").html());
+        });
+
+        $("input[id$='T_Action']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpAction").html());
+        });
+
+        $("div[id$='dvT_LinkAddress']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpLinkAddress").html());
+        });
+
+        $("input[id$='T_EntityValue']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpEntityValue").html());
+        });
+
+        $("input[id$='T_SavedSearch']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpSavedSearch").html());
+        });
+
+        $('#dvT_EntityValue').hide();
+        $('#dvT_SavedSearch').hide();
+    });
+</script>
+<script>
+    function SetEntity() {
+        $('#T_Entity').val($('#EntityList').val());
+    }
+
+    function SetAction() {
+        $('#T_Action').val($('#drpAction').val());
+    }
+
+    function SetLinkAddress() {
+        $('#T_LinkAddress').val("");
+        var dataurl = "";
+        if ($('#drpAction').val() == "Edit") {
+            $('#dvT_EntityValue').show();
+            $('#dvT_SavedSearch').hide();
+            dataurl = "/Edit/" + $('#drpEntityValue').val();
+            $('#T_LinkAddress').val(dataurl);
+        }
+        else if ($('#drpAction').val() == "Details") {
+            $('#dvT_EntityValue').show();
+            $('#dvT_SavedSearch').hide();
+            dataurl = "/Details/" + $('#drpEntityValue').val();
+            $('#T_LinkAddress').val(dataurl);
+        }
+        else if ($('#drpAction').val() == "SetFSearch") {
+            $('#dvT_EntityValue').hide();
+            $('#dvT_SavedSearch').show();
+            /*GetSavedSearchLink($('#drpSavedSearch').val());*/
+            $('#T_LinkAddress').val($('#drpSavedSearch').val());
+        }
+        else {
+            $('#dvT_EntityValue').hide();
+            $('#dvT_SavedSearch').hide();
+            $('#T_LinkAddress').val($('#drpAction').val());
+        }
+    }
+
+    function FillActionType(obj) {
+        var SelectedEntity = $(obj).val();
+        $("#drpAction").html('');
+        if (SelectedEntity != "" && SelectedEntity != "Custom URL")
+        {
+             $.ajax({
+            url: '@Url.Action("GetTemplateViews", "DefaultEntityPage", null)' + '?EntityName=' + SelectedEntity,
+            type: "GET",
+            cache: false,
+            success: function (result) {
+                $("#drpAction").html('');
+                var indexpage = result.IndexPages;
+                var detailspage = result.DetailsPage;
+                var editpage = result.EditPage;
+                var searchpage = result.SearchPage;
+                var createpage = result.CreatePage;
+                var homepage = result.HomePage;
+                var popupCardPage = result.PopupCardPage;
+                var kanbanPage = result.KanbanPage;
+                var tmpStr = "";
+                var placeHolder = "--Select--";
+                var optionDOM = "<option value='" + tmpStr + "' disabled selected>" + placeHolder + "</option>";
+                //List page
+                $.each(indexpage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+
+                //Details page
+                $.each(detailspage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //edit page
+                $.each(editpage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //search page
+                $.each(searchpage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //create page
+                $.each(createpage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //PopupCard page
+                $.each(popupCardPage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //Kanban page
+                $.each(kanbanPage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                //
+                //Home page
+                $.each(homepage, function (dispayvalue, value) {
+                    optionDOM += "<option value='" + value + "'>" + dispayvalue + "</option>";
+
+                });
+                $("#drpAction").html(optionDOM);
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+
+        }
+    }
+
+    function FillEntityValue() {
+        var SelectedEntity = $("#EntityList").val();
+        var SelectedProperty = 'DisplayValue';
+        $("#drpEntityValue").html('');
+        if (SelectedEntity != "-- Select --" && SelectedEntity != "" && SelectedEntity != undefined && SelectedEntity != "Custom URL") {
+            $.ajax({
+                url: '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)'.replace("_Entity", SelectedEntity) + '?propNameBR=' + SelectedProperty,
+                type: "GET",
+                cache: false,
+                success: function (result) {
+                    propType = "Association";
+                    var countItems = 0;
+                    var tmpStr = "";
+                    var placeHolder = "--Select--";
+                    var optionDOM = "<option value='" + tmpStr + "' disabled selected>" + placeHolder + "</option>";
+                    for (i = 0; i < result.length; i++) {
+                        if (result[i] != null)
+                            optionDOM += '<option class="' + propType + '" value="' + result[i].Id + '">' + result[i].value + '</option>';
+                        countItems++;
+                    }
+                    $("#drpEntityValue").html(optionDOM);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+        }
+    }
+
+    function FillSavedSearch() {
+        $("#drpSavedSearch").html('');
+            $.ajax({
+                url: '@Url.Action("GetAllValue", "T_FacetedSearch", new { caller = "T_AssociatedFacetedSearchID" })',
+                type: "GET",
+                cache: false,
+                success: function (result) {
+                    propType = "Association";
+                    var countItems = 0;
+                    var tmpStr = "";
+                    var placeHolder = "--Select--";
+                    var optionDOM = "<option value='" + tmpStr + "' disabled selected>" + placeHolder + "</option>";
+                    for (i = 0; i < result.length; i++) {
+                        if (result[i] != null)
+                            optionDOM += '<option class="' + propType + '" value="' + result[i].Id + '">' + result[i].Name + '</option>';
+                        countItems++;
+                    }
+                    $("#drpSavedSearch").html(optionDOM);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("error");
+                }
+            });
+    }
+
+    function GetSavedSearchLink(Sid) {
+        $.ajax({
+
+            url: '@Url.Action("GetJsonResultById", "T_FacetedSearch")',
+            type: "GET",
+            cache: false,
+            data: { id: Sid },
+            success: function (result) {
+                propType = "Association";
+                    if (result != null) {
+                        $('#T_LinkAddress').val(result.T_LinkAddress);
+                    }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("error");
+            }
+        });
+    }
+</script>

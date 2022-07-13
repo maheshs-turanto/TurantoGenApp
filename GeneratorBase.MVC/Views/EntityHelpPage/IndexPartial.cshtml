@@ -1,0 +1,570 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.EntityHelpPage>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "EntityHelpPage");
+    var RecycleView = ViewData["ShowdDeleted"] != null && Convert.ToBoolean(ViewData["ShowdDeleted"]);
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel='stylesheet' type='text/css' />
+<script src='@Url.Content("~/Scripts/summernote.js")' type='text/javascript'></script>
+<div id="EntityHelpPage">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        function LoadDivInsideTab(dvName, username, url) {
+            if (dvName.length > 0)
+                $.cookie(username + "TabCookie", dvName);
+            $("#" + dvName).empty();
+            if ($.trim($("#" + dvName).html()).length == 0) {
+                $("#" + dvName).html('Please wait..');
+                $("#" + dvName).load(url);
+            }
+        }
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'EntityHelpPage', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchEntityHelpPage").addClass('in');
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'EntityHelpPage');
+            }
+            $("#SearchStringEntityHelpPage").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#EntityHelpPageSearch").bind("click", (function () {
+                    }));
+                    $('#EntityHelpPageSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideEntityHelpPage").mouseup(function () {
+                if (document.getElementById('ColumnShowHideEntityHelpPage').className == 'collapse') {
+                    $('#lblEntityHelpPage').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".pull-left.actionbar").hide();
+            }
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+
+                    entityofentityhelp = Request.QueryString["entityofentityhelp"],
+                    OrderFrom = Request.QueryString["OrderFrom"],
+                    OrderFromhdn = Request.QueryString["OrderFromhdn"],
+                    OrderTo = Request.QueryString["OrderTo"],
+                    OrderTohdn = Request.QueryString["OrderTohdn"],
+                    Disable = Request.QueryString["Disable"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowdDeleted = ViewData["ShowdDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    entityofentityhelp = Request.QueryString["entityofentityhelp"],
+                    OrderFrom = Request.QueryString["OrderFrom"],
+                    OrderFromhdn = Request.QueryString["OrderFromhdn"],
+                    OrderTo = Request.QueryString["OrderTo"],
+                    OrderTohdn = Request.QueryString["OrderTohdn"],
+                    Disable = Request.QueryString["Disable"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowdDeleted = ViewData["ShowdDeleted"]
+                };
+            }
+        }
+    }
+    @if (ViewData["IsdrivedTab"] == null)
+    {
+        <div class="pull-left actionbar">
+            <div class="btn-group" id='@ViewData["HostingEntity"]_EntityHelpPage'>
+                @if (User.CanAdd("EntityHelpPage"))
+                {
+                    if (ViewBag.IsDivRender != true)
+                    {
+                        <a href="#"  class="btn btn-secondary" data-placement="top" id="addEntityHelpPage" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Entity Help Page','dvPopup','" + Url.Action("CreateQuick", "EntityHelpPage", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")" alt="Quick Add" title="Quick Add">
+                            <i class="fa fa-plus-circle"></i> Quick Add
+                        </a>}
+                }
+            </div>
+            <div class="btn-group">
+            </div>
+            @*@if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+            {
+                if ((User.CanEdit("EntityHelpPage") && User.CanUseVerb("BulkUpdate", "EntityHelpPage", User)) || (User.CanDelete("EntityHelpPage") && User.CanUseVerb("BulkDelete", "EntityHelpPage", User)))
+                {
+                    <div class="btn-group">
+                        <a class="btn btn-secondary dropdown-toggle" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                            <span class="fa fa-wrench"></span> Bulk
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            @if (User.CanEdit("EntityHelpPage") && User.CanUseVerb("BulkUpdate", "EntityHelpPage", User))
+                            {
+                                <li>
+                                    <a class="dropdown-item"  data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                       onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update Entity Help Page','dvPopup','" + Url.Action("BulkUpdate", "EntityHelpPage", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','EntityHelpPage')")">Update</a>
+                                </li>
+                            }
+
+                            @if (User.CanDelete("EntityHelpPage") && User.CanUseVerb("BulkDelete", "EntityHelpPage", User))
+                            {
+                                <li>
+                                    <a class="dropdown-item"  onclick="PerformBulkOperation(this,'EntityHelpPage','Bulk Delete','@Url.Action("DeleteBulk", "EntityHelpPage")');">Delete</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }*@
+        </div>
+        <div class="pull-right">
+            <div class="input-group">
+                @Html.TextBox("SearchStringEntityHelpPage", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                <div class="btn-group">
+                    <a id="EntityHelpPageSearch" onclick="SearchClick(event, 'EntityHelpPage', '@Html.Raw(Url.Action("Index", "EntityHelpPage", new {ShowdDeleted = ViewData["ShowdDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                    <a id="EntityHelpPageCancel" type="button" class="btn btn-secondary collapse-data-btn" onclick="CancelSearch('EntityHelpPage','@Html.Raw(Url.Action("Index", "EntityHelpPage", new {ShowdDeleted = ViewData["ShowdDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                    <a id="EntityHelpPageSearchCancel" type="button" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('EntityHelpPage','@Html.Raw(Url.Action("Index", "EntityHelpPage", new {ShowdDeleted = ViewData["ShowdDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                        <span class="fa fa-refresh"></span>
+                    </a>
+                    <a id="EntityHelpPageRefresh" type="button" class="d-none" onclick="CancelSearch('EntityHelpPage','@Html.Raw(Url.Action("Index", "EntityHelpPage", getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,null, false)))','@User.Name')"></a>
+                </div>
+            </div>
+        </div>
+    }
+    <div style="clear:both"></div>
+
+    @if (ViewBag.SearchResult != "")
+    {
+        <div id="fsearchEntityHelpPage" class="collapse alert alert-warning" style="margin-top:5px">
+            @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))
+            <div class="pull-right" style="margin-top:-6px;">
+                @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                {
+                    <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "EntityHelpPage",new{ShowdDeleted = ViewData["ShowdDeleted"], viewtype = Convert.ToString(ViewBag.TemplatesName)})" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-remove-sign"></span> Clear</a>
+                }
+                <a href="@(Url.Action("SetFSearch", "EntityHelpPage")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-edit"></span> Modify</a>
+                <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="EntityHelpPage",Url=Request.Url.PathAndQuery }) + "')")" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-floppy-save"></span> Save</a>
+            </div>
+        </div>
+    }
+    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("EntityHelpPage", "EntityOfEntityHelpID"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "EntityOfEntityHelpID");
+                        <th scope="col" class="col2" @(Convert.ToString(ViewData["HostingEntity"]) == "EntityPage" && Convert.ToString(ViewData["AssociatedType"]) == "EntityOfEntityHelp" ? "hidden" : "")>
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes("EntityOfEntityHelpID", false, null, false), new { @onclick = "SortLinkClick(event,'EntityHelpPage');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityOfEntityHelpID")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityOfEntityHelpID")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("EntityHelpPage", "SectionName"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "SectionName");
+                        <th scope="col" class="col3">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes("SectionName", false, null, false), new { @onclick = "SortLinkClick(event,'EntityHelpPage');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "SectionName")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "SectionName")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("EntityHelpPage", "Order"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Order");
+                        <th scope="col" class="col4">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes("Order", false, null, false), new { @onclick = "SortLinkClick(event,'EntityHelpPage');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Order")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Order")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("EntityHelpPage", "SectionText"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "SectionText");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes("SectionText", false, null, false), new { @onclick = "SortLinkClick(event,'EntityHelpPage');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "SectionText")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "SectionText")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("EntityHelpPage", "Disable"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Disable");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes("Disable", false, null, false), new { @onclick = "SortLinkClick(event,'EntityHelpPage');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Disable")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Disable")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                </tr>
+            </thead>
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="8" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row">
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        <td>
+                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                        </td>
+                    }
+                    <td>
+                        <div>
+                            <div class="btn-group">
+                                @if (User.CanEdit("EntityHelpPage"))
+                                {
+                                    if (ViewBag.IsDivRender == true)
+                                    {
+                                        <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "EntityHelpPage", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = ViewBag.IsDivRender, viewtype = Convert.ToString(ViewBag.TemplatesName) }, null))')" class="btn btn-secondary " alt="Edit" title="Edit">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Edit","EntityHelpPage", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = Convert.ToString(ViewBag.TemplatesName) },null)" class="btn btn-secondary " alt="Edit" title="Edit">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("EntityHelpPage", "EntityOfEntityHelpID"))
+                    {
+                        <td @(Convert.ToString(ViewData["HostingEntity"]) == "EntityPage" && Convert.ToString(ViewData["AssociatedType"]) == "EntityOfEntityHelp" ? "hidden" : "")>
+                            <div style="display:none;">
+                                @{
+                        var _objEntityOfEntityHelp = new List<GeneratorBase.MVC.Models.EntityPage>();
+                        var selectlist = new SelectList(_objEntityOfEntityHelp, "ID", "DisplayValue");
+                        if (item.EntityOfEntityHelpID.HasValue)
+                        {
+                            _objEntityOfEntityHelp.Add(item.entityofentityhelp);
+                            selectlist = new SelectList(_objEntityOfEntityHelp, "ID", "DisplayValue", item.EntityOfEntityHelpID);
+                        }
+                                }
+                                @Html.DropDownList("EntityOfEntityHelpID" + item.Id, selectlist, "-- Select --", new { @minwidth = "220px", @controlname = "EntityOfEntityHelpID", @id = "EntityOfEntityHelpID" + item.Id, @class = "form-control", @HostingName = "EntityPage", @dataurl = Url.Action("GetAllValue", "EntityPage", new { caller = "EntityOfEntityHelpID" }), @onchange = "SavePropertyValue(this,'EntityHelpPage'," + item.Id + ",'" + item.EntityOfEntityHelpID + "','" + Url.Action("SavePropertyValue") + "');" })
+                            </div>
+                            @ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName).DisplayName
+                        </td>
+                    }
+                    @if (User.CanView("EntityHelpPage", "SectionName"))
+                    {
+                        <td ondblclick="tdDoubleClickHelp(this);">
+                            @if (User.CanEdit("EntityHelpPage", "SectionName"))
+                            {
+                                <div style="display:none;">
+                                    @Html.TextBox("SectionName" + item.Id, item.SectionName, new { @controlname = "SectionName", @onblur = "SavePropertyValue(this,'EntityHelpPage'," + item.Id + ",'" + item.SectionName + "','" + Url.Action("SavePropertyValue") + "');" })
+                                    @Html.ValidationMessageFor(model => item.SectionName)
+
+                                </div>
+                            }
+                            @Html.DisplayFor(modelItem => item.SectionName)
+                        </td>
+                    }
+                    @if (User.CanView("EntityHelpPage", "Order"))
+                    {
+                        <td ondblclick="tdDoubleClickHelp(this);">
+                            @if (User.CanEdit("EntityHelpPage", "Order"))
+                            {
+                                <div style="display:none;">
+                                    @Html.TextBox("Order" + item.Id, item.Order, new { @controlname = "Order", @onblur = "SavePropertyValue(this,'EntityHelpPage'," + item.Id + ",'" + item.Order + "','" + Url.Action("SavePropertyValue") + "');" })
+                                    @Html.ValidationMessageFor(model => item.Order)
+
+                                </div>
+                            }
+                            @Html.DisplayFor(modelItem => item.Order)
+                        </td>
+                    }
+                    @if (User.CanView("EntityHelpPage", "SectionText"))
+                    {
+                        <td ondblclick="tdDoubleClickHelp(this);">
+                            @if (User.CanEdit("EntityHelpPage", "SectionText"))
+                            {
+                                <div style="display:none;">
+                                    @using (Html.BeginForm("SaveEntityHelpPageForHelpText", "EntityHelpPage", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmEntityHelpPage" + item.Id }))
+                                    {
+                                        @Html.Hidden("Ent" + item.Id, item.Id)
+                                        @Html.Hidden("ConcurrencyKey" + item.Id, item.ConcurrencyKey)
+                                        @Html.TextArea("SectionText" + item.Id, item.SectionText, new { @id = "SectionText" + item.Id, })
+                                        @Html.ValidationMessageFor(model => item.SectionText)
+                                        <input type="submit" name="@Html.Raw("btnsaveEntityHelp"+item.Id)" id="@Html.Raw("btnsaveEntityHelp"+item.Id)" value="Save" class="btn btn-primary" alt="Save" title="Save" onclick="SaveSectionText(@Html.Raw("event,this,'EntityHelpPage','"+item.Id+"','"+Url.Action("SaveEntityHelpPageForHelpText", "EntityHelpPage")+"'"))" />
+                                        <script type='text/javascript'>
+                                            $(document).ready(function () {
+                                                @Html.Raw("$('#SectionText" + item.Id + "').summernote();");
+                                                @Html.Raw("'SectionText" + item.Id + "'")
+                                            });
+                                        </script>
+                                    }
+
+                                </div>
+
+                            }
+                            <label style="font-weight:initial;">@Html.Raw(item.SectionText)</label>
+                        </td>
+                    }
+                    @if (User.CanView("EntityHelpPage", "Disable"))
+                    {
+                        //ondblclick="tdDoubleClickHelp(this);"
+                        <td>
+                            @*@if (User.CanView("EntityHelpPage", "Disable"))
+                                {
+                                    <div style="display:none;">
+                                        <input type="checkbox" name="Disable_@item.Id" id="Disable_@item.Id" value="@(item.Disable.HasValue && item.Disable.Value ? "true" : "false")" controlname="Disable" onchange="SavePropertyValue(this,'EntityHelpPage', @item.Id , @(item.Disable.HasValue && item.Disable.Value ? "true" : "false"),'@Url.Action("SavePropertyValue")');" @(item.Disable.HasValue && item.Disable.Value ? "checked=checked" : "") />
+                                    </div>
+                                }*@
+                            @Html.ValueFor(modelItem => item.Disable)
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0)
+    {
+        <div id="pagination" class="MyPagination1">
+            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "EntityHelpPage", getSortHtmlAttributes(null, true, page, false)))
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistEntityHelpPage",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'EntityHelpPage','"
+                             + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "EntityHelpPage",
+                             getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                             null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistEntityHelpPage"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityEntityHelpPageDisplayValue", null, null, new { @Style = "display:none;" })
+    <div class="modal fade" id="ShowGraphEntityHelpPage" tabindex="-1" role="dialog" aria-labelledby="ShowGraphEntityHelpPageLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ShowGraphEntityHelpPageLabel">Dashboard Entity Help Page</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="dvShowGraphEntityHelpPage" data-url="@Url.Action("ShowGraph", "EntityHelpPage", new { type = "all" })">
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function tdDoubleClickHelp(obj) {
+        if (!$(obj).hasClass("edit")) {
+            var divcontrol = $(obj).find("div");
+            var controltype = $(obj).attr("controltype");
+            firstControl = divcontrol.find(':first');
+            if (firstControl.length > 0 && firstControl.is('select')) {
+                $(obj).html("<div class='ChosenWrapper'>" + divcontrol.html().replace("class=\"form-control\"", "class=\"chosen-select form-control\"") + "</div>");
+                var config = {
+                    '.chosen-select': {},
+                    '.chosen-select-deselect': { allow_single_deselect: true },
+                    '.chosen-select-no-single': { disable_search_threshold: 10 },
+                    '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                    '.chosen-select-width': { width: "95%" }
+                }
+                for (var selector in config) {
+                    $(selector).chosen(config[selector]);
+                }
+            } else {
+                $(divcontrol).show();
+                $("label", $(obj)).hide();
+            }
+            $(obj).addClass("edit");
+            try {
+                document.getElementById(firstControl.attr("id")).focus();
+                if (firstControl.is('select')) {
+                    $("#" + firstControl.attr("id")).trigger("chosen:open");
+                }
+            } catch (ex) { }
+        }
+    }
+
+    function SaveSectionText(e, obj, entityname, Id, url) {
+        debugger;
+        e.preventDefault();
+        var form = $("#frmEntityHelpPage" + Id);
+        var frmText = form.find(".note-editable").html()
+        var fd = form.serialize();
+        try {
+            var fd = new FormData(form[0]);
+
+            if (frmText == "<br>") {
+                fd.append('SectionText', '');
+            } else { fd.append('SectionText', frmText); }
+
+            fd.append('Id', $("#Ent" + Id).val());
+            fd.append('ConcurrencyKey', $("#ConcurrencyKey" + Id).val());
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                data: fd,
+                dataType: "json",
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result.Result == "Success") {
+                        $('#EntityHelpPageSearchCancel').click();
+                    }
+                }
+            });
+        } catch (ex) {
+        }
+
+    }
+    //function SaveSectionText(e, obj, entityname, Id, url) {
+    //    debugger;
+    //    e.preventDefault();
+    //    var form = $("#frmEntityHelpPage" + Id);
+    //    var fd = form.serialize();
+    //    $("#SectionText" + Id).val($("#SectionText" + Id).val());
+    //    try {
+    //        var fd = new FormData(form[0]);
+    //        fd.append('SectionText', $("#SectionText" + Id).val());
+    //        fd.append('Id', $("#Ent" + Id).val());
+    //        fd.append('ConcurrencyKey', $("#ConcurrencyKey" + Id).val());
+    //        $.ajax({
+    //            url: url,
+    //            type: "GET",
+    //            cache: false,
+    //            data: fd,
+    //            dataType: "json",
+    //            processData: false,
+    //            contentType: false,
+    //            success: function (result) {
+    //                if (result.Result == "Success") {
+    //                    $('#EntityHelpPageSearchCancel').click();
+    //                }
+    //            }
+    //        });
+    //    } catch (ex) {
+    //    }
+
+    //}
+</script>

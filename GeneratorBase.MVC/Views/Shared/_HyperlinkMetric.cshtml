@@ -1,0 +1,34 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    var linkPrefix = Url.Content("~/");
+    if (Convert.ToBoolean(ViewData["FromHome"]))
+    {
+        linkPrefix = "";
+    }
+}
+
+
+<div class="col-md-6" id="Metric_@Model.Id">
+    <a href="@linkPrefix@Model.t_associatedfacetedsearch.T_LinkAddress">
+        <div class="single_banner" style="background-color:@Model.T_BackGroundColor!important;">
+            @if (Model.T_BackgroundImage != null)
+            {
+            <img src="@Url.Action("DisplayImageMobile", "Document", new { id = Model.T_BackgroundImage })" alt="shop_banner" style="width:230px;height:230px; margin:10px 0px 10px 30px; ">
+            }
+            else
+            {
+                <img src="~/logo/metrics_dummy.jpg" alt="shop_banner" style="width:230px;height:230px; margin:10px 0px 10px 30px; ">
+            }
+            <div class="single_banner_info">
+                <h5 class="single_bn_title1" style="color: @Model.T_FontColor;">@Model.T_ToolTip</h5>
+                <h3 class="single_bn_title" style="color: @Model.T_FontColor;"> @Model.T_Name</h3>
+            </div>
+        </div>
+    </a>
+</div>
+
+<style>
+    #Metric_@Model.Id a{
+    text-decoration:none;
+    }
+</style>

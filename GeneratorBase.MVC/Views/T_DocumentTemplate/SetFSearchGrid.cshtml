@@ -1,0 +1,101 @@
+﻿@model GeneratorBase.MVC.Models.T_DocumentTemplate
+@{
+    ViewBag.Title = "Search";
+	var parentUrl = new System.Collections.Specialized.NameValueCollection();
+    if (Request.UrlReferrer != null)
+    {
+        parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+    }
+	Layout = null;
+	var isHosted = ViewData["HostingEntity"] != null && ViewData["HostingEntityID"] != null? true : false;
+    var HostingEntityName =Convert.ToString(ViewData["HostingEntity"]);
+    var HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]);
+    var AssociatedType = Convert.ToString(ViewData["AssociatedType"]);
+}
+	
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div id="T_DocumentTemplateGridQuery"  class="collapse">
+           <div class="col-md-12 col-sm-12 col-xs-12 p-2 col-sm-12 m-0 row mb-2 pt-3" style="border: 1px solid #b2b2b2;">
+			 <div class='form-group col-md-3 col-sm-3 col-xs-3'>
+                        <label>Disable?</label>
+                        <div class="input-group">
+                            <input type="checkbox" id="T_Disable" class="boolean" />
+                        </div>
+                    </div>
+                
+  
+</div>
+<div class='col-md-12 col-sm-12 col-xs-12 p-0 mt-2'>
+<button onclick="RunQueryT_DocumentTemplate();" class="btn btn-primary">
+                    Search
+                </button>
+				<button onclick="window.location.reload();" class="btn btn-secondary">
+                    Reset
+                </button>
+				<button onclick="$('#T_DocumentTemplateGridQuery').collapse('toggle');" class="btn btn-secondary">
+                    Close
+                </button>
+                
+				</div>
+	</div>
+	</div>
+	</div>
+	
+	 <script>
+        $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'ALL'
+            });
+        });
+    });
+    </script>
+@if (ViewBag.TemplatesName == "CardIndexPartial")
+{
+    <script>
+        function RunQueryT_Order() {
+            var buttons = document.getElementsByName('RunQueryT_Order');
+            for (var i = 0; i < buttons.length; i++)
+                buttons[i].click();
+        }
+    </script>
+}
+else
+{
+	<script>
+    function RunQueryT_DocumentTemplate() {
+        url = '@Html.Raw(Url.Action("FSearch", new
+        {
+            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+            HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+            AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+			viewtype = ViewBag.TemplatesName,
+        }))';
+        var search = false;
+        $('.boolean', $("#T_DocumentTemplateGridQuery")).each(function () {
+            if ($(this).prop('checked') === true)
+            {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, "true");
+                search = true;
+            }
+        });
+        $('select[multiple="multiple"]', $("#T_DocumentTemplateGridQuery")).each(function () {
+            if ($(this).val() != undefined && $(this).val() != null) {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, $(this).val());
+                search = true;
+            }
+        });
+		if ("@isHosted" == "True")
+        {
+            url = addParameterToURL(url, "@AssociatedType.ToLower()", "@HostingEntityID");
+        }
+        if(search)
+            RefreshGridFSearch("T_DocumentTemplate", AntiSanitizeURLString(url))
+    }    
+</script>
+}
+  

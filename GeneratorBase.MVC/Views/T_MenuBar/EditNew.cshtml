@@ -1,0 +1,737 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBar
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Menu Bar";
+    var EditPermission = User.CanEditItem("T_MenuBar", Model, User);
+    //var DeletePermission = User.CanDeleteItem("T_MenuBar", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBar");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Menu Bar";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_MenuBar", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_MenuBar");
+    var NonViewableProperties = User.CanNotView("T_MenuBar");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+
+
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_MenuBar", User, groupcontaininginlinegrid);
+}
+
+<script src="~/Scripts/jquery.ui.nestedSortable.js"></script>
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (Property == "T_AutoNo")
+            return new { @class = "form-control", @readonly = "readonly" };
+        if (User.CanEdit("T_MenuBar", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+    object getHtmlAttributesForCheckBox(string Property)
+    {
+        if (User.CanEdit("T_MenuBar", Property))
+        {
+            return null;
+        }
+        return new { @disabled = "@disabled" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+window.onload = function(){
+	JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+}
+    </script>
+}
+@if (Model != null)
+{
+    <script>
+        $(document).ready(function () {
+            var roles = "@HttpUtility.JavaScriptStringEncode(Model.T_Roles)".split(",");
+            var eleRoles = document.getElementById("RoleList");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        });
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        try {
+     LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+			$("[inlinegrid]").each(function() {
+                //$(this).click();
+				 eval($(this).attr('onclick'));
+			    var targetpanel = $(this).attr('id').replace('dvGroup','');
+			    $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarRestrictDropdownValueRule);
+    }
+}
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index")">@EntityDisplayName Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.DisplayFor(model => model.DisplayValue)
+            </small>
+        </strong>
+    </div>
+</div>
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlT_MenuBar" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuBar")).ToHtmlString()"></a>
+<div class="tabs-container">
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("EditNew", "T_MenuBar", new { UrlReferrer = Convert.ToString(ViewData["T_MenuBarParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmT_MenuBar" }))
+            {
+                <div class="row" id="Menu_Management">
+
+                    <div class="col-sm-3">
+                        <div id="GenApp_LeftMenu_accordion">
+                            <div class="card">
+                                @*<div class="card-header" id="headingOne">
+                                        <h5 class="mb-0">
+                                            <span class="Menu_DisplayName mt-1 pull-left">Add Custom Link</span>
+
+                                        </h5>
+                                    </div>*@
+
+                                @*<div id="CustomMenuItem" class="collapse show" aria-labelledby="headingOne" data-parent="#LeftMenuItems_accordion">
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label class="cardLabel">URL</label>
+                                                <input type="text" class="form-control item-menu" id="href" name="href" placeholder="https://hostname/applicationname/">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="cardLabel">Link Text</label>
+                                                <input type="text" class="form-control item-menu" id="href" name="href" placeholder="Page Name or Entity Name">
+                                            </div>
+
+                                        </div>
+                                        <div class="card-footer" style="padding:0px;">
+                                            <button class="btn btn-light btn-sm pull-right" style="margin:8px;">
+                                                Add to Menu
+                                            </button>
+                                        </div>
+                                    </div>*@
+
+                                <div>
+                                    <div class="row bgwizard" id="wzGroupT_MenuBarBasicInformation">
+                                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                            <div class="card card-default" id="dvGroupT_MenuBarBasicInformation" style="border:0px">
+                                                <div class="card-header clearfix">
+                                                    <!--  <i class="icon-calendar"></i> -->
+                                                    <h3 class="card-title" alt="Basic Information" title="Basic Information">
+                                                        Basic Information
+                                                    </h3>
+                                                </div>
+                                                <div class="card-body row">
+                                                    @if (!NonViewableProperties.Contains("T_AutoNo") && !hiddenProperties.Contains("T_AutoNo"))
+                                                    {
+                                                        <div class='col-md-12 mb-2 col-xs-12' id="dvT_AutoNo">
+                                                            <div class='form-group' title="Auto No.">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo)   </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                    @Html.TextBoxFor(model => model.T_AutoNo, getHtmlAttributes("T_AutoNo"))
+                                                                </div>
+
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!NonViewableProperties.Contains("T_AutoNo"))
+                                                        {
+                                                            @Html.HiddenFor(model => model.T_AutoNo, new { @class = "form-control" })
+                                                        }
+                                                    }
+                                                    @if (!NonViewableProperties.Contains("T_Name") && !hiddenProperties.Contains("T_Name"))
+                                                    {
+                                                        <div class='col-md-12 mb-2 col-xs-12' id="dvT_Name">
+                                                            <div class='form-group' title="Name">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                                    @Html.TextBoxFor(model => model.T_Name, getHtmlAttributes("T_Name"))
+
+                                                                </div>
+
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.T_Name)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!NonViewableProperties.Contains("T_Name"))
+                                                        {
+                                                            @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })
+                                                        }
+                                                    }
+                                                    @if (!NonViewableProperties.Contains("T_Roles") && !hiddenProperties.Contains("T_Roles"))
+                                                    {
+                                                        <div class='col-md-12 mb-2 col-xs-12' id="dvT_Roles">
+                                                            <div class='form-group' title="Roles">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Roles) </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                    @Html.TextAreaFor(model => model.T_Roles, getHtmlAttributes("T_Roles"))
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.T_Roles)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!NonViewableProperties.Contains("T_Roles"))
+                                                        {
+                                                            @Html.HiddenFor(model => model.T_Roles, new { @class = "form-control" })
+                                                        }
+                                                    }
+                                                    @if (!NonViewableProperties.Contains("T_Disabled") && !hiddenProperties.Contains("T_Disabled"))
+                                                    {
+                                                        <div class='col-md-12 mb-2 col-xs-12' id="dvT_Disabled">
+                                                            <div class="form-group" title="Disabled?">
+                                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                                    @Html.LabelFor(model => model.T_Disabled)
+                                                                </label>
+                                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                                    @if (Model.T_Disabled.HasValue)
+                                                                    {
+                                                                        @Html.CheckBox("T_Disabled", Model.T_Disabled.Value, getHtmlAttributesForCheckBox("T_Disabled"))
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.CheckBox("T_Disabled", false, getHtmlAttributesForCheckBox("T_Disabled"))
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(model => model.T_Disabled)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (!NonViewableProperties.Contains("T_Disabled"))
+                                                        {
+                                                            @Html.HiddenFor(model => model.T_Disabled, new { @class = "form-control" })
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingTwo">
+                                    <h5 class="mb-0">
+                                        <span class="Menu_DisplayName mt-1 pull-left">
+                                            Menu Items
+                                            @if (User.CanAdd("T_MenuItem"))
+                                            {
+                                                <a data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_MenuItem", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null) + "');") alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i>
+                                                </a>
+                                            }
+                                        </span>
+                                    </h5>
+                                </div>
+                                <div id="EntityItem" class="collapse show" aria-labelledby="EntityItem" data-parent="#LeftMenuItems_accordion">
+                                    <div class="card-body" style="overflow-y:auto; max-height:200px">
+                                        @{
+                                            foreach (var item in (ViewBag.MenuItemsForOtherMenuBar as List<T_MenuItem>))
+                                            {
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        @*<input id="cbMenuItem_@menuItem.t_menuitem.Id" type="checkbox" class="form-check-input" value="@menuItem.t_menuitem.Id" onclick='CheckedEvent("@menuItem.t_menuitem.Id", "@menuItem.t_menuitem.T_Name");'>@menuItem.t_menuitem.T_Name*@
+                                                        <input id="cbMenuItem_@item.Id" type="checkbox" class="form-check-input" value="@item.Id" onclick='CheckedEvent("@Model.Id", "@item.Id", "@item.T_Name");'>@item.T_Name
+                                                    </label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="card-footer" style="padding:0px;">
+                                        @*<button class="btn btn-light btn-sm pull-right" style="margin:8px;" onclick="AddToMenu();">
+                                              Add to Menu
+                                            </button>*@
+                                        @*<input type="button" class="btn btn-light btn-sm pull-right" style="margin:8px;" value="Add to Menu" onclick="AddToMenu();">*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-9" id="GenApp_HeaderMenu_accordion">
+                        <div class="card">
+                            <div class="card-header HeadingCard" id="headingOne">
+                                <h5 class="mb-0 Menu_DisplayName1">
+                                    @Html.DisplayTextFor(model => model.T_Name)
+                                    <button type="button" id="btnUpdate" class="btn btn-primary btn-xs pull-right">Save Menu</button>
+                                </h5>
+                            </div>
+                            <div class="card-body" style="min-height:465px;">
+                                <p>Drag each item into the order you prefer. Click the arrow on the right of the item to reveal additional configuration options.</p><br>
+                                <div class="col-sm-12 row">
+                                    <div id="GenApp_Menu_accordion" class="col-sm-7" style="padding-left:0px;">
+                                        <ol id="olSortable" class="sortable1">
+                                            @{
+                                                foreach (var item in Model.T_MenuBarMenuItemAssociation_t_menubar)
+                                                {
+                                                    <li id="li_@item.T_MenuBarID-@item.T_MenuItemID-@item.Id" taborder="@item.T_OrderNumber">
+                                                        <div class="card" id="@item.t_menuitem.Id" dataurl="@Url.Action("UpdateMenuOrder")">
+                                                            <div class="card-header" id="heading_@item.t_menuitem.Id">
+                                                                <h5 class="mb-0">
+                                                                    <span class="Menu_DisplayName mt-1 pull-left">@item.t_menuitem.T_Name</span>
+                                                                    <a class="btn-link pull-right" data-toggle="collapse" data-target="#collapse_@item.t_menuitem.Id" aria-expanded="true" aria-controls="collapse_@item.t_menuitem.Id">
+                                                                        <i class="fa fa-caret-down"></i>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse_@item.t_menuitem.Id" class="collapse" aria-labelledby="heading_@item.t_menuitem.Id" data-parent="#GenApp_Menu_accordion">
+                                                                <div class="card-body">
+                                                                    <a class="Menu_Remove" onclick='RemoveMenuItem("@item.T_MenuBarID-@item.T_MenuItemID-@item.Id");'>Remove</a> | <a class="Menu_Cancel" onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit Menu Item','dvPopup','" + Url.Action("EditQuick", "T_MenuItem", new {id = Convert.ToInt32(item.t_menuitem.Id)}) + "')")">Edit</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @foreach (var subMenu in item.t_menuitem.Self_t_menuitemmenuitemassociation)
+                                                        {
+                                                            <ol>
+                                                                <li id="li_@subMenu.Id">
+                                                                    <div class="card" id="@subMenu.Id" dataurl="@Url.Action("UpdateMenuOrder")">
+                                                                        <div class="card-header" id="heading_@subMenu.Id">
+                                                                            <h5 class="mb-0">
+                                                                                <span class="Menu_DisplayName">@subMenu.T_Name</span>
+                                                                                <a class="btn-link collapsed pull-right" data-toggle="collapse" data-target="#collapse_@subMenu.Id" aria-expanded="false" aria-controls="collapse_@subMenu.Id">
+                                                                                    <i class="fa fa-caret-down"></i>
+                                                                                </a>
+                                                                            </h5>
+                                                                        </div>
+                                                                        <div id="collapse_@subMenu.Id" class="collapse" aria-labelledby="heading_@subMenu.Id" data-parent="#GenApp_Menu_accordion">
+                                                                            <div class="card-body">
+                                                                                <a class="Menu_Remove" onclick='RemoveMenuItem("@subMenu.Id");'>Remove</a> | <a class="Menu_Cancel" onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit Menu Item','dvPopup','" + Url.Action("EditQuick", "T_MenuItem", new {id = Convert.ToInt32(subMenu.Id)}) + "')")">Edit</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            </ol>
+                                                        }
+                                                    </li>
+                                                }
+                                            }
+
+
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } @*end form*@
+            <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+            <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+            <div id="divDisplayBRmsgMandatory1"></div>
+            <div id="divDisplayLockRecord1"></div>
+            <div id="divDisplayBRReadOnly1"></div>
+            <div id="divDisplayCodeFragment1"></div>
+        </div>
+        @if (string.IsNullOrEmpty(wizardid))
+        {
+            <div class="tab-pane fade in" id="JournalEntryToT_MenuBarRelation"></div>
+            <div class="tab-pane fade in" id="T_MenuBarMenuItemAssociation_T_MenuBar"></div>
+
+        }
+    </div> <!-- /tab-content -->
+</div>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+$('#printButton').click(function (evt) {
+                evt.preventDefault();
+                $('body').append('<iframe src="@Url.Action("Details", "T_MenuBar", new { id = Model.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" id="printIFrame" name="printIFrame" style="display:none;"></iframe>');
+                $('#printIFrame').bind('load',
+                    function () {
+                        window.frames['printIFrame'].focus();
+                        window.frames['printIFrame'].print();
+
+                    }
+                 );
+
+            });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "T_MenuBar").ToList();
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+    if (ViewBag.IsPartial == true)
+    {
+        var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+        <script>
+					 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBar", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+					$("#frmT_MenuBar").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+            $("#divDisplayBRmsgBeforeSaveProp").hide();
+            $("#divDisplayLockRecord").hide();
+            $("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+        </script>
+    }
+}
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuBar").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmT_MenuBar");
+				dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_MenuBar", false, "ErrMsg", form);
+				//business rules on inline associations
+				if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+						$("a.btnupload").each(function(index) {$(this).remove() });
+                  }
+    });
+        </script>
+        <script>
+   $("form input[type=submit]").click(function() {
+		var actionName = $(this).attr("actionName")
+        if (actionName == undefined)
+            actionName = $(this).val();
+        $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+    $("form").submit(function (event) {
+	 $('[businessrule="mandatory"]').each(function () {
+       $(this).removeAttr('required');
+     });
+	if (!$("#frmT_MenuBar").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_MenuBar").serialize();
+				 dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBar", false, "ErrMsg", form,"@typelist");
+  				 //business rules on inline associations
+
+			 if (flag)
+				{
+
+					 $("#frmT_MenuBar").find(':input').removeAttr('disabled');
+					}
+					else
+					{
+						}
+            return flag;
+		});
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmT_MenuBar").valid()) return;
+                $("#divDisplayBRmsgBeforeSaveProp").html("");
+                $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                $("#divDisplayCodeFragment").html("");
+                var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+$("input[datatype='Double']").addClass("pull-right text-right");
+    $(document).ready(function ()
+	{
+				try {
+		focusOnControl('frmT_MenuBar');
+        }
+        catch (ex) { }
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_MenuBar','edit',false,'Menu Bar')
+		 //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_MenuBar','edit',false,'Menu Bar')
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_MenuBarDisplayValueEdit != null)
+{
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            NextPrev("T_MenuBar");
+        });
+    </script>
+}
+<div id="tmpRoles" style="display:none;">
+    @Html.DropDownList("RoleList", null, new { @required = "required", @multiple = "multiple", @onchange = "SetRoles();" })
+    @Html.Hidden("T_Roles", null, new { @Value = "" })
+</div>
+<script>
+    $(document).ready(function () {
+        $("textarea[id$='T_Roles']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpRoles").html());
+        });
+    });
+</script>
+<script>
+        $(document).ready(function () {
+            var roles = "@HttpUtility.JavaScriptStringEncode(Model.T_Roles)".split(",");
+            var eleRoles = document.getElementById("RoleList");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        });
+</script>
+<script>
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+
+    function SetRoles() {
+        $('#T_Roles').val($('#RoleList').val());
+    }
+</script>
+
+<style>
+    ol.sortable1 {
+        list-style-type: none;
+        padding-left: 0px;
+    }
+
+        ol.sortable1 li {
+            list-style-type: none;
+            padding-left: 0px;
+        }
+</style>
+
+<script>
+    $('ol.sortable1').nestedSortable({
+        disableNesting: 'no-nest',
+        forcePlaceholderSize: true,
+        handle: 'div',
+        helper: 'clone',
+        items: 'li',
+        maxLevels: 25,
+        opacity: .6,
+        placeholder: 'placeholder',
+        revert: 250,
+        tabSize: 25,
+        tolerance: 'pointer',
+        toleranceElement: '> div',
+
+    });
+</script>
+
+<script>
+    $("#btnUpdate").click(function (e)
+    {
+        e.preventDefault();
+        var values = "";
+        $('#olSortable').find('li').each(function () {
+            if (($(this).attr("id")) != undefined)
+                values += ($(this).attr("id").replace("li_", "").trim()) + ",";
+        })
+        var val = values.split(",");
+        $.ajax({
+            url: "@Url.Action("UpdateOrderNumber", "T_MenuBar")",
+            type: "POST",
+            async: false,
+            data: { ids: val },
+            success: function (res)
+            {
+                window.location.reload(true);
+            }
+        });
+    });
+
+</script>
+
+<script>
+    //var arrMenuItmes = [];
+    function CheckedEvent(menubarId, menuItemId, menuItemName) {
+        var cbMenuItem = document.getElementById("cbMenuItem_" + menuItemId);
+        if (cbMenuItem.checked) {
+       var divresult = $("#olSortable #li_" + menubarId + "-" + menuItemId + "-new");
+        if (divresult.length == 0) {
+                AddToMenu(menubarId, menuItemId, menuItemName);
+            }
+        }
+    }
+
+    function AddToMenu(menubarId, menuItemId, menuItemName) {
+        var editUrlAction = '@Url.Action("EditQuick", "T_MenuItem", new { id = "_id" })'.replace("_id", menuItemId);
+        var editUrl = "@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit Menu Item','dvPopup','_action')")".replace("_action", editUrlAction);
+        var htmlMenuItem = "";
+        htmlMenuItem = '<li  id="li_'+ menubarId + '-' + menuItemId + '-' +'new"><div class="card" id="' + menuItemId + '" dataurl=' + '"@Url.Action("UpdateMenuOrder")"' + '>';
+        htmlMenuItem += '<div class="card-header" id="heading_' + menuItemId + '">';
+        htmlMenuItem += '<h5 class="mb-0"><span class="Menu_DisplayName mt-1 pull-left">' + menuItemName + '</span>';
+        htmlMenuItem += '<a class="btn-link pull-right" data-toggle="collapse" data-target="#collapse_' + menuItemId + '" aria-expanded="true" aria-controls="collapse_' + menuItemId + '">';
+        htmlMenuItem += '<i class="fa fa-caret-down"></i></a ></h5></div >';
+        htmlMenuItem += '<div id="collapse_' + menuItemId + '" class="collapse" aria-labelledby="heading_' + menuItemId + '" data-parent="#GenApp_Menu_accordion">';
+        var removeid = '"li_'+ menubarId + '-' + menuItemId + '-' +'new"';
+        htmlMenuItem += '<div class="card-body"><a class="Menu_Remove" onclick=RemoveMenuItem('+ removeid +');>Remove</a> | <a class="Menu_Remove" onclick="' + editUrl + '">Edit</a>';
+        htmlMenuItem += '</div></div ></div ></li >';
+        $("#olSortable").append(htmlMenuItem);
+    }
+
+    function RemoveMenuItem(menuItemId)
+    {
+        menuItemId = menuItemId.replace("li_", "").trim();
+        $("#li_" + menuItemId).remove();
+        var dashvalue = menuItemId.split('-');
+        var assoId = dashvalue[2];
+
+        if (assoId == "new")
+        {
+            window.location.reload(true);
+        }
+        else {
+            $.ajax({
+                url: "@Url.Action("DeleteItem", "T_MenuBar")",
+                type: "POST",
+                async: false,
+                data: { id: menuItemId },
+                success: function (res)
+                {
+                    window.location.reload(true);
+                }
+            });
+        }
+    }
+</script>
+

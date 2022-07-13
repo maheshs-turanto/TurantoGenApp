@@ -1,0 +1,9 @@
+﻿@{
+    var theme = System.Configuration.ConfigurationManager.AppSettings["AppTheme"];
+    if (theme == null || theme == "DefaultCompress") { theme = "Default"; }
+    if (theme == "Angular") { theme = ""; }
+    var layout = EntityDefaultPageHelper.GetLayout((IUser)User, theme, "Layout");
+    if (string.IsNullOrEmpty(layout)) { layout = "_Layout.cshtml"; }
+    else { layout = layout.Trim() + ".cshtml"; }
+    Layout = "~/Views" + theme + "/Shared/" + layout;
+}

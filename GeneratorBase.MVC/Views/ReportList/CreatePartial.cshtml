@@ -1,0 +1,335 @@
+﻿@model GeneratorBase.MVC.Models.ReportList
+@{
+		if (ViewBag.IsPartial == true)
+		{
+			<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+			<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+			<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+			<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+			<script type="text/javascript">
+				var config = {
+					'.chosen-select': {},
+					'.chosen-select-deselect': { allow_single_deselect: true },
+					'.chosen-select-no-single': { disable_search_threshold: 10 },
+					'.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+					'.chosen-select-width': { width: "95%" }
+				}
+				for (var selector in config) {
+					$(selector).chosen(config[selector]);
+				}
+			</script>
+		}
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportListIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.ReportListIsSetValueUIRule);
+    }
+}
+@using (Html.BeginForm("Create", "ReportList",new {UrlReferrer = Convert.ToString(ViewData["ReportListParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data",id="frmReportList" }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+	@*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+	 <div id="divDisplayThresholdLimit" style="display:none;">
+	</div>
+	 <div id="divDisplayBRmsgMandatory" style="display:none;">
+	</div>
+	<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+	</div>
+	<div id="divDisplayCodeFragment" style="display:none;">
+	</div>
+	<div class="row">
+	        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="AppForm">
+                <div class="">
+               					<div class="row">
+				  
+			 @if(User.CanView("ReportList","ReportNo"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportNo">
+                                <div class='form-group' title="Report No">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.ReportNo) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.ReportNo, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.ReportNo)
+									</div>
+                                </div>
+					</div>
+				}
+			 @if(User.CanView("ReportList","DisplayName"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayName">
+                                <div class='form-group' title="Display Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DisplayName) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.DisplayName, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.DisplayName)
+									</div>
+                                </div>
+					</div>
+				}
+						@if(User.CanView("ReportList","Description"))
+								{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                <div class='form-group' title="Description">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.Description)
+									</div>
+                                </div>
+						</div>
+						}
+@if(User.CanView("ReportList","ReportsGroupSSRSReportAssociationID"))
+	{
+        <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportsGroupSSRSReportAssociationID">
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportsGroupSSRSReportAssociationID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+							 
+		@Html.DropDownList("ReportsGroupSSRSReportAssociationID", null, "-- Select --", new {       @class = "chosen-select form-control", @HostingName = "ReportsGroup", @dataurl = Url.Action("GetAllValue", "ReportsGroup",new { caller = "ReportsGroupSSRSReportAssociationID" }) })
+				@Html.ValidationMessageFor(model => model.ReportsGroupSSRSReportAssociationID)
+									@if ( User.CanAdd("ReportsGroup"))
+				{
+			<div class="input-group-btn">
+				<a class="btn btn-default btn ie8fix" id="addReportsGroup"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Group','dvPopup','" + Url.Action("CreateQuick", "ReportsGroup", new { UrlReferrer = Request.Url.PathAndQuery, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop = true }) + "')")">
+					<span class="glyphicon glyphicon-plus-sign"></span>
+				</a>
+			</div>
+			}
+		                             </div>
+							</div>
+                        </div>
+                    </div>
+}
+  			 @if(User.CanView("ReportList","Name"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+                                <div class='form-group' title="Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.Name)
+									</div>
+                                </div>
+					</div>
+				}
+			 @if(User.CanView("ReportList","ReportID"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportID">
+                                <div class='form-group' title="ReportID">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.ReportID) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.ReportID, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.ReportID)
+									</div>
+                                </div>
+					</div>
+				}
+						@if(User.CanView("ReportList","ReportPath"))
+								{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvReportPath">
+                                <div class='form-group' title="Report Path">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.ReportPath) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                    @Html.TextAreaFor(model => model.ReportPath, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.ReportPath)
+									</div>
+                                </div>
+						</div>
+						}
+								  @if(User.CanView("ReportList","IsHidden"))
+								{
+								<div class='col-sm-6 col-md-6 col-xs-12' id="dvIsHidden">
+									<div class="form-group" title="Is Hidden">
+										<label class="col-sm-5 col-md-5 col-xs-12" >
+											@Html.LabelFor(model => model.IsHidden) 
+										</label>
+										<div class="input-group col-sm-7 col-md-7 col-xs-12">
+											@Html.CheckBox("IsHidden", false)
+											@Html.ValidationMessageFor(model => model.IsHidden)		
+										</div>
+										</div>
+									</div>   
+								}                         
+			 @if(User.CanView("ReportList","EntityName"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                <div class='form-group' title="Entity Name">
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.EntityName) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control"  })
+                                    @Html.ValidationMessageFor(model => model.EntityName)
+									</div>
+                                </div>
+					</div>
+				}
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+	<div id="divDisplayThresholdLimit1">
+    </div>
+    <div id="divDisplayBRmsgMandatory1">
+    </div>
+    <div id="divDisplayBRmsgBeforeSaveProp1">
+    </div>
+    <div id="divDisplayCodeFragment1">
+    </div>
+if (ViewBag.IsPartial == null)
+{
+		<a class="btn btn-default btn-sm" onclick="goBack('@Url.Action("Index","ReportList")');" alt="Cancel" title="Cancel">Cancel</a>
+}
+if (ViewBag.IsPartial == null)
+{
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" alt="Create" title="Create"/>
+}
+if (ViewBag.IsPartial == null)
+{
+    if (ViewBag.IsDDAdd == null && User.CanEdit("ReportList"))
+    {
+	<input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" alt="Create & Continue" title="Create & Continue"/>
+	<input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm" alt="Create & Add another" title="Create & Add another" />
+	}
+}
+	 <input type="hidden" name="hdncommand" value="" />
+	<br/><br/>
+}
+<script>
+	function CancelFromDivTab_ReportList() {
+        var associationname = '@Convert.ToString(ViewData["AssociatedType"])';
+        if (associationname != '' && associationname != null) {
+        }
+    }
+    function CreateFromDivTab_ReportList() {
+        $('input:hidden[name="hdncommand"]').val("Create");
+        var form2 = $("#frmReportList");
+        if (!form2.valid()) { return; }
+        var form = form2.serialize();
+		var frmUrl = form2.attr('action');
+        var fdata = new FormData(form2[0]);
+        $.ajax({
+            url: frmUrl,
+            type: "POST",
+            cache: false,
+            data: fdata,
+			 processData: false,
+            contentType: false,
+            success: function (result) {
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert('failed');
+                return false;
+            }
+        });
+    }
+</script>
+	<script>
+	$(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+	</script>
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "ReportList").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+    {
+        <script>
+            $("form").submit(function (event) {
+			//if (!$("#frmReportList").valid()) return;
+			var flag = true;
+				document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+ form = $("#frmReportList").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "ReportList", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "ReportList", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+                    $('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					 $("#frmReportList").find(':input').removeAttr('disabled');
+                }
+				else
+					  $("html, body").animate({ scrollTop: 0 }, "fast");
+				return flag;
+			 });	
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+			if (!$("#frmReportList").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		 focusOnControl('frmReportList');
+        }
+        catch (ex) { }
+			 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'ReportList','create',false,'SSRS Report')
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                 $('#' + hostingEntityName + 'ID').attr("lock","true");
+				  $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+		});
+</script>
+

@@ -1,0 +1,13 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ImportConfiguration>
+@{
+    ViewBag.Title = "Import Configuration List";
+	
+}
+
+
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("Index")">Import Configuration</a><small>List</small></strong></div>
+</div>
+<div id="dvImportConfigurationFilter"></div>
+@Html.Partial("~/Views/ImportConfiguration/IndexPartial.cshtml", Model)
+

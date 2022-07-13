@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "Change Theme & Layout";
+    var theme = System.Configuration.ConfigurationManager.AppSettings["AppTheme"];
+    if (theme == null) { theme = "Default"; }
+    if (theme == null) { theme = "Default1"; }
+}
+
+@using (Html.BeginForm("ThemeChange", "Theme", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="content-heading">
+        <div class="col-lg-10">
+            <strong>
+                <a href="@Url.Action("Index","Admin")">Admin</a>
+                <small>Change Template</small>
+            </strong>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+    <div class="">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class='row'>
+                        <div class='col-sm-12'>
+                            <label>Select Template</label>
+                            <div class='input-group'>
+                                <select class="form-control" id="themeName" name="themeName" onchange="ChangeImage();">
+                                    <option value="Default">Template 1</option>
+                                    <option value="DefaultCompress">Template 1 - Compress</option>
+                                    <option value="Angular">Template 2</option>
+                                    <option value="Default1">Template 3 (Beta)</option>
+
+                                </select>
+                                <div class='btn-group'>
+
+                                    <input type="submit" value="Set Template" class="btn btn-primary btn-sm" style="color:#ffffff !important" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class='col-sm-12 mt-3'>
+                            <div class='form-group'>
+                                <label>Preview</label> <br />
+                                <span>
+                                    <img id="imgthemedefault" style="display:none; max-width:100%;" src="~/assets/images/default1.png" class="border-bottom-dark" />
+                                    <img id="imgthemedefaultCompress" style="display:none; max-width:100%;" src="~/assets/images/default1Compress.png" class="border-bottom-dark" />
+                                    <img id="imgthemeinspinia" style="display:none; max-width:100%;" src="~/assets/images/default.png" class="border-bottom-dark" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+<script>
+    $(document).ready(function () {
+        $("#themeName").val('@theme');
+        ChangeImage();
+    });
+    function ChangeImage() {
+        $("#imgthemedefault").hide();
+        $("#imgthemedefaultCompress").hide();
+        $("#imgthemeinspinia").hide();
+        var theme = $("#themeName").val();
+        if (theme == 'Default1') {
+            $("#imgthemedefault").show();
+        }
+        if (theme == 'Default') {
+            $("#imgthemedefault").show();
+        }
+        if (theme == 'DefaultCompress') {
+            $("#imgthemedefaultCompress").show();
+        }
+        if (theme == 'Angular') {
+            $("#imgthemeinspinia").show();
+        }
+    }
+</script>

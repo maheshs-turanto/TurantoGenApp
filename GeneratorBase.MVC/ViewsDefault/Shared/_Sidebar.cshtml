@@ -1,0 +1,121 @@
+﻿@model CommonFunction
+@{
+	var entityModel = GeneratorBase.MVC.ModelReflector.Entities;
+    DisplayModeProvider.Instance.RequireConsistentDisplayMode = true;
+	var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var commonObj = Model;
+    var AppName = commonObj.AppName();
+    var linkPrefix = Url.Content("~/");
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+		string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];	
+	var maintenancemode = commonObj.MaintenanceMode().ToLower() == "true" ? true : false;
+    string roles = string.Join(", ", User.userroles);
+    var userSideBar = (new ApplicationContext(new SystemUser())).T_MenuBars.GetFromCache<IQueryable<T_MenuBar>, T_MenuBar>().ToList().Where(p => (User.IsInRole(p.T_Roles.Split(',').ToArray()) == true || p.T_Roles == "All") && p.T_Disabled.HasValue && !(p.T_Disabled.Value));
+} 
+
+
+
+    <li class="nav-item"  id="lnkDefaultDashboard"  style="display:none">
+        <a href="@Url.Action("Dashboard", "Home" )" class="nav-link @(ViewBag.Title == "Dashboard" ? "active" : "")">
+            <i class="nav-icon fas fa-desktop"></i>
+
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+ <li class="nav-item" id="@(AppUrl + User.Name +"Home")">
+    <a href="@Url.Action("Index", "Home" )" class="nav-link @((ViewBag.Title == "Home" || ViewBag.Title == "Custom Home") ? "active" : "")">
+        <i class="fas fa-fw fa-home"></i>
+        <span>Home</span>
+    </a>
+</li>
+
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    var menuItems = userSideBar.SelectMany(s => s.T_MenuBarMenuItemAssociation_t_menubar.OrderBy(o => o.T_OrderNumber)).Distinct();
+    var menuItemsList = menuItems.Select(s => s.t_menuitem);
+    Html.RenderPartial("~/Views/Shared/_SideBarMenu.cshtml", menuItemsList); 
+}
+else
+{
+
+					if ( User.CanView("T_Customer"))
+					{
+						var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+                        var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+						<li id="liT_Customer" class="nav-item @(currentController == "T_Customer" ? "active" : "")" alt="@DisplayString" title="@DisplayString">
+                            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Customer"})" class="nav-link">
+							<div class="float-right mt-1 badge badge-success CEntityCount" alt="Count - @ViewBag.T_CustomerCount" title="Count - @ViewBag.T_EmployeeCount">@ViewBag.T_CustomerCount</div>
+							<i class="fa fa-briefcase float-start mt-1"></i> 
+							<span class="nav-label">@DisplayString </span>
+							</a>
+                        </li>
+					 }
+}
+
+                     <li class="nav-item d-none d-md-block bg-primary reportcollapse mb-0" style="position:absolute;z-index:999">
+                        @if (User.CanView("Reports") || User.CanView("ReportList"))
+                        {
+                        <a class="nav-link" href="@Url.Action("Index", "ReportList")" alt="Reports" title="Reports">
+                            <i class="fa fa-file">  </i> Reports
+                        </a>
+                        }
+						<hr class="sidebar-divider d-none d-md-block m-0">
+            <!-- Sidebar Toggler (Sidebar) -->
+			
+          <p class="text-center nav-link" style="background: transparent!important;">
+                <button class="rounded-circle border-0 mb-0"  onclick="togglesidebar(event, this,'@User.Name')" id="sidebarToggle"></button>
+            </p>
+                    </li>
+					
+
+<!--show/hide the More li from sidebar, if it has the content to show or not.-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($("#collapseUtilities") != undefined && $("#collapseUtilities").html() != undefined) {
+            if ($("#collapseUtilities").html().trim().length == 0) {
+                $('#liMore').hide();
+            } else {
+                $('#liMore').show();
+            }
+        }
+    });
+</script>
+
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var collapseid = $("#accordionSidebar .active").parent().attr("id");
+            getcollapseParent(collapseid);
+        });
+
+        function getcollapseParent(collapseid) {
+            uncollaseParent(collapseid);
+            var collapseparentid = $("#accordionSidebar #" + collapseid).parent().attr("id");
+            if (collapseparentid != undefined && collapseparentid != 'accordionSidebar') {
+                getcollapseParent(collapseparentid);
+            }
+        }
+
+        function uncollaseParent(collapseid) {
+            if (collapseid != undefined) {
+                if ($("#" + collapseid).hasClass("nav-item")) {
+                    $("#" + collapseid).addClass("active")
+                }
+                $("#a" + collapseid).click();
+            }
+        }
+    </script>
+}
+
+<script src="~/Scripts/bootstrap.responsive-collapse.js"></script>
+    <script type="text/javascript">
+        $(window).on('load',function () {
+        if (typeof $('ul.navbar-nav').responsiveCollapse === "function") {
+            $('ul.navbar-nav').responsiveCollapse();
+        }
+        });
+    </script>
+

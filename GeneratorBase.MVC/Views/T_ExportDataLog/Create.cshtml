@@ -1,0 +1,49 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataLog
+@{
+    ViewBag.Title = "Create Export Data Log";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Log";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+
+<div class="content-heading">
+@{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+    <strong><a href="@Url.Action("Index")">@EntityDisplayName</a><small>Create - Add @EntityDisplayName @hostingValue @Html.DisplayFor(model => model.DisplayValue)</small></strong>
+   
+    <div class="ml-auto hidetools">
+			 
+			             
+
+
+@if (ViewBag.IsPartial == null)
+{
+    if (ViewData["HostingEntity"]==null)
+	{ 
+			 <a href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" data-original-title="Query"  class="btn btn-secondary btn-sm" alt="Query" title="Query"><i class="fa fa-search"></i> Query</a>
+	}
+}
+@if (ViewBag.IsPartial == null)
+{
+			<a class="btn btn-secondary btn-sm"  data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "T_ExportDataLog") + "');") alt="Search" title="List">
+				<i class="fa fa-list"></i> List
+			</a>
+}
+	
+        
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+
+
+@Html.Partial("~/Views/T_ExportDataLog/CreatePartial.cshtml", Model)
+
+     

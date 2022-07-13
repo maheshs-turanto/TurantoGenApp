@@ -1,0 +1,34 @@
+﻿@model GeneratorBase.MVC.Models.ApplicationFeedback
+@{
+    ViewBag.Title = "Create Application Feedback";
+}
+<div class="content-heading row">
+    <div class="col-lg-8">
+        <strong>
+            <a href="@Url.Action("Index", "ApplicationFeedback")">
+                @{
+                    var hostingValue = "";
+                    if (ViewBag.DisplayVal != null)
+                    {
+                        hostingValue = " - " + ViewBag.DisplayVal;
+                    }
+                }
+                Application Feedback
+            </a>
+        </strong>
+        <small> Add Application Feedback @hostingValue</small>
+    </div>
+    <div class="col-sm-4">
+            @if (ViewData["HostingEntity"] == null)
+            {
+                <a href="@(Url.Action("SetFSearch", "ApplicationFeedback")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-secondary pull-right text-dark">Search</a>
+            }
+        <button class="btn btn-secondary pull-right" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "ApplicationFeedback") + "');")>
+            List
+        </button>
+       
+        <h2 class="text-primary">@Html.DisplayFor(model => model.DisplayValue)</h2>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/ApplicationFeedback/CreatePartial.cshtml", Model)

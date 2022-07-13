@@ -1,0 +1,180 @@
+.chosen-container {
+  font-size: 1rem;
+}
+
+.chosen-container > .chosen-single, [class*="chosen-container"] > .chosen-single {
+  font-size: 1rem;
+  line-height: 2.25rem;
+  height: 2.5rem;
+  background: #f9fafb;
+  box-shadow: none;
+}
+
+.chosen-choices {
+  box-shadow: none !important;
+}
+
+.chosen-container-single .chosen-single .search-choice-close {
+  background: none !important;
+  color: inherit;
+  height: 2.5rem;
+  top: 0;
+}
+
+.chosen-container-single .chosen-single .search-choice-close::after {
+  content: "\00D7";
+  font-size: 1.25rem;
+}
+
+.chosen-container-single .chosen-single .search-choice-close:hover::after {
+  color: #d52727;
+}
+
+.chosen-container-single .chosen-single div b {
+  background: none !important;
+}
+
+.chosen-container-single .chosen-single div b::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 0.25em);
+  right: 0.5em;
+  width: 0;
+  height: 0;
+  border-top: 0.425rem solid rgba(0, 0, 0, 0.5);
+  border-bottom: none;
+  border-right: 0.425rem solid transparent;
+  border-left: 0.425rem solid transparent;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single div b {
+  background: none !important;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single div b::after {
+  border-bottom: 0.425rem solid rgba(0, 0, 0, 0.5);
+  border-top: none;
+}
+
+.chosen-container-single .chosen-search {
+  position: relative;
+}
+
+.chosen-container-single .chosen-search input[type="text"] {
+  background: none !important;
+  border-radius: 0;
+  line-height: 2.25rem;
+  height: 2.5rem;
+  font-size: 1rem;
+}
+
+.chosen-container-single .chosen-search::after {
+  content: "\1F50D";
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  font-size: 1.25em;
+}
+
+.chosen-container .chosen-results li {
+  line-height: 1.125rem;
+  padding: 0.5rem;
+}
+
+.chosen-container-multi .chosen-choices {
+  padding: 0.25rem 0.5rem;
+  background: none !important;
+  border-radius: 2px;
+}
+
+.chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+  height: 1.5rem;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice {
+  background: #eee;
+  line-height: 1.5rem;
+  font-size: 1rem;
+  padding-bottom: 3px;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+  background: none !important;
+  color: inherit;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close::after {
+  content: "\00D7";
+  font-size: 1.125rem;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close:hover::after {
+  color: #d52727;
+}
+
+.chosen-container .chosen-results-scroll-down span,
+.chosen-container .chosen-results-scroll-up span {
+  background: none !important;
+}
+
+.chosen-container .chosen-results-scroll-down span:before,
+.chosen-container .chosen-results-scroll-up span:before {
+  position: relative;
+  top: -1px;
+  left: 1px;
+  width: 0;
+  height: 0;
+  border-top: 0.425rem solid rgba(0, 0, 0, 0.5);
+  border-bottom: none;
+  border-right: 0.425rem solid transparent;
+  border-left: 0.425rem solid transparent;
+  content: "\f0d7";
+  display: inline-block;
+}
+
+.chosen-container .chosen-results-scroll-up span:before {
+  border-bottom: 0.425rem solid rgba(0, 0, 0, 0.5);
+  border-top: none;
+}
+
+.chosen-container-active .chosen-single-with-drop div b:before {
+  border-bottom: 0.425rem solid rgba(0, 0, 0, 0.5);
+  border-top: none;
+}
+
+.chosen-container-single .chosen-single {
+  border-radius: 2px;
+}
+
+.chosen-container .chosen-results li.highlighted {
+  background: #0092ba;
+  color: #fff;
+}
+
+.chosen-container .chosen-drop {
+  border-radius: 0;
+  border-color: #00addd;
+  border-bottom-width: 2px;
+}
+
+.chosen-single.chosen-single-with-drop, .chosen-container-active .chosen-single {
+  border-color: #00addd;
+}
+
+.chosen-container-multi .chosen-drop {
+  border-top-width: 0;
+}
+
+.chosen-container-active .chosen-choices {
+  border-color: #00addd;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single {
+  border-color: #00addd;
+}
+
+.chosen-container.chosen-with-drop .chosen-drop {
+  left: auto;
+  right: auto;
+  display: block;
+}

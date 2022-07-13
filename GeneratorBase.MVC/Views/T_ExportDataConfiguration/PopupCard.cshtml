@@ -1,0 +1,149 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataConfiguration
+@{
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataConfiguration");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Configuration";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_ExportDataConfiguration" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_ExportDataConfiguration", true);
+    }
+	Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        var IdExist = '@Model.Id';
+        console.log('Id', IdExist);
+      if (IdExist == 0) {
+          $('#@Model.Id').removeAttr("style");
+        }
+    });
+</script>
+
+<div class="card card-default CardHide" id="@Model.Id" style="width: 350px; margin-bottom:0px">
+	 @if (Model.Id > 0)
+    {
+	<div class="card-header clearfix">
+        <h3 class="card-title">
+			<div class="truncate">
+				@if(User.CanEdit("T_ExportDataConfiguration"))
+                {
+                   <i class="fa fa-info-circle"></i><a href = "@Url.Action("Edit", "T_ExportDataConfiguration", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+                else if (User.CanView("T_ExportDataConfiguration"))
+                {
+                     <i class="fa fa-info-circle"></i><a href="@Url.Action("Details", "T_ExportDataConfiguration", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+            </div>
+        </h3>
+		<a href="" class="pull-right" style="margin-top:-16px"><i class="fa fa-times-circle" onclick="event.stopImmediatePropagation();ClosePopupCard(event)"></i></a>
+    </div>
+	  @Html.HiddenFor(model => model.Id)
+	  }
+	    <div class="card-body">
+		   <div class="col-12" style="padding:0px;">
+
+@if(User.CanView("T_ExportDataConfiguration","T_AutoNo") && !hiddenProperties.Contains("T_AutoNo") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_AutoNo)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_AutoNo" class="viewlabel"  title="@Model.T_AutoNo">@Model.T_AutoNo</p>
+                      
+
+
+
+				 </div>
+}
+@if(User.CanView("T_ExportDataConfiguration","T_Name") && !hiddenProperties.Contains("T_Name") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Name)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_Name" class="viewlabel"  title="@Model.T_Name">@Model.T_Name</p>
+                      
+
+
+
+				 </div>
+}
+@if(User.CanView("T_ExportDataConfiguration","T_EntityName") && !hiddenProperties.Contains("T_EntityName") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_EntityName)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_EntityName" class="viewlabel"  title="@Model.T_EntityName">@Model.T_EntityName</p>
+                      
+
+
+
+				 </div>
+}
+						@if(User.CanView("T_ExportDataConfiguration","T_AllowedRoles")  && !hiddenProperties.Contains("T_AllowedRoles"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_AllowedRoles)</label>
+										<p class="truncate1">@Model.T_AllowedRoles</p>
+									</div>
+						}
+												@if(User.CanView("T_ExportDataConfiguration","T_Description")  && !hiddenProperties.Contains("T_Description"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Description)</label>
+										<p class="truncate1">@Model.T_Description</p>
+									</div>
+						}
+						@if(User.CanView("T_ExportDataConfiguration","T_Disable") && !hiddenProperties.Contains("T_Disable") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Disable)</label>
+					
+
+												<p class="truncate1"><input checked="@Model.T_Disable" type="checkbox" value="@Model.T_Disable" disabled="disabled"></p>
+                                        	 </div>
+}
+@if(User.CanView("T_ExportDataConfiguration","T_BackGroundColor") && !hiddenProperties.Contains("T_BackGroundColor") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_BackGroundColor)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_BackGroundColor" class="viewlabel"  title="@Model.T_BackGroundColor">@Model.T_BackGroundColor</p>
+                      
+
+
+
+				 </div>
+}
+@if(User.CanView("T_ExportDataConfiguration","T_FontColor") && !hiddenProperties.Contains("T_FontColor") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_FontColor)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_FontColor" class="viewlabel"  title="@Model.T_FontColor">@Model.T_FontColor</p>
+                      
+
+
+
+				 </div>
+}
+						@if(User.CanView("T_ExportDataConfiguration","T_ToolTip")  && !hiddenProperties.Contains("T_ToolTip"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_ToolTip)</label>
+										<p class="truncate1">@Model.T_ToolTip</p>
+									</div>
+						}
+								</div> <!-- /tab-content -->
+	</div>
+</div>
+ 

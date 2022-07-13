@@ -1,0 +1,7 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.SelectUserEditorViewModel>
+@{
+    ViewBag.Title = "User List";
+    
+}
+<div id="dvUsersInRole"></div>
+@Html.Partial("~/Views/Account/UsersInRolePartial.cshtml", Model)

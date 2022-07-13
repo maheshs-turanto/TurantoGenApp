@@ -1,0 +1,281 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ActionType>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+@if (ViewBag.ColumnMapping == null)
+{
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script>
+	function DoubleClickActionType(RecordID)
+    {
+        var url = "@Url.Action("Edit", "ActionType", new { id = "_Id" }, null)".replace("_Id", RecordID);
+        window.location.replace(url);
+    }
+    $(document).ready(function () {
+
+
+        $(".SortLink").click(function (e) {
+            var thelink = e.target.href;//get the url that would be navigated to on sort
+			eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+            var controllerName = "";
+            if (query.AssociatedType == null)
+                controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+            else
+                controllerName =query.AssociatedType
+            e.preventDefault();
+            e.stopPropagation();
+            $.ajax({
+                url: thelink,
+                data: {itemsPerPage: $('#pagesizelist').val()},
+                success: function (data) {
+                    if (data != null) {
+                        $("#" + controllerName).html(data);
+                        thelink = "";
+                    }
+                }
+            })
+            return false;
+        })
+        $(".pagination a").click(function (e) {
+            var thelink = e.target.href;//get the url that would be navigated to on sort
+			eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+            var controllerName = "";
+            if (query.AssociatedType == null)
+                controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+            else
+                controllerName = query.AssociatedType;
+            e.preventDefault();
+            e.stopPropagation();
+            $.ajax({
+                url: thelink,
+                data: {itemsPerPage: $('#pagesizelist').val()},
+                success: function (data) {
+                    if (data != null) {
+                        $("#" + controllerName).html(data);
+                    }
+                }
+            })
+            return false;
+        })
+		 $('#pagesizelist').change(function (e) {
+            var thelink = '@Html.Raw(@Url.Action(ActionNameUrl, "ActionType", getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true, ViewBag.Pages <= Model.PageCount ? ViewBag.Pages : 1, false), null))';
+            $.ajax({
+                url: thelink,
+                data: { searchString: $('#SearchStringActionType').val(), itemsPerPage: $('#pagesizelist').val() },
+                success: function (data) {
+                    if (data != null) {
+                        $("#ActionType").html(data);
+                    }
+                }
+            })
+            return false;
+        })
+
+    });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    TypeNoFrom = Request.QueryString["TypeNoFrom"],
+                    TypeNoTo = Request.QueryString["TypeNoTo"],
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    TypeNoFrom = Request.QueryString["TypeNoFrom"],
+                    TypeNoTo = Request.QueryString["TypeNoTo"],
+                };
+            }
+        }
+    }
+
+    <script>
+        function resettemplate(obj) {
+            debugger;
+            url = $(obj).attr("dataurl");
+            $.ajax({
+                async: true,
+                type: "POST",
+                url: url,
+                success: function (data) {
+                    window.location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
+        }
+    </script>
+
+    <div class="row">
+        <div style="float:right; padding-left:87%">
+            <a class="btn btn-primary" onclick="@Html.Raw("resettemplate(this)")" dataurl="@Html.Raw(Url.Action("ResetTemplate","ActionType")).ToHtmlString()">Reset Alert Style </a>
+
+        </div>
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="panel panel-default">
+
+                <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                    <table class="table table-hover default-bordered default-condensed newlist">
+                        <thead>
+                            <tr>
+                                <th class="col1">Actions</th>
+                                @if (User.CanView("ActionType", "TypeNo"))
+                                {
+                                    <th class="col2">
+                                        @Html.ActionLink("TypeNo", ActionNameUrl, "ActionType", getSortHtmlAttributes("TypeNo", false, null, false), new { @class = "SortLink" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "TypeNo")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "TypeNo")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                }
+                                @if (User.CanView("ActionType", "ActionTypeName"))
+                                {
+                                    <th class="col3">
+                                        @Html.ActionLink("Action Type Name", ActionNameUrl, "ActionType", getSortHtmlAttributes("ActionTypeName", false, null, false), new { @class = "SortLink" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ActionTypeName")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ActionTypeName")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                }
+                                @if (User.CanView("ActionType", "Description"))
+                                {
+                                    <th class="col4">
+                                        @Html.ActionLink("Description", ActionNameUrl, "ActionType", getSortHtmlAttributes("Description", false, null, false), new { @class = "SortLink" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Description")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Description")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                }
+                                @if (User.CanView("ActionType", "Template"))
+                                {
+
+
+                                    <th class="col4">
+                                        @Html.ActionLink("Alert Style", ActionNameUrl, "ActionType", getSortHtmlAttributes("Template", false, null, false), new { @class = "SortLink" })
+                                        @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Template")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                        @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Template")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                    </th>
+                                }
+
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+                                <tr ondblclick="DoubleClickActionType(@item.Id);">
+                                    <td>
+                                        <div style="width:60px; margin-top:-2px;">
+                                            <div class="btn-group" style="position:absolute;">
+                                                <a class="btn btn-primary" href="@Url.Action("Edit","ActionType", new { id = item.Id },null)">
+                                                    Edit
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    @if (User.CanView("ActionType", "TypeNo"))
+                                    {
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TypeNo)
+                                        </td>
+                                    }
+                                    @if (User.CanView("ActionType", "ActionTypeName"))
+                                    {
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ActionTypeName)
+                                        </td>
+                                    }
+                                    @if (User.CanView("ActionType", "Description"))
+                                    {
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                    }
+                                    @if (User.CanView("ActionType", "Template"))
+                                    {
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Template))
+                                            {
+                                                @Html.TextArea("Template" + item.Id, item.Template, new { @id = "Template" + item.Id })
+                                                <script type='text/javascript'>
+                                                $(document).ready(function () {
+                                                @Html.Raw("$('#Template" + item.Id + "').summernote();");
+                                                @Html.Raw("'Template" + item.Id + "'");
+                                                });
+                                                </script>
+                                            }
+                                            else
+                                            {
+                                                @Html.DisplayFor(modelItem => item.Template)
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                    </table>
+                </div>
+                @if (Model.Count > 0)
+                {
+                    <div id="pagination">
+                        @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "ActionType", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelist" })
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

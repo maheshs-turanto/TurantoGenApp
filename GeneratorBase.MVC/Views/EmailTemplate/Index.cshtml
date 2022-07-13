@@ -1,0 +1,74 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EmailTemplate>
+@{
+    ViewBag.Title = "Email Template";
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+
+
+
+@if (appTheme == "Angular")
+{
+
+
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small>Email Template</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary text-white pull-right dropdown-toggle" data-toggle="dropdown" type="button"> Add Email Template or Type </a>
+            <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Email Template Type','dvPopup','" + Url.Action("CreateEmailTemplateType", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Email Template Type</a></li>
+                <li><a href="@Url.Action("Create", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now })" class="dropdown-item"> Add Email Template</a></li>
+            </ul>
+
+        </div>
+    </div>
+}
+
+@if (appTheme == "Default")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small>Email Template</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary pull-right dropdown-toggle" data-toggle="dropdown" type="button"> Add Email Template or Type </a>
+            <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Email Template Type','dvPopup','" + Url.Action("CreateEmailTemplateType", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Email Template Type</a></li>
+                <li><a href="@Url.Action("Create", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now })" class="dropdown-item"> Add Email Template</a></li>
+            </ul>
+
+        </div>
+    </div>
+}
+
+@if (appTheme == "Default_BS_5_x")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small>Email Template</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary float-end dropdown-toggle" data-toggle="dropdown" type="button"> Add Email Template or Type </a>
+            <ul class="dropdown-menu float-start" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Email Template Type','dvPopup','" + Url.Action("CreateEmailTemplateType", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Email Template Type</a></li>
+                <li><a href="@Url.Action("Create", "EmailTemplate", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now })" class="dropdown-item"> Add Email Template</a></li>
+            </ul>
+
+        </div>
+    </div>
+}
+
+@Html.Partial("~/Views/EmailTemplate/IndexPartial.cshtml", Model)
+

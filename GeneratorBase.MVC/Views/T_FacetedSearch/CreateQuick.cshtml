@@ -1,0 +1,272 @@
+﻿@model GeneratorBase.MVC.Models.T_FacetedSearch
+@{
+    ViewBag.Title = "Create FacetedSearch";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "T_FacetedSearch", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+                            Html.ValidationSummary(true);
+                            Html.EnableClientValidation();
+                            <input type="hidden" id="ErrMsgQuickAdd" />
+                            @*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+                            <div id="errorContainerQuickAdd" style="display: none">
+                                <div id="errorsMsgQuickAdd"></div>
+                                <div id="errorsQuickAdd"></div>
+                            </div>
+                            <div id="divDisplayThresholdLimit" style="display:none;">
+                            </div>
+                            <div id="divDisplayBRmsgMandatory" style="display:none;">
+                            </div>
+                            <div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+                            </div>
+                            <div class="row">
+                                @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                                @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+                                @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+                                @Html.Hidden("T_EntityName", Convert.ToString(ViewData["EntityName"]))
+                                @if (Model != null)
+                                {
+                                    <script>
+                                        $(document).ready(function () {
+                                            var roles = "@Model.T_Roles".split(",");
+                                            var eleRoles = document.getElementById("RoleList");
+                                            for (i = 0; i < roles.length; i++) {
+                                                for (var o = 0; o < eleRoles.options.length; o++) {
+                                                    if (eleRoles.options[o].value == roles[i])
+                                                        eleRoles.options[o].selected = true;
+                                                }
+                                            }
+                                        });
+                                    </script>
+                                    @Html.HiddenFor(model => model.Id)
+                                    @Html.HiddenFor(model => model.ConcurrencyKey)
+                                }
+                                @Html.Hidden("T_LinkAddress", Convert.ToString(ViewData["Url"]))
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default AppForm">
+                                        <div class="panel-body">
+                                            <div class="row">
+
+                                                @if (User.CanView("T_FacetedSearch", "T_Name"))
+                                                {
+                                                    <div class='col-sm-6' id="dvT_Name">
+                                                        <div class='form-group' title="Name">
+                                                            <label>@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+
+                                                            @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.T_Name)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("T_FacetedSearch", "T_Description"))
+                                                {
+                                                    <div class='col-sm-6' id="dvT_Description">
+                                                        <div class='form-group' title="Description">
+                                                            <label>@Html.LabelFor(model => model.T_Description) </label>
+                                                            @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.T_Description)
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (User.CanView("T_FacetedSearch", "T_Roles"))
+                                                {
+                                                    <div class="col-sm-6 col-md-6 col-xs-12" id="dvT_Roles">
+                                                        <div class='form-group'>
+                                                            <label class="pull-left">Show to roles</label><br/>
+                                                            <div class="p-0 col-sm-8 col-md-8 col-xs-12">
+                                                                @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                                @Html.Hidden("T_Roles", null, new { @Value = "" })
+                                                                @Html.ValidationMessageFor(model => model.T_Roles)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("T_FacetedSearch", "T_Disable"))
+                                                {
+                                                    <div class='col-sm-6' id="dvT_Disable">
+                                                        <label>
+                                                            @Html.LabelFor(model => model.T_Disable)
+                                                        </label>
+                                                        <div class="form-group" title="Disable">
+                                                            @Html.CheckBox("T_Disable", false)
+                                                            @Html.ValidationMessageFor(model => model.T_Disable)
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @*@if (User.CanView("T_FacetedSearch", "T_EntityName"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_EntityName">
+                                                            <div class='form-group' title="EntityName">
+                                                                <label>@Html.LabelFor(model => model.T_EntityName) </label>
+
+                                                                @Html.TextBoxFor(model => model.T_EntityName, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.T_EntityName)
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("T_FacetedSearch", "T_LinkAddress"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_LinkAddress">
+                                                            <div class='form-group' title="LinkAddress">
+                                                                <label>@Html.LabelFor(model => model.T_LinkAddress) </label>
+                                                                @Html.TextAreaFor(model => model.T_LinkAddress, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.T_LinkAddress)
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("T_FacetedSearch", "T_TargetEntity"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_TargetEntity">
+                                                            <div class='form-group' title="TargetEntity">
+                                                                <label>@Html.LabelFor(model => model.T_TargetEntity) </label>
+
+                                                                @Html.TextBoxFor(model => model.T_TargetEntity, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.T_TargetEntity)
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("T_FacetedSearch", "T_AssociationName"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_AssociationName">
+                                                            <div class='form-group' title="Association Name">
+                                                                <label>@Html.LabelFor(model => model.T_AssociationName) </label>
+
+                                                                @Html.TextBoxFor(model => model.T_AssociationName, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.T_AssociationName)
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("T_FacetedSearch", "T_OtherInfo"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_OtherInfo">
+                                                            <div class='form-group' title="OtherInfo">
+                                                                <label>@Html.LabelFor(model => model.T_OtherInfo) </label>
+
+                                                                @Html.TextBoxFor(model => model.T_OtherInfo, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.T_OtherInfo)
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    @if (User.CanView("T_FacetedSearch", "T_Flag"))
+                                                    {
+                                                        <div class='col-sm-6' id="dvT_Flag">
+                                                            <label>
+                                                                @Html.LabelFor(model => model.T_Flag)
+                                                            </label>
+                                                            <div class="form-group" title="Flag">
+                                                                @Html.CheckBox("T_Flag", false)
+                                                                @Html.ValidationMessageFor(model => model.T_Flag)
+                                                            </div>
+                                                        </div>
+                                                    }*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                                                var busineesrule = User.businessrules.Where(p => p.EntityName == "T_FacetedSearch").ToList();
+                                                var lstinlineentityname = "";
+                                                var lstinlineassocdispname = "";
+                                                var lstinlineassocname = "";
+                                                if (ViewBag.IsAddPop != null)
+                                                {
+                                                    <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'T_FacetedSearch','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="SetRoles();QuickAddFromIndex(event,true,'T_FacetedSearch','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                }
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+
+<script type='text/javascript'>
+    function SetRoles()
+    {
+        $('#T_Roles').val($('#RoleList').val());
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+                if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500);
+            var ctrlReadonly = $("#dvPopup").find('input[type=text][readonly],textarea[readonly]');
+            $(ctrlReadonly).each(function () {
+                $(ctrlReadonly).attr("tabindex", "-1");
+            });
+        }
+        catch (ex) { }
+    });
+</script>

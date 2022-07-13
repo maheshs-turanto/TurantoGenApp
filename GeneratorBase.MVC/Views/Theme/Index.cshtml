@@ -1,0 +1,26 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ThemeSettings>
+@{
+    ViewBag.Title = "Theme List";
+}
+
+    <div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            <a href="@Url.Action("Index")">Admin</a>
+            <small>Theme list </small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+
+    </div>
+</div>
+    <div class="">
+        <div class="card">
+            <div class="card-body">              
+@Html.Partial("~/Views/Theme/IndexPartial.cshtml", Model)
+            </div>
+        </div>
+    </div>
+
+
+

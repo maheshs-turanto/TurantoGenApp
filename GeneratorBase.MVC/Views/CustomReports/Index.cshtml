@@ -1,0 +1,39 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.CustomReports>
+@{
+    ViewBag.Title = "CustomReports List";
+
+    string templatename = ("~/Views/CustomReports/IndexPartial.cshtml").Replace("?IsAddPop=true", "");
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CustomReports");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "CustomReports";
+}
+<style>
+   
+
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+
+<div class="content-heading">
+    <strong class="TitleName"><a href="@Url.Action("Index")">@EntityDisplayName</a><small>List</small></strong>
+    <div class="ml-auto">
+
+    </div>
+</div>
+
+
+
+
+<div class="card">
+    <div class="card-body">
+        <script>
+            $(document).ready(function () {
+                ClickFilterBtn();
+            });
+        </script>
+        <div id="dvCustomReportsFilter"></div>
+        @Html.Partial(templatename, Model)
+
+    </div>
+</div>

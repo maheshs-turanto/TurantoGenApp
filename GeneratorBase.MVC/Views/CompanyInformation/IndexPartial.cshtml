@@ -1,0 +1,650 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.CompanyInformation>
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CompanyInformation");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "CompanyInformation";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("CompanyInformation");
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.CompanyInformationRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+<style>
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+<div id="CompanyInformation">
+    @if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                $("#CompanyInformationGridHeader").addClass('collapse in');
+            }
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'CompanyInformation', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchCompanyInformation").addClass('show');
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'CompanyInformation');
+            }
+            $("#SearchStringCompanyInformation").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#CompanyInformationSearch").bind("click", (function () {
+                    }));
+                    $('#CompanyInformationSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideCompanyInformation").mouseup(function () {
+                if (document.getElementById('ColumnShowHideCompanyInformation').className == 'collapse') {
+                    $('#lblCompanyInformation').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".float-left.actionbar").hide();
+                if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                    $(".inlinegridoption").hide();
+                }
+            }
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    companyinformationcompanylistassociation = Request.QueryString["companyinformationcompanylistassociation"],
+
+                    SSL = Request.QueryString["SSL"],
+                    UseAnonymous = Request.QueryString["UseAnonymous"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    companyinformationcompanylistassociation = Request.QueryString["companyinformationcompanylistassociation"],
+                    SSL = Request.QueryString["SSL"],
+                    UseAnonymous = Request.QueryString["UseAnonymous"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    <div id="CompanyInformationGridHeader" class="">
+        @if (ViewData["IsdrivedTab"] == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="float-left actionbar">
+                    @if (User.CanAdd("CompanyInformation"))
+                    {
+                        <a id="addInlineRowCompanyInformation" style="display:none;"
+                           onclick="@Html.Raw("OpenInlineEntity(this,'CompanyInformation','" + Url.Action("CreateInline", "CompanyInformation", new {AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+                        </a>
+                        <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_CompanyInformation'>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus-circle"></i> Add <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                    @if (User.CanAdd("CompanyInformation"))
+                                    {
+                                        if (ViewBag.IsDivRender == true)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Create", "CompanyInformation", new { RenderPartial = true, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname ,}))')" alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "CompanyInformation", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null) + "');") alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+
+                                        if (ViewData["HostingEntity"] != null && User.CanAdd("CompanyInformationCompanyListAssociation") && Convert.ToString(ViewData["AssociatedType"]).Trim() == "CompanyInformationCompanyListAssociation_CompanyList")
+                                        {
+                                            if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                                            {
+                                                var popupDisplayLabel = EntityDisplayName;
+                                                <li class="dropdown-item">
+                                                    <a data-placement="top" data-original-title="Quick Associate" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+popupDisplayLabel+"','dvPopup','" + Url.Action("CreateQuick", "CompanyInformationCompanyListAssociation", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now }) + "')")">
+                                                        <span class="fa fa-plus-circle"></span> Quick Associate
+                                                    </a>
+                                                </li>
+                                            }
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Associate" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "CompanyInformationCompanyListAssociation", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+                                                    <span class="fa fa-plus-circle"></span> Associate
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    <div class="btn-group">
+                    </div>
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        if ((User.CanEdit("CompanyInformation") && User.CanUseVerb("BulkUpdate", "CompanyInformation", User)) || (User.CanDelete("CompanyInformation") && User.CanUseVerb("BulkDelete", "CompanyInformation", User)))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanEdit("CompanyInformation") && User.CanUseVerb("BulkUpdate", "CompanyInformation", User))
+                                        {
+                                            <a class="dropdown-item" data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                               onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update "+EntityDisplayName+"','dvPopup','" + Url.Action("BulkUpdate", "CompanyInformation", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','CompanyInformation')")">
+                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                                Update
+                                            </a>
+                                        }
+
+                                        @if (User.CanDelete("CompanyInformation") && User.CanUseVerb("BulkDelete", "CompanyInformation", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'CompanyInformation','Bulk Delete','@Url.Action("DeleteBulk", "CompanyInformation")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            <div class="float-right" style="display:none;">
+                <div class="input-group">
+                    @Html.TextBox("SearchStringCompanyInformation", ViewBag.CurrentFilter as string, null, new { @class = "form-control listsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                    <div class="input-group-btn">
+                        <a id="CompanyInformationSearch" onclick="SearchClick(event, 'CompanyInformation', '@Html.Raw(Url.Action("Index", "CompanyInformation", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                        <a id="CompanyInformationDeepSearch" onclick="SearchClick(event, 'CompanyInformation', '@Html.Raw(Url.Action("Index", "CompanyInformation", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = true, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString() ,viewtype = viewbagname}))','@User.JavaScriptEncodedName');" data-original-title="Deep Search" class="btn btn-secondary tip-top" alt="Deep Search" title="Search deep"><span class="fa fa-search-plus"></span></a>
+                        <a id="CompanyInformationCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('CompanyInformation','@Html.Raw(Url.Action("Index", "CompanyInformation", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                        <a id="CompanyInformationSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('CompanyInformation','@Html.Raw(Url.Action("Index", "CompanyInformation", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                            <span class="fa fa-sync-alt"></span>
+                        </a>
+                        <a id="CompanyInformationRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('CompanyInformation','@Html.Raw(Url.Action(ActionNameUrl, "CompanyInformation", getSortHtmlAttributes(ViewBag.CurrentSort, false,null, false)))','@User.Name')"></a>
+                    </div>
+                </div>
+            </div>
+        }
+        <div style="clear:both"></div>
+        @if (ViewBag.SearchResult != "")
+        {
+            <div id="fsearchCompanyInformation" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                <div class="col-sm-6">  @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))</div>
+                <div class="col-sm-6 text-right">
+                    @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                    {
+                        <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", "CompanyInformation",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    <a href="@(Url.Action("SetFSearch", "CompanyInformation")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                    @if (User.CanAdd("T_FacetedSearch"))
+                    {
+                        <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="CompanyInformation",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "CompanyInformation", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistCompanyInformation",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'CompanyInformation','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "CompanyInformation",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistCompanyInformation"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    }
+    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+        <table class="table table-hover default-bordered default-condensed newlist">
+            <thead id="theaderCompanyInformation">
+                <tr>
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("CompanyInformation") && User.CanUseVerb("BulkUpdate", "CompanyInformation", User)) || (User.CanDelete("CompanyInformation") && User.CanUseVerb("BulkDelete", "CompanyInformation", User))))
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("CompanyInformation", "CompanyName"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyName");
+                        <th scope="col" class="col2">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyName", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyName")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyName")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyEmail"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyEmail");
+                        <th scope="col" class="col3">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyEmail", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyEmail")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyEmail")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyCountry"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyCountry");
+                        <th scope="col" class="col4">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyCountry", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyCountry")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyCountry")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyState"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyState");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyState", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyState")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyState")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyCity"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyCity");
+                        <th scope="col" class="col6">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyCity", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyCity")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyCity")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyZipCode"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyZipCode");
+                        <th scope="col" class="col7">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("CompanyZipCode", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyZipCode")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyZipCode")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "ContactNumber1"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "ContactNumber1");
+                        <th scope="col" class="col8">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("ContactNumber1", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ContactNumber1")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ContactNumber1")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("CompanyInformation", "ContactNumber2"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "ContactNumber2");
+                        <th scope="col" class="col9">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "CompanyInformation", getSortHtmlAttributes("ContactNumber2", false, null, false), new { @onclick = "SortLinkClick(event,'CompanyInformation');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ContactNumber2")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ContactNumber2")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                </tr>
+                <tr id="trInlineCompanyInformation" style="display:none; padding:0px!important">
+                    <th id="tdInlineCompanyInformation" colspan="10" style="padding: 0px!important;">
+
+                    </th>
+                </tr>
+            </thead>
+
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                List<string> hiddenProperties = new List<string>();
+                if (User.businessrules.Any(p => p.EntityName == "CompanyInformation" && p.ActionTypeID.Contains(6)))
+                {
+                    hiddenProperties = item.ApplyHiddenRule(User.businessrules, "CompanyInformation");
+                }
+                bool isRecordReadOnly = false;
+
+
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="10" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row">
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("CompanyInformation") && User.CanUseVerb("BulkUpdate", "CompanyInformation", User)) || (User.CanDelete("CompanyInformation") && User.CanUseVerb("BulkDelete", "CompanyInformation", User))))
+                    {
+                        <td style="width: 20px;">
+                            @if (item.Id != 1)
+                            {
+                                <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" style="position:absolute" />
+                            }
+                        </td>
+                    }
+                    <td style="width: 70px;" class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                        <div style="display:none;">
+                            <div class="btn-group tdDoubleClickGroup">
+                                <a onclick="SavePropertiesValue(this,'CompanyInformation',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                    <i class="fa fa-save"></i>
+                                </a>
+                                <a onclick="$('#CompanyInformationRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                    <i class="fa fa-close"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div id="DivbutEdit">
+                            <div class="btn-group">
+                                @if (User.CanEdit("CompanyInformation"))
+                                {
+                                    var editIconClass = isRecordReadOnly ? "fa fa-eye" : "fa fa-pencil-alt";
+                                    var edittitle = isRecordReadOnly ? "View" : "Edit";
+                                    if (ViewBag.IsDivRender == true)
+                                    {
+                                        <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "CompanyInformation", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = ViewBag.IsDivRender, viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  }, null))')" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Edit","CompanyInformation", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  },null)" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="@editIconClass"></i>
+                                        </a>
+                                    }
+                                }
+                                @if (!User.CanEdit("CompanyInformation"))
+                                {
+                                    <a href="@Url.Action("Details", "CompanyInformation", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                }
+                                <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                    <span class="sr-only"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @if (User.CanEdit("CompanyInformation") && isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","CompanyInformation", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly },null)"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Details", "CompanyInformation", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" alt="View" title="View"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+
+                                    <div class="dropdown-divider"></div>
+
+                                    @if (User.CanEdit("CompanyInformation") && !isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","CompanyInformation", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname },null)"><i class="fa fa-edit"></i>  Edit</a>
+                                        </li>
+                                    }
+                                    <li class="divider" style="clear:both"></li>
+                                    @if (!HideAction)
+                                    {
+                                        <div class="dropdown-divider" style="display:none"></div>
+                                        <li class="dropdown-submenu" style="display:none">
+                                            <a class="dropdown-item" tabindex="-1" href="#"><i class="fa fa-search"></i> Search Matching</a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="@Url.Action("FindFSearch", "User", new {sourceEntity="CompanyInformation",id=item.Id}, null)">User</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    <div class="dropdown-divider"></div>
+                                    @if (User.CanDelete("CompanyInformation") && !isRecordReadOnly && item.Id != 1)
+                                    {
+                                        <li class="divider" style="clear:both"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Delete", "CompanyInformation", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("CompanyInformation", "CompanyName"))
+                    {
+
+                        <td title="@item.CompanyName">
+                            @Html.DisplayFor(modelItem => item.CompanyName)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyEmail"))
+                    {
+
+                        <td title="@item.CompanyEmail">
+                            @Html.DisplayFor(modelItem => item.CompanyEmail)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyCountry"))
+                    {
+
+                        <td title="@item.CompanyCountry">
+                            @Html.DisplayFor(modelItem => item.CompanyCountry)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyState"))
+                    {
+
+                        <td title="@item.CompanyState">
+                            @Html.DisplayFor(modelItem => item.CompanyState)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyCity"))
+                    {
+
+                        <td title="@item.CompanyCity">
+                            @Html.DisplayFor(modelItem => item.CompanyCity)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "CompanyZipCode"))
+                    {
+
+                        <td title="@item.CompanyZipCode">
+                            @Html.DisplayFor(modelItem => item.CompanyZipCode)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "ContactNumber1"))
+                    {
+
+                        <td title="@item.ContactNumber1">
+                            @Html.DisplayFor(modelItem => item.ContactNumber1)
+                        </td>
+                    }
+                    @if (User.CanView("CompanyInformation", "ContactNumber2"))
+                    {
+
+                        <td title="@item.ContactNumber2">
+                            @Html.DisplayFor(modelItem => item.ContactNumber2)
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "CompanyInformation", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistCompanyInformation",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'CompanyInformation','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "CompanyInformation",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistCompanyInformation"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityCompanyInformationDisplayValue", null, null, new { @Style = "display:none;" })
+</div>

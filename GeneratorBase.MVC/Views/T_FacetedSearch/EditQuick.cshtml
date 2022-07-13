@@ -1,0 +1,321 @@
+﻿@model GeneratorBase.MVC.Models.T_FacetedSearch
+@using PagedList;
+@{
+    ViewBag.Title = "Edit FacetedSearch";
+    var EditPermission = User.CanEditItem("T_FacetedSearch", Model, User);
+    var DeletePermission = User.CanDeleteItem("T_FacetedSearch", Model, User);
+    var FsearchId = Request.QueryString["FsearchId"];
+    Layout = null;
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_FacetedSearch", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            if ($('#EntityT_FacetedSearchDisplayValue').has('option').length > 0) {
+                var RecId = $("#Id").val()
+                $("#T_FacetedSearchDD").append($("#EntityT_FacetedSearchDisplayValue").html());
+                $("#T_FacetedSearchDD").val(RecId);
+                var text = $("option:selected", $("#T_FacetedSearchDD")).text();
+                $("#T_FacetedSearchDD").attr('data-toggle', 'tooltip')
+                $("#T_FacetedSearchDD").attr('title', text);
+                var lastOptionVal = $('#T_FacetedSearchDD option:last-child').val();
+                var fristOptionVal = $('#T_FacetedSearchDD option:first-child').val();
+                if (lastOptionVal == RecId) {
+                    $('#next').hide();
+                    $('#SaveAndContinue').hide();
+                }
+                if (fristOptionVal == RecId)
+                    $('#prev').hide();
+            } else { $('#dvsavenext').hide(); $('#SaveAndContinue').hide(); }
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                if ('@Convert.ToBoolean(ViewData["IsFilter"])' != "False")
+                    $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+                $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_FacetedSearchIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_FacetedSearchIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+
+    @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <input type="hidden" id="ErrMsg" />
+    <div id="errorContainerEdit" style="display: none">
+        <div id="errorsMsgEdit"></div>
+        <div id="errorsEdit"></div>
+    </div>
+    <div class="col-sm-6 col-md-6 col-xs-12" style="margin-top: -5px;">
+        <h4>
+            <span id="HostingEntityDisplayValue">@Html.DisplayFor(model => model.DisplayValue) (@Model.T_EntityName)</span>
+        </h4>
+    </div>
+    @if (EditPermission)
+    {
+        <div class="col-sm-6 col-md-6 col-xs-12" id="dvsavenext" style="margin-top: -5px;">
+            <button class="btn btn-default btn-xs pull-right" id="next" onclick="@Html.Raw("SetRoles();nextFun('T_FacetedSearch')")">Next >></button>
+            @Html.DropDownList("T_FacetedSearchDD", null, null, new { @onchange = "FillDisplayValueQEdit('T_FacetedSearch')", @required = "required", @class = "pull-right", @Style = "height: 22px;width: 170px;" })
+            <button class="btn btn-default btn-xs pull-right" id="prev" onclick="@Html.Raw("SetRoles();prevFun('T_FacetedSearch')")"><< Prev</button>
+        </div>
+    }
+</div>
+<!-- /.col-lg-12 -->
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+
+
+@using (Html.BeginForm("EditQuick", "T_FacetedSearch", new { UrlReferrer = Convert.ToString(ViewData["T_FacetedSearchParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditT_FacetedSearch" }))
+{
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.T_EntityName)
+    @Html.HiddenFor(model => model.T_AssociationName)
+    @Html.HiddenFor(model => model.T_Flag)
+    @Html.HiddenFor(model => model.T_TabName)
+    @Html.HiddenFor(model => model.T_TargetEntity)
+    @Html.HiddenFor(model => model.T_OtherInfo)
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                    @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+                    @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+                    @Html.Hidden("FsearchId", FsearchId)
+                    @if (Model != null)
+                    {
+                        <script>
+                            $(document).ready(function () {
+                                var roles = "@Model.T_Roles".split(",");
+                                var eleRoles = document.getElementById("RoleList");
+                                for (i = 0; i < roles.length; i++) {
+                                    for (var o = 0; o < eleRoles.options.length; o++) {
+                                        if (eleRoles.options[o].value == roles[i])
+                                            eleRoles.options[o].selected = true;
+                                    }
+                                }
+                            });
+                        </script>
+                    }
+                    <div class="row">
+                        @if (User.CanView("T_FacetedSearch", "T_Name"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                <div class='form-group' title="Name">
+                                    <label>@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                    @Html.TextBoxFor(model => model.T_Name, getHtmlAttributes("T_Name"))
+                                    @Html.ValidationMessageFor(model => model.T_Name)
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+                        @if (User.CanView("T_FacetedSearch", "T_Roles"))
+                        {
+                            <div class="col-sm-6 col-md-6 col-xs-12" id="dvT_Roles">
+                                <div class='form-group'>
+                                    <label class="pull-left">Show to roles</label><br />
+                                    <div class="p-0 col-sm-12 col-md-12 col-xs-12 m-0">
+                                        @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                        @Html.Hidden("T_Roles", null, new { @Value = "" })
+                                        @Html.ValidationMessageFor(model => model.T_Roles)
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.T_Roles, new { @class = "form-control" })}
+                        @if (User.CanView("T_FacetedSearch", "T_Description"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                <div class='form-group' title="Description">
+                                    <label>@Html.LabelFor(model => model.T_Description) </label>
+
+                                    @Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+                                    @Html.ValidationMessageFor(model => model.T_Description)
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.T_Description, new { @class = "form-control" })}
+
+
+
+                        @if (User.CanView("T_FacetedSearch", "T_LinkAddress"))
+                        {
+                            var style = "";
+                            if (!string.IsNullOrEmpty(FsearchId))
+                            {
+                                style = "style = display:none;";
+                            }
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_LinkAddress" @style>
+                                <div class='form-group' title="LinkAddress">
+                                    <label>@Html.LabelFor(model => model.T_LinkAddress) </label>
+
+                                    @Html.TextAreaFor(model => model.T_LinkAddress, getHtmlAttributes("T_LinkAddress"))
+                                    @Html.ValidationMessageFor(model => model.T_LinkAddress)
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.T_LinkAddress, new { @class = "form-control" })}
+                        @if (User.CanView("T_FacetedSearch", "T_Disable"))
+                        {
+                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+                                <div class="form-group" title="Disable">
+                                    <label>
+                                        @Html.LabelFor(model => model.T_Disable)
+                                    </label>
+
+                                    @Html.CheckBox("T_Disable", Model.T_Disable.HasValue ? Model.T_Disable : false)
+                                    @Html.ValidationMessageFor(model => model.T_Disable)
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        { @Html.HiddenFor(model => model.T_Disable, new { @class = "form-control" })}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.AntiForgeryToken();
+    var businessrule1 = User.businessrules.Where(p => p.EntityName == "T_FacetedSearch").ToList();
+    var lstinlineentityname = "";
+    var lstinlineassocdispname = "";
+    var lstinlineassocname = "";
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    if (EditPermission)
+    {
+        <input type="submit" id="command" name="command" value="Save & Close" class="btn btn-primary btn-sm" onclick="SetRoles();QuickEditFromGrid(event,true,'T_FacetedSearch','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+        <input type="submit" id="sevranBtn" style="display:none;" name="command" value="Save" class="btn btn-primary btn-sm" onclick="SetRoles();QuickEditFromGrid(event,true,'T_FacetedSearch','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','True');" />
+        <button type="button" id="SaveAndContinue" name="SaveAndContinue" class="btn btn-primary btn-sm" onclick="@Html.Raw("SetRoles();SaveAndContinueEdit('T_FacetedSearch',event)")">Save & Next</button>
+        <input type="hidden" name="hdncommand" value="" />
+    }
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script>
+    function SetRoles() {
+        $('#T_Roles').val($('#RoleList').val());
+    }
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+    $("input[type='submit']").click(function (event) {
+        if (!$("#frmQEditT_FacetedSearch").valid()) return;
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_FacetedSearch").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var ruleids = businessrule.Select(q => q.Id).ToList();
+        var typelist = string.Join(",", (new GeneratorBase.MVC.Models.RuleActionContext()).RuleActions.Where(p => ruleids.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmQEditT_FacetedSearch");
+                dataurl = "@Url.Action("businessruletype", "T_FacetedSearch", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "T_FacetedSearch", false, "ErrMsg", form);
+                //business rules on inline associations
+            });
+        </script>
+        <script>
+            $("form").submit(function (event) {
+                if (!$("#frmQEditT_FacetedSearch").valid()) return;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var form = $("#frmQEditT_FacetedSearch").serialize();
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])')
+            var cltid = "";
+            $(cltcoll).each(function () {
+                if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500)
+        }
+        catch (ex) { }
+    });
+</script>

@@ -1,0 +1,464 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBarMenuItemAssociation
+@{
+    ViewBag.Title = "Create Menu Bar Menu Item Association";
+    Layout = null;
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBarMenuItemAssociation").Properties;
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+
+<style>
+    select[multiple], select[size] {
+    height: auto;
+    width: 100%;}
+.filtercollapse{
+display: block;
+color: #fff !important;
+padding: 10px 10px;
+width: 13%;
+
+}
+.panel-heading {
+  position: relative;
+}
+.panel-heading[data-toggle="collapse"]:after {
+  font-family: 'Glyphicons Halflings';
+  content: "\e072"; /* "play" icon */
+  position: absolute;
+  color: #fff;
+  font-size: 11px;
+  line-height: 22px;
+  right: 20px;
+  top: calc(50% - 10px);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform:    rotate(-90deg);
+  -ms-transform:     rotate(-90deg);
+  -o-transform:      rotate(-90deg);
+  transform:         rotate(-90deg);
+}
+.panel-heading[data-toggle="collapse"].collapsed:after {
+  -webkit-transform: rotate(90deg);
+  -moz-transform:    rotate(90deg);
+  -ms-transform:     rotate(90deg);
+  -o-transform:      rotate(90deg);
+  transform:         rotate(90deg);
+}
+</style>
+<script>
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+	 $('#btnT_MenuBar').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_MenuBar'), dataurl, $('#txtSearchT_MenuBar').val(), 'T_MenuItem', '@ViewData["HostingEntityID"]', 'T_MenuBarMenuItemAssociation_T_MenuItem', 'T_MenuBarIDAvailable', 't_menubarmenuitemassociation,T_Disabled,T_Horizontal');
+        return false;
+    });
+	 $('#btnT_MenuItem').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_MenuItem'), dataurl, $('#txtSearchT_MenuItem').val(), 'T_MenuBar', '@ViewData["HostingEntityID"]', 'T_MenuBarMenuItemAssociation_T_MenuBar', 'T_MenuItemIDAvailable', 't_menubarmenuitemassociation,t_menuitemmenuitemassociation');
+        return false;
+    });
+</script>
+
+   <p class="text-center" style="margin:0px;margin-top:-10px;margin-bottom:8px;font-weight:bold;color: #1d5072; font-size:16px">
+         @ViewBag.DisplayVal
+    </p>
+ 
+
+@using (Html.BeginForm("CreateQuick", "T_MenuBarMenuItemAssociation",FormMethod.Post, new { enctype = "multipart/form-data", @id="frmT_MenuBarMenuItemAssociation" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	 <input type="hidden" id="ErrMsgQuickAdd" />
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+   <a id="seturlT_MenuBarMenuItemAssociation" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuBarMenuItemAssociation")).ToHtmlString()"></a>
+    <div class="row" style='display:none;'>
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row">         
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_MenuBarMenuItemAssociation_T_MenuBar")
+                {
+				 <div class='col-sm-6' >
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_MenuBarID) </label>
+                            <div class="input-group" style="width: 100%;">
+		@Html.DropDownList("T_MenuBarID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllValue", "T_MenuBar",new { caller = "T_MenuBarID" }) })
+                                @Html.ValidationMessageFor(model => model.T_MenuBarID)
+                            </div>
+                        </div>
+                    </div>
+	}
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_MenuBarMenuItemAssociation_T_MenuItem")
+                {
+				 <div class='col-sm-6' >
+                        <div class='form-group'>
+                            <label>@Html.LabelFor(model => model.T_MenuItemID) </label>
+                            <div class="input-group" style="width: 100%;">
+		@Html.DropDownList("T_MenuItemID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllValue", "T_MenuItem",new { caller = "T_MenuItemID" }) })
+                                @Html.ValidationMessageFor(model => model.T_MenuItemID)
+                            </div>
+                        </div>
+                    </div>
+	}
+					<div class='col-sm-6'>
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.T_OrderNumber) </label>
+									
+									 
+                                    @Html.TextBoxFor(model => model.T_OrderNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_OrderNumber)
+									
+                                </div>
+					</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+		<div class="col-md-5">
+    
+    </div>
+	if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+		{
+		<div class="M2MList">
+		<div class="btn-group w-100"  id="accordion">
+
+		     <div id="custom-search-input1" style="width:600px;">
+                <div class="input-group col-md-12">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.TextBox("txtSearchT_MenuBar", null, new { @class = "form-control",placeholder = "Search Menu Bar", @size = 10, @dataurl = Url.Action("GetAllValues") }) 
+		
+
+                </div>
+            </div>
+                <span class="btn btn-primary accordion-toggle collapsed mr-1 pt-1" data-parent="#accordion" data-target="#searchfilters" data-toggle="collapse"style="cursor:pointer;">
+                           Filters
+							</span>
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+        {
+             <button id="btnT_MenuBar" class="btn btn-primary"  btntype="MMSearch">Search</button>
+        }
+         
+						</div>
+			
+           
+  <div id="searchfilters" class="collapse" style="border:1px solid #b2b2b2; border-top:0px;">
+  <div class="row col-sm-12 pt-3 pb-3">
+				<div class='col-sm-6' title="Disabled?<">
+                    <div class='col-sm-6 pull-left pt-0 pl-0'>
+                        <label id="M2M_text-primary">Disabled?</label>
+                    </div>
+                    <div class="col-sm-6 pull-left pt-0 pr-0" id="dvT_Disabled" multiple = "multiple">
+                        <select class="form-control" id="T_Disabled" name="T_Disabled">
+                            <option value="">All</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>
+            				<div class='col-sm-6' title="Horizontal?<">
+                    <div class='col-sm-6 pull-left pt-0 pl-0'>
+                        <label id="M2M_text-primary">Horizontal?</label>
+                    </div>
+                    <div class="col-sm-6 pull-left pt-0 pr-0" id="dvT_Horizontal" multiple = "multiple">
+                        <select class="form-control" id="T_Horizontal" name="T_Horizontal">
+                            <option value="">All</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>
+              
+					@if (ViewBag.t_menubarmenuitemassociation!=null)
+                    {
+					<div class='col-sm-6' title="Menu Item">
+							<div class='col-sm-6 pull-left pt-0 pl-0'>
+								<label id="M2M_text-primary"> Menu Item</label>
+							</div>
+							<div class="col-sm-6 pull-left pt-0 pr-0" id="dvt_menubarmenuitemassociation">
+		
+	 @Html.DropDownList("t_menubarmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuItem",null) })
+                                </div>
+                        </div>
+					}
+		</div>
+		</div>
+
+</div>
+			<label style="display:none;">@Html.LabelFor(model => model.T_MenuBarID) </label>
+			    <div class="card-deck mt-2">
+				  <div class="card bg-light">
+					<div class="card-header row">
+					   <div class="col text-truncate p-0" title="Available Menu Bar ">Available Menu Bar 
+					   </div>
+					     <div class="float-right"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_MenuBar').val(),'T_MenuItem', '"+ViewData["HostingEntityID"]+"', 'T_MenuBarMenuItemAssociation_T_MenuBar', 'T_MenuBarIDAvailable');"})
+					     </div>
+					</div>
+					<div class="card-body p-0">
+					@*@Html.TextBox("txtSearchT_MenuBar", null, new { @class = "form-control", placeholder = "Search Menu Bar", @size = 10, @dataurl = Url.Action("GetAllValues") })*@
+					@Html.ListBox("T_MenuBarIDAvailable", null, new { @class = "optionvalue Text_Shadow", @size = 10 })
+				 </div>		
+			   </div>
+				 <div class="align-self-center text-center">
+                    
+                    <div  class="btn btn-primary m-3"  id="MoveRightT_MenuBar" onclick="Associate(event,'T_MenuBar');">
+                        <i  id="MoveRightT_MenuBar" class="fa fa-chevron-right "></i>
+						</div>
+                   
+                   <br>
+                    <div  class="btn btn-primary m-3" id="MoveLeftT_MenuBar"  onclick="Associate(event,'T_MenuBar');">
+                        <i id="MoveLeftT_MenuBar" class="fa fa-chevron-left"></i>
+                        </div>
+                   
+                </div>
+				<div class="card bg-light">
+                    <div class="card-header row">
+                        <div class="col text-truncate p-0" title="Selected Menu Bar">Selected Menu Bar</div>
+                        <div class="float-right mb-1" ><label id="CntT_MenuBarIDSelected"></label></div>
+                    </div>
+					<div class="card-body p-0">
+                    @Html.ListBox("T_MenuBarIDSelected", null, new { @class = "optionvalue Text_Shadow", @size = 10 })
+                    </div>
+				 </div>
+				
+			</div>
+		
+    }
+	if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+		{
+		<div class="M2MList">
+		<div class="btn-group w-100"  id="accordion">
+
+		     <div id="custom-search-input1" style="width:600px;">
+                <div class="input-group col-md-12">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.TextBox("txtSearchT_MenuItem", null, new { @class = "form-control",placeholder = "Search Menu Item", @size = 10, @dataurl = Url.Action("GetAllValues") }) 
+		
+
+                </div>
+            </div>
+                <span class="btn btn-primary accordion-toggle collapsed mr-1 pt-1" data-parent="#accordion" data-target="#searchfilters" data-toggle="collapse"style="cursor:pointer;">
+                           Filters
+							</span>
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+        {
+             <button id="btnT_MenuItem" class="btn btn-primary"  btntype="MMSearch">Search</button>
+        }
+         
+						</div>
+			
+           
+  <div id="searchfilters" class="collapse" style="border:1px solid #b2b2b2; border-top:0px;">
+  <div class="row col-sm-12 pt-3 pb-3">
+  
+				@if (ViewBag.t_menuitemmenuitemassociation!=null)
+                {
+						<div class='col-sm-6' title="Parent">
+							<div class='col-sm-6 pull-left pt-0 pl-0'>
+								<label id="M2M_text-primary"> Parent</label>
+							</div>
+							<div class="col-sm-6 pull-left pt-0 pr-0" id="dvt_menuitemmenuitemassociation">
+		
+	 @Html.DropDownList("t_menuitemmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuItem",null) })
+						    </div>
+						</div>
+				}
+					@if (ViewBag.t_menubarmenuitemassociation!=null)
+                    {
+					<div class='col-sm-6' title="Menu Bar">
+							<div class='col-sm-6 pull-left pt-0 pl-0'>
+								<label id="M2M_text-primary"> Menu Bar</label>
+							</div>
+							<div class="col-sm-6 pull-left pt-0 pr-0" id="dvt_menubarmenuitemassociation">
+		
+	 @Html.DropDownList("t_menubarmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuBar",null) })
+                                </div>
+                        </div>
+					}
+		</div>
+		</div>
+
+</div>
+			<label style="display:none;">@Html.LabelFor(model => model.T_MenuItemID) </label>
+			    <div class="card-deck mt-2">
+				  <div class="card bg-light">
+					<div class="card-header row">
+					   <div class="col text-truncate p-0" title="Available Menu Item ">Available Menu Item 
+					   </div>
+					     <div class="float-right"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_MenuItem').val(),'T_MenuBar', '"+ViewData["HostingEntityID"]+"', 'T_MenuBarMenuItemAssociation_T_MenuItem', 'T_MenuItemIDAvailable');"})
+					     </div>
+					</div>
+					<div class="card-body p-0">
+					@*@Html.TextBox("txtSearchT_MenuItem", null, new { @class = "form-control", placeholder = "Search Menu Item", @size = 10, @dataurl = Url.Action("GetAllValues") })*@
+					@Html.ListBox("T_MenuItemIDAvailable", null, new { @class = "optionvalue Text_Shadow", @size = 10 })
+				 </div>		
+			   </div>
+				 <div class="align-self-center text-center">
+                    
+                    <div  class="btn btn-primary m-3"  id="MoveRightT_MenuItem" onclick="Associate(event,'T_MenuItem');">
+                        <i  id="MoveRightT_MenuItem" class="fa fa-chevron-right "></i>
+						</div>
+                   
+                   <br>
+                    <div  class="btn btn-primary m-3" id="MoveLeftT_MenuItem"  onclick="Associate(event,'T_MenuItem');">
+                        <i id="MoveLeftT_MenuItem" class="fa fa-chevron-left"></i>
+                        </div>
+                   
+                </div>
+				<div class="card bg-light">
+                    <div class="card-header row">
+                        <div class="col text-truncate p-0" title="Selected Menu Item">Selected Menu Item</div>
+                        <div class="float-right mb-1" ><label id="CntT_MenuItemIDSelected"></label></div>
+                    </div>
+					<div class="card-body p-0">
+                    @Html.ListBox("T_MenuItemIDSelected", null, new { @class = "optionvalue Text_Shadow", @size = 10 })
+                    </div>
+				 </div>
+				
+			</div>
+		
+    }
+	<div class="col-md-12 mt-2">
+		<button id="CancelQuickAdd" type="button" class="btn btn-outline-secondary pull-right ml-1" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        @if (ViewBag.IsAddPop != null)
+		{
+			var busineesrule = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+			<input type="submit" value="Save"  class="btn btn-primary btn-sm pull-right" onclick="FillSelectedListBox();QuickAdd(event,'@busineesrule',@busineesrule.Count);" />
+		}
+		else
+		{
+			var lstinlineentityname = "";
+            var lstinlineassocdispname = "";
+            var lstinlineassocname = "";
+			var busineesrule = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+			<input type="submit" value="Save"  class="btn btn-primary pull-right" onclick="FillSelectedListBox();QuickAddFromIndex(event,true,'T_MenuBarMenuItemAssociation','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+		}
+	</div>
+	<div class="clearfix clear" style="margin-bottom:8px"></div>
+	<br/>
+}
+@*<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>*@
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_MenuBarIDSelected option").prop("selected","selected");
+}
+</script>
+}
+@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_MenuItemIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {
+			MMDropdownGetAllValue1("T_MenuBar", '@ViewBag.SelectedListRemoved');
+		MMDropdownGetAllValue1("T_MenuItem", '@ViewBag.SelectedListRemoved');
+ $('select[multiple="multiple"]').each(function () {
+            if (this.className == "form-control")
+            {$(this).multiselect({ buttonWidth: '100%', nonSelectedText: 'ALL' });}
+            if (this.className == "" && this.className != undefined) {
+                $(this).multiselect({ buttonWidth: '100%', nonSelectedText: 'ALL' });
+            }
+        });
+        fillMultiSelectAssociation();
+	});
+    $('button[tempclass="selectmulti"]').removeClass("multiselectFix").addClass("btn-xs SessionClientFix");
+	function fillMultiSelectAssociation() {
+	var rest_menubarmenuitemassociation = AntiSanitizeURLString(urlParam('t_menubarmenuitemassociation')).split(",");var elet_menubarmenuitemassociation = document.getElementById('t_menubarmenuitemassociation');ShowViewAllInMultiSelect(rest_menubarmenuitemassociation, elet_menubarmenuitemassociation, 't_menubarmenuitemassociation');var rest_menuitemmenuitemassociation = AntiSanitizeURLString(urlParam('t_menuitemmenuitemassociation')).split(",");var elet_menuitemmenuitemassociation = document.getElementById('t_menuitemmenuitemassociation');ShowViewAllInMultiSelect(rest_menuitemmenuitemassociation, elet_menuitemmenuitemassociation, 't_menuitemmenuitemassociation');var resT_Disabled = AntiSanitizeURLString(urlParam('T_Disabled')).split(",");var eleT_Disabled = document.getElementById('T_Disabled');ShowViewAllInMultiSelect(resT_Disabled, eleT_Disabled, 'T_Disabled');var resT_Horizontal = AntiSanitizeURLString(urlParam('T_Horizontal')).split(",");var eleT_Horizontal = document.getElementById('T_Horizontal');ShowViewAllInMultiSelect(resT_Horizontal, eleT_Horizontal, 'T_Horizontal');
+  }
+</script>
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+    <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsgQuickAdd").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmT_MenuBarMenuItemAssociation");
+				dataurl = "@Url.Action("businessruletype", "T_MenuBarMenuItemAssociation", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "T_MenuBarMenuItemAssociation", false, "ErrMsgQuickAdd", form);
+				//business rules on inline associations
+    });
+</script>
+<script>
+    $("form").submit(function (event) {
+		if (!$("#frmT_MenuBarMenuItemAssociation").valid()) return;
+			document.getElementById("ErrMsgQuickAdd").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_MenuBarMenuItemAssociation").serialize();
+				 dataurl = "@Url.Action("businessruletype", "T_MenuBarMenuItemAssociation", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBarMenuItemAssociation", false, "ErrMsgQuickAdd", form,"@typelist");
+  				 //business rules on inline associations
+			 if (flag)
+				{
+				                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+					if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+			         $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                    $("form").find(':input').removeAttr('disabled');
+					}
+            return flag;
+		});
+</script>
+}
+ else
+    {
+       <script>
+    $("input[type='submit']").click(function (event) {
+	if (!$("#frmT_MenuBarMenuItemAssociation").valid()) return;
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+	</script>
+    }
+}
+
+

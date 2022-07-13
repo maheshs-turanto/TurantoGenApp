@@ -1,0 +1,73 @@
+﻿@model IEnumerable<T_MenuItem>
+
+@helper  BuildSideBar(IEnumerable<T_MenuItem> data)
+{
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var linkPrefix = Url.Content("~/");
+
+    foreach (var menuItem in data)
+    {
+        var action = menuItem.T_Action;
+        var IsPermit = false;
+        switch (action)
+        {
+            case "Create":
+                IsPermit = User.CanAdd(menuItem.T_Entity);
+                break;
+            case "Edit":
+                IsPermit = User.CanEdit(menuItem.T_Entity);
+                break;
+            default:
+                IsPermit = User.CanView(menuItem.T_Entity);
+                break;
+        }
+        var classname = string.IsNullOrEmpty(menuItem.T_ClassIcon) ? "fa fa-briefcase" : menuItem.T_ClassIcon;
+        if (IsPermit)
+        {
+            if (menuItem.Self_t_menuitemmenuitemassociation.Count > 0)
+            {
+                <li id="liT_MenuItem_@menuItem.Id" class="nav-item" alt="@menuItem.T_Name" title="@menuItem.T_Name">
+                    <a id="aliT_MenuItem_@menuItem.Id" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = menuItem.T_Entity })" class="nav-link collapsed" data-toggle="collapse" data-target="#collapse_@menuItem.Id" aria-expanded="false" aria-controls="collapse_@menuItem.Id">
+                        <i class="@classname float-start mt-1"></i>
+                        <span class="nav-label">@menuItem.T_Name</span>
+                    </a>
+                </li>
+                <div id="collapse_@menuItem.Id" class="childMenu pl-2 collapse" aria-labelledby="heading_@menuItem.Id" style="">
+                    <div id="liT_MenuItem_@menuItem.Id" class="py-2 collapse-inner">
+                        @BuildSideBar(menuItem.Self_t_menuitemmenuitemassociation.OrderBy(q => q.T_DisplayOrder))
+                    </div>
+                </div>
+            }
+            else
+            {
+                var linkUrl = Url.Action("RedirectToEntity", "Home", new { EntityName = menuItem.T_Entity });
+
+                if (menuItem.T_Action != null && menuItem.T_Action == "SetFSearch")
+                {
+                    ApplicationContext dbcntx = new ApplicationContext(new SystemUser());
+                    if (menuItem.T_LinkAddress != null)
+                    {
+                        var _objmenu = dbcntx.T_FacetedSearchs.Find(Convert.ToInt64(menuItem.T_LinkAddress));
+                        linkUrl = linkPrefix + _objmenu.T_LinkAddress;
+                    }
+                }
+				else if (menuItem.T_LinkAddress == "IndexPartialGallery" || menuItem.T_LinkAddress == "IndexPartialList")
+                {
+                    linkUrl = Url.Action("Index", menuItem.T_Entity, new { viewtype = menuItem.T_LinkAddress });
+                }
+                else if (menuItem.T_LinkAddress != "IndexPartial")
+                {
+                    linkUrl = Url.Action("RedirectToEntity", "Home", new { EntityName = menuItem.T_Entity + "/" + menuItem.T_LinkAddress });
+                }
+                <li id="liT_MenuItem_@menuItem.Id" class="nav-item @(currentController == menuItem.T_Entity ? "active" : "")" alt="@menuItem.T_Name" title="@menuItem.T_Name">
+                    <a href="@linkUrl" class="nav-link">
+                        <i class="@classname float-start mt-1"></i>
+                        <span class="nav-label">@menuItem.T_Name</span>
+                    </a>
+                </li>
+            }
+        }
+    }
+}
+
+@BuildSideBar(Model);

@@ -1,0 +1,102 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBar
+@{
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBar");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Menu Bar";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_MenuBar", true);
+    }
+	Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        var IdExist = '@Model.Id';
+        console.log('Id', IdExist);
+      if (IdExist == 0) {
+          $('#@Model.Id').removeAttr("style");
+        }
+    });
+</script>
+
+<div class="card card-default CardHide" id="@Model.Id" style="width: 350px; margin-bottom:0px">
+	 @if (Model.Id > 0)
+    {
+	<div class="card-header clearfix">
+        <h3 class="card-title">
+			<div class="truncate">
+				@if(User.CanEdit("T_MenuBar"))
+                {
+                   <i class="fa fa-info-circle"></i><a href = "@Url.Action("Edit", "T_MenuBar", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+                else if (User.CanView("T_MenuBar"))
+                {
+                     <i class="fa fa-info-circle"></i><a href="@Url.Action("Details", "T_MenuBar", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+            </div>
+        </h3>
+		<a href="" class="pull-right" style="margin-top:-16px"><i class="fa fa-times-circle" onclick="event.stopImmediatePropagation();ClosePopupCard(event)"></i></a>
+    </div>
+	  @Html.HiddenFor(model => model.Id)
+	  }
+	    <div class="card-body">
+		   <div class="col-12" style="padding:0px;">
+
+@if(User.CanView("T_MenuBar","T_AutoNo") && !hiddenProperties.Contains("T_AutoNo") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_AutoNo)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_AutoNo" class="viewlabel"  title="@Model.T_AutoNo">@Model.T_AutoNo</p>
+                      
+
+
+
+				 </div>
+}
+@if(User.CanView("T_MenuBar","T_Name") && !hiddenProperties.Contains("T_Name") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Name)</label>
+					
+
+				                        
+                            <p class="truncate1" id="lblT_Name" class="viewlabel"  title="@Model.T_Name">@Model.T_Name</p>
+                      
+
+
+
+				 </div>
+}
+@if(User.CanView("T_MenuBar","T_Disabled") && !hiddenProperties.Contains("T_Disabled") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Disabled)</label>
+					
+
+												<p class="truncate1"><input checked="@Model.T_Disabled" type="checkbox" value="@Model.T_Disabled" disabled="disabled"></p>
+                                        	 </div>
+}
+						@if(User.CanView("T_MenuBar","T_Roles")  && !hiddenProperties.Contains("T_Roles"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Roles)</label>
+										<p class="truncate1">@Model.T_Roles</p>
+									</div>
+						}
+						@if(User.CanView("T_MenuBar","T_Horizontal") && !hiddenProperties.Contains("T_Horizontal") )
+{
+<div class="form-group col-6 float-left">
+                <label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_Horizontal)</label>
+					
+
+												<p class="truncate1"><input checked="@Model.T_Horizontal" type="checkbox" value="@Model.T_Horizontal" disabled="disabled"></p>
+                                        	 </div>
+}
+		</div> <!-- /tab-content -->
+	</div>
+</div>
+ 

@@ -1,0 +1,610 @@
+﻿@{
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            <a href="@Url.Action("Index")">Data Metric</a>
+
+            <small>@ViewBag.Title</small>
+        </strong>
+
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<br />
+@if (ViewBag.ImportError != null)
+{
+    if (ViewBag.ImportError == "success")
+    {
+        <div class="row">
+            <div class='col-sm-12'>
+
+                <div class="card card-default">
+                    <div class="card-body" style="color:green">
+                        Data imported successfully.
+                    </div>
+                </div>
+                @if (ViewBag.HostingEntityName != null)
+                {
+                    <a href="@ViewBag.UrlReferrer" class="btn btn-primary btn-sm">Return to @ViewBag.HostingEntityName</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "T_DataMetric")" class="btn btn-primary ">Return to Data Metric</a>
+                }
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary ">Return to Home</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        using (Html.BeginForm("DownloadSheet", "T_DataMetric", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="row">
+                <div class='col-sm-12'>
+                    <div class="card card-default">
+                        <input type="hidden" name="hdnFilePath" value="@ViewBag.FilePath" />
+                        <input type="hidden" name="hdnErrorList" value="@ViewBag.ErrorList" />
+                        <div class="card-body">
+                            <b>@Html.Raw(ViewBag.Title):</b><br />
+                            @Html.Raw(ViewBag.ImportError)
+                        </div>
+                    </div>
+                    @if (ViewBag.FilePath != null && File.Exists(ViewBag.FilePath))
+                    {
+                        <input type="submit" value="Download Error Sheet" class="btn btn-primary btn-sm" />
+                    }
+                    @if (ViewBag.HostingEntityName != null)
+                    {
+                        <a href="@ViewBag.UrlReferrer" class="btn btn-primary btn-sm">Return to @ViewBag.HostingEntityName</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", "T_DataMetric")" class="btn btn-primary btn-sm">Return to Data Metric</a>
+                    }
+                </div>
+            </div>
+        }
+    }
+}
+@if (ViewBag.ColumnMapping != null)
+{
+    using (Html.BeginForm("ConfirmImportData", "T_DataMetric", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="hdnAssociatedType" value="@ViewBag.AssociatedType" />
+        <input type="hidden" name="hdnHostingEntityName" value="@ViewBag.HostingEntityName" />
+        <input type="hidden" name="hdnHostingEntityID" value="@ViewBag.HostingEntityID" />
+        <input type="hidden" name="hdnUrlReferrer" value="@ViewBag.UrlReferrer" />
+        <div class="row">
+            <div class='col-sm-12'>
+                <div class="card card-default">
+                    <div class="card-header clearfix" style="margin:0px; padding:8px;">
+                        Define Column Mapping(s) for Data Metric
+                        <div class="pull-right">
+                            <input name="SaveMapping" type="checkbox" /> Save as a default mapping
+                            <input name="MappingName" type="text" placeholder="Enter Name of Mapping" />
+                        </div>
+                    </div>
+                    <input type="hidden" name="hdnFilePath" value="@ViewBag.FilePath" />
+                    <div class="card-body">
+                        <table class="table table-striped default-bordered table-hover default-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Table Columns</th>
+                                    <th>Sheet Columns</th>
+                                    <th>Update existing records</th>
+                                </tr>
+                                @foreach (var col in ViewBag.ColumnMapping)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.Label((col.Key as GeneratorBase.MVC.ModelReflector.Property).Name, (col.Key as GeneratorBase.MVC.ModelReflector.Property).DisplayName)
+                                            @if ((col.Key as GeneratorBase.MVC.ModelReflector.Property).IsRequired == true)
+                                            {
+                                                <span class="text-danger-reg">*</span>
+                                            }
+                                            @Html.Hidden("lblColumnDisplayName", (col.Key as GeneratorBase.MVC.ModelReflector.Property).DisplayName)
+                                            @Html.Hidden("lblColumn", (col.Key as GeneratorBase.MVC.ModelReflector.Property).Name)
+                                        </td>
+                                        <td>
+                                            @if ((col.Key as GeneratorBase.MVC.ModelReflector.Property).IsRequired == true)
+                                            {
+                                                @Html.DropDownList("colList", col.Value as SelectList, null, new { @required = "required" })
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownList("colList", col.Value as SelectList)
+                                            }
+                                            @if (ViewBag.AssociatedProperties != null)
+                                            {
+                                                foreach (var assocCol in ViewBag.AssociatedProperties)
+                                                {
+                                                    if ((col.Key as GeneratorBase.MVC.ModelReflector.Property).Name == (assocCol.Key as GeneratorBase.MVC.ModelReflector.Association).AssociationProperty)
+                                                    {
+                                                        @Html.DropDownList("colAssocPropList", assocCol.Value as SelectList)
+                                                    }
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.CheckBox("chkUpdate", false, new { datavalue = (col.Key as GeneratorBase.MVC.ModelReflector.Property).Name })
+                                            @Html.Label((col.Key as GeneratorBase.MVC.ModelReflector.Property).Name, "If " + (col.Key as GeneratorBase.MVC.ModelReflector.Property).DisplayName + " matches")
+                                        </td>
+                                    </tr>
+                                }
+                            </thead>
+                        </table>
+                        @Html.Hidden("ListChkUpdate", "")
+                    </div>
+                </div>
+                <input type="submit" value="Start Import" onclick="SetchkUpdate();" class="btn btn-primary" />
+                @if (ViewBag.HostingEntityName != null)
+                {
+                    <a href="@ViewBag.UrlReferrer" class="btn btn-default btn-sm">Cancel</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "T_DataMetric")" class="btn btn-secondary">Cancel</a>
+                }
+            </div>
+        </div>
+        <script>
+            function SetchkUpdate() {
+                $('input:checkbox[name="chkUpdate"]').each(function () {
+                    var value = $(this).is(':checked') == true ? true : false;
+                    var listvalue = $("#ListChkUpdate").val();
+                    if (value)
+                        $("#ListChkUpdate").val(listvalue + $(this).attr('datavalue') + ",")
+                });
+            }
+        </script>
+        <br />
+        <br />
+    }
+}
+@if (ViewBag.ConfirmImportData != null)
+{
+    using (Html.BeginForm("ImportData", "T_DataMetric", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <div id="divImport" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+            <p style="position: absolute; top: 30%; left:30%; color: White;font-size:18px; border:1px solid #ffffff; padding:15px;">
+                Data import is in progress, please wait...<span class="glyphicon glyphicon-time" style="font-size:18px;"></span>
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                @{ var objDataType = new List<string>(); var anyError = false;}
+                <div class="card card-default">
+                    <div class="card-header clearfix">
+                        @Html.Raw(ViewBag.DetailMessage)
+                        @if (ViewBag.chkUpdateList != null && !string.IsNullOrEmpty(Convert.ToString(ViewBag.chkUpdateList)))
+                        {
+                            <div class="alert-info">
+                                <strong class="text-warning">Warning!</strong> Existing record will be updated based on selected column(s) for matching, No change if system finds more than one record.
+                            </div>
+                        }
+                    </div>
+                    <input type="hidden" name="hdnFilePath" value="@ViewBag.FilePath" />
+                    <input type="hidden" name="hdnColumnList" value="@ViewBag.ColumnList" />
+                    <input type="hidden" name="hdnSelectedList" value="@ViewBag.SelectedList" />
+                    <input type="hidden" name="hdnSelectedAssocPropList" value="@ViewBag.colAssocPropList" />
+                    <input type="hidden" name="hdnListChkUpdate" value="@ViewBag.chkUpdateList" />
+                    <input type="hidden" name="hdnAssociatedType" value="@ViewBag.AssociatedType" />
+                    <input type="hidden" name="hdnHostingEntityName" value="@ViewBag.HostingEntityName" />
+                    <input type="hidden" name="hdnHostingEntityID" value="@ViewBag.HostingEntityID" />
+                    <input type="hidden" name="hdnUrlReferrer" value="@ViewBag.UrlReferrer" />
+                    <div class="card-body" style="margin:0px; padding:8px; overflow-x:scroll">
+                        @if (ViewBag.DefaultMappingMsg != null)
+                        {
+                            <div class="alert-danger" style="margin-top:10px; margin-bottom:10px; padding:5px;">Error : Please scroll down for details or <a class="alert-danger" href="#ErrMsg"> Click Here </a></div>
+                        }
+                        <table class="table table-striped default-bordered table-hover default-condensed table-responsive">
+                            <thead>
+                                <tr>
+                                    @for (int i = 0; i < ((System.Data.DataTable)ViewBag.ConfirmImportData).Columns.Count; i++)
+                                    {
+                                        var columnName = ((System.Data.DataTable)ViewBag.ConfirmImportData).Columns[i].Caption;
+                                        objDataType.Add(GeneratorBase.MVC.ModelReflector.Entities.FirstOrDefault(e => e.Name == "T_DataMetric").Properties.FirstOrDefault(p => p.DisplayName == columnName).DataType);
+                                        <th>@columnName</th>
+                                    }
+                                </tr>
+                                @for (int i = 0; i < ((System.Data.DataTable)ViewBag.ConfirmImportData).Rows.Count; i++)
+                                {
+                                    int j = 0;
+                                    <tr>
+                                        @foreach (var cell in ((System.Data.DataTable)ViewBag.ConfirmImportData).Rows[i].ItemArray)
+                                        {
+                                            if (string.IsNullOrEmpty(cell.ToString().Trim()))
+                                            {
+                                                <td></td>
+                                                j++;
+                                                continue;
+                                            }
+                                            string colValue = cell.ToString();
+                                            string colClass = string.Empty;
+                                            if (objDataType[j].ToLower() == "datetime")
+                                            {
+                                                var columnName = ((System.Data.DataTable)ViewBag.ConfirmImportData).Columns[j].Caption;
+                                                var DataTypeAttribute = GeneratorBase.MVC.ModelReflector.Entities.FirstOrDefault(e => e.Name == "T_DataMetric").Properties.FirstOrDefault(p => p.DisplayName == columnName).DataTypeAttribute;
+                                                try
+                                                {
+                                                    if (DataTypeAttribute != null)
+                                                    {
+                                                        if (DataTypeAttribute.ToLower() == "date")
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "yyyyMMdd";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("MM/dd/yyyy");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("MM/dd/yyyy");
+                                                            }
+                                                        }
+                                                        else if (DataTypeAttribute.ToLower() == "time")
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "hhmmtt";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("hh:mm tt");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("hh:mm tt");
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (System.Text.RegularExpressions.Regex.IsMatch(colValue, "^[0-9]*$"))
+                                                            {
+                                                                var us = new System.Globalization.CultureInfo("en-US");
+                                                                string text = colValue;
+                                                                string format = "yyyyMMddhhmmtt";
+                                                                colValue = (DateTime.ParseExact(text, format, us)).ToString("MM/dd/yyyy hh:mm tt");
+                                                            }
+                                                            else
+                                                            {
+                                                                colValue = (DateTime.Parse(cell.ToString())).ToString("MM/dd/yyyy hh:mm tt");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                catch
+                                                {
+                                                    anyError = true;
+                                                    colClass = "class=alert-danger";
+                                                }
+                                            }
+                                            else if (objDataType[j].ToLower() == "double")
+                                            {
+                                                try
+                                                {
+                                                    colValue = (Double.Parse(cell.ToString())).ToString("C2");
+                                                }
+                                                catch
+                                                {
+                                                    anyError = true;
+                                                    colClass = "class=alert-danger";
+                                                }
+                                            }
+                                            else if (objDataType[j].ToLower() == "decimal")
+                                            {
+                                                try
+                                                {
+                                                    decimal decvalue = 0M;
+                                                    System.Globalization.NumberStyles style = System.Globalization.NumberStyles.AllowLeadingSign | System.Globalization.NumberStyles.AllowDecimalPoint;
+                                                    if (Decimal.TryParse(cell.ToString(), style, null, out decvalue))
+                                                    {
+                                                        colValue = decvalue.ToString();
+                                                    }
+                                                    else
+                                                    {
+                                                        anyError = true;
+                                                        colClass = "class=alert-danger";
+                                                    }
+                                                }
+                                                catch
+                                                {
+                                                    anyError = true;
+                                                    colClass = "class=alert-danger";
+                                                }
+                                            }
+                                            else if (objDataType[j].ToLower() == "boolean")
+                                            {
+                                                try
+                                                {
+                                                    colValue = (Boolean.Parse(cell.ToString())).ToString();
+                                                }
+                                                catch
+                                                {
+                                                    anyError = true;
+                                                    colClass = "class=alert-danger";
+                                                }
+                                            }
+                                            else if (objDataType[j].ToLower() == "int32")
+                                            {
+                                                try
+                                                {
+                                                    colValue = (Int32.Parse(cell.ToString())).ToString();
+                                                }
+                                                catch
+                                                {
+                                                    anyError = true;
+                                                    colClass = "class=alert-danger";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                colValue = cell.ToString();
+                                            }
+                                            <td @colClass>@colValue</td>
+                                            j++;
+                                        }
+                                    </tr>
+                                }
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                @if (ViewBag.CustomErrorsConfirmImportData != null)
+                {
+                    <div class="card-group" id="accordion">
+                        <div class="card card-default">
+                            <div class="card-header clearfix">
+                                <h4 class="card-title">
+                                    <span class="alert-danger" style="text-decoration:none;">@Html.Raw(ViewBag.CustomErrorsConfirmImportData)</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.AssoUnique != null)
+                {
+                    bool showBtnImportMsg = true;
+                    <div class="card-group" id="accordion">
+                        <div class="card card-default">
+                            <div class="card-header clearfix">
+                                <h4 class="card-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseAssociatedList" style="text-decoration:none;"> To create new <b>Data Metric</b> following additional records need to be added. Please review.</a>
+                                </h4>
+                            </div>
+                            <div id="collapseAssociatedList" class="collapse in">
+                                @foreach (var AssoUnique in ViewBag.AssoUnique)
+                                {
+                                    <div class="card card-default" style="margin-top:5px;">
+                                        <div class="card-header clearfix">
+                                            @*New @((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).DisplayName) records found. Import these as well @Html.CheckBox((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).AssociationProperty, true)*@
+                                            New <b> @((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).DisplayName) </b>records found.
+                                            @if (((GeneratorBase.MVC.ModelReflector.Association)AssoUnique.Key).IsRequired)
+                                            {
+                                                if (User.CanAdd((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).Target) || User.IsAdmin)
+                                                {
+                                                    <label id="lblBtnImportMesg">It is a mandatory field. Clicking on button <b>Confirm & Continue Import</b> will import below record(s) automatically into the application.</label>
+                                                }
+                                                else
+                                                {
+                                                    showBtnImportMsg = false;
+                                                    <label id="lblContactAdminMsg">You do not have permission to add this mandatory field. Contact your <b>Administrator</b> to create below record(s) & try again. </label>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (User.CanAdd((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).Target) || User.IsAdmin)
+                                                {
+                                                    <label id="lblChkboxImportMesg">Check @Html.CheckBox((AssoUnique.Key as GeneratorBase.MVC.ModelReflector.Association).AssociationProperty, true) to import the additional record(s). Else <b>None</b> value will be assigned. </label>
+                                                }
+                                                else
+                                                {
+                                                    showBtnImportMsg = false;
+                                                    <label>You do not have permission to add this field. Contact your <b>Administrator</b> to create below record(s) & try again.</label>
+                                                }
+                                            }
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-striped default-bordered table-hover default-condensed table-responsive" style="margin-bottom:0px !important; ">
+                                                <thead>
+                                                    @foreach (string item in (AssoUnique.Value as List<String>))
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @item
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            if('@showBtnImportMsg' == 'False' || '@anyError' == 'True')
+                            {
+                                $("#lblBtnImportMesg").html("Contact your <b>Administrator</b> to create below record(s) & try again.");
+                                $("#lblChkboxImportMesg").html("Contact your <b>Administrator</b> to create below record(s) & try again.");
+                            }
+                        });
+                    </script>
+                }
+                @if (ViewBag.Confirm == null)
+                {
+                    var strDisable = string.Empty;
+                    var stcssClass = string.Empty;
+                    if (ViewBag.DefaultMappingMsg != null || anyError)
+                    {
+                        strDisable = "disabled=\"disabled\"";
+                        stcssClass = "btn btn-primary btn-sm";
+                    }
+                    else
+                    {
+                        stcssClass = "btn btn-primary btn-sm";
+                    }
+                    if (ViewBag.DefaultMappingMsg != null)
+                    {
+                        <div class="alert-danger" style="margin-top:10px; margin-bottom:10px;"> @Html.Raw(ViewBag.DefaultMappingMsg) </div>
+                    }
+                    if (anyError)
+                    {
+                        <div class="alert-danger" style="margin-top:10px; margin-bottom:10px;"> <b>Error:</b><br /> Invalid field value - Make sure that the data in the highlighted cells conform to valid field type and try to import again </div>
+                    }
+                    if (!anyError)
+                    {
+                        <input type="submit" value="Confirm & Continue Import" @strDisable class="@stcssClass" />
+                    }
+                }
+                else
+                {
+                    if (anyError)
+                    {
+                        <div class="alert-danger" style="margin-top:10px; margin-bottom:10px;"> <b>Error:</b><br /> Invalid field value - Make sure that the data in the highlighted cells conform to valid field type and try to import again </div>
+                    }
+                }
+                @if (ViewBag.HostingEntityName != null)
+                {
+                    <a href="@ViewBag.UrlReferrer" class="btn btn-default btn-sm">Cancel</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "T_DataMetric")" class="btn btn-default btn-sm">Cancel and Return</a>
+                }
+            </div>
+        </div>
+        <br />
+        <br />
+        <script type="text/javascript">
+            $("input[type='submit']").click(function () {
+                $("#divImport").show();
+            });
+        </script>
+    }
+}
+@if (ViewBag.ColumnMapping == null && ViewBag.ImportError == null && ViewBag.ConfirmImportData == null)
+{
+    using (Html.BeginForm("Upload", "T_DataMetric", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="hdnAssociatedType" value="@ViewBag.AssociatedType" />
+        <input type="hidden" name="hdnHostingEntityName" value="@ViewBag.HostingEntityName" />
+        <input type="hidden" name="hdnHostingEntityID" value="@ViewBag.HostingEntityID" />
+        <input type="hidden" name="hdnUrlReferrer" value="@ViewBag.UrlReferrer" />
+        <div class="row">
+            <div class='col-sm-12'>
+                <div class="card card-default">
+                    <div class="card-header clearfix">
+                        @if (ViewBag.FileType == "csv")
+                        {
+                            <h3 class="card-title">Upload File (Valid File Extension : .csv)</h3>
+                        }
+                        @if (ViewBag.FileType == "xls" || ViewBag.FileType == "xlsx")
+                        {
+                            <h3 class="card-title">Upload File (Valid File Extensions : .xls, .xlsx)</h3>
+                        }
+                        @{
+                            string isDefaultMapped = "checked=\"@checked\"";
+                            if (!ViewBag.IsDefaultMapping)
+                            {
+                                isDefaultMapped = "";
+                            }
+                        }
+                        @if (ViewBag.IsDefaultMapping)
+                        {
+                            <div class="pull-right" style="margin-top:-15px;">
+                                <input name="DefaultMapping" type="checkbox" @isDefaultMapped /><span> Use default mapping</span>
+                            </div>
+                        }
+                        <div class="pull-right" style="padding-right:5px; margin-top:-15px;">
+                            @Html.DropDownList("ListOfMappings", null, "--Select Mapping--", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class='col-sm-12 row'>
+                            <div class='col-sm-5'>
+                                <input type="file" id="FileUpload" name="FileUpload" required data-val="true" data-val-required="please select a file" style="height:34px; padding:5px;" onchange="uploadOnChange(this);" /><span id="IEFileName" style="display:inline-block; margin-left:5px;"></span>
+                            </div>
+                            <div class='col-sm-7'>
+                                <input type="submit" id="impData" value="Upload" title="Click to upload file" onclick="return CheckFileName();" class="btn btn-primary " style="text-align:left;" />
+                                @if (ViewBag.HostingEntityName != null)
+                                {
+                                    <a href="@ViewBag.UrlReferrer" class="btn btn-default btn-sm">Cancel</a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-default btn-default collapse-data-btn tip-top" data-placement="top" style="display:inline-block" href="@Url.Action("Index","T_DataMetric")">Cancel</a>
+                                }
+                            </div>
+                            <script type="text/javascript">
+                                function uploadOnChange(fileid) {
+                                    if (navigator.userAgent.indexOf('Trident') != -1 || navigator.userAgent.indexOf('MSIE') != -1) {
+                                        var filename = fileid.value;
+                                        var lastIndex = filename.lastIndexOf("\\");
+                                        if (lastIndex >= 0) {
+                                            filename = filename.substring(lastIndex + 1);
+                                        }
+                                        $("#IEFileName").html(filename);
+                                    }
+                                }
+
+                            </script>
+                            @if (ViewBag.FileType == "csv")
+                            {
+                                <script type="text/javascript">
+                                    function CheckFileName() {
+                                        var fileName = document.getElementById("FileUpload").value;
+                                        if (fileName == "") {
+                                            alert("Browse to upload a valid File with csv extension");
+                                            return false;
+                                        }
+                                        else if (fileName.split(".")[fileName.split('.').length - 1].toUpperCase() == "CSV") {
+                                            return true;
+                                        }
+                                        else {
+                                            alert("File with " + fileName.split(".")[fileName.split('.').length - 1].toUpperCase() + " is invalid. Upload a valid file with csv extension");
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+                                </script>
+                            }
+                            @if (ViewBag.FileType == "xls" || ViewBag.FileType == "xlsx")
+                            {
+                                <script type="text/javascript">
+                                    function CheckFileName() {
+                                        var fileName = document.getElementById("FileUpload").value;
+                                        if (fileName == "") {
+                                            alert("Browse to upload a valid File with xls or xlsx extensions");
+                                            return false;
+                                        }
+                                        else if (fileName.split(".")[fileName.split('.').length - 1].toUpperCase() == "XLS" || fileName.split(".")[fileName.split('.').length - 1].toUpperCase() == "XLSX") {
+                                            return true;
+                                        }
+                                        else {
+                                            alert("File with " + fileName.split(".")[fileName.split('.').length - 1].toUpperCase() + " is invalid. Upload a valid file with xls or xlsx extensions");
+                                            return false;
+                                        }
+                                        return true;
+                                    }
+                                </script>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+    }
+}
+

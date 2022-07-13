@@ -1,0 +1,76 @@
+﻿@model GeneratorBase.MVC.Models.AppConfiguration
+@{
+
+}
+<div class="content-heading">
+    <div class="TitleName"><strong><a href="@Url.Action("Index","Admin")">Admin</a><small>Import Roles</small></strong></div>
+</div>
+<script language="JavaScript">
+    function toggleAdd(source) {
+        $('.fooAdd').each(function () { this.checked = source.checked; });
+    }
+    
+</script>
+<div class="card">
+    <div class="card-body">
+        @if (ViewBag.ImportError != null)
+        {
+            if (ViewBag.ImportError == "success")
+            {
+                <div class="row">
+                    <div class='col-sm-12'>
+                        <div class="card card-default">
+                            <div class="card-body" style="margin:0px; padding:8px;">
+                                Roles imported successfully.
+                            </div>
+                        </div>
+                        <a href="@Url.Action("Index", "Admin")" class="btn btn-primary btn-sm">Return to Admin</a>
+                        <a href="@Url.Action("RoleList", "Account")" class="btn btn-primary btn-sm">Return to Roles</a>
+                    </div>
+                </div>
+            }
+        }
+        @using (Html.BeginForm("ConfirmImportConfiguration", "Account", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+        {
+            @Html.AntiForgeryToken()
+            <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                <table class="table table-hover default-bordered default-condensed newlist">
+                    <thead>
+                        <tr>
+                            <th>
+                                Role Name
+                            </th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                <input type="checkbox" onclick="toggleAdd(this)" />  Select
+                            </th>
+                        </tr>
+                    </thead>
+                    @for (int i = 0; i < Model.rolespermission.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.rolespermission[i].role.Name
+                                @Html.HiddenFor(modelItem => Model.rolespermission[i].role.Name)
+                            </td>
+                            <td>
+                                @Model.rolespermission[i].type
+                                @Html.HiddenFor(modelItem => Model.rolespermission[i].role.RoleType)
+                            </td>
+                            <td>
+                                @Html.CheckBoxFor(modelItem => Model.rolespermission[i].isselected, new { @class = "fooAdd" })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            if (User.IsAdmin)
+            {
+                <input id="btnImportConfiguration" type="submit"  value="Import" class="btn btn-primary" />
+            }
+        }
+ 
+    </div>
+</div>

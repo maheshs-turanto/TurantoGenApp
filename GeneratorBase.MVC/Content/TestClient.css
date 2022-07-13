@@ -1,0 +1,78 @@
+.httpMethod {
+    width: 100%;
+    padding: 5px;
+   
+    border: 1px solid #ced4da;
+    color:#000;
+    font-weight: 700;
+    text-align:center
+}
+
+.uriPath {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ced4da;
+}
+
+.sampleArea {
+    width: 100%;
+}
+
+#testClientButton {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 150px;
+    font-size: x-large;
+}
+
+select {
+    margin-top: 10px;
+}
+
+.panel {
+    max-height: 150px;
+    overflow: auto;
+}
+
+.uriParameterInput {
+    margin-bottom:5px;
+    width:300px;
+}
+
+.uriParameterLabel {
+    width: 150px;
+    float: left;
+    border: none;
+}
+
+.ui-widget-header {
+    border: 1px solid #ced4da /*{borderColorHeader}*/;
+    background: #e9ecef!important;
+    color: #1d5072!important;
+    font-weight: bold;
+    padding: 5px;
+   font-size:16px;
+}
+
+.tokenName {
+    width: 150px;
+    
+    border: 1px solid #ced4da;
+    color: #000;
+    font-weight: 700;
+    text-align: center
+}
+
+.tokenValue {
+    width: 830px;
+    margin-bottom:5px;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    background: #1d5072!important ;
+    color: #fff!important ;
+}
+
+
+}

@@ -1,0 +1,682 @@
+﻿@model T_ExportDataDetailsIndexViewModel
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+        if (!string.IsNullOrEmpty(Request.QueryString["backurlhome"]))
+        {
+            BackUrl = Request.QueryString["backurlhome"];
+        }
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataDetails");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Export Data Details";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_ExportDataDetails");
+    var viewbagname = Convert.ToString(Model.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+    var nonbridgecontrol = true;
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataDetailsRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.T_ExportDataDetailsRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+
+<div id="T_ExportDataDetails">
+    @if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    }
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var divId = $("#dvGroup" + "@ViewData["AssociatedType"]" + "Pivot");
+        var divIdlist = $("#dvGroup" + "@ViewData["AssociatedType"]" + "PivotList");
+        if (divId != undefined) {
+            divId.show();
+        }
+        if (divIdlist != undefined)
+            divIdlist.hide();
+	if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+            $("#T_ExportDataDetailsGridHeader").addClass('collapse in');
+    }
+
+
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'T_ExportDataDetails','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_ExportDataDetails").addClass('show');
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_ExportDataDetails');
+        }
+	    $("#SearchStringT_ExportDataDetails").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_ExportDataDetailsSearch").bind("click", (function () {
+                        }));
+                $('#T_ExportDataDetailsSearch').trigger("click");
+                return false;
+			}
+        })
+        var usrName = "@User.JavaScriptEncodedName";
+		var myCookie = usrName + "T_ExportDataDetails" + "@ViewData["AssociatedType"]";
+		if ($.cookie(myCookie) != null) {
+			$("#btnShowHideT_ExportDataDetails").click();
+            $("#dvShowHideT_ExportDataDetails").hide();
+		}
+		if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+              $(".float-left.actionbar").hide();
+			  if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+		        $(".inlinegridoption").hide();
+                divId.remove();
+                divIdlist.remove();
+
+		    }
+		}
+    });
+	$("input[datatype='Double']").addClass("pull-right text-right");
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = Model.CurrentSort,
+                    IsAsc = Model.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = Model.currentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+
+                    t_exportdataconfigurationexportdatadetailsassociation = Request.QueryString["t_exportdataconfigurationexportdatadetailsassociation"],
+                    T_IsNested = Request.QueryString["T_IsNested"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    IsAsc = (Model.IsAsc == "ASC" ? "DESC" : ""),
+                    page = Model.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+                    t_exportdataconfigurationexportdatadetailsassociation = Request.QueryString["t_exportdataconfigurationexportdatadetailsassociation"],
+                    T_IsNested = Request.QueryString["T_IsNested"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    <div id="T_ExportDataDetailsGridHeader" class="">
+        @if (ViewData["IsdrivedTab"] == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="float-left actionbar">
+                    @if (Model.IsDivRender == null || Model.IsDivRender == false)
+                    {
+                        if (nonbridgecontrol && (((User.CanEdit("T_ExportDataDetails") && User.CanUseVerb("BulkUpdate", "T_ExportDataDetails", User)) || (User.CanDelete("T_ExportDataDetails") && User.CanUseVerb("BulkDelete", "T_ExportDataDetails", User)) || User.CanUseVerb("BulkDocumentDownload", "T_ExportDataDetails", User))))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanDelete("T_ExportDataDetails") && User.CanUseVerb("BulkDelete", "T_ExportDataDetails", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataDetails','Bulk Delete','@Url.Action("DeleteBulk", "T_ExportDataDetails")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="float-left actionbar">
+                    @if (User.CanEdit("T_ExportDataDetails") && User.CanUseVerb("Recycle", "T_ExportDataDetails", User))
+                    {<div class="btn-group">
+                            <a class="btn btn-white btn-sm" style="cursor:pointer;" onclick="RecycleActionSelected(this,'T_ExportDataDetails','Restore','@Url.Action("Recycle", "T_ExportDataDetails")');">Restore Selected</a>
+                            @if (User.CanDelete("T_ExportDataDetails"))
+                            {
+                                <a class="btn btn-white btn-sm" style="cursor:pointer;margin-right:5px;" onclick="RecycleActionSelected(this,'T_ExportDataDetails','Purge','@Url.Action("Purge", "T_ExportDataDetails")');">Purge Selected</a>
+                            }
+                        </div>
+                        <div class="btn-group">
+                            <a class="btn btn-white btn-sm" style="cursor:pointer;" onclick="RecycleActions(this,'T_ExportDataDetails','RestoreAll','@Url.Action("RecycleAll", "T_ExportDataDetails")');">Restore All</a>
+                            @if (User.CanDelete("T_ExportDataDetails"))
+                            {
+                                <a class="btn btn-white btn-sm" style="cursor:pointer;margin-right:5px;" onclick="RecycleActions(this,'T_ExportDataDetails','PurgeAll','@Url.Action("PurgeAll", "T_ExportDataDetails")');">Purge All</a>
+                            }
+                        </div>
+                        <a href="@Url.Action("Index", "T_ExportDataDetails",new{viewtype = viewbagname})" class="btn btn-white btn-sm"><span class="glyphicon glyphicon-remove-sign"></span> Cancel</a>
+                    }
+                </div>
+            }
+            <div class="float-right" style="">
+                <div class="input-group">
+                    @Html.TextBox("SearchStringT_ExportDataDetails", Model.currentFilter as string, null, new { @class = "form-control listsearchbox", @value = Model.HomeVal, @placeholder = "Search" })
+                    <div class="input-group-btn">
+                        <a id="T_ExportDataDetailsSearch" onclick="SearchClick(event, 'T_ExportDataDetails', '@Html.Raw(Url.Action("Index", "T_ExportDataDetails", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                        <a id="T_ExportDataDetailsDeepSearch" onclick="SearchClick(event, 'T_ExportDataDetails', '@Html.Raw(Url.Action("Index", "T_ExportDataDetails", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = true, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString() ,viewtype = viewbagname}))','@User.JavaScriptEncodedName');" data-original-title="Deep Search" class="btn btn-secondary tip-top" alt="Deep Search" title="Search deep"><span class="fa fa-search-plus"></span></a>
+                        <a id="T_ExportDataDetailsCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataDetails','@Html.Raw(Url.Action("Index", "T_ExportDataDetails", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                        <a id="T_ExportDataDetailsSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataDetails','@Html.Raw(Url.Action("Index", "T_ExportDataDetails", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(Model.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                            <span class="fa fa-sync-alt"></span>
+                        </a>
+                        <a id="T_ExportDataDetailsRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('T_ExportDataDetails','@Html.Raw(Url.Action(ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes(Model.CurrentSort, false,null, false)))','@User.Name')"></a>
+                        @if (ViewData["HostingEntity"] == null)
+                        {
+                            <a data-toggle="dropdown" data-original-title="Queries" class="btn btn-secondary tip-top" alt="Queries" title="Queries"><span class="fa fa-binoculars"> <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-item">
+                                    <a href="@(Url.Action("SetFSearch", "T_ExportDataDetails")+Request.Url.Query)" data-placement="top" alt="Define new query" title="Define new query">
+                                        <span class="fa fa-plus" style="margin-right:3px;"></span> New Query
+                                    </a>
+                                </li>
+
+
+                                @if (User.CanView("T_ExportDataConfiguration"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item" data-toggle="collapse" id="T_ExportDataDetailsSetFSearchGridbtn" onclick="@Html.Raw("LoadSetFSearchGridfun(this,'"+Url.Action("SetFSearchGrid", "T_ExportDataDetails", new {HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType= @Convert.ToString(ViewData["AssociatedType"]) })+"','T_ExportDataDetails');")">
+                                            <i class="fa fa-filter"> </i> Filter
+                                        </a>
+                                    </li>
+
+                                }
+                                <li style="border-bottom: 1px solid #ddd;
+    color: #194969!important;
+    padding-left: 15px;
+    font-weight: bold;
+    font-size: 16px!important;
+    background: #f3f5f9;
+    border-top: 1px solid #ddd; margin-top:5px; margin-bottom:5px">Saved Queries</li>
+                                <li class="dropdown-item">
+                                    @foreach (var fsearch in User.GetFacetedSearch("T_ExportDataDetails", User))
+                                    {
+                                        <a href="~/@fsearch.T_LinkAddress&FsearchId=@fsearch.Id&ShowDeleted=@Convert.ToString(ViewData["ShowDeleted"])" data-placement="top" alt="@fsearch.T_Description" title="@fsearch.T_Description">
+                                            <span class="fa fa-filter" style="margin-right:3px;"></span> @fsearch.T_Name
+                                        </a>
+                                    }
+                                </li>
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <div style="clear:both"></div>
+    </div>
+    <div class="row">
+        <div id="LoadT_ExportDataDetailsSetFSearchGrid" class="collapse">
+        </div>
+        <div class="col" style="width:200px; float:left; ">
+            @if (Model.SearchResult != "")
+            {
+                <div id="fsearchT_ExportDataDetails" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                    <div class="col-sm-6">  @Html.Raw(Html.Encode(Model.SearchResult).Replace(Environment.NewLine, ""))</div>
+                    <div class="col-sm-6 text-right">
+                        @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            <a class="btn btn-primary btn-sm ExpandAllOpen">Expand All</a>
+                        }
+                        @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                        {
+                            <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "T_ExportDataDetails",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        <a href="@(Url.Action("SetFSearch", "T_ExportDataDetails")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                        @if (User.CanAdd("T_FacetedSearch"))
+                        {
+                            if (!string.IsNullOrEmpty(Model.FsearchId))
+                            {
+                                <a id='aBtnQuickEditT_FacetedSearch_@Convert.ToInt32(Model.FsearchId)' onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit FacetedSearch','dvPopup','" + Url.Action("EditQuick", "T_FacetedSearch", new
+																			{
+																				id = Convert.ToInt32(Model.FsearchId),
+																				 UrlReferrer = Html.Raw(Request.Url.PathAndQuery),
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                                                                                FsearchId=Model.FsearchId
+																			}) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Edit</a>
+                            }
+                            else
+                            {
+                                <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="T_ExportDataDetails",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes(null, true, page, false)),
+                        new PagedListRenderOptions
+                        {
+                            FunctionToTransformEachPageLink = (liTag, aTag) =>
+                            {
+                                aTag.Attributes.Add("class", "page-link");
+                                liTag.InnerHtml = aTag.ToString();
+                                return liTag;
+                            },
+                            LiElementClasses = new[] { "page-item" },
+                            UlElementClasses = new[] { "pagination pagination-sm" }
+                        })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistT_ExportDataDetails",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataDetails','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataDetails",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistT_ExportDataDetails"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            }
+            @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+            {
+                <script>
+                    $(document).ready(function () {
+                        $('.hideTr').slideUp(600);
+                        $('[data-toggle="toggle"]').click(function () {
+                            var tag = $(this).find("p").attr("id");
+                            if ($(this).parents().next(".hideTr").is(':visible')) {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideUp(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('+');
+                                $(this).css('background-color', 'white');
+                            }
+                            else {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideDown(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('-');
+                                $(this).css('background-color', '#c1eaff');
+                            }
+                        });
+                        $('.ExpandAllOpen').click(function () {
+                            var link = $(this);
+                            if (link.text() == "Expand All") {
+                                $('.hideTr').slideDown(600);
+                                link.text('Collapse All');
+                                $("[class^='plusminus_']").text('-');
+                            }
+                            else {
+                                $('.hideTr').slideUp(600);
+                                link.text('Expand All');
+                                $("[class^='plusminus_']").text('+');
+                            }
+
+                        });
+                    });
+                </script>
+            }
+
+            <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                <table class="table table-hover default-bordered default-condensed newlist">
+                    <thead id="theaderT_ExportDataDetails">
+                        <tr>
+                            @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("T_ExportDataDetails") && User.CanUseVerb("BulkUpdate", "T_ExportDataDetails", User)) || (User.CanDelete("T_ExportDataDetails") && User.CanUseVerb("BulkDelete", "T_ExportDataDetails", User))))
+                            {
+                                <th class="col0" style="width:30px" scope="col" data-sort-ignore="true">
+                                    <div style="width:10px">
+                                        <div class="CheckboxHeaderFix">
+                                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this,'T_ExportDataDetails');" />
+                                            @Html.Hidden("SelectedItems")
+                                        </div>
+                                    </div>
+                                </th>
+                            }
+                            <th scope="col" class="col1" alt="Actions" title="Actions" data-sort-ignore="true">
+                                <div style="width: 65px;"><span class="ActionsHeaderFix">Actions </span></div>
+                            </th>
+
+                            @if (User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails", "T_ExportDataConfigurationExportDataDetailsAssociationID"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_ExportDataConfigurationExportDataDetailsAssociationID");
+                                <th scope="col" class="col2" @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataConfiguration" && Convert.ToString(ViewData["AssociatedType"]) == "T_ExportDataConfigurationExportDataDetailsAssociation" ? "hidden" : "")>
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes("T_ExportDataConfigurationExportDataDetailsAssociationID", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataDetails');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_ExportDataConfigurationExportDataDetailsAssociationID")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_ExportDataConfigurationExportDataDetailsAssociationID")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataDetails", "T_ChildEntity"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_ChildEntity");
+                                <th scope="col" class="col3">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes("T_ChildEntity", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataDetails');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_ChildEntity")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_ChildEntity")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataDetails", "T_ParentEntity"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_ParentEntity");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes("T_ParentEntity", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataDetails');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_ParentEntity")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_ParentEntity")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            <th scope="col" class="col5">
+                                <a>Set Criteria</a>
+                            </th>
+                        </tr>
+                        <tr id="trInlineT_ExportDataDetails" style="display:none; padding:0px!important">
+                            <th id="tdInlineT_ExportDataDetails" colspan="6" style="padding: 0px!important;">
+
+                            </th>
+                        </tr>
+                    </thead>
+                    @{
+                        var RowCounter = 0;
+                        var RowCounter1 = 0;
+                    }
+                    @{ bool isFirst = true; string oldKey = null; var Entities = ModelReflector.Entities; }
+                    @foreach (var item in Model.list)
+                    {
+                        List<string> hiddenProperties = new List<string>();
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataDetails" && p.ActionTypeID.Contains(6)))
+                        {
+                            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_ExportDataDetails");
+                        }
+                        bool isRecordReadOnly = false;
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataDetails" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))))
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "T_ExportDataDetails" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), "T_ExportDataDetails");
+                        }
+                        if (ViewData["HostingEntity"] != null && !isRecordReadOnly)
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+                        }
+                        if (!isRecordReadOnly)
+                        {
+                            isRecordReadOnly = !User.CanEditItemInHierarchy("T_ExportDataDetails", item, User);
+                        }
+                        if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            var groupKey = item.m_DisplayValue;
+                            if (oldKey != groupKey)
+                            {
+                                isFirst = true;
+                                oldKey = item.m_DisplayValue;
+                            }
+                            if (isFirst || oldKey == null)
+                            {
+                                isFirst = false;
+                                string groupString = string.Empty;
+
+                                <tr data-toggle="toggle">
+                                    <td colspan="6" style="background: #EDF5FA; font-weight:bold; cursor: pointer;">
+                                        <p id="@(++RowCounter)">
+                                            <b>
+                                                <span class="plusminus_@(++RowCounter1)">+</span>
+
+                                            </b> @groupKey @groupString
+
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        <tbody class="hideTr" tag="@RowCounter1">
+                            <tr scope="row">
+                                @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("T_ExportDataDetails") && User.CanUseVerb("BulkUpdate", "T_ExportDataDetails", User)) || (User.CanDelete("T_ExportDataDetails") && User.CanUseVerb("BulkDelete", "T_ExportDataDetails", User))))
+                                {
+                                    <td>
+                                        <div class="CheckboxrowFix">
+                                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id','T_ExportDataDetails');" autocomplete="off" />
+                                        </div>
+                                    </td>
+                                }
+                                <td class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                                    <div id="DivbutEdit" class="DivbutEditFix" style="width: 65px;">
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Details", "T_ExportDataDetails", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                                <span class="sr-only"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+
+                                                @if (!User.CanEdit("T_ExportDataDetails"))
+                                                {
+                                                }
+
+                                                <div class="dropdown-divider"></div>
+                                                @if (nonbridgecontrol && User.CanDelete("T_ExportDataDetails") && !isRecordReadOnly)
+                                                {
+                                                    <li class="divider" style="clear:both"></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Delete", "T_ExportDataDetails", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                                @if (User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails", "T_ExportDataConfigurationExportDataDetailsAssociationID"))
+                                {
+
+                                    <td @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataConfiguration" && Convert.ToString(ViewData["AssociatedType"]) == "T_ExportDataConfigurationExportDataDetailsAssociation" ? "hidden" : "")>
+                                        @if (item.t_exportdataconfigurationexportdatadetailsassociation != null && !string.IsNullOrEmpty(item.t_exportdataconfigurationexportdatadetailsassociation.DisplayValue))
+                                        {
+                                            @Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayFor(modelItem => item.t_exportdataconfigurationexportdatadetailsassociation.DisplayValue).ToString()), User.CanEdit("T_ExportDataConfiguration") ? "Edit" : "Details", "T_ExportDataConfiguration", new { Id = Html.DisplayFor(modelItem => item.t_exportdataconfigurationexportdatadetailsassociation.Id).ToString() }, new { onclick = "event.stopImmediatePropagation();", @class = "DisplayCardT_ExportDataConfigurationExportDataDetailsAssociationTD_" + item.Id })
+                                            <script>
+                                    var timer;
+                                    $('.DisplayCardT_ExportDataConfigurationExportDataDetailsAssociationTD_@item.Id').hover(function () {
+										PopupLinkToCard(this, '@Html.Raw(Url.Action("PopupCard", "T_ExportDataConfiguration", new {id = item.T_ExportDataConfigurationExportDataDetailsAssociationID}))','@item.Id');
+                                        clearTimeout(timer);
+                                        timer = setTimeout(function () {
+                                            $('.DisplayCardOpenClose').show();
+                                        }, 4000);
+                                    }, function () {
+                                            $('.DisplayCardOpenClose').remove();
+                                        });
+                                            </script>
+                                        }
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataDetails", "T_ChildEntity"))
+                                {
+                                    <td>
+                                        @Entities.FirstOrDefault(fd => fd.Name == item.T_ChildEntity).DisplayName
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataDetails", "T_ParentEntity"))
+                                {
+                                    <td>
+                                        @Entities.FirstOrDefault(fd => fd.Name == item.T_ParentEntity).DisplayName
+                                    </td>
+                                }
+                                <td>
+                                    @if ((new ConditionContext()).Conditions.Where(p => p.ExportDetailConditionsID == item.Id).Count() > 0)
+                                    {
+                                    <button class="btn btn-secondary" data-placement="top" data-original-title="Set Criteria" data-toggle="modal" data-target="#quickaddCriteria" onclick="OpenQuickQddPopUp('dvQAddquickaddCriteria', '@Url.Action("CreateCriteria", "T_ExportDataDetails", new { id = item.Id, EntityName = item.T_ChildEntity })', '@ModelReflector.Entities.FirstOrDefault(fd => fd.Name == item.T_ChildEntity).DisplayName')">
+                                        <span class="fa fa-pencil-square-o"> </span>
+                                    </button>
+                                    }
+                                    else
+                                    {
+                                <button class="btn btn-secondary" data-placement="top" data-original-title="Set Criteria" data-toggle="modal" data-target="#quickaddCriteria" onclick="OpenQuickQddPopUp('dvQAddquickaddCriteria', '@Url.Action("CreateCriteria", "T_ExportDataDetails", new { id = item.Id, EntityName = item.T_ChildEntity })', '@ModelReflector.Entities.FirstOrDefault(fd => fd.Name == item.T_ChildEntity).DisplayName')">
+                                    <span class="fa fa-plus-circle"> </span>
+                                </button>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataDetails", getSortHtmlAttributes(null, true, page, false)),
+                          new PagedListRenderOptions
+                          {
+                              FunctionToTransformEachPageLink = (liTag, aTag) =>
+                              {
+                                  aTag.Attributes.Add("class", "page-link");
+                                  liTag.InnerHtml = aTag.ToString();
+                                  return liTag;
+                              },
+                              LiElementClasses = new[] { "page-item" },
+                              UlElementClasses = new[] { "pagination pagination-sm" }
+                          })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistT_ExportDataDetails",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataDetails','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataDetails",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistT_ExportDataDetails"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @Html.DropDownList("EntityT_ExportDataDetailsDisplayValue", null, null, new { @Style = "display:none;" })
+    @if (ViewData["HostingEntity"] == null)
+    {
+        <div class="modal fade" id="ShowGraphT_ExportDataDetails" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_ExportDataDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="ShowGraphT_ExportDataDetailsLabel">Dashboard Export Data Details</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dvShowGraphT_ExportDataDetails" data-url="@Url.Action("ShowGraph", "T_ExportDataDetails", new { type = "all" })">
+                        </div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="modal fade fade midal-fade-inline" id="quickaddCriteria" tabindex="-1" role="dialog" aria-labelledby="quickaddCriteria" aria-hidden="true" data-keyboard="false" data-backdrop="">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="quickaddCriteriaheader"> Set Criteria</h4>
+
+                    <button id="btnquickaddCriteria" class="close" type="button" data-dismiss="modal" aria-label="Close" onclick="cancelQuickAdd()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="dvQAddquickaddCriteria" class="modal-body">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function OpenQuickQddPopUp(dvName, url, entityname) {
+            $("#quickaddCriteriaheader").html("Set Criteria - " + entityname);
+            $("#" + dvName).load(url);
+        }
+    </script>
+</div>
+

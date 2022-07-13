@@ -1,0 +1,1656 @@
+﻿@model GeneratorBase.MVC.Models.CustomReports
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    function LoadTabReports(Url) {
+        $("#ViewRepotsTab").html('');
+        var ReportName = $("#ReportName").val();
+        var EntityParm = $("#EntityName").val();
+        var reportsType = $('#ReportTypeDD option:selected').val();
+        var rowProp = "";
+        var ColProp = "";
+        var CrossTabPropertyVal = "";
+        var propertyParm = "";
+        if (reportsType == "Simple") {
+            propertyParm = $("#ResultProperty").val();
+            if (propertyParm == "") {
+                alert("Please Add Property")
+            }
+        }
+        if (reportsType == "CrossTab") {
+            rowProp = $('#CrossTabRowDD option:selected').val();
+            ColProp = $('#CrossTabColumnDD option:selected').val();
+            CrossTabPropertyVal = $('#CrossTabPropertyValues').val();
+            var msg = "";
+            if (rowProp == "") {
+                msg += "\nPlease Select Row of Cross Tab ";
+            }
+            if (ColProp == "") {
+                msg += "\nPlease Select Column of Cross Tab";
+            }
+            if (CrossTabPropertyVal == "") {
+                msg += "\nPlease add cross tab matrix";
+            }
+            if (msg != "") {
+                alert(msg);
+                return false;
+            }
+        }
+        if (EntityParm == "" && propertyParm == "") {
+            $("#errorContainer").show();
+            $("#errorsMsg").html("Please add entity or property.");
+            return false;
+        }
+        var QueryConditionValues = $("#QueryConditionValues").val();
+        var RelationsValues = $("#RelationsValues").val();
+        var url = Url + '?entityVal=' + EntityParm + '&properties=' + propertyParm + '&FilterCondition=' + QueryConditionValues + "&relationsValues=" + RelationsValues + "&reportsType=" + reportsType + "&rowProp=" + rowProp + "&ColProp=" + ColProp + "&CrossTabPropertyVal=" + CrossTabPropertyVal + "&ReportName=" + ReportName;
+
+        if ($.trim($("#ViewRepotsTab").html()).length == 0) {
+            $("#ViewRepotsTab").html('Please wait..');
+            $("#ViewRepotsTab").load(encodeURI(url));
+        }
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    }
+</script>
+<script>
+    function SetLogicalOperator() {
+        var Value = $('#LogicalOperatorDD option:selected').val();
+    }
+    var ProRes = "";
+    var CrossProRes = "";
+    function SetReportType(obj) {
+        if (ProRes == "")
+            ProRes = $('#ResultProperty').val();
+        if (CrossProRes == "")
+            CrossProRes = $('#CrossTabPropertyValues').val();
+        var Value = $('#ReportTypeDD option:selected').val();
+        if (Value == "Simple") {
+            $("#SimpleRpt").show();
+            $("#CrossTabrpt").hide();
+            $("#ReportType").val(Value);
+            $('#CrossTabPropertyValues').val('');
+            $('#ResultProperty').val(ProRes);
+        }
+        if (Value == "CrossTab") {
+            $("#SimpleRpt").hide();
+            $("#CrossTabrpt").show();
+            $("#ReportType").val(Value);
+            $('#CrossTabPropertyValues').val(CrossProRes);
+            $('#ResultProperty').val('');
+        }
+    }
+    //Entity Oprations
+    function SetEntityName(obj) {
+        if ($('#EntityNameDD option:selected').val() == "")
+            return false;
+        var Value = $('#EntityNameDD option:selected').val();
+        if (Value.length != 0) {
+
+            //$("#EntityName").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#EntityName").val('');
+        }
+    }
+    function AddEntity(obj) {
+        var Value = $('#EntityNameDD option:selected').val();
+        var ValueText = $('#EntityNameDD option:selected').text();
+
+        if (Value.length != 0) {
+            //code for add entity in tamprary grid...........
+            if ($("#EntityName").val().match(Value)) {
+                alert('Entity name is alrady added.');
+                return false;
+            }
+            if ($("#EntityName").val() != "") {
+                FillPropertyDropDown();
+                FillPropertyQueryConditionDropDown();
+                FillRelationsGrid()
+                var hdnEntity = $("#EntityName").val()
+                $("#EntityName").val(hdnEntity + "," + Value);
+            }
+            else {
+                $("#EntityName").val(Value)
+                FillPropertyDropDown();
+                FillRelationsGrid()
+                FillPropertyQueryConditionDropDown();
+            }
+            //
+            var reportName = $('#ReportTypeDD option:selected').val();
+            if (reportName == "CrossTab") {
+                var listItems = "";
+                listItems = "<option  value='" + Value + "'>" + ValueText + "</option>";
+                $('#AggregateEntityDD').append(listItems);
+            }
+            //
+            var str = "<tr>";
+            str += "<td>" + ValueText + "</td>";
+            str += "<td><i name=\"lblEntityName" + Value + "\" onclick=\"deleteEntityRow(this,'" + Value + "');\" class=\"fa fa-remove\"></i></td>";
+            $('#tblEntityList').show();
+            $('#tblEntityList').append(str) + "</tr>";
+
+            //
+        }
+        if (Value.length == 0) {
+            alert('Please Select Entity Name');
+        }
+    }
+
+    function FillRelationsGrid() {
+        var entityName = $('#EntityNameDD option:selected').val();
+        var entityDisplayName = $('#EntityNameDD option:selected').text();
+        $.ajax({
+            url: '@Url.Action("GetAllAssotions", "CustomReports")' + '?entityName=' + entityName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                $('#tblrelationList').show();
+                for (i = 0; i < result.length; i++) {
+                    var value = "";
+                    var sourceName = result[i].SourceEntity;
+                    var targetName = result[i].TargetEntity;
+                    var targetNameDisp = result[i].TargetEntityDisp;
+                    var assocName = result[i].AssocName
+                    if ($("#RelationsValues").val() != "") {
+                        var hdnProperty = $("#RelationsValues").val()
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(hdnProperty + "," + sourceName + "-" + targetName + "-" + assocName);
+                    }
+                    else {
+                        value = sourceName + "-" + targetName + "-" + assocName;
+                        $("#RelationsValues").val(value)
+                    }
+
+
+                    var str = "<tr>";
+                    str += "<td>" + entityDisplayName + "</td>";
+                    str += "<td>" + targetNameDisp + "</td>";
+                    str += "<td>" + assocName + "</td>";
+                    str += "<td style='display:none'><i id=\"lblrelationName" + value + "\" name=\"lblrelationName" + value + "\" onclick=\"deleterelationRow(this,'" + value + "');\" class=\"fa fa-remove\"></i></td>";
+                    $('#tblrelationList').append(str) + "</tr>";
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+    function FillCrossTabProperty() {
+        var entityName = $('#AggregateEntityDD option:selected').val();
+        var entityDisplayName = $('#AggregateEntityDD option:selected').text();
+        $('#AggregatePropertyDD').html('');
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                listItems = "<option  value=''>--Select--</option>";
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#AggregatePropertyDD').html(listItems);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+
+    }
+    function FillPropertyDropDown() {
+        var reportName = $('#ReportTypeDD option:selected').val();
+        var entityName = $('#EntityNameDD option:selected').val();
+        var entityDisplayName = $('#EntityNameDD option:selected').text();
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var listItems = "";
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#ResultPropertyDD').append(listItems);
+                $('#CrossTabRowDD').append(listItems);
+                $('#CrossTabColumnDD').append(listItems);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+    function deleteEntityRow(obj, entityName) {
+        deleteEntityGrid(entityName);
+        deleteRelationsGrid(entityName);
+        deleteEntityPropertiesGrid(entityName);
+        deleteFilterPropertiesGrid(entityName);
+        deleteCrossTabPropertiesGrid(entityName);
+        var obj_tr = $(obj).closest("tr");
+        $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteEntityGrid(entityName) {
+        var _entityNameRow = $("#EntityName").val()
+        var res = _entityNameRow.split(",");
+        if (res.length > 1) {
+            if (res.indexOf(entityName) == 0) {
+                _entityNameRow = _entityNameRow.replace(entityName + ",", '');
+                deleteEntityPropertiesDD(entityName)
+                deleteFilterPropertiesDD(entityName)
+            }
+            else {
+                _entityNameRow = _entityNameRow.replace("," + entityName, '');
+                deleteEntityPropertiesDD(entityName)
+                deleteFilterPropertiesDD(entityName)
+
+            }
+        }
+        else {
+            _entityNameRow = _entityNameRow.replace(entityName, '');
+            deleteEntityPropertiesDD(entityName)
+            deleteFilterPropertiesDD(entityName)
+
+        }
+        $("#EntityName").val(_entityNameRow);
+    }
+    function deleteRelationsGrid(entityName) {
+        var _RelationsNameRow = $("#RelationsValues").val();
+        if (_RelationsNameRow == undefined || _RelationsNameRow == null || _RelationsNameRow == "")
+            return false;
+        var res = _RelationsNameRow.split(",");
+        var res1 = _RelationsNameRow.split(",");
+        for (var i = 0; i < res.length; i++) {
+            var relArr = res[i].split('-');
+            for (var j = 0; j < relArr.length; j++) {
+                if (entityName == relArr[0]) {
+                    var itemtoRemove = res[i];
+                    res1.splice($.inArray(itemtoRemove, res1), 1);
+                    $("#lblrelationName" + res[i]).click();
+                    break;
+                }
+            }
+        }
+        var relResult = "";
+        if (res1.length > 1) {
+            for (var k = 0; k < res1.length; k++) {
+                relResult += res1[k] + ",";
+            }
+            relResult = relResult.substring(0, relResult.length - 1);
+            $("#RelationsValues").val(relResult);
+        }
+        else {
+            $("#RelationsValues").val(res1);
+        }
+    }
+    function deleterelationRow(obj) {
+        var obj_tr = $(obj).closest("tr");
+        $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteEntityPropertiesGrid(entityName) {
+        var _ResultPropertyRow = $("#ResultProperty").val();
+        if (_ResultPropertyRow == undefined || _ResultPropertyRow == null || _ResultPropertyRow == "")
+            return false;
+
+        var res = _ResultPropertyRow.split(",");
+        var res1 = _ResultPropertyRow.split(",");
+
+        for (i = 0; i < res.length; i++) {
+            var propArr = res[i].split('-');
+            if (propArr[0].split('.')[0] == entityName) {
+                var itemtoRemove = res[i];
+                res1.splice($.inArray(itemtoRemove, res1), 1);
+                $("#lblPropertyName" + propArr[0].replace('.', '_')).click();
+            }
+        }
+        var propResult = "";
+        if (res1.length > 1) {
+            for (var k = 0; k < res1.length; k++) {
+                propResult += res1[k] + ",";
+            }
+            propResult = propResult.substring(0, propResult.length - 1);
+            $("#ResultProperty").val(propResult);
+        }
+        else {
+            $("#ResultProperty").val(res1);
+        }
+
+    }
+
+    function deleteEntityPropertiesDD(entityName) {
+        var reportName = $('#ReportTypeDD option:selected').val();
+        if (reportName == "Simple") {
+            var resdd = $('#ResultPropertyDD option')
+            for (var i = 0; i < resdd.length; i++) {
+                if (resdd[i].value.match(entityName)) {
+                    resdd[i].remove();
+                }
+            }
+            if ($('#ResultPropertyDD option').length == 0) {
+                listItems = "<option  value=''>--Select--</option>";
+                $('#ResultPropertyDD').html(listItems);
+            }
+        }
+        if (reportName == "CrossTab") {
+            var CrossRowdd = $('#CrossTabRowDD option')
+            var CrossColdd = $('#CrossTabColumnDD option')
+            for (var i = 0; i < CrossRowdd.length; i++) {
+                if (CrossRowdd[i].value.match(entityName)) {
+                    CrossRowdd[i].remove();
+                }
+            }
+            for (var i = 0; i < CrossColdd.length; i++) {
+                if (CrossColdd[i].value.match(entityName)) {
+                    CrossColdd[i].remove();
+                }
+            }
+            var CrossEntitydd = $('#AggregateEntityDD option')
+            for (var i = 0; i < CrossEntitydd.length; i++) {
+                if (CrossEntitydd[i].value.match(entityName)) {
+                    CrossEntitydd[i].remove();
+                }
+            }
+            if ($('#AggregateEntityDD option').length == 0) {
+                $('#AggregateEntityDD').html("<option  value=''>--Select--</option>");
+            }
+            var CrossPropdd = $('#AggregatePropertyDD option')
+            for (var i = 0; i < CrossPropdd.length; i++) {
+                if (CrossPropdd[i].value.match(entityName)) {
+                    CrossPropdd[i].remove();
+                }
+            }
+            if ($('#AggregatePropertyDD option').length == 0) {
+                $('#AggregatePropertyDD').html("<option  value=''>--Select--</option>");
+            }
+        }
+    }
+    function deleteFilterPropertiesGrid(entityName) {
+        var _QueryConditionValuesRow = $("#QueryConditionValues").val();
+        var res = _QueryConditionValuesRow.split(",");
+        var res1 = _QueryConditionValuesRow.split(",");
+        for (i = 0; i < res.length; i++) {
+            var propArr = res[i].split('-');
+            if (propArr[0].split('.')[0] == entityName) {
+                res1.splice($.inArray(itemtoRemove, res1), 1);
+                $("#lblFilter" + propArr[0].replace('.', '_')).click();
+            }
+        }
+        var propResult = "";
+        if (res1.length > 1) {
+            for (var k = 0; k < res1.length; k++) {
+                propResult += res1[k] + ",";
+            }
+            propResult = propResult.substring(0, propResult.length - 1);
+            $("#QueryConditionValues").val(propResult);
+        }
+        else {
+            $("#QueryConditionValues").val(res1);
+        }
+    }
+    function deleteFilterPropertiesDD(entityName) {
+        var resdd = $('#FilterPropertyDD option')
+        for (var i = 0; i < resdd.length; i++) {
+            if (resdd[i].value.match(entityName)) {
+                resdd[i].remove();
+            }
+        }
+    }
+    //
+    //Property Oprations
+    function SetOrderBy(obj) {
+        var Value = $('#OrderByDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#OrderBy").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#OrderBy").val('');
+        }
+    }
+    function SetResultProperty(obj) {
+        var Value = $('#ResultPropertyDD option:selected').val();
+        var ValueText = $('#ResultPropertyDD option:selected').text();
+        if (Value.length != 0) {
+            if (Value.lastIndexOf('ID') == Value.length - 'ID'.length) {
+                listItems = "<option value='Count'>COUNT</option>";
+                $('#AggregateDD').html(listItems);
+                $("#AggregateDD option:selected").removeAttr("selected");
+                $("#AggregateDD").multiselect('rebuild');
+                return false;
+            }
+            if (Value != "") {
+                $.ajax({
+                    url: '@Url.Action("GetPropertyAggDataType", "CustomReports")' + '?PropName=' + Value,
+                    type: "GET",
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        if (result == "decimal" || result == "double" || result == "int64" || result == "int32") {
+                            listItems = "<option value='Sum'>SUM</option>" +
+                                        "<option value='Count'>COUNT</option>" +
+                                        "<option value='Average'>AVERAGE</option>" +
+                                        "<option value='Min'>MIN</option>" +
+                                        "<option value='Max'>MAX</option>";
+                        }
+                        else if (result == "datetime") {
+                            listItems = "<option value='Count'>COUNT</option>" +
+                                    "<option value='Min'>MIN</option>" +
+                                    "<option value='Max'>MAX</option>";
+                        }
+                        else {
+                            listItems = "<option value='Count'>COUNT</option>";
+                        }
+
+                        $('#AggregateDD').html(listItems);
+                        $("#AggregateDD option:selected").removeAttr("selected");
+                        $("#AggregateDD").multiselect('rebuild');
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+
+                });
+            }
+            else {
+                listItems = "<option  value=''>None</option>";
+                $('#AggregateDD').html(listItems);
+                $("#AggregateDD option:selected").removeAttr("selected");
+                $("#AggregateDD").multiselect('rebuild');
+            }
+        }
+        if (Value.length == 0) {
+            listItems = "<option  value=''>None</option>";
+            $('#AggregateDD').html(listItems);
+            $("#AggregateDD option:selected").removeAttr("selected");
+            $("#AggregateDD").multiselect('rebuild');
+        }
+    }
+    function AddProperty(obj) {
+        var propValue = $('#ResultPropertyDD option:selected').val();
+        var propText = $('#ResultPropertyDD option:selected').text();
+
+        var propOrderBy = $('#OrderByDD option:selected').val();
+        var propOrderByText = $('#OrderByDD option:selected').text();
+
+        var propGroupBy = $('#GroupBy').prop('checked')
+
+
+        var AggraOpval = $("#AggregateDD option:selected").map(function () {
+            return $(this).val();
+        }).get().join();
+        var AggraOpText = $("#AggregateDD option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (AggraOpval != "") {
+            AggraOpval = AggraOpval.replaceAll(",", ";");
+        }
+        var PropertyDispalyOrder = $('#ColumnOrder').text();
+        if (PropertyDispalyOrder == "")
+            PropertyDispalyOrder = 0
+        if (propGroupBy == true)
+            PropertyDispalyOrder = '';
+
+        if (propValue.length != 0) {
+            //code for add property in tamprary grid...........
+            if ($("#ResultProperty").val().match(propValue)) {
+                alert('Property Name alrady added.');
+                return false;
+            }
+            var value = "";
+            if ($("#ResultProperty").val() != "") {
+                var entName = propValue.split('.')[0];
+                var entNameId = entName + "." + "Id";
+                var hdnProperty = $("#ResultProperty").val()
+                value = propValue + "-" + PropertyDispalyOrder + "-" + propOrderBy + "-" + propGroupBy + "-" + entNameId + "-" + AggraOpval;
+                $("#ResultProperty").val(hdnProperty + "," + propValue + "-" + PropertyDispalyOrder + "-" + propOrderBy + "-" + propGroupBy + "-" + entNameId + "-" + AggraOpval);
+            }
+            else {
+                var entName = propValue.split('.')[0];
+                var entNameId = entName + "." + "Id";
+                value = propValue + "-" + PropertyDispalyOrder + "-" + propOrderBy + "-" + propGroupBy + "-" + entNameId + "-" + AggraOpval;
+                $("#ResultProperty").val(value)
+            }
+
+            var str = "<tr>";
+            str += "<td>" + propText + "</td>";
+            //str += "<td>" + PropertyDispalyOrder + "</td>";
+            str += "<td>" + propOrderByText + "</td>";
+            str += "<td>" + propGroupBy + "</td>";
+            str += "<td>" + AggraOpText + "</td>";
+            str += "<td><i id=\"lblPropertyName" + propValue.replace('.', '_') + "\" name=\"lblPropertyName" + propValue.replace('.', '_') + "\"  onclick=\"deletePropertyRow(this,'" + propValue + "','" + value + "');\" class=\"fa fa-remove\"></i></td>";
+            $('#tblPropertyList').show();
+            $('#tblPropertyList').append(str) + "</tr>";
+            $('#ResultPropertyDD').val("");
+            $('#GroupBy').prop('checked', false);
+            $('#OrderByDD').val("");
+            listItems = "<option  value=''>None</option>";
+            $('#AggregateDD').html(listItems);
+            $("#AggregateDD option:selected").removeAttr("selected");
+            $("#AggregateDD").multiselect('rebuild');
+
+            //
+        }
+        if (propValue.length == 0) {
+            alert('Please Select Property Name');
+        }
+    }
+    function GroupByClick(obj) {
+        if ($(obj).is(':checked')) {
+            $("#AggregateDD").val();
+            $("#dvAggregateFunctionSimple").css("visibility", "hidden");
+            $("#AggregateDD option:selected").removeAttr("selected");
+            $("#AggregateDD").multiselect('rebuild');
+        } else {
+            $("#dvAggregateFunctionSimple").css("visibility", "visible");
+        }
+    }
+
+    function deletePropertyRow(obj, property, value) {
+        deleteProperty(property, value);
+        var obj_tr = $(obj).closest("tr");
+        $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteProperty(property, value) {
+        var _propertyNameRow = $("#ResultProperty").val()
+        var res = _propertyNameRow.split(",");
+        if (res.length > 1) {
+            if (res.indexOf(value) == 0) {
+                _propertyNameRow = _propertyNameRow.replace(value + ",", '');
+            }
+            else {
+                _propertyNameRow = _propertyNameRow.replace("," + value, '');
+            }
+        }
+        else {
+            _propertyNameRow = _propertyNameRow.replace(value, '');
+
+        }
+        $("#ResultProperty").val(_propertyNameRow);
+
+    }
+    //
+    function SetCrossTabRow(obj) {
+        var Value = $('#CrossTabRowDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#CrossTabRow").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#CrossTabRow").val('');
+        }
+    }
+    function SetCrossTabColumn(obj) {
+        var Value = $('#CrossTabColumnDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#CrossTabColumn").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#CrossTabColumn").val('');
+        }
+    }
+    function SetAggregateEntity(obj) {
+        var Value = $('#AggregateEntityDD option:selected').val();
+        if (Value.length != 0) {
+            FillCrossTabProperty();
+        }
+        if (Value.length == 0) {
+            $('#AggregatePropertyDD').html('');
+            $('#AggregatePropertyDD').html("<option  value=''>--Select--</option>");
+
+        }
+    }
+    function SetAggregateProperty(obj) {
+
+        var Value = $('#AggregatePropertyDD option:selected').val();
+        var ValueText = $('#AggregatePropertyDD option:selected').text();
+
+        if (Value.length != 0) {
+            if (Value.lastIndexOf('ID') == Value.length - 'ID'.length) {
+                listItems = "<option value='Count'>COUNT</option>";
+                $('#AggregateFunctionDD').html(listItems);
+                $("#AggregateFunctionDD option:selected").removeAttr("selected");
+                $("#AggregateFunctionDD").multiselect('rebuild');
+                return false;
+            }
+            if (Value != "") {
+                $.ajax({
+                    url: '@Url.Action("GetPropertyAggDataType", "CustomReports")' + '?PropName=' + Value,
+                    type: "GET",
+                    cache: false,
+                    async: false,
+                    success: function (result) {
+                        if (result == "decimal" || result == "double" || result == "int64" || result == "int32") {
+                            listItems = "<option value='Sum'>SUM</option>" +
+                                        "<option value='Count'>COUNT</option>" +
+                                        "<option value='Average'>AVERAGE</option>" +
+                                        "<option value='Min'>MIN</option>" +
+                                        "<option value='Max'>MAX</option>";
+                        }
+                        else if (result == "datetime") {
+                            listItems = "<option value='Count'>COUNT</option>" +
+                                    "<option value='Min'>MIN</option>" +
+                                    "<option value='Max'>MAX</option>";
+                        }
+                        else {
+                            listItems = "<option value='Count'>COUNT</option>";
+                        }
+
+                        $('#AggregateFunctionDD').html(listItems);
+                        $("#AggregateFunctionDD option:selected").removeAttr("selected");
+                        $("#AggregateFunctionDD").multiselect('rebuild');
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    }
+
+                });
+            }
+            else {
+                listItems = "<option  value=''>None</option>";
+                $('#AggregateFunctionDD').html(listItems);
+                $("#AggregateFunctionDD option:selected").removeAttr("selected");
+                $("#AggregateFunctionDD").multiselect('rebuild');
+            }
+        }
+        if (Value.length == 0) {
+            listItems = "<option  value=''>None</option>";
+            $('#AggregateFunctionDD').html(listItems);
+            $("#AggregateFunctionDD option:selected").removeAttr("selected");
+            $("#AggregateFunctionDD").multiselect('rebuild');
+        }
+    }
+    function SetAggregateFunction(obj) {
+        var Value = $('#AggregateFunctionDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#AggregateFunction").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#AggregateFunction").val('');
+        }
+    }
+    function SetFilterProperty(obj) {
+        var FilterProperty = $('#FilterPropertyDD option:selected').val();
+        var listItems = "";
+        if (FilterProperty.lastIndexOf('ID') == FilterProperty.length - 'ID'.length) {
+            listItems = "<option value='10'>Equals To</option>" +
+                       "<option value='11'>Does Not Equal To</option>" +
+                       "<option value='7'>Contains</option>" +
+                       "<option value='8'>Begins With</option>" +
+                       "<option value='9'>Ends With</option>";
+            $('#FilterConditionDD').html(listItems);
+            return false;
+        }
+        if (FilterProperty != "") {
+            $.ajax({
+                url: '@Url.Action("GetPropertyDataType", "CustomReports")' + '?FilterPropertyName=' + FilterProperty,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+
+                    if (result == "nonstring") {
+                        listItems = "<option value='3'>Equals To</option>" +
+                            "<option value='1'>Greater Than</option>" +
+                         "<option value='2'>Greater Than Or Equal To</option>" +
+                        "<option value='3'>Equals To</option>" +
+                        "<option value='4'>Does Not Equal To</option>" +
+                        "<option value='5'>Less Than</option>" +
+                        "<option value='6'>Less Than Or Equal To</option>";
+                    }
+                    else if (result == "string") {
+                        listItems = "<option value='10'>Equals To</option>" +
+                        "<option value='11'>Does Not Equal To</option>" +
+                        "<option value='7'>Contains</option>" +
+                        "<option value='8'>Begins With</option>" +
+                        "<option value='9'>Ends With</option>";
+                    }
+                    $('#FilterConditionDD').html(listItems);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+
+            });
+        }
+        else {
+            listItems = "<option  value=''>--Select--</option>";
+            $('#FilterConditionDD').html(listItems);
+        }
+    }
+
+    function SetFilterCondition(obj) {
+        var Value = $('#FilterConditionDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#FilterCondition").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#FilterCondition").val('');
+        }
+    }
+    function SetFilterType(obj) {
+        var Value = $('#FilterTypeDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#FilterType").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#FilterType").val('');
+        }
+    }
+    function SetSelectValueFromList(obj) {
+        var Value = $('#SelectValueFromListDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#SelectValueFromList").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#SelectValueFromList").val('');
+        }
+    }
+    function SetSelectProperty(obj) {
+        var Value = $('#SelectPropertyDD option:selected').val();;
+        if (Value.length != 0) {
+            $("#SelectProperty").val(Value);
+        }
+        if (Value.length == 0) {
+            $("#SelectProperty").val('');
+        }
+    }
+    //QueryConditions
+    function FillPropertyQueryConditionDropDown() {
+        var entityName = $('#EntityNameDD option:selected').val();
+        var entityDisplayName = $('#EntityNameDD option:selected').text();
+        $.ajax({
+            url: '@Url.Action("GetAllProperties", "CustomReports")' + '?entityName=' + entityName + '&entityDispayName=' + entityDisplayName,
+            type: "GET",
+            cache: false,
+            async: false,
+            success: function (result) {
+                var listItems = "";
+                for (var i = 0; i < result.length; i++) {
+                    listItems += "<option  value='" + result[i].Key + "'>" + result[i].Value + "</option>";
+                }
+                $('#FilterPropertyDD').append(listItems);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    function AddQueryCondition() {
+        if ($("#ResultProperty").val() == "" && $("#CrossTabPropertyValues").val() == "") {
+            alert("please add result property")
+            return false;
+        }
+
+        var propValue = $('#FilterPropertyDD option:selected').val();
+        var propText = $('#FilterPropertyDD option:selected').text();
+
+        var propFilterCondition = $('#FilterConditionDD option:selected').val();
+        var propFilterConditionByText = $('#FilterConditionDD option:selected').text();
+
+        var propFilterType = $('#FilterTypeDD option:selected').val();
+        var propFilterTypeText = $('#FilterTypeDD option:selected').text();
+
+        var LogicalOperatorType = $('#LogicalOperatorDD option:selected').val();
+
+        var FilterValue = $('#FilterValue').val();
+
+        if (propValue.length != 0) {
+            //code for add property in tamprary grid...........
+            var value = "";
+            if ($("#QueryConditionValues").val() != "") {
+                var hdnProperty = $("#QueryConditionValues").val();
+                value = propValue + "-" + propFilterCondition + "-" + propFilterType + "-" + FilterValue + "-" + LogicalOperatorType;
+                $("#QueryConditionValues").val(hdnProperty + "," + propValue + "-" + propFilterCondition + "-" + propFilterType + "-" + FilterValue + "-" + LogicalOperatorType);
+            }
+            else {
+                LogicalOperatorType = "";
+                value = propValue + "-" + propFilterCondition + "-" + propFilterType + "-" + FilterValue + "-0";
+                $("#QueryConditionValues").val(value)
+            }
+
+            var str = "<tr>";
+            str += "<td>" + LogicalOperatorType + "</td>";
+            str += "<td>" + propText + "</td>";
+            str += "<td>" + propFilterConditionByText + "</td>";
+            str += "<td>" + propFilterType + "</td>";
+            str += "<td>" + FilterValue + "</td>";
+            str += "<td><i id=\"lblFilter" + propValue.replace('.', '_') + "\" name=\"lblFilter" + propValue.replace('.', '_') + "\" onclick=\"deleteFilterPropertyRow(this,'" + propValue + "','" + value + "');\" class=\"fa fa-remove\"></i></td>";
+            $('#tblFilterList').show();
+            $('#tblFilterList').append(str) + "</tr>";
+
+            $('#FilterPropertyDD').val("");
+            $('#FilterConditionDD').val(3);
+            $('#FilterTypeDD').val("Value");
+            $('#FilterValue').val("");
+
+
+            //
+        }
+        if (propValue.length == 0) {
+            alert('Please Select Filter Property Name');
+        }
+
+    }
+    function deleteFilterPropertyRow(obj, property, value) {
+        deleteFilterProperty(property, value);
+        var obj_tr = $(obj).closest("tr");
+        $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteFilterProperty(property, value) {
+        var _propertyNameRow = $("#QueryConditionValues").val()
+        var res = _propertyNameRow.split(",");
+        if (res.length > 1) {
+            if (res.indexOf(value) == 0) {
+                _propertyNameRow = _propertyNameRow.replace(value + ",", '');
+            }
+            else {
+                _propertyNameRow = _propertyNameRow.replace("," + value, '');
+            }
+        }
+        else {
+            _propertyNameRow = _propertyNameRow.replace(value, '');
+
+        }
+        $("#QueryConditionValues").val(_propertyNameRow);
+
+    }
+    //
+
+</script>
+<div class="table responsive">
+    <ul class="nav nav-tabs">
+        <li class="nav-item " id="Detailsli"><a class="nav-link active"  href="#Details" id="DetailsTab" data-toggle="tab">Designer</a></li>
+        <li class="nav-item " id="ViewReportsli" >
+            <a class="nav-link"  href="#ViewRepotsTab" id="ReportsTab" onclick="LoadTabReports('@Html.Raw(Url.Action("ReportsResult", "CustomReports"))')" data-toggle="tab">
+                View Report
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="Details">
+            @{
+                if (!string.IsNullOrEmpty(ViewBag.CustomReportsIsHiddenRule))
+                {
+                    @Html.Raw(ViewBag.CustomReportsIsHiddenRule);
+                }
+            }
+            @{
+                if (!string.IsNullOrEmpty(ViewBag.CustomReportsIsSetValueUIRule))
+                {
+                    @Html.Raw(ViewBag.CustomReportsIsSetValueUIRule);
+                }
+            }
+            @using (Html.BeginForm("Create", "CustomReports", new { UrlReferrer = Convert.ToString(ViewData["CustomReportsParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCustomReports" }))
+            {
+                @Html.AntiForgeryToken();
+                                        Html.ValidationSummary(true);
+                                        Html.EnableClientValidation();
+                                        <input type="hidden" id="ErrMsg" />
+                                        <div id="errorContainer" style="display: none">
+                                            <div id="errorsMsg"></div>
+                                            <div id="errors"></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="card card-default AppForm">
+                                                    <div class="card-body">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                         
+                                                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#detailsbody"><span class="glyphicon glyphicon-chevron-down"></span> Details</a></h3>
+                                                                    </div>
+                                                                    <div class="card-body card-deck" id="detailsbody">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportName">
+                                                                            <div class='form-group' title="Report Name">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportName) <span class="text-danger-reg">*</span></label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                    @Html.TextBoxFor(model => model.ReportName, new { @class = "form-control" })
+                                                                                    @Html.ValidationMessageFor(model => model.ReportName)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCreatedOn">
+                                                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.CreatedOn) <span class="text-danger-reg">*</span></label>
+                                                                            <div class="form-group" title="Created On">
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group date" id="datetimepickerCreatedOn">
+                                                                                        @Html.TextBoxFor(model => model.CreatedOn, new { @class = "form-control", @Value = DateTime.Now.ToString("MM/dd/yyyy") })
+
+                                                                                        <span class="input-group-addon btn btn-default calendar">
+                                                                                            <i class="fa fa-calendar"></i>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    @Html.ValidationMessageFor(model => model.CreatedOn)
+
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <script type="text/javascript">
+                                                                                $(function () {
+                                                                                    $('#CreatedOn').datetimepicker({ pickTime: false });
+                                                                                    $('#datetimepickerCreatedOn').datetimepicker({ pickTime: false });
+                                                                                });
+                                                                            </script>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvReportType">
+                                                                            <div class='form-group' title="Report Type">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ReportType) <span class="text-danger-reg">*</span></label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="ReportTypeDD" required="required" onchange="SetReportType(this);">
+                                                                                        <option value="Simple">Simple</option>
+                                                                                        <option value="CrossTab">Cross Tab</option>
+                                                                                    </select>
+                                                                                    @Html.Hidden("ReportType")
+                                                                                    @Html.ValidationMessageFor(model => model.ReportType)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCreatedByUserID">
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.CreatedByUserID) <span class="text-danger-reg">*</span></label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group" style="width:100%;">
+                                                                                        @Html.DropDownList("CreatedByUserID", null, "--Select Created By--", new { @class = "chosen-select form-control", @HostingName = "UserDropDown", @dataurl = Url.Action("GetAllValueUserLogin", "CustomReports", null) })
+                                                                                        @Html.ValidationMessageFor(model => model.CreatedByUserID)
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                                                            <div class='form-group' title="Description">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                                                                    @Html.ValidationMessageFor(model => model.Description)
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                         
+                                                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#entitiesinreportbody"><span class="glyphicon glyphicon-chevron-down"></span> Entities In Report</a></h3>
+                                                                    </div>
+                                                                    <div class="card-body card-deck" id="entitiesinreportbody">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                                                            <div class='form-group' title="Entity Name">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span> </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("EntityNameDD", null, "-- Select --", new { @required = "Required", @onchange = "SetEntityName(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("EntityName")
+                                                                                    @Html.ValidationMessageFor(model => model.EntityName)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group" title="Add">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12" style="visibility:hidden">
+                                                                                    Entity
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <input type="button" id="addEntityBtn" onclick="AddEntity()" value="Add Entity" class="btn btn-primary btn-sm" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group" title="Add">
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="Des_Table" style="padding-top:5px;" style="overflow-x:auto;">
+                                                                            <table id="tblEntityList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col1">Entity Name</th>
+                                                                                        <th class="col1">Remove</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr></tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" id="SimpleRpt">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                         
+                                                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#resultpropertybody"><span class="glyphicon glyphicon-chevron-down"></span> Result Property</a></h3>
+                                                                    </div>
+                                                                    <div class="card-body card-deck" id="resultpropertybody">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvResultProperty">
+                                                                            <div class='form-group' title="Result Property">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ResultProperty)</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("ResultPropertyDD", null, "-- Select --", new { @onchange = "SetResultProperty(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("ResultProperty")
+                                                                                    @Html.ValidationMessageFor(model => model.ResultProperty)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvColumnOrder" style="display:none;">
+                                                                            <div class='form-group' title="Column Order">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ColumnOrder) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.TextBoxFor(model => model.ColumnOrder, new { @class = "form-control" })
+                                                                                    @Html.ValidationMessageFor(model => model.ColumnOrder)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOrderBy">
+                                                                            <div class='form-group' title="Order By">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.OrderBy) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="OrderByDD" required="required" onchange="SetOrderBy(this);">
+                                                                                        <option value="">None</option>
+                                                                                        <option value="asc">Ascending</option>
+                                                                                        <option value="desc">Descending</option>
+                                                                                    </select>
+                                                                                    @Html.Hidden("OrderBy")
+                                                                                    @Html.ValidationMessageFor(model => model.OrderBy)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvGroupBy">
+                                                                            <div class="form-group" title="Group By">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">
+                                                                                    @Html.LabelFor(model => model.GroupBy)
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <input id="GroupBy" name="GroupBy" type="checkbox" value="false" onclick="GroupByClick(this)" />
+                                                                                    @Html.ValidationMessageFor(model => model.GroupBy)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group' name="dvAggregateFunctionSimple" id="dvAggregateFunctionSimple">
+                                                                                <label class='col-sm-5 col-md-5 col-xs-12'>
+                                                                                    Aggregate Operators
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="AggregateDD" multiple="multiple" required="required">
+                                                                                        @*<option value="Sum">SUM</option>*@
+                                                                                    </select>
+                                                                                </div>
+                                                                                </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12" style="visibility:hidden">
+                                                                                    Property
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <input type="button" id="addPropertyBtn" value="Add Property" class="btn btn-primary btn-sm" onclick="AddProperty(this)" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="Des_Table" style="padding-top:5px;">
+                                                                            <table id="tblPropertyList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col1">Property Name</th>
+                                                                                        <th class="col1">Order By</th>
+                                                                                        <th class="col1">Group By</th>
+                                                                                        <th class="col1">Aggr.Operators</th>
+                                                                                        <th class="col1">Remove</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr></tr>
+                                                                            </table>
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" id="CrossTabrpt" style="display:none">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                        <div style="margin: 3px 0px 0px 0px;">
+                                                                             
+                                                                            <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#crosstabpropertybody"><span class="glyphicon glyphicon-chevron-down"></span> Cross Tab</a></h3>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div style="clear:both;"></div>
+                                                                    <div class="card-body card-deck" id="crosstabpropertybody">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCrossTabRow">
+                                                                            <div class='form-group' title="Cross Tab Row">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Row</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("CrossTabRowDD", null, "-- Select --", new { @onchange = "SetCrossTabRow(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("CrossTabRow")
+                                                                                    @Html.ValidationMessageFor(model => model.CrossTabRow)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCrossTabColumn">
+                                                                            <div class='form-group' title="Cross Tab Column">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Column</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("CrossTabColumnDD", null, "-- Select --", new { @onchange = "SetCrossTabColumn(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("CrossTabColumn")
+                                                                                    @Html.ValidationMessageFor(model => model.CrossTabColumn)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvAggregateEntity">
+                                                                            <div class='form-group' title="Aggregate Entity">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Entity</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("AggregateEntityDD", null, "-- Select --", new { @onchange = "SetAggregateEntity(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("AggregateEntity")
+                                                                                    @Html.ValidationMessageFor(model => model.AggregateEntity)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvAggregateProperty">
+                                                                            <div class='form-group' title="Aggregate Property">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Property </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("AggregatePropertyDD", null, "-- Select --", new { @onchange = "SetAggregateProperty(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("AggregateProperty")
+                                                                                    @Html.ValidationMessageFor(model => model.AggregateProperty)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group' name="dvAggregateFunction" id="dvAggregateFunction">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Function</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="AggregateFunctionDD" multiple="multiple" required="required"></select>
+                                                                                    @Html.Hidden("AggregateFunction")
+                                                                                    @Html.ValidationMessageFor(model => model.AggregateFunction)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12" style="visibility:hidden">
+                                                                                    CrossTabBtn
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <input type="button" id="addCrossTabBtn" value="Add Cross Tab Matrix" class="btn btn-primary btn-sm" onclick="AddCrossTab(this)" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="Des_Table" style="padding-top:5px;" class="" style="overflow-x:auto;">
+                                                                            <table id="tblCrossTabList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col1">Entity Name</th>
+                                                                                        <th class="col1">Property Name</th>
+                                                                                        <th class="col1">Function Name</th>
+                                                                                        <th class="col1">Remove</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr></tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @Html.Hidden("CrossTabPropertyValues")
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                         
+                                                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#queryconditionbody"><span class="glyphicon glyphicon-chevron-down"></span> Filter Condition</a></h3>
+                                                                    </div>
+                                                                    <div class="card-body card-deck" id="queryconditionbody">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterProperty">
+                                                                            <div class='form-group' title="Filter Property">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterProperty) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                    @Html.DropDownList("FilterPropertyDD", null, "-- Select --", new { @onchange = "SetFilterProperty(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("FilterProperty")
+                                                                                    @Html.ValidationMessageFor(model => model.FilterProperty)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterCondition">
+                                                                            <div class='form-group' title="Filter Condition">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterCondition) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    @Html.DropDownList("FilterConditionDD", null, "-- Select --", new { @onchange = "SetFilterCondition(this);", @class = "form-control" })
+                                                                                    @Html.Hidden("FilterCondition")
+                                                                                    @Html.ValidationMessageFor(model => model.FilterCondition)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterType">
+                                                                            <div class='form-group' title="Filter Type">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterType) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="FilterTypeDD" onchange="SetFilterType(this);">
+                                                                                        <option value="Value" selected="selected">Enter Value</option>
+                                                                                        @*<option value="Constant">Choose From List</option>
+                                                                                            <option value="Another">Another Column</option>
+                                                                                            <option value="Prompt">Prompt</option>*@
+                                                                                    </select>
+                                                                                    @Html.Hidden("FilterType")
+                                                                                    @Html.ValidationMessageFor(model => model.FilterType)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvFilterValue">
+                                                                            <div class='form-group' title="Filter Value">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.FilterValue) </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                    @Html.TextBoxFor(model => model.FilterValue, new { @class = "form-control" })
+                                                                                    @Html.ValidationMessageFor(model => model.FilterValue)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectValueFromList">
+                                                                            <div class='form-group' title="Select Value From List">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Logical Operator</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <select class="form-control" id="LogicalOperatorDD" onchange="SetLogicalOperator(this);">
+                                                                                        <option value="AND">AND</option>
+                                                                                        <option value="OR">OR</option>
+                                                                                        @*<option value="Prompt">Prompt</option>*@
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div style="display:none;">
+                                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectValueFromList">
+                                                                                <div class='form-group' title="Select Value From List">
+                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SelectValueFromList) </label>
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                        @Html.DropDownList("SelectValueFromListDD", null, "-- Select --", new { @onchange = "SetSelectValueFromList(this);", @class = "form-control" })
+                                                                                        @Html.Hidden("SelectValueFromList")
+                                                                                        @Html.ValidationMessageFor(model => model.SelectValueFromList)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvSelectProperty">
+                                                                                <div class='form-group' title="Select Property">
+                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SelectProperty) </label>
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                        @Html.DropDownList("SelectPropertyDD", null, "-- Select --", new { @onchange = "SetSelectProperty(this);", @class = "form-control" })
+                                                                                        @Html.Hidden("SelectProperty")
+                                                                                        @Html.ValidationMessageFor(model => model.SelectProperty)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group" title="Add">
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12" style="visibility:hidden">
+                                                                                    Condition
+                                                                                </label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <input type="button" id="addFilterBtn" onclick="AddQueryCondition()" value="Add Condition" class="btn btn-primary btn-sm" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class="form-group" title="Add">
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="Des_Table" style="padding-top:5px;"  style="overflow-x:auto;">
+                                                                            <table id="tblFilterList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col1">Logical Operator</th>
+                                                                                        <th class="col1">Property In Filter</th>
+                                                                                        <th class="col1">Condition</th>
+                                                                                        <th class="col1">Filter Type</th>
+                                                                                        <th class="col1">Filter Value</th>
+                                                                                        <th class="col1">Remove</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr></tr>
+                                                                            </table>
+                                                                        </div>
+                                                                        @Html.Hidden("QueryConditionValues")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div class="card card-default">
+                                                                    <div class="card-header clearfix">
+                                                                         
+                                                                        <h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#relationsbody"><span class="glyphicon glyphicon-chevron-down"></span> Relations</a></h3>
+                                                                    </div>
+                                                                    <div class="card-body card-deck" id="relationsbody">
+                                                                        <div style="display:none">
+                                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvRelatedEntity">
+                                                                                <div class='form-group' title="Related Entity">
+                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RelatedEntity) </label>
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                        @Html.TextBoxFor(model => model.RelatedEntity, new { @class = "form-control" })
+                                                                                        @Html.ValidationMessageFor(model => model.RelatedEntity)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvForeignKeyEntity">
+                                                                                <div class='form-group' title="ForeignKey Entity">
+                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ForeignKeyEntity) </label>
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                        @Html.TextBoxFor(model => model.ForeignKeyEntity, new { @class = "form-control" })
+                                                                                        @Html.ValidationMessageFor(model => model.ForeignKeyEntity)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvRelationName">
+                                                                                <div class='form-group' title="Relation Name">
+                                                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.RelationName) </label>
+                                                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                                                        @Html.TextBoxFor(model => model.RelationName, new { @class = "form-control" })
+                                                                                        @Html.ValidationMessageFor(model => model.RelationName)
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="Des_Table" style="padding-top:5px;" class="" style="overflow-x:auto;">
+                                                                            <table id="tblrelationList" style="table-layout: fixed;" class="table table-hover table-striped default-bordered default-condensed">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th class="col1">Entity</th>
+                                                                                        <th class="col1">Related Entity</th>
+                                                                                        <th class="col1">Relation Name</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr></tr>
+                                                                            </table>
+                                                                        </div>
+                                                                        @Html.Hidden("RelationsValues")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @*Hidden Values*@
+                                                        @Html.Hidden("EntityValues")
+                                                        @Html.Hidden("OtherValues")
+                                                        @*End*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["CustomReportsParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm" })
+                                        <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm" />
+                if (ViewBag.IsDDAdd == null && User.CanEdit("CustomReports"))
+                {
+                    <input type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm" />
+                }
+                <input type="Button" name="command" id="btnViewReport" value="View Report" onclick="ViewReportResult()" class="btn btn-primary btn-sm" />
+                <input type="hidden" name="hdncommand" value="" />
+                <br />
+            }
+        </div>
+        <div class="tab-pane fade" id="ViewRepotsTab">
+
+        </div>
+    </div>
+</div>
+<script>
+    function ViewReportResult() {
+        $("#ReportsTab").click();
+    }
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "CustomReports").ToList();
+
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        <script>
+            $("form").submit(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+                form = $("#frmCustomReports").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "CustomReports", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "CustomReports", false, "ErrMsg", form);
+                //business rules on inline associations
+                if (flag) {
+
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+                return flag;
+            });
+            $(document).ready(function () {
+                $("input[type='submit']").on('blur', function () {
+                    $("input[type='submit']").removeAttr('disabled');
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                $("#ReportType").val($('#ReportTypeDD option:selected').val());
+                var $this = $(this);
+                SaveServerTime(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '80%' });
+        });
+
+    });
+</script>
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            focusOnControl('frmCustomReports');
+        }
+        catch (ex) { }
+    });
+    function AddCrossTab(obj) {
+
+        var EntityCrossTabValue = $('#AggregateEntityDD option:selected').val();
+        var EntityCrossTabText = $('#AggregateEntityDD option:selected').text();
+
+        var PropCrossTabValue = $('#AggregatePropertyDD option:selected').val();
+        var PropCrossTabText = $('#AggregatePropertyDD option:selected').text();
+
+        var FunCrossVal = $("#AggregateFunctionDD option:selected").map(function () {
+            return $(this).val();
+        }).get().join();
+
+        var FunCrossText = $("#AggregateFunctionDD option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (FunCrossVal == "") {
+            alert('Please Select Corss Tab Function');
+            return false;
+        }
+        if (FunCrossVal != "") {
+            FunCrossVal = FunCrossVal.replaceAll(",", ";");
+        }
+
+        if (EntityCrossTabValue.length != 0) {
+            //code for add Cross Tab property in tamprary grid...........
+            //if ($("#CrossTabPropertyValues").val().match(EntityCrossTabValue)) {
+            //    alert('CrossTab Value alrady added.');
+            //    return false;
+            //}
+            var value = "";
+            if ($("#CrossTabPropertyValues").val() != "") {
+
+                var hdnCrossTab = $("#CrossTabPropertyValues").val()
+                value = EntityCrossTabValue + "-" + PropCrossTabValue + "-" + FunCrossVal;
+                $("#CrossTabPropertyValues").val(hdnCrossTab + "," + EntityCrossTabValue + "-" + PropCrossTabValue + "-" + FunCrossVal);
+            }
+            else {
+
+                value = EntityCrossTabValue + "-" + PropCrossTabValue + "-" + FunCrossVal;
+                $("#CrossTabPropertyValues").val(value)
+            }
+
+            var str = "<tr>";
+            str += "<td>" + EntityCrossTabText + "</td>";
+            str += "<td>" + PropCrossTabText + "</td>";
+            str += "<td>" + FunCrossText + "</td>";
+            str += "<td><i id=\"lblCrossTabName" + EntityCrossTabValue.replace('.', '_') + "\" name=\"lblCrossTabName" + EntityCrossTabValue.replace('.', '_') + "\"  onclick=\"deleteCrossTabPropertyRow(this,'" + EntityCrossTabValue + "','" + value + "');\" class=\"fa fa-remove\"></i></td>";
+            $('#tblCrossTabList').show();
+            $('#tblCrossTabList').append(str) + "</tr>";
+
+            $('#AggregateEntityDD').val("");
+            $('#AggregatePropertyDD').val("");
+            $('#AggregatePropertyDD').html("<option  value=''>--Select--</option>");
+
+            listItems = "<option  value=''>None</option>";
+            $('#AggregateFunctionDD').html(listItems);
+            $("#AggregateFunctionDD option:selected").removeAttr("selected");
+            $("#AggregateFunctionDD").multiselect('rebuild');
+        }
+        if (EntityCrossTabValue.length == 0) {
+            alert('Please Select Corss Tab Property');
+        }
+    }
+    function deleteCrossTabPropertyRow(obj, property, value) {
+        deleteCrossTabProperty(property, value);
+        var obj_tr = $(obj).closest("tr");
+        $("#" + $(obj).attr("name")).val("");
+        obj_tr.remove();
+    }
+    function deleteCrossTabProperty(property, value) {
+        var _propertyNameRow = $("#CrossTabPropertyValues").val()
+        var res = _propertyNameRow.split(",");
+        if (res.length > 1) {
+            if (res.indexOf(value) == 0) {
+                _propertyNameRow = _propertyNameRow.replace(value + ",", '');
+            }
+            else {
+                _propertyNameRow = _propertyNameRow.replace("," + value, '');
+            }
+        }
+        else {
+            _propertyNameRow = _propertyNameRow.replace(value, '');
+
+        }
+        $("#CrossTabPropertyValues").val(_propertyNameRow);
+
+    }
+    function deleteCrossTabPropertiesGrid(entityName) {
+        var _ResultPropertyRow = $("#CrossTabPropertyValues").val();
+        if (_ResultPropertyRow == undefined || _ResultPropertyRow == null || _ResultPropertyRow == "")
+            return false;
+
+        var res = _ResultPropertyRow.split(",");
+        var res1 = _ResultPropertyRow.split(",");
+
+        for (i = 0; i < res.length; i++) {
+            var propArr = res[i].split('-');
+            if (propArr[0].split('.')[0] == entityName) {
+                var itemtoRemove = res[i];
+                res1.splice($.inArray(itemtoRemove, res1), 1);
+                $("#lblCrossTabName" + propArr[0].replace('.', '_')).click();
+            }
+        }
+        var propResult = "";
+        if (res1.length > 1) {
+            for (var k = 0; k < res1.length; k++) {
+                propResult += res1[k] + ",";
+            }
+            propResult = propResult.substring(0, propResult.length - 1);
+            $("#CrossTabPropertyValues").val(propResult);
+        }
+        else {
+            $("#CrossTabPropertyValues").val(res1);
+        }
+
+    }
+</script>

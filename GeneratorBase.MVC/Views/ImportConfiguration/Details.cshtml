@@ -1,0 +1,127 @@
+﻿@model GeneratorBase.MVC.Models.ImportConfiguration
+@using PagedList;
+@{
+    ViewBag.Title = "View Import Configuration";
+}
+<div class="content-heading">
+    <div class="col-lg-12">
+       
+            Import Configuration  
+         <small>View - @Html.DisplayFor(model => model.DisplayValue)</small>
+       
+
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li ><a class="nav-link active"  href="#Details" data-toggle="tab">Details</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="Details">
+            <div class="AppForm">
+                <div class="">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-xs-12">
+                            <div class="card card-default">
+                                <div class="card-header clearfix">
+                                    
+                                    <h3 class="card-title">General</h3>
+                                </div>
+                                <div class="card-body card-deck">
+                                    @if (User.CanView("ImportConfiguration", "TableColumn"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.TableColumn) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.TableColumn</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "SheetColumn"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.SheetColumn) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.SheetColumn</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "UniqueColumn"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.UniqueColumn) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.UniqueColumn</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "LastUpdate"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.LastUpdate)</label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.LastUpdate.Value.ToString("MM/dd/yyyy hh:mm tt") @Model.LastUpdateUser</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "Name"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Name) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.Name</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "MappingName"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.MappingName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.MappingName</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (User.CanView("ImportConfiguration", "IsDefaultMapping"))
+                                    {
+                                        <div class='col-sm-6'>
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.IsDefaultMapping) </label>
+                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                    <p class="viewlabel">@Model.IsDefaultMapping</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    @Html.ActionLink("Back to List", "Cancel", new { UrlReferrer = Request.UrlReferrer.PathAndQuery }, new { @class = "btn btn-secondary  " })
+                    @if ( User.CanEdit("ImportConfiguration"))
+                    {
+                        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary  " })
+                    }
+                </div>
+            </div>
+        </div>
+    </div> <!-- /tab-content --><br />
+    <br />
+</div>

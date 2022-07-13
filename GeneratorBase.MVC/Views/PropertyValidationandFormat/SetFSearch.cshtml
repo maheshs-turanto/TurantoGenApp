@@ -1,0 +1,575 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@{
+    ViewBag.Title = "Set Search Criteria";
+    var parentUrl = new System.Collections.Specialized.NameValueCollection();
+    if (Request.UrlReferrer != null)
+    {
+        parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+    }
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "PropertyValidationandFormat");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Property Validation and Format";
+}
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true);
+                                 Html.EnableClientValidation();
+                                <div class="content-heading">
+                                    <div class="col-lg-10">
+                                  
+                                        <strong>
+                                            <a href="@Url.Action("Index", "Admin")"> Admin</a>  <a href="@Url.Action("Index")"> @EntityDisplayName</a>
+
+                                           <small> Query </small>
+                                        </strong>
+                                    </div>
+                                    <div class="col-lg-2">
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div>
+                                                @if (User.CanView("PropertyValidationandFormat"))
+                                                {
+                                                    <button class="btn btn-secondary   tip-top" type="button" data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "PropertyValidationandFormat") + "');")>
+                                                        <span class="fa fa-list"></span> List
+                                                    </button>
+                                                }
+                                                @if (User.CanAdd("PropertyValidationandFormat"))
+                                                {
+                                                    <button class="btn btn-secondary   tip-top" type="button" data-original-title="Create New" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "PropertyValidationandFormat", new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');")>
+                                                        <span class="fam-world-add"></span> Create New
+                                                    </button>
+                                                }
+                                                @if (ViewBag.FavoriteItem != null)
+                                                {
+                                                    var baseUri = GeneratorBase.MVC.Models.CommonFunction.Instance.getBaseUri();
+                                                    <div class="btn-group">
+                                                        <button data-toggle="dropdown" type="button" class="btn btn-secondary   tip-top dropdown-toggle btn-secondary">
+                                                            <span class="fa fa fa-star"></span> Favorite Items
+                                                            <span class="caret">    </span>
+                                                        </button>
+                                                        <ul class="dropdown-menu pull-left">
+                                                            @foreach (GeneratorBase.MVC.Models.FavoriteItem fItem in ViewBag.FavoriteItem)
+                                                            {
+                                                                var linkaddress = baseUri + fItem.LinkAddress;
+                                                                if (baseUri.EndsWith("/") && fItem.LinkAddress.StartsWith("/"))
+                                                                {
+                                                                    linkaddress = baseUri + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                                                                }
+                                                                if (!baseUri.EndsWith("/") && !fItem.LinkAddress.StartsWith("/"))
+                                                                {
+                                                                    linkaddress = baseUri + "/" + fItem.LinkAddress.TrimStart("/".ToCharArray());
+                                                                }
+                                                                <li>
+                                                                    <a href='@linkaddress'>@fItem.Name</a>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                <a href="#" class="btn btn-secondary closeall pull-right  "><i class="fa fa-chevron-up small"></i> close all</a> <a href="#" class="btn btn-secondary openall pull-right  " style="margin-right:5px;"><i class="fa fa-chevron-down small"></i> open all</a>
+                                            </div>
+                                            <div class="fsearch">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <div class="card card-default">
+                                                            <div class="card-header clearfix">
+                                                                 
+                                                                <h3 class="card-title">
+                                                                    All Field Search Criteria
+                                                                </h3>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <div class='col-sm-12 col-md-12 col-xs-12'>
+                                                                    @{
+    var txtGenCriteria = String.IsNullOrEmpty(Convert.ToString(ViewBag.CurrentFilter)) ? "" : Convert.ToString(ViewBag.CurrentFilter);
+                                                                    }
+                                                                    <input type="text" id="FSearch" class="form-control" placeholder="Search Criteria" value="@txtGenCriteria" style="font-size:12px" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="accordion">
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Range Property</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseOne" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'
+                                                                                 title="@Html.DisplayNameFor(model => model.LowerBound)">
+                                                                                @Html.LabelFor(model => model.LowerBound)
+                                                                                <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                                                                    <input type="text" id="LowerBoundFrom" name="LowerBoundFrom" class="form-control" placeholder="From"
+                                                                                           data-val="true" data-val-number="Must be a number." />
+                                                                                    <span class="field-validation-valid" data-valmsg-for="LowerBoundFrom" data-valmsg-replace="true"></span>
+                                                                                    <span class="input-group-addon datefiled">
+                                                                                        <input type="text" id="LowerBoundTo" name="LowerBoundTo" class="form-control" placeholder="To" data-val="true" data-val-number="Must be a number." style="border-radius:0px 4px 4px 0px; border-left:0px" />
+                                                                                        <div class="field-validation-valid" style="margin-top: 25px;font-size: 12px;" data-valmsg-for="LowerBoundTo" data-valmsg-replace="true"></div>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'
+                                                                                 title="@Html.DisplayNameFor(model => model.UpperBound)">
+                                                                                @Html.LabelFor(model => model.UpperBound)
+                                                                                <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                                                                    <input type="text" id="UpperBoundFrom" name="UpperBoundFrom" class="form-control" placeholder="From"
+                                                                                           data-val="true" data-val-number="Must be a number." />
+                                                                                    <span class="field-validation-valid" data-valmsg-for="UpperBoundFrom" data-valmsg-replace="true"></span>
+                                                                                    <span class="input-group-addon datefiled">
+                                                                                        <input type="text" id="UpperBoundTo" name="UpperBoundTo" class="form-control" placeholder="To" data-val="true" data-val-number="Must be a number." style="border-radius:0px 4px 4px 0px; border-left:0px" />
+                                                                                        <div class="field-validation-valid" style="margin-top: 25px;font-size: 12px;" data-valmsg-for="UpperBoundTo" data-valmsg-replace="true"></div>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseBoolean"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Boolean Property</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseBoolean" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class="row">
+                                                                            <div class='form-group'>
+                                                                                <div class="col-sm-4 col-md-4 col-xs-4">
+                                                                                    <label>Is Enabled</label>
+                                                                                    <select class="form-control" id="IsEnabled">
+                                                                                        <option value="">None</option>
+                                                                                        <option value="True">True</option>
+                                                                                        <option value="False">False</option>
+                                                                                    </select>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Association Property</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseTwo" class="collapse">
+                                                                    <div class="card-body">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-sm-6 col-xs-6">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapsesorting"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Select Columns for sorting</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapsesorting" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'>
+                                                                                <label id="lblOrderDepth" class="col-sm-5 col-md-5 col-xs-12">Order By</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group" style="width:100%;">
+                                                                                        @Html.DropDownList("SortOrder1", null, "-- Select --", new { @class = "form-control" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="btn btn-primary  " onclick="SetSortOrder();" type="button" value="Add">Add</button>
+                                                                        <div class="clearfix"></div>
+                                                                        <label id="lblsortorder" style=""></label>
+                                                                        <button class="btn btn-secondary btn-xs" type="button" id="btnsortorder" style="display:none !important;" onclick="clearsortorder();">Reset</button>
+                                                                        @Html.Hidden("SortOrder")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-sm-6 col-xs-6">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapsegrouping"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Select Columns for grouping</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapsegrouping" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'>
+                                                                                <label id="lblGroupDepth" class="col-sm-5 col-md-5 col-xs-12">Group By</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group" style="width:100%;">
+                                                                                        @Html.DropDownList("GroupByColumn", null, "-- Select --", new { @class = "form-control" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="btn btn-primary  " onclick="SetGroupByColumn();" type="button" value="Add">Add</button>
+                                                                        <div class="clearfix"></div>
+                                                                        <label id="lblgroupbycolumn" style=""></label>
+                                                                        <button class="btn btn-secondary btn-xs" type="button" id="btngroupbycolumn" style="display:none !important;" onclick="cleargroupbycolumn();">Reset</button>
+                                                                        @Html.Hidden("hdnGroupByColumn")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                     
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseGridLayout"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Grid Layout & Hide Columns</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseGridLayout" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Grid Layout</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group" style="width:100%;">
+                                                                                        <select class="form-control" id="DisplayLayout">
+                                                                                            <option value="IndexPartial">Table (Default)</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                                            <div class='form-group'>
+                                                                                <label class="col-sm-5 col-md-5 col-xs-12">Hide Columns</label>
+                                                                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                                                    <div class="input-group" style="width:100%;">
+                                                                                        @Html.DropDownList("HideColumns", null, new { @multiple = "multiple" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="card card-default">
+                                                                <div class="card-header clearfix">
+                                                                    <h3 class="card-title">
+                                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSearchCriteria"><i class="fa fa-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Specific Field Search Criteria</a>
+                                                                    </h3>
+                                                                </div>
+                                                                <div id="collapseSearchCriteria" class="collapse">
+                                                                    <div class="card-body">
+                                                                        <div class="row">
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Property <span class="text-danger-reg">*</span></label>
+                                                                                    @Html.DropDownList("PropertyList", null, "-- Select Property --", new { @onchange = "FillCriteriaValue(this);GetSecondLevelAttributeForCriteria();", @class = "form-control" })
+                                                                                    @Html.DropDownList("AssociationPropertyList", null, "-- Select --", new { @onchange = "GetCriteriaSuggestedValues(this);FillCriteriaForAssociation();", @class = "form-control", @style = "margin-top:8px;display:none;", @HostingName = "", @dataurl = "" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Operator <span class="text-danger-reg">*</span></label>
+                                                                                    <select class="form-control" id="OperatorList" onchange="SetCriteriaValueType(this);">
+                                                                                        <option value="">-- Select --</option>
+                                                                                    </select>
+                                                                                    @Html.TextBox("ConditionOperator", null, new { @class = "form-control hidden" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <div class='form-group'>
+                                                                                    <label>Select Value Type<span class="text-danger-reg">*</span></label>
+                                                                                    <select class="form-control" id="ValueTypeList" onchange="GetCriteriaSuggestedValues(this);">
+                                                                                        <option value="Constant">Constant</option>
+                                                                                        <option value="Pick From List">Pick From List</option>
+                                                                                        <option value="Dynamic">Dynamic</option>
+                                                                                    </select>
+                                                                                    @Html.TextBox("ConditionValueType", null, new { @class = "form-control hidden" })
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-3 col-md-3 col-xs-12">
+                                                                                <label>Property Value<span class="text-danger-reg">*</span></label>
+                                                                                <div class='form-group'>
+                                                                                    @Html.TextBox("ConditionValue", null, new { @class = "col-sm-8 col-md-8 col-xs-8", @style = "border-radius:4px;" })
+                                                                                    <div style="display:none; padding-left:0px;" id="dvSuggestedPropertyValue" class="col-sm-8 col-md-8 col-xs-8">
+                                                                                        @Html.DropDownList("SuggestedPropertyValue", null, new { @multiple = "multiple" })
+                                                                                        @Html.TextBox("SuggestedPropertyValues", null, new { @class = "form-control hidden" })
+                                                                                    </div>
+                                                                                    <div id="dvRule7DynamicValueInCondition" class="col-sm-8 col-md-8 col-xs-8" style="display:none; padding:0px;">
+                                                                                        @Html.DropDownList("SuggestedDynamicValueInCondition7", null, "-- Select --", new { @onchange = "GetSecondLevelAttributeInCriteria();", @class = "form-control", @style = "margin:0px;", @HostingName = "", @dataurl = "" })
+                                                                                        @Html.DropDownList("SuggestedDynamicValueInCondition71", null, "-- Select --", new { @class = "form-control", @style = "margin-top:8px;", @HostingName = "", @dataurl = "" })
+                                                                                    </div>
+                                                                                    <div class="col-sm-4 col-md-4 col-xs-4" style="padding:0px 0px 0px 5px;">
+                                                                                        <select class="form-control" id="LogicalConnectorList">
+                                                                                            <option value="AND">AND</option>
+                                                                                            <option value="OR">OR</option>
+                                                                                        </select>
+                                                                                        @Html.TextBox("LogicalConnector", null, new { @class = "form-control hidden" })
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-12 col-md-12 col-lg-12" style="margin-top:10px; padding:0px">
+                                                                            <button type="button" id="btnAddAction4" onclick="AddCriteriaInGrid()" class="btn btn-primary pull-right">Add Condition</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="Des_Table" style="padding-top:5px;" class="table-responsive" style="overflow-x:auto;">
+                                                                        <table id="tblConditionList" style="display:none;" class="table table-striped default-bordered table-hover default-condensed">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th class="col1">Property</th>
+                                                                                    <th class="col1">Operator</th>
+                                                                                    <th class="col1">Value</th>
+                                                                                    <th class="col1">Connector</th>
+                                                                                    <th class="col1">Remove</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tr></tr>
+                                                                        </table>
+                                                                    </div>
+                                                                    @Html.TextBox("FilterCondition", null, new { @class = "hidden" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @*End Div*@
+                                                </div>
+                                            </div>
+                                            <a href="@Url.Action("Index")" class="btn btn-secondary  "> Cancel</a>
+                                            <button id="clearfSearchPropertyValidationandFormat" type="button" class="btn btn-primary  " onclick="@Html.Raw("clearFsearch('" + Url.Action("SetFSearch", "PropertyValidationandFormat") + "',event)")">Clear</button>
+                                            <button id="fSearchPropertyValidationandFormat" class="btn btn-primary  " type="submit" dataurl="@(Url.Action("FSearch", "PropertyValidationandFormat", new { ShowDeleted = @Convert.ToString(ViewData["ShowDeleted"]) }))"
+                                                    onclick="@(Html.Raw("FacetedSearch(event,'PropertyValidationandFormat','','LowerBoundFrom,LowerBoundTo,UpperBoundFrom,UpperBoundTo,IsEnabled','','"
+   + Convert.ToString(Request.QueryString["viewtype"]) + "','" + Convert.ToString(Request.QueryString["sortBy"]) + "','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+                                                Run
+                                            </button>
+                                            @if (User.CanAdd("T_FacetedSearch"))
+                                            {
+                                                <button id="fSearchPropertyValidationandFormatSave" class="btn btn-primary  " type="submit" dataurl="@(Url.Action("FSearch", "PropertyValidationandFormat", null) )"
+                                                        onclick="@(Html.Raw("FacetedSearchSave(event,'PropertyValidationandFormat','','LowerBoundFrom,LowerBoundTo,UpperBoundFrom,UpperBoundTo,IsEnabled','','"
+   + Convert.ToString(Request.QueryString["viewtype"]) + "','" + Convert.ToString(Request.QueryString["sortBy"]) + "','"
+     + Convert.ToString(Request.QueryString["isAsc"]) + "','" + "'); "))">
+                                                    Save Query
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+}
+<script>
+    function clearFsearch(url, e) {
+        e.preventDefault();
+        $(e.target).closest('form').find("input:text").each(function () {
+            $(this).val('');
+        });
+        $("option:selected").removeAttr("selected");
+        $('#tblConditionList>tbody>tr').each(function () {
+            if ($(this).html() != "") {
+                $("#FilterCondition").val('');
+                $("#FilterCondition").click();
+                $(this).remove();
+            }
+        });
+        $('#tblConditionList').hide();
+        $('select[multiple="multiple"]').each(function () {
+            multiselect_deselectAll($(this));
+        });
+        clearsortorder();
+        cleargroupbycolumn();
+        return false;
+    }
+    function multiselect_deselectAll($el) {
+        $('option', $el).each(function (element) {
+            $el.multiselect('deselect', $(this).val());
+        });
+    }
+    function closealert() {
+        $('#dvalert').attr("class", "modal fade");
+        $('#dvalert').attr("aria-hidden", "true");
+        $('#dvalert').attr("style", "display:none;");
+    }
+    function cleargroupbycolumn() {
+        $("#hdnGroupByColumn").val('');
+        $("#lblgroupbycolumn").html('');
+        $("#lblgroupbycolumn").removeAttr("style");
+        $("#btngroupbycolumn").attr("style", "display:none !important;");
+        $("#lblGroupDepth").html('Group By');
+    }
+    function SetGroupByColumn() {
+        var value = $("#hdnGroupByColumn").val();
+        value += $("#GroupByColumn").val() + ",";
+        $("#hdnGroupByColumn").val(value);
+        var text = $("#GroupByColumn option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (text == "-- Select --") {
+            $('#dvalert').attr("class", "modal fade in");
+            $('#dvalert').attr("aria-hidden", "false");
+            $('#dvalert').attr("style", "display:block;");
+            $('#alertbody').html("Please select at least one property for grouping.");
+            return;
+        }
+        if ($("#lblgroupbycolumn").html().length > 0) {
+            var arrgrouping = $("#lblgroupbycolumn").html().split(' Then Group By ');
+            //var test1 = arrsortorder.indexOf(text + "-&gt");
+            if ($.inArray(text, arrgrouping) >= 0) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("This property is already selected, please select any other property.");
+                return;
+            }
+            $("#lblgroupbycolumn").append(" Then Group By " + text);
+        }
+        else
+            $("#lblgroupbycolumn").append(text);
+        $("#btngroupbycolumn").show();
+        $("#lblGroupDepth").html('Then Group By');
+        $("#lblgroupbycolumn").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }
+    function clearsortorder() {
+        $("#SortOrder").val('');
+        $("#lblsortorder").html('');
+        $("#lblsortorder").removeAttr("style");
+        $("#btnsortorder").attr("style", "display:none !important;");
+        $("#lblOrderDepth").html('Order By');
+    }
+    function SetSortOrder() {
+        var value = $("#SortOrder").val();
+        value += $("#SortOrder1").val() + ",";
+        $("#SortOrder").val(value);
+        var text = $("#SortOrder1 option:selected").map(function () {
+            return $(this).text();
+        }).get().join();
+        if (text == "-- Select --") {
+            $('#dvalert').attr("class", "modal fade in");
+            $('#dvalert').attr("aria-hidden", "false");
+            $('#dvalert').attr("style", "display:block;");
+            $('#alertbody').html("Please select at least one property for sorting.");
+            return;
+        }
+        if ($("#lblsortorder").html().length > 0) {
+            var arrsortorder = $("#lblsortorder").html().split(';');
+            //var test1 = arrsortorder.indexOf(text + "-&gt");
+            if ($.inArray(text + "-&gt", arrsortorder) >= 0 || $.inArray(text, arrsortorder) >= 0) {
+                $('#dvalert').attr("class", "modal fade in");
+                $('#dvalert').attr("aria-hidden", "false");
+                $('#dvalert').attr("style", "display:block;");
+                $('#alertbody').html("This property is already selected, please select any other property.");
+                return;
+            }
+            $("#lblsortorder").append("->" + text);
+        }
+        else
+            $("#lblsortorder").append(text);
+        $("#btnsortorder").show();
+        $("#lblOrderDepth").html('Then Order By');
+        $("#lblsortorder").attr("style", "border:1px solid #428bca;margin-left: 15px; background: #edf5fa; padding-left: 5px !important; border-radius: 4px;")
+    }
+    $(document).ready(function () {
+        $('#HideColumns').multiselect({
+            buttonWidth: '100%'
+        });
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'ALL'
+            });
+        });
+    });
+</script>
+<script>
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            $(this).blur();
+            $('#fSearchPropertyValidationandFormat').focus().click();
+        }
+    }
+    $(document).keypress(keypressHandler);
+    $(document).ready(function () {
+        if ("@parentUrl".length > 0) {
+            SetFSearchParameters("@parentUrl["SortOrder"]", "@parentUrl["GroupByColumn"]", "@parentUrl["HideColumns"]", "@parentUrl["viewtype"]");
+            SetFSearchFilterCondition('@Url.Action("GetPropertyDP", "PropertyValidationandFormat")', "@parentUrl["FilterCondition"]");
+            document.getElementById("FSearch").value = AntiSanitizeURLString("@parentUrl["search"]");
+            document.getElementById("FSearch").value = AntiSanitizeURLString("@parentUrl["search"]");
+            document.getElementById("LowerBoundTo").value = "@parentUrl["LowerBoundTo"]";
+            document.getElementById("LowerBoundFrom").value = "@parentUrl["LowerBoundFrom"]";
+            document.getElementById("UpperBoundTo").value = "@parentUrl["UpperBoundTo"]";
+            document.getElementById("UpperBoundFrom").value = "@parentUrl["UpperBoundFrom"]";
+            document.getElementById("IsEnabled").value = "@parentUrl["IsEnabled"]";
+        }
+    });
+</script>
+<script type="text/javascript">
+    // Criteria Javascript Methods
+    function FillCriteriaValue(obj) {
+        FillCriteriaValueFunction(obj, '@ViewBag.EntityName', '@Url.Action("GetDateType", "BusinessRule")');
+    }
+    function GetSecondLevelAttributeForCriteria() {
+        GetSecondLevelAttributeForCriteriaFunction('@ViewBag.EntityName', '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")');
+    }
+    function GetCriteriaSuggestedValues(obj) {
+        GetCriteriaSuggestedValuesFunction(obj, '@ViewBag.EntityName', '@Url.Action("GetDropdown", "BusinessRule")', '@Url.Action("GetTargetEntityOfAssociationProperty", "BusinessRule")', '@Url.Action("GetAllMultiSelectValueForBR", "_Entity", null)');
+    }
+    function FillCriteriaForAssociation() {
+        FillCriteriaForAssociationFunction('@ViewBag.EntityName', '@Url.Action("GetDateTypeForAssociationProperties", "BusinessRule")');
+    }
+    function GetSecondLevelAttributeInCriteria() {
+        GetSecondLevelAttributeInCriteriaFunction('@ViewBag.EntityName', '@Url.Action("GetAttributesofTargetEntity", "BusinessRule")');
+    }
+    function AddCriteriaInGrid() {
+        AddCriteriaInGridFunction('@ViewBag.EntityName');
+    }
+    function CreateCriteriaForAssociation(entityName, param, assocName, assocDispName, valueType, dynamicDispName) {
+        CreateCriteriaForAssociationFunction(entityName, param, assocName, assocDispName, valueType, dynamicDispName);
+    }
+    function VerifyPropertyAndValueDataType(entityName, propertyName, conditionValue, valueType, actionType) {
+        VerifyPropertyAndValueDataTypeFunction(entityName, propertyName, conditionValue, valueType, actionType, '@Url.Action("VerifyPropertyAndValueDataType", "BusinessRule")');
+    }
+    $(document).ready(function () {
+        FSearchConditionFunction();
+    });
+</script>
+<div class="modal fade" aria-hidden="true" id="dvalert">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="closealert();" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <center><h4 class="modal-title"> Property Validation and Format </h4></center>
+                <div class="alert alert-warning" id="alertbody">
+                </div>
+                <button type="button" class="btn btn-secondary  " onclick="closealert();" data-dismiss="modal" aria-hidden="true">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,287 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBarMenuItemAssociation
+@using PagedList;
+
+@{
+    ViewBag.Title = "Edit Menu Bar Menu Item Association";
+	var EditPermission = User.CanEditItem("T_MenuBarMenuItemAssociation", Model, User);
+	//var DeletePermission = User.CanDeleteItem("T_MenuBarMenuItemAssociation", Model, User);
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBarMenuItemAssociation").Properties;
+	Layout = null;
+
+	bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"])==true)
+    {
+        isRecordReadOnly = true;
+		ViewData["RecordReadOnly"]=true;
+    }
+	var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_MenuBarMenuItemAssociation");
+	var NonViewableProperties = User.CanNotView("T_MenuBarMenuItemAssociation");
+	var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_MenuBarMenuItemAssociation", User);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("T_MenuBarMenuItemAssociation", Property))
+        {
+            return new { @class = "form-control"};
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+		 if ($('#EntityT_MenuBarMenuItemAssociationDisplayValue').has('option').length > 0) {
+			var RecId =  $($("#frmQEditT_MenuBarMenuItemAssociation")[0]["Id"]).val();//.$("#Id").val()
+            $("#T_MenuBarMenuItemAssociationDD").append($("#EntityT_MenuBarMenuItemAssociationDisplayValue").html());
+            $("#T_MenuBarMenuItemAssociationDD").val(RecId);
+			var text = $("option:selected", $("#T_MenuBarMenuItemAssociationDD")).text();
+            $("#T_MenuBarMenuItemAssociationDD").attr('data-toggle', 'tooltip')
+            $("#T_MenuBarMenuItemAssociationDD").attr('title', text);
+            var lastOptionVal = $('#T_MenuBarMenuItemAssociationDD option:last-child').val();
+            var fristOptionVal = $('#T_MenuBarMenuItemAssociationDD option:first-child').val();
+            if (lastOptionVal == RecId)
+			{
+                $('#next').hide();
+				$('#SaveAndContinue').hide();
+				}
+            if (fristOptionVal == RecId)
+                $('#prev').hide();	
+			} else {  $('#dvsavenext').hide(); $('#SaveAndContinue').hide(); }
+			
+			LockHostDropdownOnEditQuick('@Convert.ToString(ViewData["AssociatedType"])','@Convert.ToBoolean(ViewData["IsFilter"])');
+        }
+        catch (ex) { }
+    });
+	 $(document).ready(function () {
+        $('input[type=text], textarea,input[type=multiline]').hover(function () {
+            $(this).attr("title", $(this).val());
+        });
+
+    });
+</script>
+<style>.multiselect-container{
+        height: 250px !important;
+}</style>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarMenuItemAssociationRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarMenuItemAssociationRestrictDropdownValueRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<div class="row">
+	 @*<label id="ErrMsg" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+		<input type="hidden" id="ErrMsg" />
+		<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+
+<div class="col-sm-6">
+     <h4>
+                <span id="HostingEntityDisplayValue">
+				 @Html.DisplayFor(model => model.DisplayValue)
+    </span>
+            </h4>
+    </div>
+
+	@if (EditPermission && !HideAction)
+            {
+            <div class="col-sm-6" id="dvsavenext">
+                <button class="btn btn-default btn-xs float-right" id="next" onclick="@Html.Raw("nextFun('T_MenuBarMenuItemAssociation')")">Next >></button>
+                @Html.DropDownList("T_MenuBarMenuItemAssociationDD", null, null, new { @onchange = "FillDisplayValueQEdit('T_MenuBarMenuItemAssociation')", @required = "required", @class = "float-right", @Style = "height: 22px;width: 170px;" })
+                <button class="btn btn-default btn-xs float-right" id="prev" onclick="@Html.Raw("prevFun('T_MenuBarMenuItemAssociation')")"><< Prev</button>
+            </div>
+        }
+
+
+</div>
+	
+@using (Html.BeginForm("EditQuick","T_MenuBarMenuItemAssociation",new {UrlReferrer =Convert.ToString(ViewData["T_MenuBarMenuItemAssociationParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmQEditT_MenuBarMenuItemAssociation" }))
+{
+     Html.ValidationSummary(true);
+     Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+		if (NonViewableProperties != null) { @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))}
+			@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+     <a id="seturlT_MenuBarMenuItemAssociation" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuBarMenuItemAssociation")).ToHtmlString()"></a>
+		 <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+						<div>
+						    @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+											<div class="row">
+								@if(User.CanView("T_MenuBar") && !NonViewableProperties.Contains("T_MenuBarID"))
+				{
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_MenuBarID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_MenuBarID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_MenuBarMenuItemAssociation", "T_MenuBarID"))
+		{
+			@Html.DropDownList("T_MenuBarID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllValue", "T_MenuBar",new { caller = "T_MenuBarID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_MenuBarID, new { @class = "form-control" })
+			@Html.DropDownList("T_MenuBarID", null, "-- Select --", new {     @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllValue", "T_MenuBar",new { caller = "T_MenuBarID" }) })
+		}
+                               
+							</div> @Html.ValidationMessageFor(model => model.T_MenuBarID)
+							
+                        </div>
+                    </div>
+					} 
+				@if(User.CanView("T_MenuItem") && !NonViewableProperties.Contains("T_MenuItemID"))
+				{
+				   <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_MenuItemID">
+                        <div class='form-group'>
+                            <label  >@Html.LabelFor(model => model.T_MenuItemID) </label>
+							
+							<div class="input-group" style="width:100%;">									
+									@if (User.CanEdit("T_MenuBarMenuItemAssociation", "T_MenuItemID"))
+		{
+			@Html.DropDownList("T_MenuItemID", null, "-- Select --", new {      @class = "chosen-select form-control", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllValue", "T_MenuItem",new { caller = "T_MenuItemID" }) })
+		}
+		else
+		{
+			@Html.HiddenFor(model => model.T_MenuItemID, new { @class = "form-control" })
+			@Html.DropDownList("T_MenuItemID", null, "-- Select --", new {     @class = "chosen-select form-control", @disabled="disabled", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllValue", "T_MenuItem",new { caller = "T_MenuItemID" }) })
+		}
+                               
+							</div> @Html.ValidationMessageFor(model => model.T_MenuItemID)
+							
+                        </div>
+                    </div>
+					} 
+@if(!NonViewableProperties.Contains("T_OrderNumber"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_OrderNumber">
+							
+								<label  >@Html.LabelFor(model => model.T_OrderNumber)   </label>
+								<div class='input-group' title="Order Number">
+                                
+											
+											@Html.TextBoxFor(model => model.T_OrderNumber,  getHtmlAttributes("T_OrderNumber"))
+																							@Html.ValidationMessageFor(model => model.T_OrderNumber)
+									
+								
+                             </div>
+						</div>
+				} 
+       </div>
+	            </div>
+        </div>
+	</div>
+</div>
+		 @Html.AntiForgeryToken();
+		 var businessrule1 = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+		 var lstinlineentityname = "";
+		 var lstinlineassocdispname ="";
+		 var lstinlineassocname = "";
+		  var typelist = string.Join(",", businessrule1.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+		 <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true" onclick="$('#T_MenuBarMenuItemAssociationRefresh').click();">Cancel</button>
+		 if (EditPermission)
+         {
+			    <input type="submit" id="command" name="command" value="Save & Close" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,true,'T_MenuBarMenuItemAssociation','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist');" />
+				<input type="submit" id="sevranBtn" style="display:none;" name="command" value="Save" class="btn btn-primary btn-sm" onclick="QuickEditFromGrid(event,false,'T_MenuBarMenuItemAssociation','@ViewData["AssociatedType"]',false,'@businessrule1',@businessrule1.Count,'OnEdit','ErrMsg',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname','@typelist','True');" />
+                if (!HideAction)
+				{
+				<button type="button" id="SaveAndContinue" name="SaveAndContinue" class="btn btn-primary btn-sm" onclick="@Html.Raw("SaveAndContinueEdit('T_MenuBarMenuItemAssociation',event)")">Save & Next</button>
+				}
+				<input type="hidden" name="hdncommand" value="" />
+  		 }	
+}
+@*<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>*@
+@Scripts.Render("~/bundles/jqueryval")
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<script>
+    $("input[type='submit']").click(function (event) {
+	if (!$("#frmQEditT_MenuBarMenuItemAssociation").valid()) return;
+        var $this = $(this);
+        $('input:hidden[name="hdncommand"]').val($this.val());
+    });
+</script>
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{	
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+    <script>
+    $(document).ready(function () {
+	document.getElementById("ErrMsg").innerHTML = "";
+		 var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				 form = $("#frmQEditT_MenuBarMenuItemAssociation");
+					 dataurl = "@Url.Action("businessruletype", "T_MenuBarMenuItemAssociation", new { ruleType = "OnEdit"})";
+            ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_MenuBarMenuItemAssociation", false, "ErrMsg", form);
+			//business rules on inline associations
+			if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+						$("a.btnupload").each(function(index) {$(this).remove() });
+                  }
+
+    });
+</script>
+<script>
+    $("form").submit(function (event) {
+	if (!$("#frmQEditT_MenuBarMenuItemAssociation").valid()) return;
+	document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+		var form = $("#frmQEditT_MenuBarMenuItemAssociation").serialize();
+					});
+</script>
+}
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+		IgnoreReadOnlyCtrlFocus();
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_MenuBarMenuItemAssociation','editquick',false,'Menu Bar Menu Item Association')
+			var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+		
+    });
+</script>
+

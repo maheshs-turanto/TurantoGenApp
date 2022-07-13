@@ -1,0 +1,46 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataConfiguration
+@{
+    Layout = null;
+}
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12" id="dvNoteExportData">
+            <label class="col-sm-2 col-md-2 float-left col-xs-12">Add Note<span class="text-danger-reg">*</span></label>
+            <div class="input-group col-sm-10 col-md-10 float-left col-xs-12">
+                @Html.TextArea("Note", new { @class = "form-control", @required = "required" })
+            </div>
+        </div>
+    </div>
+    <br />
+        <a id="btnexportdata_@Model.Id" class="btn btn-primary btn-sm pull-right formbuttonfix" onclick="return ExportDataDelete('@Model.Id', '@Model.T_Name');" data-url='@Url.Action("ExportData", ViewBag.EntityName as string, new { Ids = ViewBag.Ids as string, btnId = Model.Id })' style="fore-color:@Model.T_FontColor !important;background-color:@Model.T_BackGroundColor !important;"> @Model.T_Name</a>
+        <script>
+        function ExportDataDelete(id, name) {
+            var note = $("#Note").val();
+            if (note == "" || note == null) {
+                alert("Please enter required field note.")
+                return false;
+            }
+            var dataurl = $("#btnexportdata_" + id).attr("data-url");
+            dataurl = dataurl + "&Notes=" + note;
+            var popupWindow = window.open("@Url.Action("LoaderPage")", "_blank");
+            var content = name +" - ";
+            var nextcontent = "<div>" + content + " Please don’t refresh and wait until the file/folder has finished writing to zip file.</div>";
+            nextcontent += "<script>window.location.href='" + dataurl + "'<\/script>";
+            popupWindow.document.write(nextcontent);
+            if ('@Model.T_IsRootDeleted' == 'True' || '@Model.T_IsRootDeleted' == 'true')
+            {
+                window.location.href = '@Url.Action("Index", ViewBag.EntityName)';
+            }
+            else
+            {
+                window.location.reload();
+            }
+        }
+        </script>
+}
+else
+{
+    <div class="row col-md-12 col-sm-12 col-xs-12"><span class="text text-danger"> Export Data Configuration not found...!!!</span></div>
+}

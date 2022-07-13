@@ -1,0 +1,157 @@
+﻿@model CommonFunction
+@{
+	var entityModel = GeneratorBase.MVC.ModelReflector.Entities;
+    DisplayModeProvider.Instance.RequireConsistentDisplayMode = true;
+	var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var commonObj = Model;
+    var AppName = commonObj.AppName();
+    var linkPrefix = Url.Content("~/");
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+		string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];	
+	var maintenancemode = commonObj.MaintenanceMode().ToLower() == "true" ? true : false;
+    string roles = string.Join(", ", User.userroles);
+    var userSideBar = (new ApplicationContext(new SystemUser())).T_MenuBars.GetFromCache<IQueryable<T_MenuBar>, T_MenuBar>().ToList().Where(p => (User.IsInRole(p.T_Roles.Split(',').ToArray()) == true || p.T_Roles == "All") && p.T_Disabled.HasValue && !(p.T_Disabled.Value));
+} 
+
+
+
+
+
+
+<div class="flex-grow-1 ace-scroll" data-ace-scroll="{}">
+
+    <div class="sidebar-section my-2">
+ <ul class="nav has-active-border active-on-right">
+
+
+    <li class="nav-item"  id="lnkDefaultDashboard"  style="display:none">
+        <a href="@Url.Action("Dashboard", "Home" )" class="nav-link @(ViewBag.Title == "Dashboard" ? "active" : "")">
+            <i class="nav-icon fas fa-desktop"></i>
+
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+ <li class="nav-item" id="@(AppUrl + User.Name +"Home")">
+    <a href="@Url.Action("Index", "Home" )" class="nav-link @((ViewBag.Title == "Home" || ViewBag.Title == "Custom Home") ? "active" : "")">
+        <i class="nav-icon fas fa-fw fa-home"></i>
+        <span class="nav-text fadeable">Home</span>
+    </a>
+</li>
+
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    var menuItems = userSideBar.SelectMany(s => s.T_MenuBarMenuItemAssociation_t_menubar.OrderBy(o => o.T_OrderNumber)).Distinct();
+    var menuItemsList = menuItems.Select(s => s.t_menuitem);
+    Html.RenderPartial("~/Views/Shared/_SideBarMenu.cshtml", menuItemsList); 
+}
+else
+{
+
+					if ( User.CanView("T_Customer"))
+					{
+						var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+                        var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+						<li id="liT_Customer" class="nav-item @(currentController == "T_Customer" ? "active" : "")" alt="@DisplayString" title="@DisplayString">
+                            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Customer"})" class="nav-link">
+							<div class="float-right mt-1 badge badge-success CEntityCount" alt="Count - @ViewBag.T_CustomerCount" title="Count - @ViewBag.T_EmployeeCount">@ViewBag.T_CustomerCount</div>
+							<i class="nav-icon fa fa-briefcase float-start mt-1"></i> 
+							<span class="nav-text fadeable">@DisplayString </span>
+							</a>
+                        </li>
+					 }
+					 
+}
+  </ul>
+    </div>
+</div>
+
+<div class="sidebar-section">
+    <div class="sidebar-section-item fadeable-bottom">
+<div class="fadeinable">
+         
+            <!-- shows this when collapsed -->
+            <div class="pos-rel shadow-sm border-t-2 brc-primary-m3">
+                @if (User.CanView("Reports") || User.CanView("ReportList"))
+                {
+
+                    <div class="pos-rel">
+
+                        <a class="nav-link text-blue-d1 font-bolder" href="@Url.Action("Index", "ReportList")" alt="Reports" title="Reports">
+                            <i class="fa fa-file ml-2 mr-3 nav-icon ">  </i>
+                        </a>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+
+        <div class="fadeable hideable w-100 bg-transparent shadow-none border-0">
+            <!-- shows this when full-width -->
+            <div id="sidebar-footer-bg" class="d-flex align-items-center bgc-white shadow-sm mx-2 mt-2px py-2 radius-t-1 border-x-1 border-t-2 brc-primary-m3">
+                <div class="d-flex mr-auto py-1">
+                    @if (User.CanView("Reports") || User.CanView("ReportList"))
+                    {
+
+                        <div class="pos-rel">
+
+                            <a class="nav-link text-blue-d1 font-bolder" href="@Url.Action("Index", "ReportList")" alt="Reports" title="Reports">
+                                <i class="fa fa-file ml-2">  </i>   Reports
+                            </a>
+                        </div>
+                    }
+
+                </div>
+
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>               
+
+
+
+ 
+<!--show/hide the More li from sidebar, if it has the content to show or not.-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($("#collapseUtilities") != undefined && $("#collapseUtilities").html() != undefined) {
+            if ($("#collapseUtilities").html().trim().length == 0) {
+                $('#liMore').hide();
+            } else {
+                $('#liMore').show();
+            }
+        }
+    });
+</script>
+
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var collapseid = $("#accordionSidebar .active").parent().attr("id");
+            getcollapseParent(collapseid);
+        });
+
+        function getcollapseParent(collapseid) {
+            uncollaseParent(collapseid);
+            var collapseparentid = $("#accordionSidebar #" + collapseid).parent().attr("id");
+            if (collapseparentid != undefined && collapseparentid != 'accordionSidebar') {
+                getcollapseParent(collapseparentid);
+            }
+        }
+
+        function uncollaseParent(collapseid) {
+            if (collapseid != undefined) {
+                if ($("#" + collapseid).hasClass("nav-item")) {
+                    $("#" + collapseid).addClass("active")
+                }
+                $("#a" + collapseid).click();
+            }
+        }
+    </script>
+}

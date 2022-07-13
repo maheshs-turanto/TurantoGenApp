@@ -1,0 +1,362 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBarMenuItemAssociation
+@{
+    ViewBag.Title = "Create Menu Bar Menu Item Association";
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBarMenuItemAssociation").Properties;
+}
+<script>
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+ $(document).ready(function () {
+	 $('#btnT_MenuBar').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_MenuBar'), dataurl, $('#txtSearchT_MenuBar').val(), 'T_MenuItem', '@ViewData["HostingEntityID"]', 'T_MenuBarMenuItemAssociation_T_MenuItem', 'T_MenuBarIDAvailable', 't_menubarmenuitemassociation,T_Disabled,T_Horizontal');
+        return false;
+    });
+	 $('#btnT_MenuItem').click(function () {
+        var dataurl = '@Url.Action("GetAllValues1")';
+        SearchListNew1($('#btnT_MenuItem'), dataurl, $('#txtSearchT_MenuItem').val(), 'T_MenuBar', '@ViewData["HostingEntityID"]', 'T_MenuBarMenuItemAssociation_T_MenuBar', 'T_MenuItemIDAvailable', 't_menubarmenuitemassociation,t_menuitemmenuitemassociation');
+        return false;
+    });
+});
+</script>
+
+
+
+@using (Html.BeginForm("Create", "T_MenuBarMenuItemAssociation",new {UrlReferrer = Convert.ToString(ViewData["T_MenuBarMenuItemAssociationParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmT_MenuBarMenuItemAssociation"  }))
+{
+   @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+   <a id="seturlT_MenuBarMenuItemAssociation" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuBarMenuItemAssociation")).ToHtmlString()"></a>
+    <div class="row" style='display:none;' >
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+               <div class="row" >         
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_MenuBarMenuItemAssociation_T_MenuBar")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_MenuBarID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_MenuBarID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllValue", "T_MenuBar",null) })
+                                @Html.ValidationMessageFor(model => model.T_MenuBarID)
+								@if (User.CanAdd("T_MenuBar"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','" + HttpUtility.JavaScriptStringEncode(Convert.ToString(Html.DisplayNameFor(model => model.T_MenuBarID))) + "','dvPopup','" + Url.Action("CreateQuick", "T_MenuBar", new { UrlReferrer = Request.Url.PathAndQuery, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+				@if (Convert.ToString(ViewData["AssociatedType"]).Trim() == "T_MenuBarMenuItemAssociation_T_MenuItem")
+                {
+				 <div class='col-sm-6 col-md-6 col-xs-12'>
+                        <div class='form-group'>
+                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.T_MenuItemID) </label>
+							<div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <div class="input-group" style="width:100%;">
+		@Html.DropDownList("T_MenuItemID", null, "-- Select --", new {    @class = "chosen-select form-control", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllValue", "T_MenuItem",null) })
+                                @Html.ValidationMessageFor(model => model.T_MenuItemID)
+								@if (User.CanAdd("T_MenuItem"))
+                                    {
+                                <div class="input-group-btn">
+									<a class="btn btn-default btn ie8fix"  data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','" + HttpUtility.JavaScriptStringEncode(Convert.ToString(Html.DisplayNameFor(model => model.T_MenuItemID))) + "','dvPopup','" + Url.Action("CreateQuick", "T_MenuItem", new { UrlReferrer = Request.Url.PathAndQuery, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop=true }) + "')")">
+										<span class="glyphicon glyphicon-plus-sign"></span>
+                                    </a>
+                                </div>
+								}
+                            </div>
+							</div>
+                        </div>
+                    </div>
+				}
+					<div class='col-sm-6 col-md-6 col-xs-12'>
+                                <div class='form-group'>
+                                   <label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.T_OrderNumber) </label>
+									<div class="input-group col-sm-7 col-md-7 col-xs-12">
+									  
+                                    @Html.TextBoxFor(model => model.T_OrderNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.T_OrderNumber)
+									</div>
+                                </div>
+					</div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+  { 
+	<div class="M2MList row">
+		<div class="col-md-5">
+		<div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.TextBox("txtSearchT_MenuBar", null, new { @class = "form-control", placeholder = "Search Menu Bar", @size = 10, @dataurl = Url.Action("GetAllValues") })
+                    
+                </div>
+            </div>
+            
+<div style="max-height:400px;overflow: auto;border: 1px solid #b2b2b2;border-top:0px;" class="pl-3 pr-3 pb-2 pt-2">
+ 
+				 <div class="col-sm-12 p-0 mt-0 clearfix">	
+				 				<div class='col-sm-6 pull-left pt-0 pl-0'>
+						<label id="M2M_text-primary">Disabled?</label>
+					</div>
+                    <div class="col-sm-6 pull-right pr-0" id="dvT_Disabled">
+                        <select class="form-control" id="T_Disabled" name="T_Disabled">
+                            <option value="">All</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+					</div>
+                
+             
+				 <div class="col-sm-12 p-0 mt-0 clearfix">	
+				 				<div class='col-sm-6 pull-left pt-0 pl-0'>
+						<label id="M2M_text-primary">Horizontal?</label>
+					</div>
+                    <div class="col-sm-6 pull-right pr-0" id="dvT_Horizontal">
+                        <select class="form-control" id="T_Horizontal" name="T_Horizontal">
+                            <option value="">All</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+					</div>
+                
+             
+					@if (ViewBag.t_menubarmenuitemassociation!=null)
+                    {
+							<div class="col-sm-12 p-0 mt-0 clearfix">
+						<div class='col-sm-6 pull-left pt-0 pl-0' title="Menu Item">
+							<label id="M2M_text-primary"> Menu Item</label>
+						</div>
+                                <div class="col-sm-6 pull-right pr-0" id="dvt_menubar">
+		
+	 @Html.DropDownList("t_menubarmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuItem",null) })
+                                </div>
+								 </div>
+                        
+					}
+</div>
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+        {
+            <div class="col-md-12" style="float: left;padding: 0;">
+			<button id="btnT_MenuBar" class="btn btn-primary " style="margin-top:8px;" >Search</button> </div>
+        }
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+        {
+            <div class="col-md-12" style="float: left;padding: 0;">
+			<button id="btnT_MenuItem" class="btn btn-primary " style="margin-top:8px;" >Search</button> </div>
+        }
+ 
+<label style="display:none;">@Html.LabelFor(model => model.T_MenuBarID) </label>
+		</div>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title" style="color: #1d5072;font-weight: 700;">Available Menu Bar </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_MenuBar').val(),'T_MenuItem', '"+ViewData["HostingEntityID"]+"', 'T_MenuBarMenuItemAssociation_T_MenuBar', 'T_MenuBarIDAvailable');"})
+			</span></h4>
+				@Html.ListBox("T_MenuBarIDAvailable", null, new { @class = "optionvalue", @size = 10,@style="width:100%; background: -webkit-linear-gradient(90deg,#ececec 0,#fff 100%);background-position: 100% center;background-repeat:no-repeat;font-weight:bold;" })
+				 </div>
+			<div class="col-md-12  btn-group mt-2">
+				<a id="MoveRightT_MenuBar" onclick="Associate(event,'T_MenuBar');" class="btn btn-primary col-md-6"><span id="MoveRightT_MenuBar" class="text-white fa fa-chevron-down"></span></a>
+				<a id="MoveLeftT_MenuBar" onclick="Associate(event,'T_MenuBar');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_MenuBar" class="text-white fa fa-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4 class="d-flex mt-3 mb-2" style="color: #1d5072;font-weight: 700;">
+				 <span class="unselected-title" style="color: #1d5072;font-weight: 700;">Selected Menu Bar</span> 
+				 <span class="ml-auto badge"><span id="CntT_MenuBarIDSelected"></span></span>
+				</h4>
+				@Html.ListBox("T_MenuBarIDSelected", null, new { @class = "optionvalue", @size = 10,@style="width:100%; background: -webkit-linear-gradient(90deg,#ececec 0,#fff 100%);background-position: 100% center;background-repeat:no-repeat;font-weight:bold;" })
+			</div>
+		</div>
+	</div>
+    }
+  if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+  { 
+	<div class="M2MList row">
+		<div class="col-md-5">
+		<div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.TextBox("txtSearchT_MenuItem", null, new { @class = "form-control", placeholder = "Search Menu Item", @size = 10, @dataurl = Url.Action("GetAllValues") })
+                    
+                </div>
+            </div>
+            
+<div style="max-height:400px;overflow: auto;border: 1px solid #b2b2b2;border-top:0px;" class="pl-3 pr-3 pb-2 pt-2">
+ 
+				@if (ViewBag.t_menuitemmenuitemassociation!=null)
+                {
+						<div class="col-sm-12 p-0 mt-0 clearfix">
+							<div class='pt-0 pull-left' title="Parent">
+								<label id="M2M_text-primary"> Parent</label>
+							</div>
+							<div class="col-sm-6 pull-right pr-0 " id="dvt_menuitemmenuitemassociation">
+		
+	 @Html.DropDownList("t_menuitemmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuItem",null) })
+							</div>
+								</div>
+						
+				}
+					@if (ViewBag.t_menubarmenuitemassociation!=null)
+                    {
+							<div class="col-sm-12 p-0 mt-0 clearfix">
+						<div class='col-sm-6 pull-left pt-0 pl-0' title="Menu Bar">
+							<label id="M2M_text-primary"> Menu Bar</label>
+						</div>
+                                <div class="col-sm-6 pull-right pr-0" id="dvt_menuitem">
+		
+	 @Html.DropDownList("t_menubarmenuitemassociation", null, new {   @multiple = "multiple", @HostingName = "T_MenuBar", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuBar",null) })
+                                </div>
+								 </div>
+                        
+					}
+</div>
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+        {
+            <div class="col-md-12" style="float: left;padding: 0;">
+			<button id="btnT_MenuBar" class="btn btn-primary " style="margin-top:8px;" >Search</button> </div>
+        }
+		@if (Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+        {
+            <div class="col-md-12" style="float: left;padding: 0;">
+			<button id="btnT_MenuItem" class="btn btn-primary " style="margin-top:8px;" >Search</button> </div>
+        }
+ 
+<label style="display:none;">@Html.LabelFor(model => model.T_MenuItemID) </label>
+		</div>
+		<div class="col-md-7">
+			<div class="col-md-12">
+				<h4><span class="unselected-title" style="color: #1d5072;font-weight: 700;">Available Menu Item </span> <span style="float:right; font-size:14px;"> Show @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, string> { {"50","50"},{ "100", "100" }, { "200", "200" }, { "500", "500" }, { "All", "All" } }, "Key", "Value")
+                    ,new {@dataurl=Url.Action("GetAllValues"), onchange="ListBoxPagination(this,$('#txtSearchT_MenuItem').val(),'T_MenuBar', '"+ViewData["HostingEntityID"]+"', 'T_MenuBarMenuItemAssociation_T_MenuItem', 'T_MenuItemIDAvailable');"})
+			</span></h4>
+				@Html.ListBox("T_MenuItemIDAvailable", null, new { @class = "optionvalue", @size = 10,@style="width:100%; background: -webkit-linear-gradient(90deg,#ececec 0,#fff 100%);background-position: 100% center;background-repeat:no-repeat;font-weight:bold;" })
+				 </div>
+			<div class="col-md-12  btn-group mt-2">
+				<a id="MoveRightT_MenuItem" onclick="Associate(event,'T_MenuItem');" class="btn btn-primary col-md-6"><span id="MoveRightT_MenuItem" class="text-white fa fa-chevron-down"></span></a>
+				<a id="MoveLeftT_MenuItem" onclick="Associate(event,'T_MenuItem');" class="btn btn-primary col-md-6" ><span id="MoveLeftT_MenuItem" class="text-white fa fa-chevron-up"></span></a>
+			</div>
+			<div class="col-md-12">
+				<h4 class="d-flex mt-3 mb-2" style="color: #1d5072;font-weight: 700;">
+				 <span class="unselected-title" style="color: #1d5072;font-weight: 700;">Selected Menu Item</span> 
+				 <span class="ml-auto badge"><span id="CntT_MenuItemIDSelected"></span></span>
+				</h4>
+				@Html.ListBox("T_MenuItemIDSelected", null, new { @class = "optionvalue", @size = 10,@style="width:100%; background: -webkit-linear-gradient(90deg,#ececec 0,#fff 100%);background-position: 100% center;background-repeat:no-repeat;font-weight:bold;" })
+			</div>
+		</div>
+	</div>
+    }
+<div class="clearfix clear"></div>
+<div class="row mb-3 mt-1" style="margin-left:-17px">
+<div class="col-md-5">
+</div>
+<div class="col-md-7">
+       @Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["T_MenuBarMenuItemAssociationParentUrl"] }, new { @onclick = "", @class = "btn btn-outline-primary", @style="margin-left:15px;" })
+            <input type="submit" name="command" value="Create" class="btn btn-primary " />
+	 <input type="hidden" name="hdncommand" value="" />
+    </div>
+    </div>
+}
+	<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuBar")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_MenuBarIDSelected option").prop("selected","selected");
+}
+</script>
+}
+@if(Convert.ToString(ViewData["AssociatedType"]).Trim() != "T_MenuBarMenuItemAssociation_T_MenuItem")
+{
+<script>
+function FillSelectedListBox()
+{
+	$("#T_MenuItemIDSelected option").prop("selected","selected");
+}
+</script>
+}
+<script>
+    $(document).ready(function () {	 
+		MMDropdownGetAllValue1("T_MenuBar", '@ViewBag.SelectedListRemoved');
+		MMDropdownGetAllValue1("T_MenuItem", '@ViewBag.SelectedListRemoved');
+	$('select[multiple="multiple"]').each(function () {
+			if ($(this).attr('class') != "optionvalue") {
+				$(this).multiselect({ buttonWidth: '100%', nonSelectedText: 'ALL' });
+			}
+		});
+	});
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuBarMenuItemAssociation").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+	var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $("form").submit(function (event) {
+			if (!$("#frmT_MenuBarMenuItemAssociation").valid()) return;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmT_MenuBarMenuItemAssociation").serialize();
+                dataurl = "@Url.Action("businessruletype", "T_MenuBarMenuItemAssociation", new { ruleType = "OnCreate" })";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBarMenuItemAssociation", false, "ErrMsg", form,"@typelist");
+                if (flag) {
+                    FillSelectedListBox();
+                    $('input:hidden[name="hdncommand"]').val($("input[type='submit']").val());
+                    $("form").find(':input').removeAttr('disabled');
+                }
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+			if (!$("#frmT_MenuBarMenuItemAssociation").valid()) return;
+                FillSelectedListBox();
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+    }
+}
+
+

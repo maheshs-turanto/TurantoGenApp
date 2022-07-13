@@ -1,0 +1,57 @@
+﻿@model GeneratorBase.MVC.Models.ReportList
+@{
+    ViewBag.Title = "Create SSRS Report";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportList");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "SSRS Report";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+<style>
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-8">
+		@{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+        <ol class="breadcrumb">
+            <li  class="active">
+              <strong><a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li class="active">
+                Add SSRS Report @hostingValue 
+            </li>
+            <li class="active">
+                <span>@Html.DisplayFor(model => model.DisplayValue) </span>
+            </li>
+        </ol>
+		</div>
+		<div class="col-lg-4">
+        <div class="pull-right">
+@if (ViewBag.IsPartial == null)
+{
+			<a class="btn btn-primary btn-xs" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "ReportList") + "');") alt="Search" title="List">
+				<i class="glyphicon glyphicon-list"></i> List
+			</a>
+}
+	
+         </div>
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="ibox">
+                <div class="ibox-content">
+@Html.Partial("~/Views/ReportList/CreatePartial.cshtml", Model)
+</div>
+            </div>
+     </div>

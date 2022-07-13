@@ -1,0 +1,69 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.T_Chart>
+<div id="T_Chart">
+    <button id="T_ChartSearchCancel" type="button" hidden onclick="CancelSearch('T_Chart','@Html.Raw(Url.Action("Index", "Chart", new { ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" style="padding:3px 5px;"></button>
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-heading">
+                    <h4 class="card-title pl-3">Charts List</h4>
+                </div>
+                <div class="card-body">
+                    <div id="Des_Table" class="table-responsive border-top" style="overflow-x:auto;">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <thead>
+                                <tr>
+                                    <th class="col1" style="width:70px;">Actions</th>
+                                    <th style="width:25%">Entity Name</th>
+                                    <th style="width:35%">Chart Title</th>
+                                    <th style="width:auto">Chart Type</th>
+                                    <th style="width:auto">Show In Dashboard</th>
+                                </tr>
+                            </thead>
+
+                            @foreach (var item in Model)
+                            {
+                                var entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == item.EntityName);
+                                var entityDP = item.EntityName;
+                                if (entity != null)
+                                {
+                                    entityDP = entity.DisplayName;
+                                }
+
+                                <tr>
+                                    <td>
+
+                                        <div>
+                                            <div class="btn-group">
+                                                <button data-toggle="dropdown" class="btn dropdown-toggle btn-secondary">
+                                                    Action
+                                                </button>
+                                                <ul class="dropdown-menu pull-left" aria-labelledby="dropdownMenuButton">
+                                                    <li class="dropdown-item">
+                                                        @if (User.CanEdit("T_Chart"))
+                                                        {
+                                                           <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Application Chart','dvPopup','" + Url.Action("Edit", "Chart", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-edit"></i>  Edit</a>
+                                                        }
+                                                    </li>
+                                                    <li class="dropdown-item">
+                                                        @if (User.CanDelete("T_Chart"))
+                                                        {
+                                                            <a data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Delete Application Chart','dvPopup','" + Url.Action("Delete", "Chart", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="fa fa-trash"></i>  Delete</a>
+                                                        }
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@entityDP</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ChartTitle)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ChartType)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ShowInDashBoard)</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

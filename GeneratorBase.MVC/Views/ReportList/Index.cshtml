@@ -1,0 +1,91 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ReportList>
+@{
+    ViewBag.Title = "SSRS Report List";
+    string templatename = ("~/Views/ReportList/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportList");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "SSRS Report";
+}
+<style>
+ 
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+<div class="content-heading">
+    <strong class="TitleName"><a href="@Url.Action("Index")">Reports</a><small>List</small></strong>
+    <div class="ml-auto">
+        <div class="btn-group float-right">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" alt="Tools" title="Tools">
+                    <i class="fa fa-cog"> </i> Tools
+                    <span class="caret"></span>
+                </button>
+
+                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                    <li>
+                        @if (User.CanViewAdminFeature("ApplicationConfiguration"))
+                        {
+                            <a class="dropdown-item" href="@Url.Action("Index", "AppSetting")"><i class="fa fa-gears"></i> Report Server Configuration</a>
+
+                        }
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        @if (User.CanView("ReportsGroup"))
+                        {
+
+                            <a class="dropdown-item"  data-placement="top" id="addReportsGroup" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Report Group','dvPopup','" + Url.Action("CreateQuick", "ReportsGroup", new {  AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")" alt="Quick Add" title="Quick Add" style="cursor:default">
+                                <i class="fa fa-plus-circle"></i> Add Report Group
+                            </a>
+
+                        }
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        @if (User.CanView("ReportsGroup"))
+                        {
+
+                            <a class="dropdown-item"  href="@Url.Action("Index", "ReportsGroup")"><i class="fa fa-list"></i> Report Group List</a>
+
+                        }
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        @if (User.CanView("CustomReports"))
+                        {
+
+                            <a class="dropdown-item"  href="@Url.Action("Index", "CustomReports")"><i class="fa fa-list"></i> Custom Report List</a>
+
+                        }
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        @if (User.IsAdmin)
+                        {
+
+                            <a class="dropdown-item"  href="@Url.Action("Sync", "ReportList")"><i class="fa fa-refresh"></i> Refresh Reports</a>
+
+                        }
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+
+<div class="card">
+    <div class="card-body">
+        <div id="dvReportListFilter"></div>
+        @Html.Partial(templatename, Model)
+    </div>
+</div>

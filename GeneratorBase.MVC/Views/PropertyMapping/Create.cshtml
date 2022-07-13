@@ -1,0 +1,34 @@
+﻿@model GeneratorBase.MVC.Models.PropertyMapping
+@{
+    ViewBag.Title = "Create Property Mapping";
+}
+<div class="content-heading">
+    <div class="col-lg-10 p-0">
+        <strong>
+            @{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+            <a href="#">Property Mapping</a>               
+                <small> Add Property Mapping @hostingValue</small>
+</strong>
+    </div>
+    <div class="col-lg-2 text-right p-0">
+        @if (ViewData["HostingEntity"] == null)
+        {
+            <a href="@(Url.Action("SetFSearch", "PropertyMapping")+Request.Url.Query)" data-original-title="Faceted Search" class="btn btn-secondary d-none">Search</a>
+        }
+        <button class="btn btn-secondary" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "PropertyMapping") + "');")>
+            List
+        </button>
+    </div>
+    
+    
+
+    <!-- /.col-lg-12 -->
+</div>
+
+@Html.Partial("~/Views/PropertyMapping/CreatePartial.cshtml", Model)

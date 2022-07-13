@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "About";
+}
+<div class="content-heading">
+    <div class="col-lg-12">
+        <strong><a href="@Url.Action("Index", "Home")">Home</a></strong>
+        <small>About Application</small>
+    </div>
+</div>
+  
+
+<div class="row">
+    <div class="col-sm-12">
+        @if (ViewBag.AboutCompany != null)
+        {
+            @Html.Raw(ViewBag.AboutCompany)
+
+        }
+    </div>
+</div>

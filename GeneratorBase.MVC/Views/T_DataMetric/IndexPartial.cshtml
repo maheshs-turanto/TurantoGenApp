@@ -1,0 +1,820 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_DataMetric>
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_DataMetric");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Data Metric";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_DataMetric");
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+    var Classfloatright = "float-right";
+    var Classpullright = "pull-right";
+    var Classfloatleft = "float-left";
+    var Classpullleft = "pull-left";
+
+
+    if (appTheme == "Default_BS_5_x")
+    {
+        Classfloatright = "float-end";
+        Classpullright = "float-end";
+        Classfloatleft = "float-start";
+        Classpullleft = "float-start";
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DataMetricRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.T_DataMetricRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+<style>
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+<div id="T_DataMetric">
+    @if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log('appTheme','@appTheme');
+            if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                $("#T_DataMetricGridHeader").addClass('collapse in');
+            }
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'T_DataMetric', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchT_DataMetric").addClass('show');
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_DataMetric');
+            }
+            $("#SearchStringT_DataMetric").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#T_DataMetricSearch").bind("click", (function () {
+                    }));
+                    $('#T_DataMetricSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideT_DataMetric").mouseup(function () {
+                if (document.getElementById('ColumnShowHideT_DataMetric').className == 'collapse') {
+                    $('#lblT_DataMetric').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".'@Classfloatleft'.actionbar").hide();
+                if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                    $(".inlinegridoption").hide();
+                }
+            }
+
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+
+                    t_associateddatametrictype = Request.QueryString["t_associateddatametrictype"],
+                    t_associatedfacetedsearch = Request.QueryString["t_associatedfacetedsearch"],
+                    T_Hide = Request.QueryString["T_Hide"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    t_associateddatametrictype = Request.QueryString["t_associateddatametrictype"],
+                    t_associatedfacetedsearch = Request.QueryString["t_associatedfacetedsearch"],
+                    T_Hide = Request.QueryString["T_Hide"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    <div id="T_DataMetricGridHeader" class="">
+        @if (ViewData["IsdrivedTab"] == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="@Classfloatleft actionbar">
+                    @if (User.CanAdd("T_DataMetric"))
+                    {
+
+                        <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_T_DataMetric'>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus-circle"></i> Add <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                    @if (User.CanAdd("T_DataMetric"))
+                                    {
+                                        if (ViewBag.IsDivRender == true)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Create", "T_DataMetric", new { RenderPartial = true, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname ,}))')" alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_DataMetric", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null) + "');") alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+
+
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    <div class="btn-group">
+                        @if (User.CanView("T_DataMetrictype"))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-original-title="Filter-Groupby" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-filter"></i> Filter <i class="caret"></i>
+                                    </button>
+                                    <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                        <a class="dropdown-item" data-toggle="collapse" href="#T_DataMetricGridQuery">
+                                            <i class="fa fa-search"> </i> Filter
+                                        </a>
+                                        @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                                        {
+                                            <li class="dropdown-divider"></li>
+                                            <li class="dropdown-submenu">
+                                                <a class="dropdown-item" tabindex="-1" href="#">
+                                                    <i class="fa fa-search"> </i> Filter by
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                    @if (User.CanView("T_DataMetrictype"))
+                                                    {
+                                                        <li class="dropdown-item">
+                                                            <a id="fltT_DataMetrictype" data-placement="top" onclick=@Html.Raw("SetCookieFlt('fltT_DataMetrictypeT_DataMetric');EntityFilter('T_DataMetric','" + Url.Action("GetAllValueForFilter", "T_DataMetrictype", new { caller = "T_AssociatedDataMetricTypeID" }) + "','" + Html.Raw(Url.Action(ActionNameUrl, "T_DataMetric", new { FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "T_DataMetrictype", AssociatedType = "T_AssociatedDataMetricType", viewtype = viewbagname})) + "','" + User.JavaScriptEncodedName + "');")>
+                                                                <span>@EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_AssociatedDataMetricTypeID").DisplayName</span>
+                                                            </a>
+                                                        </li>
+                                                    }
+
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-item">
+                                                <a data-placement="top" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "T_DataMetric", viewtype = viewbagname })" onclick="ClearFilterCookies();">
+                                                    <span class="fa fa-search-minus"> </span> Clear
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        if ((User.CanEdit("T_DataMetric") && User.CanUseVerb("BulkUpdate", "T_DataMetric", User)) || (User.CanDelete("T_DataMetric") && User.CanUseVerb("BulkDelete", "T_DataMetric", User)))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanEdit("T_DataMetric") && User.CanUseVerb("BulkUpdate", "T_DataMetric", User))
+                                        {
+                                            <a class="dropdown-item" data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                               onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update "+EntityDisplayName+"','dvPopup','" + Url.Action("BulkUpdate", "T_DataMetric", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','T_DataMetric')")">
+                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                                Update
+                                            </a>
+                                        }
+
+                                        @if (User.CanDelete("T_DataMetric") && User.CanUseVerb("BulkDelete", "T_DataMetric", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_DataMetric','Bulk Delete','@Url.Action("DeleteBulk", "T_DataMetric")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        <div class="btn-group mb-1">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-original-title="Filter-Groupby" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Tools
+                                </button>
+                                <div class="dropdown-menu multi-level" role="menu">
+                                    @if (ViewData["HostingEntity"] == null)
+                                    {
+                                        <a class="dropdown-item" data-placement="top" data-original-title="Show Graph" data-toggle="modal" data-target="#ShowGraphT_DataMetric" onclick=@Html.Raw("OpenDashBoard('dvShowGraphT_DataMetric');") alt="Show Graph" title="Show Graph">
+                                            <span class="fa fa-chart-line"></span> Show Graph
+                                        </a>
+                                    }
+                                    @if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+                                    {
+                                        <a class="dropdown-item" id="showAssociateBtn" data-placement="top" data-original-title="Associate Data Metric with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','"+EntityDisplayName+"','dvPopupBulkOperation','" + Url.Action("Index", "T_DataMetric", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = viewbagname }) + "')")">
+                                            <i class="fa fa-plus-circle"></i> Bulk Associate
+                                        </a>
+                                        <script>
+                                            if ($("#HostingEntityDisplayValue").attr('id') == undefined)
+                                                $("#showAssociateBtn").hide();
+                                        </script>
+                                    }
+
+                                    @if (User.CanAdd("T_DataMetric") && User.CanUseVerb("ImportExcel", "T_DataMetric", User))
+                                    {
+                                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_DataMetric", new { filetype = "xls", AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl }) + "');") alt="Import Excel" title="Import Excel">
+                                            <i class="fa fa-upload"></i> Import Excel
+                                        </a>
+                                    }
+                                    @if (User.CanAdd("T_DataMetric") && User.CanUseVerb("ImportCSV", "T_DataMetric", User))
+                                    {
+                                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Upload", "T_DataMetric", new { filetype = "csv", AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), UrlReferrer = BackUrl }) + "');") alt="Import CSV" title="Import CSV">
+                                            <i class="fa fa-upload"></i> Import CSV
+                                        </a>
+                                    }
+                                    @if (User.CanView("T_DataMetric") && User.CanUseVerb("ExportExcel", "T_DataMetric", User))
+                                    {
+                                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_DataMetric",getSortHtmlAttributes(null, false, null, true, "xls"), null) + "');") alt="Export Excel" title="Export Excel">
+                                            <i class="fa fa-download"></i> Export Excel
+                                        </a>
+                                    }
+                                    @if (User.CanView("T_DataMetric") && User.CanUseVerb("ExportCSV", "T_DataMetric", User))
+                                    {
+                                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"T_DataMetric",getSortHtmlAttributes(null, false, null, true, "csv"), null) + "');") alt="Export CSV" title="Export CSV">
+                                            <i class="fa fa-download"></i> Export CSV
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            <div class="@Classfloatright" style="">
+                <div class="input-group">
+                    @Html.TextBox("SearchStringT_DataMetric", ViewBag.CurrentFilter as string, null, new { @class = "form-control listsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                    <div class="input-group-btn">
+                        <a id="T_DataMetricSearch" onclick="SearchClick(event, 'T_DataMetric', '@Html.Raw(Url.Action("Index", "T_DataMetric", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                        <a id="T_DataMetricCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_DataMetric','@Html.Raw(Url.Action("Index", "T_DataMetric", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                        <a id="T_DataMetricSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_DataMetric','@Html.Raw(Url.Action("Index", "T_DataMetric", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                            <span class="fa fa-sync-alt"></span>
+                        </a>
+                        <a id="T_DataMetricRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('T_DataMetric','@Html.Raw(Url.Action(ActionNameUrl, "T_DataMetric", getSortHtmlAttributes(ViewBag.CurrentSort, false,null, false)))','@User.Name')"></a>
+                        @if (ViewData["HostingEntity"] == null)
+                        {
+                            <a data-toggle="dropdown" data-original-title="Queries" class="btn btn-secondary tip-top" alt="Queries" title="Queries"><span class="fa fa-binoculars"> <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-item">
+                                    <a href="@(Url.Action("SetFSearch", "T_DataMetric")+Request.Url.Query)" data-placement="top" alt="Define new query" title="Define new query">
+                                        <span class="fa fa-plus" style="margin-right:3px; font-size: xx-small;"></span> New Query
+                                    </a>
+                                </li>
+                                <li class="dropdown-item">
+                                    @foreach (var fsearch in User.GetFacetedSearch("T_DataMetric", User))
+                                    {
+                                        <a href="~/@fsearch.T_LinkAddress&ShowDeleted=@Convert.ToString(ViewData["ShowDeleted"])" data-placement="top" alt="@fsearch.T_Description" title="@fsearch.T_Description">
+                                            <span class="fa fa-filter" style="margin-right:3px; font-size: xx-small;"></span> @fsearch.T_Name
+                                        </a>
+                                    }
+                                </li>
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <div style="clear:both"></div>
+        @if (ViewBag.SearchResult != "")
+        {
+            <div id="fsearchT_DataMetric" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                <div class="col-sm-6">  @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))</div>
+                <div class="col-sm-6 text-right">
+                    @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                    {
+                        <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", "T_DataMetric",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    <a href="@(Url.Action("SetFSearch", "T_DataMetric")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                    @if (User.CanAdd("T_FacetedSearch"))
+                    {
+                        <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="T_DataMetric",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                    }
+                </div>
+            </div>
+        }
+        @{Html.RenderPartial("~/Views/T_DataMetric/SetFSearchGrid.cshtml", new GeneratorBase.MVC.Models.T_DataMetric());}
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_DataMetric", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistT_DataMetric",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'T_DataMetric','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_DataMetric",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistT_DataMetric"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    }
+    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+        <table class="table table-hover default-bordered default-condensed newlist">
+            <thead id="theaderT_DataMetric">
+                <tr>
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("T_DataMetric") && User.CanUseVerb("BulkUpdate", "T_DataMetric", User)) || (User.CanDelete("T_DataMetric") && User.CanUseVerb("BulkDelete", "T_DataMetric", User))))
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("T_DataMetric", "T_DisplayOrder"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_DisplayOrder");
+                        <th scope="col" class="col2">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_DisplayOrder", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_DisplayOrder")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_DisplayOrder")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Name"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Name");
+                        <th scope="col" class="col2">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_Name", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Name")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Name")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+
+                    @if (User.CanView("T_DataMetrictype") && User.CanView("T_DataMetric", "T_AssociatedDataMetricTypeID"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_AssociatedDataMetricTypeID");
+                        <th scope="col" class="col4" @(Convert.ToString(ViewData["HostingEntity"]) == "T_DataMetrictype" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedDataMetricType" ? "hidden" : "")>
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_AssociatedDataMetricTypeID", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AssociatedDataMetricTypeID")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AssociatedDataMetricTypeID")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_FacetedSearch") && User.CanView("T_DataMetric", "T_AssociatedFacetedSearchID"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_AssociatedFacetedSearchID");
+                        <th scope="col" class="col5" @(Convert.ToString(ViewData["HostingEntity"]) == "T_FacetedSearch" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedFacetedSearchID" ? "hidden" : "")>
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_AssociatedFacetedSearchID", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_AssociatedFacetedSearchID")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_AssociatedFacetedSearchID")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Aggregate"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Aggregate");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_Aggregate", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Aggregate")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Aggregate")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_EntityName"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_EntityName");
+                        <th scope="col" class="col6">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_EntityName")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_EntityName")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+
+                    @if (User.CanView("T_DataMetric", "T_Roles"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Roles");
+                        <th scope="col" class="col8">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_Roles", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Roles")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Roles")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_DisplayOn"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_DisplayOn");
+                        <th scope="col" class="col8">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_DisplayOn", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_DisplayOn")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_DisplayOn")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+
+                    @if (User.CanView("T_DataMetric", "T_Hide"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Hide");
+                        <th scope="col" class="col11">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_DataMetric", getSortHtmlAttributes("T_Hide", false, null, false), new { @onclick = "SortLinkClick(event,'T_DataMetric');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "T_Hide")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "T_Hide")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+
+                </tr>
+                <tr id="trInlineT_DataMetric" style="display:none; padding:0px!important">
+                    <th id="tdInlineT_DataMetric" colspan="14" style="padding: 0px!important;">
+
+                    </th>
+                </tr>
+            </thead>
+
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                List<string> hiddenProperties = new List<string>();
+                if (User.businessrules.Any(p => p.EntityName == "T_DataMetric" && p.ActionTypeID.Contains(6)))
+                {
+                    hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_DataMetric");
+                }
+                bool isRecordReadOnly = false;
+
+
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="14" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row">
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("T_DataMetric") && User.CanUseVerb("BulkUpdate", "T_DataMetric", User)) || (User.CanDelete("T_DataMetric") && User.CanUseVerb("BulkDelete", "T_DataMetric", User))))
+                    {
+                        <td style="width: 20px;">
+                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" style="position:absolute" />
+                        </td>
+                    }
+                    <td style="width: 70px;" class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                        <div style="display:none;">
+                            <div class="btn-group tdDoubleClickGroup">
+                                <a onclick="SavePropertiesValue(this,'T_DataMetric',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                    <i class="fa fa-save"></i>
+                                </a>
+                                <a onclick="$('#T_DataMetricRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                    <i class="fa fa-close"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div id="DivbutEdit">
+                            <div class="btn-group">
+                                @if (User.CanEdit("T_DataMetric"))
+                                {
+                                    var editIconClass = isRecordReadOnly ? "fa fa-eye" : "fa fa-pencil-alt";
+                                    var edittitle = isRecordReadOnly ? "View" : "Edit";
+                                    if (ViewBag.IsDivRender == true)
+                                    {
+                                        <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "T_DataMetric", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = ViewBag.IsDivRender, viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  }, null))')" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Edit","T_DataMetric", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  },null)" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="@editIconClass"></i>
+                                        </a>
+                                    }
+                                }
+                                @if (!User.CanEdit("T_DataMetric"))
+                                {
+                                    <a href="@Url.Action("Details", "T_DataMetric", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                }
+                                <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                    <span class="sr-only"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @if (User.CanEdit("T_DataMetric") && isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","T_DataMetric", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly },null)"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Details", "T_DataMetric", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" alt="View" title="View"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+
+
+
+                                    <div class="dropdown-divider"></div>
+                                    @if (User.CanEdit("T_DataMetric"))
+                                    {
+
+                                    }
+                                    @if (User.CanEdit("T_DataMetric") && !isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","T_DataMetric", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname },null)"><i class="fa fa-edit"></i>  Edit</a>
+                                        </li>
+                                    }
+
+
+                                    <div class="dropdown-divider"></div>
+                                    @if (User.CanDelete("T_DataMetric") && !isRecordReadOnly)
+                                    {
+                                        <li class="divider" style="clear:both"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Delete", "T_DataMetric", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("T_DataMetric", "T_DisplayOrder"))
+                    {
+
+                        <td title="@item.T_DisplayOrder">
+                            @Html.DisplayFor(modelItem => item.T_DisplayOrder)
+                        </td>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Name"))
+                    {
+
+                        <td title="@item.T_Name">
+                            @Html.DisplayFor(modelItem => item.T_Name)
+                        </td>
+                    }
+
+                    @if (User.CanView("T_DataMetrictype") && User.CanView("T_DataMetric", "T_AssociatedDataMetricTypeID"))
+                    {
+
+                        <td title="@Html.DisplayFor(modelItem => item.t_associateddatametrictype.DisplayValue)" @(Convert.ToString(ViewData["HostingEntity"]) == "T_DataMetrictype" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedDataMetricType" ? "hidden" : "")>
+                            @Html.DisplayFor(modelItem => item.t_associateddatametrictype.DisplayValue)
+                        </td>
+                    }
+                    @if (User.CanView("T_FacetedSearch") && User.CanView("T_DataMetric", "T_AssociatedFacetedSearchID"))
+                    {
+                        if (item.t_associatedfacetedsearch != null)
+                        {
+                            <td title="@Html.DisplayFor(modelItem => item.t_associatedfacetedsearch.DisplayValue)" @(Convert.ToString(ViewData["HostingEntity"]) == "T_FacetedSearch" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedFacetedSearch" ? "hidden" : "")>
+                                @Html.DisplayFor(modelItem => item.t_associatedfacetedsearch.DisplayValue)
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
+
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Aggregate"))
+                    {
+
+                        <td title="@item.T_Aggregate">
+                            @Html.DisplayFor(modelItem => item.T_Aggregate)
+                        </td>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_EntityName"))
+                    {
+                        if (item.T_EntityName != null)
+                        {
+
+                            if (ModelReflector.Entities.FirstOrDefault(p => p.Name == item.T_EntityName) != null)
+                            {
+                                <td>
+                                    @(ModelReflector.Entities.FirstOrDefault(p => p.Name == item.T_EntityName).DisplayName)
+                                </td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    }
+
+                    @if (User.CanView("T_DataMetric", "T_Roles"))
+                    {
+
+                        <td title="@item.T_Roles">
+                            @Html.DisplayFor(modelItem => item.T_Roles)
+                        </td>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_DisplayOn"))
+                    {
+
+                        <td title="@item.T_DisplayOn">
+                            @Html.DisplayFor(modelItem => item.T_DisplayOn)
+                        </td>
+                    }
+                    @if (User.CanView("T_DataMetric", "T_Hide"))
+                    {
+
+                        <td title="@item.T_Hide">
+                            @Html.ValueFor(modelItem => item.T_Hide)
+                        </td>
+                    }
+
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "T_DataMetric", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistT_DataMetric",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'T_DataMetric','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_DataMetric",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistT_DataMetric"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityT_DataMetricDisplayValue", null, null, new { @Style = "display:none;" })
+    @if (ViewData["HostingEntity"] == null)
+    {
+        <div class="modal fade" id="ShowGraphT_DataMetric" tabindex="-1" role="dialog" aria-labelledby="ShowGraphT_DataMetricLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="ShowGraphT_DataMetricLabel">Dashboard Data Metric</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dvShowGraphT_DataMetric" data-url="@Url.Action("ShowGraph", "T_DataMetric", new { type = "all" })">
+                        </div>
+                        <div style="clear:both"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,624 @@
+﻿@model GeneratorBase.MVC.Models.VerbGroup
+@{
+    ViewBag.Title = "Create Verb Group";
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbGroup").Properties;
+    var NonViewableProperties = User.CanNotView("VerbGroup");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "VerbGroup", User);
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
+@{
+
+    if (ViewBag.IsPartial == true)
+    {
+        <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        if (appTheme == "Default1")
+        {
+            <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+        }
+        else
+        {
+            <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        }
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+    }
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 8px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -0px !important;
+        }
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+
+        @@media (max-width: 767px) {
+
+
+            .arrowCount {
+                background-color: #1d5072 !important;
+            }
+
+            #dvGroupT_StudentPersonalInformation {
+                margin-top: 10px !important;
+            }
+
+            .nav-tabs .nav-item.active a {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+
+                .nav-tabs .nav-item.active a:hover {
+                    display: block !important;
+                    border-color: #1d5072 !important;
+                    color: #fff !important;
+                    background: #1d5072 !important;
+                }
+
+            .sw-theme-arrows > ul.step-anchor {
+                border-top-right-radius: 0 !important;
+            }
+
+                .sw-theme-arrows > ul.step-anchor > li.active > a {
+                    display: block !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
+                    display: none !important;
+                    color: #1d5072 !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor.open > li > a {
+                    display: block !important;
+                }
+
+            .responsive-tabs .dropdown-arrow {
+                border-color: #fff !important;
+                display: block !important;
+                z-index: 1000;
+                position: absolute;
+            }
+
+            #WizardBtnCancel {
+                margin-top: unset !important;
+                float: unset !important;
+                display: block !important;
+                margin-right: 8px !important;
+                margin-top: 3px !important;
+            }
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsGroupsHiddenRule))
+    {
+        <script>
+        var ResetBaseUrl = '@Url.Action("ResetToDefault", new { id = Model != null ? Model.Id : 0, groupName = "_groupname" })';
+        </script>
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsHiddenRule))
+    {
+        <script>
+
+             var ResetBaseUrlField = '@Url.Action("ResetToDefaultField", new { id = Model != null ? Model.Id : 0, fieldName = "_fieldname" })';
+        </script>
+    }
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.VerbGroupRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.VerbGroupRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "VerbGroup", new { UrlReferrer = Convert.ToString(ViewData["VerbGroupParentUrl"]), IsDDAdd = ViewBag.IsDDAdd, viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmVerbGroup" }))
+{
+    @Html.AntiForgeryToken();
+    if (!string.IsNullOrEmpty(wizardid))
+    { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+else { Html.ValidationSummary(true); }
+Html.EnableClientValidation();
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainer" style="display: none">
+    <div id="errorsMsg"></div>
+    <div id="errors"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlVerbGroup" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "VerbGroup")).ToHtmlString()"></a>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+        <div class="AppForm tabs-container" @wizardid>
+            @if (!string.IsNullOrEmpty(wizardid))
+            {
+                <ul id="olwizard" class="nav nav-tabs responsive-tabs" role="tablist">
+                    <li role="tab" class="nav-item" id="liGroupVerbGroupBasicInformation">
+                        <a href="#wzGroupVerbGroupBasicInformation" class="hidden-phone">Basic Information</a>
+                    </li>
+                    <li role="tab" class="nav-item" id="liGroupVerbGroupUIInformation">
+                        <a href="#wzGroupVerbGroupUIInformation" class="hidden-phone">UI Information</a>
+                    </li>
+                    <li role="tab" class="nav-item" id="liGroupVerbGroupInternalUse">
+                        <a href="#wzGroupVerbGroupInternalUse" class="hidden-phone">Internal Use</a>
+                    </li>
+                </ul>
+                <script>
+                    $(document).ready(function () {
+                        $(".formbuttonfix").hide();
+                        $(".pager").show();
+                        $(".pager.bwizard-buttons").show();
+                        $(".hidetools").hide();
+                    });
+                </script>
+                @Html.Hidden("wizardstep")
+            }
+            <div class="">
+                <div class="row bgwizard" id="wzGroupVerbGroupBasicInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupVerbGroupBasicInformation">
+                            <div class="card-header">
+                                <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("VerbGroup", "EntityInternalName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityInternalName">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.EntityInternalName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("EntityInternalName", null, "-- Select --", new { @class = "chosen-select form-control", @HostingName = "VerbGroup", @dataurl = Url.Action("GetAllValueEntity", "VerbGroup", new { caller = "EntityInternalName" }) })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.EntityInternalName)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "Name"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.Name)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span></label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Name)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "GroupId"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvGroupId">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.GroupId) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("GroupId", null, "-- Select --", new { @class = "form-control", @HostingName = "VerbGroup" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.GroupId)
+                                    </div>
+                                }
+
+                                @if (User.CanView("VerbGroup", "UIGroupInternalName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvUIGroupInternalName" style="display:none;">
+                                        <div class='form-group'>
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.UIGroupInternalName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                <div class="input-group" style="width:100%;">
+                                                    @Html.DropDownList("UIGroupInternalName", null, "-- Select --", new { @class = "chosen-select form-control", @VerbEntityName = "EntityInternalName", @HostingName = "VerbGroup", @dataurl = Url.Action("GetAllValueGroup", "VerbGroup", new { caller = "UIGroupInternalName" }) })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.UIGroupInternalName)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "DisplayOrder"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayOrder">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.DisplayOrder)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.DisplayOrder) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.DisplayOrder, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.DisplayOrder)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "Flag1"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvFlag1">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.Flag1)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.Flag1)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("Flag1", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Flag1)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "Icon"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvIcon">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.Icon)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Icon) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.Icon, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Icon)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "Description"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.Description)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.Description) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.Description)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row bgwizard" id="wzGroupVerbGroupUIInformation">
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupVerbGroupUIInformation">
+                            <div class="card-header">
+
+
+                                <h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("VerbGroup", "BackGroundColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvBackGroundColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.BackGroundColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.BackGroundColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.BackGroundColor, new { @class = "form-control" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvBackGroundColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.BackGroundColor)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "FontColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvFontColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.FontColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.FontColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.FontColor, new { @class = "form-control" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvFontColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.FontColor)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupVerbGroupInternalUse" style="display:none;">
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupVerbGroupInternalUse">
+                            <div class="card-header">
+                                <h3 class="card-title" alt="Internal Use" title="Internal Use">Internal Use</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("VerbGroup", "InternalName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvInternalName">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.InternalName)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.InternalName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.InternalName, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.InternalName)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "UIGroupInternalName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvUIGroupInternalName">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.UIGroupInternalName)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.UIGroupInternalName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.UIGroupInternalName, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.UIGroupInternalName)
+                                    </div>
+                                }
+                                @if (User.CanView("VerbGroup", "GroupId"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvGroupId">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.GroupId)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.GroupId) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.GroupId, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.GroupId)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divDisplayThresholdLimit1">
+</div>
+<div id="divDisplayBRmsgMandatory1">
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp1">
+</div>
+<div id="divDisplayCodeFragment1">
+</div>
+<div class="@footerclassdiv1">
+    <div class="@footerclassdiv2">
+
+        <a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","VerbGroup")');" alt="Cancel" title="Cancel">Cancel</a>
+
+
+        <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create" />
+
+        @if (ViewBag.IsPartial == null)
+        {
+            if (ViewBag.IsDDAdd == null && User.CanEdit("VerbGroup"))
+            {
+                <input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue" />
+                <input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+            }
+        }
+        <input type="hidden" name="hdncommand" value="" />
+    </div>
+</div>
+<br />
+<br />
+}
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "VerbGroup").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				form = $("#frmVerbGroup");
+				dataurl = "@Url.Action("businessruletype", "VerbGroup", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "VerbGroup", false, "ErrMsg", form);
+
+    });
+        </script>
+
+
+        <script>
+			$("input[type='submit']").click(function() {
+                $('input:hidden[name="hdncommand"]').val($(this).val());
+            });
+            $("form").submit(function (event) {
+			//if (!$("#frmVerbGroup").valid()) return;
+			var flag = true;
+				document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+ form = $("#frmVerbGroup").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "VerbGroup", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "VerbGroup", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+                    //$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					 $("#frmVerbGroup").find(':input').removeAttr('disabled');
+                }
+				else
+					  $("html, body").animate({ scrollTop: 0 }, "fast");
+				return flag;
+			 });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmVerbGroup").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+
+		 focusOnControl('frmVerbGroup');
+        }
+        catch (ex) { }
+			 if('@ViewBag.EntityHelp' == 'True' || '@ViewBag.EntityHelp' == 'true')
+{
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'VerbGroup','create',false,'Verb Group')
+		//instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'VerbGroup','create',false,'Verb Group')
+}
+		var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+               if (value.length > 0) $("#"+value).hide();
+            });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+		});
+</script>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+

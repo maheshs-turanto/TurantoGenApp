@@ -1,0 +1,719 @@
+﻿@model IEnumerable<object>
+@{
+    string grpStr = "";
+    int total = 0;
+    var isId = false;
+    int idsRowIdx = 0;
+    string GroupColExclude = "";
+    List<object> ids = new List<object>();
+    List<object> idRows = new List<object>();
+    GeneratorBase.MVC.Controllers.CustomReportsController ObjClt = new GeneratorBase.MVC.Controllers.CustomReportsController();
+    var AggResult = ViewBag.AggrationResult;
+}
+@if (ViewBag.ReportType == "Simple")
+{
+    <style>
+    
+
+    #Lnk_Print {
+        display:none !important;
+    }
+
+
+        /*
+        * dragtable
+        *
+        *
+        * default css
+        *
+        */
+        /*##### the dragtable stuff #####*/
+        .dragtable-sortable {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            -moz-user-select: none;
+        }
+
+            .dragtable-sortable li {
+                margin: 0;
+                padding: 0;
+                float: left;
+                font-size: 1em;
+                background: white;
+            }
+
+            .dragtable-sortable th, .dragtable-sortable td {
+                border-left: 0px;
+            }
+
+            .dragtable-sortable li:first-child th, .dragtable-sortable li:first-child td {
+                border-left: 1px solid #CCC;
+            }
+
+        .ui-sortable-helper {
+            opacity: 0.7;
+            filter: alpha(opacity=70);
+        }
+
+        .ui-sortable-placeholder {
+            -moz-box-shadow: 4px 5px 4px #C6C6C6 inset;
+            -webkit-box-shadow: 4px 5px 4px #C6C6C6 inset;
+            box-shadow: 4px 5px 4px #C6C6C6 inset;
+            border-bottom: 1px solid #CCCCCC;
+            border-top: 1px solid #CCCCCC;
+            visibility: visible !important;
+            background: #EFEFEF !important;
+            visibility: visible !important;
+        }
+
+            .ui-sortable-placeholder * {
+                opacity: 0.0;
+                visibility: hidden;
+            }
+    </style>
+    <script>
+        function PrintDate(value, aId) {
+            $("#" + aId).html(value);
+        }
+        function ClientDateTime(formate, value, aId) {
+            var localDateString = "";
+            var amPm = "";
+            if (formate != "") {
+
+                if (formate.trim() == "MM/DD/YYYY hh:mm".trim()) {
+                    var date = new Date(value);
+                    var convertedTime = convertLocalDateReport(date, false);
+                    localDateString = moment(convertedTime).format(formate + " A");
+                    $("#" + aId).html(localDateString);
+                }
+                else if (formate.trim() == "MM/DD/YYYY HH:mm".trim()) {
+                    var date = new Date(value);
+                    var convertedTime = convertLocalDateReport(date, false);
+                    localDateString = moment(convertedTime).format(formate);
+                    $("#" + aId).html(localDateString);
+                }
+                else if (formate.trim() == "HH:mm".trim() || formate.trim() == "hh:mm".trim()) {
+                    var time = value;
+                    var convertedTime = ConvertTimeOnlyReport(time, false);
+                    if (formate.trim() == "hh:mm".trim())
+                        localDateString = moment(convertedTime).format(formate + " A");
+                    else
+                        localDateString = moment(convertedTime).format(formate);
+                    $("#" + aId).html(localDateString);
+                }
+            }
+        }
+        function convertLocalDateReport(date, toUTC) {
+            date = new Date(date);
+            //Local time converted to UTC
+            var localOffset = date.getTimezoneOffset() * 60000;
+            //var localOffset = new Date().getTimezoneOffset() / 60000;
+            var localTime = date.getTime();
+            if (localOffset == 0) {
+                date = localTime;
+            }
+            else {
+                date = localTime - localOffset;
+            }
+            date = new Date(date);
+            return date;
+
+        }
+        function ConvertTimeOnlyReport(time, toUTC) {
+            var temp = time;
+            var TimeOnly = new Date();
+            var time = time.match(/(\d+)(?::(\d\d))?\s*(p?)/);
+            TimeOnly.setHours(parseInt(time[1]));
+
+
+            if (temp.match("PM$")) {
+                TimeOnly.setHours(0, 0, 0, 0)
+                if (!temp.match("^12")) {
+                    TimeOnly.setHours(parseInt(time[1]) + 12);
+                }
+                else {
+                    TimeOnly.setHours(parseInt(time[1]));
+                }
+            }
+            else if (temp.match("AM$")) {
+                TimeOnly.setHours(0, 0, 0, 0)
+                if (temp.match("^12")) {
+                    TimeOnly.setHours(parseInt(time[1]) - 12);
+                }
+                else {
+                    TimeOnly.setHours(parseInt(time[1]));
+                }
+            }
+            TimeOnly.setMinutes(parseInt(time[2]));
+            //Local time converted to UTC
+            var localOffset = TimeOnly.getTimezoneOffset() * 60000;
+            var localTime = TimeOnly.getTime();
+            if (localOffset == 0) {
+                TimeOnly = localTime;
+            }
+            else {
+                TimeOnly = localTime - localOffset;
+            }
+            return new Date(TimeOnly);
+        }
+    </script>
+
+    <script src="~/Scripts/jquery.dragtable.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#reportstd').dragtable({ maxMovingRows: 1 });
+        });
+    </script>
+    
+    <div style="clear:both;"></div>
+
+    if (ViewBag.GroupResult != null)
+    {
+        var colCount = 0;
+        foreach (var column in (object[])ViewBag.RowValue)
+        {
+            foreach (var GroupColName in ViewBag.GroupCol.Split(','))
+            {
+                if (column.ToString() == (string)GroupColName)
+                {
+                    GroupColExclude += (string)GroupColName + ",";
+                }
+            }
+        }
+        if (GroupColExclude != "")
+        {
+            GroupColExclude = GroupColExclude.TrimEnd(',');
+        }
+        var GroupPropHeader = ObjClt.getGroupProertyHeader(GroupColExclude);
+        foreach (var Gcol in GroupPropHeader)
+        {
+            grpStr += Gcol.ToString() + ",";
+        }
+        <div style="clear:both;"></div>
+
+    <div id="fsearchPosition" class="collapse MessageFSearch in" style="margin: 12px 0px 0px 0px;">
+        Group By :@grpStr
+    </div>
+        <div id="table_wrapper" class="table-responsive" style="overflow-x:auto;">
+
+            @foreach (var row in (object[])ViewBag.columns)
+            {
+                isId = false;
+                foreach (var column in (object[])ViewBag.RowValue)
+                {
+                    if (!(column.ToString().Split('.')[1] == "Id"))
+                    {
+                        isId = true;
+                        colCount++;
+                        break;
+                    }
+                }
+                if (isId)
+                {
+                    continue;
+                }
+            }
+            <table class="table table-bordered table-condensed" style="background-color: #a3a3a3;background-image: -webkit-linear-gradient(top, #ccc, #aaaaaa);background-image: -moz-linear-gradient(top, #fdfefe, #edf5fa);background-image: -ms-linear-gradient(top, #fdfefe, #edf5fa);background-image: -o-linear-gradient(top, #fdfefe, #edf5fa);background-image: linear-gradient(top, #fdfefe, #edf5fa);">
+                <tr>
+
+                    <td style="text-align:center;" colspan='@colCount'>
+                        <div style="margin: 0 0 -19px -4px;float:left;">
+                            <b id="exportexcel" onclick="ExpXls();">
+                                <span class="fa fa-file-excel-o" title="Export to Excel"></span>
+                            </b>
+                        </div>
+                        @if (ViewBag.ReportName != "")
+                        {
+                            <b>
+                                @ViewBag.ReportName
+                            </b>
+
+                        }
+                        else
+                        {
+                            <b>
+                                Blank Report
+                            </b>
+
+                        }
+                        <div style="margin: 0 0 -19px -4px;float:right">
+                            <b id="exportexcel" onclick="ExpXls();">
+                                <span class="fa fa-file-excel-o" title="Export to Excel"></span>
+                            </b>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table id="reportstd" class="table table-hover table-striped default-bordered default-condensed">
+
+                <thead>
+                    <tr>
+
+                        @foreach (var COL in (object[])ViewBag.columns)
+                        {
+                            var isGroup = false;
+                            foreach (var Gcol in GroupPropHeader)
+                            {
+                                if (Gcol.ToString().Trim(' ') == COL.ToString().Trim(' '))
+                                {
+                                    isGroup = true;
+                                }
+                            }
+                            if (!isGroup)
+                            {
+                                isId = false;
+                                foreach (var column in (object[])ViewBag.RowValue)
+                                {
+                                    if (!(column.ToString().Split('.')[1] == "Id"))
+                                    {
+                                        isId = true;
+                                        <th>@COL</th>
+                                        break;
+                                    }
+                                }
+                                if (isId)
+                                {
+                                    continue;
+                                }
+
+                            }
+                        }
+                    </tr>
+                </thead>
+
+                @foreach (var COL in (object[])ViewBag.columns)
+                {
+                    var isGroup = false;
+                    foreach (var Gcol in GroupPropHeader)
+                    {
+                        if (Gcol.ToString().Trim(' ') == COL.ToString().Trim(' '))
+                        {
+                            isGroup = true;
+                        }
+                    }
+                    if (!isGroup)
+                    {
+                        foreach (var column in (object[])ViewBag.RowValue)
+                        {
+                            if ((column.ToString().Split('.')[1] == "Id"))
+                            {
+                                ids.Add(column);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                @foreach (var item in ViewBag.GroupResult)
+                {
+                    foreach (var row in (IEnumerable<object>)item)
+                    {
+                        foreach (var column in (object[])ViewBag.RowValue)
+                        {
+                            if (!(GroupColExclude == column.ToString()))
+                            {
+                                if ((column.ToString().Split('.')[1] == "Id"))
+                                {
+                                    idRows.Add(row);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+
+                @foreach (var item in ViewBag.GroupResult)
+                {
+                    var GroupValue = "";
+                    <tr>
+                        <td colspan="8" style="background: #EDF5FA; font-weight:bold">
+                            @foreach (var row in (IEnumerable<object>)item)
+                            {
+                                foreach (var GroupColName in ViewBag.GroupCol.Split(','))
+                                {
+
+                                    GroupValue = ObjClt.getRecordValue(Convert.ToString(ViewBag.Relations), row, (object)GroupColName) + "-";
+                                    break;
+                                }
+                            }
+                            @if (GroupValue == "")
+                            {
+                                GroupValue = "None";
+                            }
+                            @{
+
+                            int count = (((IEnumerable<object>)item).ToList().Count());
+                            total += count;
+                            }
+                            @GroupValue : @count Record(s)
+                        </td>
+                    </tr>
+                    foreach (var row in (IEnumerable<object>)item)
+                    {
+
+                        int idsColIdx = 0;
+                        <tr>
+                            @foreach (var column in (object[])ViewBag.RowValue)
+                            {
+                                if (!(GroupColExclude == column.ToString()))
+                                {
+                                    if (!(column.ToString().Split('.')[1] == "Id"))
+                                    {
+                                        <td>
+                                            <a href="@Url.Action("Details",  @ids[idsColIdx].ToString().Split('.')[0], new { id = ObjClt.getRecordValue(Convert.ToString(ViewBag.Relations),idRows[idsRowIdx], ids[idsColIdx]) }, null)" target="_blank">@ObjClt.getRecordValue(Convert.ToString(ViewBag.Relations), row, column)</a>
+                                        </td>
+                                        idsColIdx++;
+                                    }
+                                }
+                            }
+                        </tr>
+                            idsRowIdx++;
+                    }
+                }
+
+            </table>
+            <span>
+                Total record is:@total
+            </span>
+        </div>
+
+    }
+    else
+    {
+        var colCount = 0;
+        <div id="table_wrapper" class="table-responsive" style="overflow-x:auto;">
+
+            @foreach (var row in (object[])ViewBag.columns)
+            {
+                isId = false;
+                foreach (var column in (object[])ViewBag.RowValue)
+                {
+                    if (!(column.ToString().Split('.')[1] == "Id"))
+                    {
+                        isId = true;
+                        colCount++;
+                        break;
+                    }
+                }
+                if (isId)
+                {
+                    continue;
+                }
+            }
+            <table class="table table-bordered table-condensed" style="background-color: #a3a3a3;background-image: -webkit-linear-gradient(top, #ccc, #aaaaaa);background-image: -moz-linear-gradient(top, #fdfefe, #edf5fa);background-image: -ms-linear-gradient(top, #fdfefe, #edf5fa);background-image: -o-linear-gradient(top, #fdfefe, #edf5fa);background-image: linear-gradient(top, #fdfefe, #edf5fa);">
+                <tr>
+                    <td style="text-align:center;border:1px solid #a3a3a3;" colspan='@colCount'>
+                        <div style="margin: 0 0 -19px -4px;float:left;">
+                            <b id="exportexcel" onclick="ExpXls();">
+                                <span class="fa fa-file-excel-o" title="Export to Excel"></span>
+                            </b>
+                        </div>
+                        @if (ViewBag.ReportName != "")
+                        {
+                            <b>
+                                @ViewBag.ReportName
+                            </b>
+                        }
+                        else
+                        {
+                            <b>
+                                Blank Report
+                            </b>
+
+                        }
+                        <div style="margin: 0 0 -19px -4px;float:right">
+                            <b id="exportexcel" onclick="ExpXls();">
+                                <span class="fa fa-file-excel-o" title="Export to Excel"></span>
+                            </b>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table id="reportstd" class="table table-hover table-striped default-bordered default-condensed">
+                <thead>
+                    <tr>
+
+                        @foreach (var row in (object[])ViewBag.columns)
+                        {
+                            isId = false;
+                            foreach (var column in (object[])ViewBag.RowValue)
+                            {
+                                if (!(column.ToString().Split('.')[1] == "Id"))
+                                {
+                                    isId = true;
+                                    <th>@row</th>
+                                    break;
+                                }
+                            }
+                            if (isId)
+                            {
+                                continue;
+                            }
+                        }
+                    </tr>
+                </thead>
+                @if (Model.Count() == 0)
+                {
+                    <tr>
+                        <td>No Record Available</td>
+                    </tr>
+                }
+                @foreach (var row in (object[])ViewBag.RowValue)
+                {
+                    if (row.ToString().Split('.')[1] == "Id")
+                    {
+
+                        ids.Add(row);
+                        // idRows.Add(row);
+
+                    }
+                }
+                @foreach (var row in Model)
+                {
+                    foreach (var column in (object[])ViewBag.RowValue)
+                    {
+                        if (column.ToString().Split('.')[1] == "Id")
+                        {
+                            idRows.Add(row);
+                            break;
+                        }
+                    }
+                }
+                @foreach (var row in Model)
+                {
+                    int idsColIdx = 0;
+                    <tr>
+                        @foreach (var column in (object[])ViewBag.RowValue)
+                        {
+                            if (!(column.ToString().Split('.')[1] == "Id"))
+                            {
+                                var colvalue = ObjClt.getRecordValue(Convert.ToString(ViewBag.Relations), row, column);
+                                var colformate = ObjClt.getDataFormatString(row, column).ToString();
+                                <td>
+                                    @if (colvalue != null)
+                                    {
+                                        Guid randomId = Guid.NewGuid();
+                                        string uniqueId = randomId.ToString().Substring(0, 18).ToUpper();
+                                        var ID = ObjClt.getRecordValue(Convert.ToString(ViewBag.Relations), idRows[idsRowIdx], ids[idsColIdx]);
+                                        <a id=@Html.Raw("'" + column.ToString().Split('.')[1] + uniqueId + "'") href="@Url.Action("Details", @ids[idsColIdx].ToString().Split('.')[0], new { id = ID }, null)" target="_blank">
+                                            @if (colformate.Contains("MM/dd/yyyy"))
+                                            {
+                                                colvalue = string.Format(colformate, colvalue);
+                                                @Html.Raw(colvalue)
+                                            }
+                                            @if (colformate.Contains("MM/dd/yyyy hh:mm tt"))
+                                            {
+                                                @Html.Raw("<script>ClientDateTime('MM/DD/YYYY hh:mm','" + colvalue + "','" + column.ToString().Split('.')[1] + uniqueId + "')</script>")
+                                            }
+                                            @if (colformate.Contains("MM/dd/yyyy HH:mm"))
+                                            {
+                                                @Html.Raw("<script>ClientDateTime('MM/DD/YYYY HH:mm','" + colvalue + "','" + column.ToString().Split('.')[1] + uniqueId + "')</script>")
+                                            }
+                                            @if (colformate.Contains("hh:mm tt"))
+                                            {
+                                                colvalue = string.Format(colformate, colvalue);
+                                                @Html.Raw("<script>ClientDateTime('hh:mm','" + colvalue + "','" + column.ToString().Split('.')[1] + uniqueId + "')</script>")
+                                            }
+                                            @if (colformate.Contains("HH:mm"))
+                                            {
+                                                colvalue = string.Format(colformate, colvalue);
+                                                @Html.Raw("<script>ClientDateTime('hh:mm','" + colvalue + "','" + column.ToString().Split('.')[1] + uniqueId + "')</script>")
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("<script>PrintDate('" + colvalue + "','" + column.ToString().Split('.')[1] + uniqueId + "')</script>")
+                                                @*<b>@string.Format(colformate, colvalue)</b>*@
+                                            }
+                                        </a>
+                                    }
+                                </td>
+                                    idsColIdx++;
+                            }
+                        }
+                    </tr>
+                        idsRowIdx++;
+                }
+                @if (ViewBag.AggrationResult != null)
+                {
+                    <tr>
+                        @foreach (var column in (object[])ViewBag.RowValue)
+                        {
+
+                            if (!(column.ToString().Split('.')[1] == "Id"))
+                            {
+                                <td>
+                                    @{
+                                string aggresults = ViewBag.AggrationResult;
+                                var aggresult = aggresults.Split(',');
+                                foreach (var item in aggresult)
+                                {
+                                    string formatstring = "";
+                                    var res = item.Split('-');
+                                    string prop = res[0].Split('.')[1];
+                                    string aggOp = res[1];
+                                    string result = res[2];
+                                    foreach (var row in Model.Take(1))
+                                    {
+                                        formatstring = ObjClt.getDataFormatString(row, column).ToString();
+                                        if (formatstring.Contains("MM/dd/yyyy") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+
+                                        }
+                                        if (formatstring.Contains("MM/dd/yyyy hh:mm tt") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+                                        }
+                                        if (formatstring.Contains("MM/dd/yyyy hh:mm tt") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+                                        }
+                                        if (formatstring.Contains("hh:mm tt") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+                                        }
+                                        if (formatstring.Contains("HH:mm") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+                                        }
+                                        if (formatstring.Contains("MM/dd/yyyy") && column.ToString() == res[0].ToString())
+                                        {
+                                            DateTime dresult = DateTime.Parse(result);
+                                            result = string.Format(formatstring, dresult);
+                                        }
+                                        break;
+                                    }
+
+                                    if (column.ToString().Split('.')[1] == prop)
+                                    {
+                                        <b> @Html.Raw(aggOp + "(" + result + ") <br/>")</b>
+                                    }
+                                }
+                                    }
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </table>
+
+            <span>
+                Total record is: @Model.Count()
+            </span>
+        </div>
+    }
+   
+}
+else if (ViewBag.ReportType == "CrossTab")
+{
+    <style>
+        /* REPORT */
+        .CssTable {
+            margin: 0px;
+            max-width: 500px;
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+            text-decoration: none;
+            border: 1px solid #a3a3a3;
+            color: #000000;
+        }
+
+            .CssTable .CssSubHeading {
+                font-weight: bold;
+                padding: 8px;
+                background: #000 repeat-x;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-top: 1px solid #a3a3a3;
+                border-bottom: 0px solid #a3a3a3;
+                border-left: 0px solid #a3a3a3;
+                border-right: 0px solid #a3a3a3;
+                color: #fff;
+                text-decoration: none;
+                text-align: left;
+            }
+
+            .CssTable .CssTotals {
+                font-weight: bold;
+                padding: 8px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-top: 1px solid #a3a3a3;
+                border-bottom: 0px solid #a3a3a3;
+                border-left: 0px solid #a3a3a3;
+                border-right: 0px solid #a3a3a3;
+                color: #000;
+                text-decoration: none;
+                text-align: left;
+            }
+
+            .CssTable td {
+                font-size: 0.95em;
+                padding: 8px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-bottom: 1px solid #a3a3a3;
+                background-color: #fff;
+                border-top: 1px solid #a3a3a3;
+                border-right: 1px solid #a3a3a3;
+                vertical-align: top middle;
+            }
+
+            .CssTable tr:first-child td {
+                background: #d9d9d9 repeat-x;
+                font-weight: bold;
+                color: black;
+            }
+            .CssTable tr:nth-child(2) td {
+                background: #d9d9d9 repeat-x;
+                font-weight: bold;
+                color: black;
+            }
+         
+
+            .CssTable tfoot tr td {
+                background: #e8edff;
+                font-size: 0.9;
+            }
+
+            .CssTable tbody tr:hover td {
+                background: #fef1c8 repeat-x;
+                color: Black;
+            }
+
+            .CssTable a {
+                text-decoration: none;
+            }
+    </style>
+    <div id="table_wrapper" class="table-responsive" style="height:100%;width:100%;overflow:auto;">
+       
+        @Html.Raw(@ViewBag.TabResult)
+    </div>
+}
+<script>
+
+    function ExpXls() {
+        var data_type = 'data:application/vnd.ms-excel';
+        var table_div = document.getElementById('table_wrapper');
+        var table_html = table_div.outerHTML.replace(/ /g, '%20');
+        var a = document.createElement('a');;
+        a.href = data_type + ', ' + table_html;
+        a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
+        a.click();
+    }
+</script>
+
+
+
+
+

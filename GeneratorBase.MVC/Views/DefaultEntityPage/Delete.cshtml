@@ -1,0 +1,83 @@
+﻿@model GeneratorBase.MVC.Models.DefaultEntityPage
+@{
+    ViewBag.Title = "Delete Default Entity Page";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            Delete Default Entity Page
+            <small> @Html.DisplayFor(model => model.DisplayValue)</small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ConcurrencyKey)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card AppForm">
+                    <div class="card-header text-white bg-danger clearfix">
+                        <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.EntityName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.EntityName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Roles)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Roles)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.PageType)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.PageType)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.PageUrl)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.PageUrl)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Other)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Other)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Flag)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Flag)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+                @if (User.CanDelete("DefaultEntityPage"))
+                {
+                    <input type="submit" value="Delete" class="btn btn-primary btn-sm" />
+                }
+            </div>
+        </div>
+    <br />
+    }
+</div>
+

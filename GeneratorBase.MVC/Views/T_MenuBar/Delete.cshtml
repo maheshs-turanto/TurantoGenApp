@@ -1,0 +1,100 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBar
+@{
+    ViewBag.Title = "Delete Menu Bar";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+      <strong> 	  
+		Menu Bar         
+		<small>Delete - @Html.DisplayFor(model => model.DisplayValue)</small>
+      </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+				<div>
+               
+ </div>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+<label id="ErrMsg" style="color:brown;vertical-align:middle;font-size:90%;"></label>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+	                                  
+	<div class="row">	
+        <div class="col-md-12 col-sm-12 col-xs-12">	
+            <div class="card AppForm">	
+                <div class="card-header text-white bg-danger clearfix">	
+                    <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>	
+                </div>	
+                <div class="card-body">
+    <dl class="dl-horizontal">
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_AutoNo)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_AutoNo)
+			@Html.HiddenFor(model => model.T_AutoNo)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Name)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Name)
+			@Html.HiddenFor(model => model.T_Name)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Disabled)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Disabled)
+			@Html.HiddenFor(model => model.T_Disabled)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Roles)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Roles)
+			@Html.HiddenFor(model => model.T_Roles)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_Horizontal)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_Horizontal)
+			@Html.HiddenFor(model => model.T_Horizontal)
+        </dd>
+    </dl>
+
+	  </div>	
+                </div>	
+            </div>	
+        </div>
+	<br/>
+        <div class="row deletefix">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+         <a class="btn btn-default btn-sm" Onclick="goBack('@Url.Action("Index","T_MenuBar")');">Back</a>
+ 
+	@if ( User.CanDelete("T_MenuBar") && User.CanDeleteItemInHierarchy("T_MenuBar", Model, User))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>
+
+<script>
+    $("input[type='submit']").click(function (event) {
+        var returnvalue = true;
+        var alertmsg = "";
+        if (alertmsg.length > 0)
+            OpenAlertPopUp("Warning!", alertmsg);
+        return returnvalue;
+    });
+</script>
+
+ 

@@ -1,0 +1,86 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBarMenuItemAssociation
+@{
+    ViewBag.Title = "Delete Menu Bar Menu Item Association";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+      <strong> 	  
+		Menu Bar Menu Item Association         
+		<small>Delete - @Html.DisplayFor(model => model.DisplayValue)</small>
+      </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+				<div>
+               
+ </div>
+	<div class="col-md-12 col-sm-12 col-xs-12">
+<label id="ErrMsg" style="color:brown;vertical-align:middle;font-size:90%;"></label>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.ConcurrencyKey)
+    @Html.HiddenFor(model => model.Id)
+	                                  
+	<div class="row">	
+        <div class="col-md-12 col-sm-12 col-xs-12">	
+            <div class="card AppForm">	
+                <div class="card-header text-white bg-danger clearfix">	
+                    <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>	
+                </div>	
+                <div class="card-body">
+    <dl class="dl-horizontal">
+		 <dt>
+            @Html.DisplayNameFor(model => model.T_MenuBarID)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.t_menubar.DisplayValue)
+			 @Html.HiddenFor(model => model.T_MenuBarID)
+        </dd>
+		 <dt>
+            @Html.DisplayNameFor(model => model.T_MenuItemID)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.t_menuitem.DisplayValue)
+			 @Html.HiddenFor(model => model.T_MenuItemID)
+        </dd>
+		  <dt>		   
+            @Html.DisplayNameFor(model => model.T_OrderNumber)
+        </dt>
+		<dd class="clearfix">
+           - @Html.DisplayFor(model => model.T_OrderNumber)
+			@Html.HiddenFor(model => model.T_OrderNumber)
+        </dd>
+    </dl>
+
+	  </div>	
+                </div>	
+            </div>	
+        </div>
+	<br/>
+        <div class="row deletefix">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+         <a class="btn btn-default btn-sm" Onclick="goBack('@Url.Action("Index","T_MenuBarMenuItemAssociation")');">Back</a>
+ 
+	@if ( User.CanDelete("T_MenuBarMenuItemAssociation") && User.CanDeleteItemInHierarchy("T_MenuBarMenuItemAssociation", Model, User))
+     {
+			<input type="submit" value="Delete" class="btn btn-primary btn-sm" /> 
+	}
+        </div>
+            </div>
+    }
+</div>
+
+<script>
+    $("input[type='submit']").click(function (event) {
+        var returnvalue = true;
+        var alertmsg = "";
+        if (alertmsg.length > 0)
+            OpenAlertPopUp("Warning!", alertmsg);
+        return returnvalue;
+    });
+</script>
+
+ 

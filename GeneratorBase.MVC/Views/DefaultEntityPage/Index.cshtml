@@ -1,0 +1,100 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.DefaultEntityPage>
+@{
+    ViewBag.Title = "Default Entity Page List";
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@if (appTheme == "Default" || appTheme == "Default_BS_5_x")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">Default Entity Page</a>
+
+                <small>Default Entity Page List</small>
+            </strong>
+
+        </div>
+        <div class="col-lg-4">
+            <div class="title-action">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- /.col-lg-12 -->
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div id="dvDefaultEntityPageFilter"></div>
+                @Html.Partial("~/Views/DefaultEntityPage/IndexPartial.cshtml", Model)
+
+            </div>
+        </div>
+    </div>
+
+}
+@if (appTheme == "Angular")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index")">Default Entity Page</a>
+
+                <small>Default Entity Page List</small>
+            </strong>
+
+        </div>
+        <div class="col-lg-4">
+            <div class="title-action">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- /.col-lg-12 -->
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div id="dvDefaultEntityPageFilter"></div>
+                @Html.Partial("~/Views/DefaultEntityPage/IndexPartial.cshtml", Model)
+
+            </div>
+        </div>
+    </div>
+}
+@if (appTheme == "Default1")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">Default Entity Page</a>
+
+                <small>Default Entity Page List</small>
+            </strong>
+
+        </div>
+        <div class="col-lg-4">
+            <div class="title-action">
+
+            </div>
+        </div>
+    </div>
+
+    <!-- /.col-lg-12 -->
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col" style="width:200px; float:left">
+
+                        <div id="dvDefaultEntityPageFilter"></div>
+                        @Html.Partial("~/Views/DefaultEntityPage/IndexPartial.cshtml", Model)
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+}

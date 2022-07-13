@@ -1,0 +1,559 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataConfiguration
+@{
+    ViewBag.Title = "Create Export Data Configuration";
+    var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataConfiguration").Properties;
+    var NonViewableProperties = User.CanNotView("T_ExportDataConfiguration");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> hiddenProperties = new List<string>();
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_ExportDataConfiguration", User);
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+
+    var IsSoftDeleteEnabled = bool.Parse(CommonFunction.Instance.SoftDeleteEnabled());
+}
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
+@{
+
+    if (ViewBag.IsPartial == true)
+    {
+        <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+        if (appTheme == "Default1")
+        {
+            <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+        }
+        else
+        {
+            <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        }
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+    }
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 8px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -0px !important;
+        }
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_ExportDataConfiguration", new { UrlReferrer = Convert.ToString(ViewData["T_ExportDataConfigurationParentUrl"]), IsDDAdd = ViewBag.IsDDAdd, viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmT_ExportDataConfiguration" }))
+{
+    @Html.AntiForgeryToken();
+    if (!string.IsNullOrEmpty(wizardid))
+    { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+else { Html.ValidationSummary(true); }
+Html.EnableClientValidation();
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainer" style="display: none">
+    <div id="errorsMsg"></div>
+    <div id="errors"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlT_ExportDataConfiguration" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_ExportDataConfiguration")).ToHtmlString()"></a>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+        <div class="AppForm" @wizardid>
+            @if (!string.IsNullOrEmpty(wizardid))
+            {
+                <ul id="olwizard" class="nav" role="tablist">
+                    <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationBasicInformation">
+                        <a href="#wzGroupT_ExportDataConfigurationBasicInformation" class="hidden-phone">Basic Information</a>
+                    </li>
+                    <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationUIInformation">
+                        <a href="#wzGroupT_ExportDataConfigurationUIInformation" class="hidden-phone">UI Information</a>
+                    </li>
+                </ul>
+                <script>
+                    $(document).ready(function () {
+                        $(".formbuttonfix").hide();
+                        $(".pager").show();
+                        $(".pager.bwizard-buttons").show();
+                        $(".hidetools").hide();
+                    });
+                </script>
+                @Html.Hidden("wizardstep")
+            }
+            <div class="">
+                <div class="row bgwizard" id="wzGroupT_ExportDataConfigurationBasicInformation">
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_ExportDataConfigurationBasicInformation">
+                            <div class="card-header">
+                                <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_ExportDataConfiguration", "T_AutoNo"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_AutoNo)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextBoxFor(model => model.T_AutoNo, new { @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_Name"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Name)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Name)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_EntityName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EntityName">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_EntityName)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_EntityName) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.DropDownList("T_EntityName", null, "-- Select --", new { @class = "form-control", @onchange = "GetNodeData();" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_EntityName)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_AllowedRoles"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AllowedRoles">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_AllowedRoles)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AllowedRoles) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.DropDownList("T_AllowedRoles", null, "-- Select --", new { @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_AllowedRoles)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_Description"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Description)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Description) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Description)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_Disable"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_Disable)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_Disable)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_Disable", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_Disable)
+                                    </div>
+                                }
+
+                                @if (IsSoftDeleteEnabled && User.CanView("T_ExportDataConfiguration", "T_EnableDelete"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EnableDelete">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_EnableDelete)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_EnableDelete)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_EnableDelete", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_EnableDelete)
+                                    </div>
+                                }
+                                @if (IsSoftDeleteEnabled && User.CanView("T_ExportDataConfiguration", "T_IsRootDeleted"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsRootDeleted">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_IsRootDeleted)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_IsRootDeleted)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_IsRootDeleted", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_IsRootDeleted)
+                                    </div>
+                                }
+                                @*OneDrive Changes*@
+                                @if (User.CanView("T_ExportDataConfiguration", "T_UploadOneDrive"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_UploadOneDrive">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_UploadOneDrive)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_UploadOneDrive)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_UploadOneDrive", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_UploadOneDrive)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_UploadGoogleDrive"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_UploadGoogleDrive">
+                                        <div class="form-group" title="@Html.DisplayNameFor(model => model.T_UploadGoogleDrive)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                @Html.LabelFor(model => model.T_UploadGoogleDrive)
+                                            </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.CheckBox("T_UploadGoogleDrive", false)
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_UploadGoogleDrive)
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard" id="wzGroupT_ExportDataConfigurationUIInformation">
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default" id="dvGroupT_ExportDataConfigurationUIInformation">
+                            <div class="card-header">
+                                <h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+                            </div>
+                            <div class="card-body row">
+                                @if (User.CanView("T_ExportDataConfiguration", "T_BackGroundColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackGroundColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_BackGroundColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_BackGroundColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_BackGroundColor, new { @class = "form-control" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvT_BackGroundColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_BackGroundColor)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_FontColor"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FontColor">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_FontColor)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_FontColor) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.T_FontColor, new { @class = "form-control" })
+
+                                                <span class="input-group-addon btn btn-default">
+                                                    <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                </span>
+                                                <script>
+                                                    $(function () { $('#dvT_FontColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_FontColor)
+                                    </div>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration", "T_ToolTip"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+                                        <div class='form-group' title="@Html.DisplayNameFor(model => model.T_ToolTip)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ToolTip) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.TextAreaFor(model => model.T_ToolTip, new { @class = "form-control" })
+
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.T_ToolTip)
+                                    </div>
+                                }
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bgwizard">
+                    <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                        <div class="card card-default">
+                            <div class="card-header">
+                                <h3 class="card-title" alt="Export Data Details" title="Export Data Details">Export Data Details</h3>
+                            </div>
+                            <div class="card-body row">
+                                <div id="ExportDatails" class="form-control">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divDisplayThresholdLimit1">
+</div>
+<div id="divDisplayBRmsgMandatory1">
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp1">
+</div>
+<div id="divDisplayCodeFragment1">
+</div>
+<div class="@footerclassdiv1">
+    <div class="@footerclassdiv2">
+
+        <a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","T_ExportDataConfiguration")');" alt="Cancel" title="Cancel">Cancel</a>
+
+
+        <input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create" />
+
+        @if (ViewBag.IsPartial == null)
+        {
+            if (ViewBag.IsDDAdd == null && User.CanEdit("T_ExportDataConfiguration"))
+            {
+                <input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue" />
+                <input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+            }
+        }
+        <input type="hidden" name="hdncommand" value="" />
+    </div>
+</div>
+<br />
+<br />
+}
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+    function GetNodeData()
+    {
+        var obj = $("#T_EntityName").val();
+        $("#ExportDatails").html("");
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: '@Url.Action("ExportData", "T_ExportDataConfiguration")' + '?EntityName=' + obj,
+            success: function (data)
+            {
+                $("#ExportDatails").append(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+</script>
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_ExportDataConfiguration").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				form = $("#frmT_ExportDataConfiguration");
+				dataurl = "@Url.Action("businessruletype", "T_ExportDataConfiguration", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "T_ExportDataConfiguration", false, "ErrMsg", form);
+
+    });
+        </script>
+
+
+        <script>
+			$("input[type='submit']").click(function() {
+                $('input:hidden[name="hdncommand"]').val($(this).val());
+            });
+            $("form").submit(function (event) {
+			//if (!$("#frmT_ExportDataConfiguration").valid()) return;
+			var flag = true;
+				document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+ form = $("#frmT_ExportDataConfiguration").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "T_ExportDataConfiguration", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_ExportDataConfiguration", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+                    //$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					 $("#frmT_ExportDataConfiguration").find(':input').removeAttr('disabled');
+                }
+				else
+					  $("html, body").animate({ scrollTop: 0 }, "fast");
+				return flag;
+			 });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmT_ExportDataConfiguration").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+        </script>
+
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+
+		 focusOnControl('frmT_ExportDataConfiguration');
+        }
+        catch (ex) { }
+			 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_ExportDataConfiguration','create',false,'Export Data Configuration')
+		//instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_ExportDataConfiguration','create',false,'Export Data Configuration')
+		var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+		});
+</script>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+

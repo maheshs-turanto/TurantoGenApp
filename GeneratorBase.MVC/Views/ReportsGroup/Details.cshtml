@@ -1,0 +1,203 @@
+﻿@model GeneratorBase.MVC.Models.ReportsGroup
+@using PagedList;
+@{
+    ViewBag.Title = "View Reports Group";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportsGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Reports Group";
+}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsSetValueUIRule);
+    }
+}
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-6">
+        <ol class="breadcrumb">
+            <li>
+               <strong><a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li class="active">
+                Details
+            </li>
+			<li class="active">
+              <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-6">
+			<div class="btn-group pull-right fixactionbut" style="margin:0px 0px 0px 0px;">
+            <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("ReportsGroup"))
+                    {
+                        <a href="@Url.Action("Edit", "ReportsGroup", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("ReportsGroup"))
+                    {
+                        <a href="@Url.Action("Delete", "ReportsGroup", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left" id="AddAssociationdropmenuReportsGroup">
+	 @{ var dropmenu = false; }
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if ( User.CanAdd("ReportList"))
+				{ dropmenu = true;
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ReportList",
+              new
+              {
+                  UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="ReportsGroupSSRSReportAssociation", 
+							HostingEntityName = "ReportsGroup",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Reports
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+@if(!dropmenu)
+{
+    <script>
+        $("#AddAssociationdropmenuReportsGroup").hide();
+    </script>
+}
+			</ul>
+   </div>
+</div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+		 <li @(!User.CanView("ReportList") ?"style=display:none;":"")><a onclick="LoadTab('ReportsGroupSSRSReportAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "ReportList", new {RenderPartial=true, HostingEntity ="ReportsGroup", HostingEntityID = @Model.Id, AssociatedType = "ReportsGroupSSRSReportAssociation",TabToken = DateTime.Now.Ticks,}))')" href="#ReportsGroupSSRSReportAssociation" data-toggle="tab">
+		 Reports
+		 <span class="badge bg-blue"><div id="dvcnt_ReportsGroupSSRSReportAssociation">@ViewBag.ReportsGroupSSRSReportAssociationCount</div></span>
+		 		 </a></li>
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade in active" id="Details">
+				 <div class="panel panel-default AppForm">
+					<div class="panel-body">
+
+			<div class="row">
+
+@if(User.CanView("ReportsGroup","Name")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+	<div class='form-group' title="@Model.Name">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Name) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblName" class="viewlabel">@Model.Name</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("ReportsGroup","Description"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+	<div class='form-group' title="@Model.Description">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Description)</label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		<p class="viewlabelmultiline">@Model.Description</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("ReportsGroup","DisplayOrder")  )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayOrder">
+	<div class='form-group' title="@Model.DisplayOrder">
+		<label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DisplayOrder) </label>
+		<div class="input-group col-sm-7 col-md-7 col-xs-12">
+		
+						<p id="lblDisplayOrder" class="viewlabel">@Model.DisplayOrder</p>
+								</div>
+	</div>
+</div>
+}
+		</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+				<a class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","ReportsGroup")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("ReportsGroup"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = Request.UrlReferrer, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="" id="AddAssociationdropmenubottomReportsGroup">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+			@if (User.CanAdd("ReportList"))
+            {
+			    dropmenubottom = true;
+                <li><a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ReportList",
+              new
+              {
+                  UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="ReportsGroupSSRSReportAssociation", 
+						HostingEntityName = "ReportsGroup",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                   Add  Reports
+                </a>
+				</li>
+            }
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomReportsGroup").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+<div class="tab-pane fade in" id="ReportsGroupSSRSReportAssociation">
+     @if ( User.CanView("ReportList"))
+	{
+	  // Html.RenderAction("Index", "ReportList", new {RenderPartial=true, HostingEntity = "ReportsGroup", HostingEntityID = @Model.Id, AssociatedType = "ReportsGroupSSRSReportAssociation" }); 
+	}
+  </div>
+	</div> <!-- /tab-content --><br />
+<br/>
+</div>
+</div>
+ 

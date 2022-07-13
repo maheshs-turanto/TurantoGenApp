@@ -1,0 +1,176 @@
+﻿@model CommonFunction
+@{
+	var entityModel = GeneratorBase.MVC.ModelReflector.Entities;
+    DisplayModeProvider.Instance.RequireConsistentDisplayMode = true;
+	var currentController = ViewContext.RouteData.Values["controller"].ToString();
+    var commonObj = Model;
+    var AppName = commonObj.AppName();
+    var linkPrefix = Url.Content("~/");
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+		string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];	
+
+
+    string roles = string.Join(", ", User.userroles);
+    bool menudisplay = commonObj.ShowMenuOnTop();
+    var userSideBar = (new ApplicationContext(new SystemUser())).T_MenuBars.GetFromCache<IQueryable<T_MenuBar>, T_MenuBar>().ToList().Where(p => (User.IsInRole(p.T_Roles.Split(',').ToArray()) == true || p.T_Roles == "All") && p.T_Disabled.HasValue && !(p.T_Disabled.Value));
+   ApplicationUser userinfo = null;
+    var picId ="";
+    bool IsFile = false;
+    using (var userdb = new ApplicationDbContext(true))
+    {
+        userinfo = userdb.Users.FirstOrDefault(p => p.UserName == User.Name);
+        var ent = entityModel.FirstOrDefault(p => p.Name == "ApplicationUser");
+        var properties = ent.Properties;
+         var ImgProps = ent.Properties.Where(p => p.PropCheck=="File" || p.PropCheck=="Image").FirstOrDefault();
+        if (ImgProps != null)
+        {
+
+            var picIdVal = (userinfo.GetType()).GetProperty(ImgProps.Name).GetValue(userinfo, null);
+            if (picIdVal != null)
+            {
+                if (ImgProps.PropCheck == "File")
+                {
+                    IsFile = true;
+                    picId = Convert.ToString(picIdVal);
+                }
+                if (ImgProps.PropCheck == "Image")
+                {
+                    picId = Convert.ToString(picIdVal);
+                }
+            }
+        }
+    }
+    var ProfilePic = Url.Content("~/Content/images/user.png");
+    if (!string.IsNullOrEmpty(picId))
+    {
+        if (IsFile)
+        {
+            ProfilePic = Url.Content("~/Files/") + picId;
+        }
+        else
+        {
+            ProfilePic = Url.Action("DisplayProfileImage", "Document", new { id = Convert.ToInt64(picId), time = "637932252144131914" });
+        }
+    }
+} 
+
+ <nav class="sidebar" data-sidebar-anyclick-close="">
+             <ul class="sidebar-nav">
+			 <li class="has-user-block">
+            <div class="collapse" id="user-block">
+                <div class="item user-block">
+                    <!-- User picture-->
+                    <div class="user-block-picture">
+                        <div class="user-block-status">
+                                <img class="img-thumbnail rounded-circle" src="@ProfilePic" alt="Avatar" width="60" height="60">
+                            <div class="circle bg-success circle-lg"></div>
+                        </div>
+                    </div><!-- Name and Job-->
+                    <div class="user-block-info">
+                        <span class="user-block-name">Hello, @User.Name </span>
+						<span class="user-block-role">
+                           			@if (User != null && !(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+            {
+                        if (!(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+                        {
+							<span class="block m-t-xs"> Role : @string.Join(", ", User.userroles) </span>
+                        }
+            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </li><!-- END user info-->
+               <li class="nav-heading">
+        <span data-localize="sidebar.heading.HEADER">Main Navigation</span>
+        </li>
+
+    <li class="nav-item" id="lnkDefaultDashboard"  style="display:none">
+        <a href="@Url.Action("Dashboard", "Home" )" class="nav-link @(ViewBag.Title == "Dashboard" ? "active" : "")">
+            <i class="nav-icon fas fa-desktop"></i>
+
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+
+                    <li class="nav-item" id="@(AppUrl + User.Name +"Home")">
+                        <a href="@Url.Action("Index", "Home" )" class="nav-link @((ViewBag.Title == "Home" || ViewBag.Title == "Custom Home") ? "active" : "")">
+                            <i class="fa fa-home"></i> <span class="nav-label">Home</span>
+                        </a>
+                    </li>
+
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    var menuItems = userSideBar.SelectMany(s => s.T_MenuBarMenuItemAssociation_t_menubar.OrderBy(o => o.T_OrderNumber)).Distinct();
+    var menuItemsList = menuItems.Select(s => s.t_menuitem);
+    Html.RenderPartial("~/Views/Shared/_SideBarMenu.cshtml", menuItemsList); 
+}
+else
+{
+
+					if ( User.CanView("T_Customer"))
+					{
+						var EntityReflectorObj = entityModel.FirstOrDefault(p => p.Name == "T_Customer");
+                        var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : "Customer";
+                        <li id="liT_Customer" @(currentController == "T_Customer" ? "class=active" : "") alt="@DisplayString" title="@DisplayString">
+                            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName="T_Customer"})">
+							<i class="fa fa-briefcase"></i> 
+							<span class="nav-label">@DisplayString </span>
+							<div class="float-right badge badge-success CEntityCount" alt="Count - @ViewBag.T_CustomerCount" title="Count - @ViewBag.T_EmployeeCount">@ViewBag.T_CustomerCount</div></a>
+                        </li>
+					 }
+}
+				<li class="reportcollapse">
+                             @if (User.CanView("Reports") || User.CanView("ReportList"))
+                             {
+                                <a href="@Url.Action("Index", "ReportList")" alt="Reports" title="Reports">
+                                    <i class="fa fa-file">  </i>
+                                    <span class="nav-label"> Reports</span>
+                                </a>
+                             }
+                         </li>
+                </ul>
+        </nav>
+
+
+<!--show/hide the More li from sidebar, if it has the content to show or not.-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        if ($("#more") != undefined && $("#more").html() != undefined) {
+            if ($("#more").html().trim().length == 0) {
+                $('#liMore').hide();
+            } else {
+                $('#liMore').show();
+            }
+        }
+    });
+</script>
+@if (userSideBar != null && userSideBar.Count() > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var collapseid = $("#accordionSidebar .active").parent().attr("id");
+            getcollapseParent(collapseid);
+        });
+
+        function getcollapseParent(collapseid) {
+            uncollaseParent(collapseid);
+            var collapseparentid = $("#accordionSidebar #" + collapseid).parent().attr("id");
+            if (collapseparentid != undefined && collapseparentid != 'accordionSidebar') {
+                getcollapseParent(collapseparentid);
+            }
+        }
+
+        function uncollaseParent(collapseid) {
+            if (collapseid != undefined) {
+                if ($("#" + collapseid).hasClass("nav-item")) {
+                    $("#" + collapseid).addClass("active")
+                }
+                $("#a" + collapseid).click();
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,92 @@
+﻿@model GeneratorBase.MVC.Models.DataSourceParameters
+@{
+    ViewBag.Title = "Delete Data Source Parameters";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            Delete Data Source Parameters
+            <small>@Html.DisplayFor(model => model.DisplayValue)</small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+
+
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <label id="ErrMsg" class="text-primary small" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ConcurrencyKey)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card AppForm">
+                    <div class="card-header text-white bg-danger clearfix">
+                        <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.ArgumentName)</strong> </h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.ArgumentName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.ArgumentName)
+                                @Html.HiddenFor(model => model.ArgumentName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.ArgumentValue)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.ArgumentValue)
+                                @Html.HiddenFor(model => model.ArgumentValue)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.HostingEntity)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.HostingEntity)
+                                @Html.HiddenFor(model => model.HostingEntity)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.flag)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.flag)
+                                @Html.HiddenFor(model => model.flag)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.other)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.other)
+                                @Html.HiddenFor(model => model.other)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.EntityDataSourceParametersID)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.entitydatasourceparameters.DisplayValue)
+                                @Html.HiddenFor(model => model.EntityDataSourceParametersID)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })
+
+                @if (User.CanDelete("DataSourceParameters"))
+                {
+                    <input type="submit" value="Delete" class="btn btn-primary btn-sm" />
+                }
+            </div>
+        </div>
+    }
+</div>
+

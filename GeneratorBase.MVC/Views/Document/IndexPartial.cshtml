@@ -1,0 +1,548 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.Document>
+@using PagedList.Mvc;
+@{
+
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "Document");
+}
+<div id="Document">
+
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'Document')
+                PaginationClick(e, 'Document', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchDocument").addClass('in');
+                if ('@ViewData["HostingEntity"]'.length > 0) {
+                    $("#" + "@ViewData["HostingEntity"]" + "_Document").hide();
+                }
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'Document');
+            }
+            $("#SearchStringDocument").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#DocumentSearch").bind("click", (function () {
+                    }));
+                    $('#DocumentSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideDocument").mouseup(function () {
+                if (document.getElementById('ColumnShowHideDocument').className == 'collapse') {
+                    $('#lblDocument').css('display', 'none');
+                }
+            })
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+
+                    t_facilitydocumentassociation = Request.QueryString["t_facilitydocumentassociation"],
+                    DateCreatedFrom = Request.QueryString["DateCreatedFrom"],
+                    DateCreatedFromhdn = Request.QueryString["DateCreatedFromhdn"],
+                    DateCreatedTo = Request.QueryString["DateCreatedTo"],
+                    DateCreatedTohdn = Request.QueryString["DateCreatedTohdn"],
+                    DateLastUpdatedFrom = Request.QueryString["DateLastUpdatedFrom"],
+                    DateLastUpdatedFromhdn = Request.QueryString["DateLastUpdatedFromhdn"],
+                    DateLastUpdatedTo = Request.QueryString["DateLastUpdatedTo"],
+                    DateLastUpdatedTohdn = Request.QueryString["DateLastUpdatedTohdn"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    t_facilitydocumentassociation = Request.QueryString["t_facilitydocumentassociation"],
+                    DateCreatedFrom = Request.QueryString["DateCreatedFrom"],
+                    DateCreatedFromhdn = Request.QueryString["DateCreatedFromhdn"],
+                    DateCreatedTo = Request.QueryString["DateCreatedTo"],
+                    DateCreatedTohdn = Request.QueryString["DateCreatedTohdn"],
+                    DateLastUpdatedFrom = Request.QueryString["DateLastUpdatedFrom"],
+                    DateLastUpdatedFromhdn = Request.QueryString["DateLastUpdatedFromhdn"],
+                    DateLastUpdatedTo = Request.QueryString["DateLastUpdatedTo"],
+                    DateLastUpdatedTohdn = Request.QueryString["DateLastUpdatedTohdn"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria
+                };
+            }
+        }
+    }
+    <div id="DocumentGridHeader" class="">
+
+        <div class="btn-group">
+            <a class="btn btn-secondary dropdown-toggle" data-original-title="Filter-Groupby" data-toggle="dropdown" href="#">
+                <span class="fa fa-filter"></span> Filter
+            </a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuButton">
+                <li class="dropdown-item">
+                    <a id="fltBusinessRule" data-placement="top" onclick=@Html.Raw("EntityFilterDocument('Document','" +
+                                        Url.Action("GetAllValueForFilter", "Document") + "','"
+                                        + Html.Raw(Url.Action("Index", "Document",
+                                        new
+                                        {
+                                            FirstCall = true,
+                                            FilterHostingEntityID = ViewData["HostingEntityID"],
+                                            IsFilter = true,
+                                            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                                            ClearSearchTimeStamp = DateTime.Now
+                                        })) + "','" + User.JavaScriptEncodedName + "');")>
+                        <span>Entity Name</span>
+                    </a>
+                </li>
+                <li class="dropdown-item">
+                    <a id="fltBusinessRule" data-placement="top" onclick=@Html.Raw("EntityFilterFileDataType('Document','" +
+                                        Url.Action("GetAllValueForFilterFileDataType", "Document") + "','"
+                                        + Html.Raw(Url.Action("Index", "Document",
+                                        new
+                                        {
+                                            FirstCall = true,
+                                            FilterHostingEntityID = ViewData["HostingEntityID"],
+                                            IsFilter = true,
+                                            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                                            ClearSearchTimeStamp = DateTime.Now
+                                        })) + "','" + User.JavaScriptEncodedName + "');")>
+                        <span>File Type</span>
+                    </a>
+                </li>
+                <li class="dropdown-item"><span class="label label-primary filterLabel">@Html.ActionLink("Clear", "Index")</span></li>
+            </ul>
+
+
+        </div>
+
+        @if (User.IsAdmin)
+        {
+            <a class="btn btn-secondary" href="@Url.Action("UpdateEntity", "Document")">Correct Old Data</a>
+        }
+
+        @if (ViewData["IsdrivedTab"] == null)
+        {
+            <div class="float-right" style="">
+                <div class="input-group">
+                    @Html.TextBox("SearchStringDocument", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                    <div class="input-group-btn">
+                        <a id="DocumentSearch" onclick="SearchClick(event, 'Document', '@Html.Raw(Url.Action("Index", "Document", new { IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn tip-top" style="padding:3px 5px; border:1px solid #ccc" alt="Grid Search" title="Search"><span class="fa fa-search"></span></a>
+                        <a id="DocumentCancel" type="button" class="btn collapse-data-btn tip-top" onclick="CancelSearch('Document','@Html.Raw(Url.Action("Index", "Document", new {IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" style="padding:3px 5px; border:1px solid #ccc" alt="Clear Search" title="Clear Search">
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                        <a id="DocumentSearchCancel" type="button" class="btn collapse-data-btn tip-top" onclick="CancelSearch('Document','@Html.Raw(Url.Action("Index", "Document", new {IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" style="padding:3px 5px; border:1px solid #ccc" alt="Refresh Grid" title="Refresh Grid">
+                            <span class="fa fa-refresh"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+    <div style="clear:both"></div>
+    <div class="row">
+        <div class="col" style="width:200px; float:left; ">
+            <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                <table class="table table-hover default-bordered default-condensed newlist">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col1" style="width:42px;" alt="Actions" title="Actions">Actions</th>
+                            @if (User.CanView("Document", "DocumentName"))
+                            {
+                                var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "DocumentName");
+                                <th scope="col" class="col2">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "Document", getSortHtmlAttributes("DocumentName", false, null, false), new { @onclick = "SortLinkClick(event,'Document');" })
+                                    @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DocumentName")
+                                    {<i class="fa fa-sort-desc"></i>}
+                                    @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DocumentName")
+                                    {<i class="fa fa-sort-asc"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("Document", "Description"))
+                            {
+                                var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Description");
+                                <th scope="col" class="col3">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "Document", getSortHtmlAttributes("Description", false, null, false), new { @onclick = "SortLinkClick(event,'Document');" })
+                                    @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Description")
+                                    {<i class="fa fa-sort-desc"></i>}
+                                    @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Description")
+                                    {<i class="fa fa-sort-asc"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("Document", "FileType") && User.CanView("Document"))
+                            {
+                                var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "FileType");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "Document", getSortHtmlAttributes("FileType", false, null, false), new { @onclick = "SortLinkClick(event,'Document');" })
+                                    @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "FileType")
+                                    {<i class="fa fa-sort-desc"></i>}
+                                    @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "FileType")
+                                    {<i class="fa fa-sort-asc"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("Document", "EntityName") && User.CanView("Document"))
+                            {
+                                var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "EntityName");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "Document", getSortHtmlAttributes("EntityName", false, null, false), new { @onclick = "SortLinkClick(event,'Document');" })
+                                    @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "EntityName")
+                                    {<i class="fa fa-sort-desc"></i>}
+                                    @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "EntityName")
+                                    {<i class="fa fa-sort-asc"></i>}
+                                </th>
+                            }
+                            
+                            </tr>
+                    </thead>
+
+                    @{ bool isFirst = true; var oldKey = string.Empty; }
+                    @foreach (var item in Model)
+                    {
+                        if (!User.IsAdmin && string.IsNullOrEmpty(item.EntityName)) { continue; }
+                        var EntityDisplayName = GeneratorBase.MVC.Models.DoAuditEntry.GetEntityNameForDocument(item.Id, User);
+
+                        if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                        {
+
+                        }
+                        <tr scope="row" ondblclick="DoubleClickRow(@item.Id,'@Url.Action(User.CanEdit("Document") ? "Edit" : "Edit", "Document", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)');">
+                            <td>
+                                <div id="DivbutEdit" class="DivbutEditFix" style="width: 65px;">
+                                    <div class="btn-group">
+
+                                        @if (User.CanEdit("Document"))
+                                        {
+                                            <a href="@Url.Action("Edit", "Document", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)" class="btn btn-info btn-xs" alt="Edit" title="Edit">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+
+                                        }
+                                        @if (!User.CanEdit("Document"))
+                                        {
+                                            <a href="@Url.Action("Details", "Document", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)" class="btn btn-secondary btn-xs">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                        }
+
+                                        <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                            <span class="sr-only"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            @if (User.CanEdit("Document"))
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item" href="@Url.Action("Edit", "Document", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="fa fa-edit"></i> Edit</a>
+
+                                                </li>
+                                            }
+                                            @if (User.CanDelete("Document"))
+                                            {
+                                                <li class="divider" style="clear:both"></li>
+                                                <li>
+                                                    <a class="dropdown-item" href="@Url.Action("Delete", "Document", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = Convert.ToString(ViewBag.TemplatesName) }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                                </li>
+                                            }
+                                            <li class="divider" style="clear:both"></li>
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            @*@if (User.CanView("Document", "DocumentName"))
+                            {
+                                <td onclick="OpenQuickEdit('Document','@item.Id',event);">
+                                    @Html.DisplayFor(modelItem => item.DocumentName)
+                                </td>
+                            }*@
+                            @if (User.CanView("Document", "DocumentName") && User.CanView("Document"))
+                            {
+                                <td onclick="OpenQuickEdit('Document','@item.Id',event);">
+                                    @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.DocumentName).ToString()))
+                                    {
+                                        <a href="@Url.Action("Download", "Document", new { id = item.Id })">@item.DocumentName</a>
+                                    }
+                                    else
+                                    { <label>NA</label>}
+                                </td>
+                            }
+                            @if (User.CanView("Document", "Description"))
+                            {
+                                <td onclick="OpenQuickEdit('Document','@item.Id',event);">
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                            }
+                            @if (User.CanView("Document", "FileType") && User.CanView("Document"))
+                            {
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.FileType))
+                                    {
+                                        if (item.FileType.ToLower() == "file")
+                                        {
+                                            @Html.Raw("Physical File")
+                                        }
+                                        else if (item.FileType.ToLower() == "onedrive")
+                                        {
+                                            @Html.Raw("OneDrive")
+                                        }
+                                        else if (item.FileType.ToLower() == "byte")
+                                        {
+                                            @Html.Raw("Byte")
+                                        }
+                                    }
+                                </td>
+                            }
+                        <td>
+                            @if (!string.IsNullOrEmpty(EntityDisplayName))
+                            {
+                                @Html.Raw(EntityDisplayName)
+                            }
+                        </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+            @if (Model.Count > 0)
+            {
+                <div id="pagination" class="MyPagination1">
+                    @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "Document", getSortHtmlAttributes(null, true, page, false)))
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                        , new
+                        {
+                            @id = "pagesizelistDocument",
+                            @onchange = @Html.Raw("pagesizelistChange(event,'Document','"
+                            + @User.JavaScriptEncodedName + "')"),
+                            @Url = Html.Raw(@Url.Action(ActionNameUrl, "Document",
+                            getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                            null, false), null))
+                        })
+                        <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistDocument"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function EntityFilterDocument(EntityName, url, dataurl, UserName) {
+        var _username = UserName;
+        UserName = (encodeURI(UserName));
+        if ($.cookie("pagination" + _username + EntityName) != null)
+            $.removeCookie("pagination" + _username + EntityName);
+        var FilterHostingEntityID = (dataurl.indexOf("FirstCall=True") > 0) ? undefined : getHostingEntityID(dataurl)["FilterHostingEntityID"];
+        var html = "<ul class=\"nav nav-tabs\">";
+        var otherhtml = "<li class='nav-item'><a class=\"hidden\" id=\"hiddendatatoggle\" data-toggle=\"tab\"></a><a onclick=\"$('#hiddendatatoggle').click();\" data-original-title=\"Filter-Groupby\" data-toggle=\"dropdown\" href=\"#\" class=\"nav-link\"> <span id=\"filtertabOther\">Other</span></a>";
+        otherhtml += "<ul class=\"dropdown-menu\" role=\"menu\" style=\"max-height: 400px;overflow-y: auto;\">";
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            success: function (result) {
+                var firstClick = "";
+                var isother = false;
+                var i = 0;
+                $.each(result, function (key, value) {
+                    var isactive = false;
+                    if (i == 0) {
+                        html += "<li name=\"" + key + "\" class=\"nav-item\">";
+                        isactive = true;
+                    }
+                    else {
+                        if (i < 10)
+                            html += "<li name=\"" + key + "\" class=\"nav-item\">";
+                        else {
+                            otherhtml += "<li name=\"" + key + "\" class=\"nav-item\">";
+                            isother = true;
+                        }
+                    }
+                    if (isother) {
+                        otherhtml += "<a onclick=\"$('#filtertabOther').html('Other-" + value + "');CancelSearchDocument('" + EntityName + "','" + dataurl + "&HostingEntityName=" + key + "')\" class=\"nav-link\">" + value + "</a>";
+                    }
+                    else {
+                        html += "<a data-toggle=\"tab\"  onclick=\"CancelSearchDocument('" + EntityName + "','" + dataurl + "&HostingEntityName=" + key + "','" + UserName + "')\"class=\"nav-link\">" + value + "</a>";
+                    }
+                    html += "</li>";
+                    if (isother)
+                        otherhtml += "</li>";
+                    if (isactive) {
+                        firstClick = dataurl + "&HostingEntityName=" + key;
+                    }
+                    i += 1;
+                });
+                //html += "<li name=\"" + "null" + "\">";
+                //html += "<a data-toggle=\"tab\"  onclick=\"CancelSearchBizRule('" + EntityName + "','" + dataurl + "','" + UserName + "')\">" + "All Record" + "</a>";
+                //html += "</li>";
+                //
+                if (isother) {
+                    otherhtml += "</ul></li>";
+                    html += "<li>";
+                    html += otherhtml;
+                    html += "</li>";
+                }
+                //
+                html += "</ul>";
+                $("#dv" + EntityName + "Filter").html($(html));
+                if (firstClick.length > 0 && firstClick.indexOf("FirstCall=True") > 0) {
+                    CancelSearchDocument(EntityName, firstClick.replace("FirstCall=true&", ""));
+                }
+            }
+        });
+    }
+
+    function EntityFilterFileDataType(EntityName, url, dataurl, UserName) {
+        var _username = UserName;
+        UserName = (encodeURI(UserName));
+        if ($.cookie("pagination" + _username + EntityName) != null)
+            $.removeCookie("pagination" + _username + EntityName);
+        var FilterHostingEntityID = (dataurl.indexOf("FirstCall=True") > 0) ? undefined : getHostingEntityID(dataurl)["FilterHostingEntityID"];
+        var html = "<ul class=\"nav nav-tabs\">";
+        var otherhtml = "<li class='nav-item'><a class=\"hidden\" id=\"hiddendatatoggle\" data-toggle=\"tab\"></a><a onclick=\"$('#hiddendatatoggle').click();\" data-original-title=\"Filter-Groupby\" data-toggle=\"dropdown\" href=\"#\" class=\"nav-link\"> <span id=\"filtertabOther\">Other</span></a>";
+        otherhtml += "<ul class=\"dropdown-menu\" role=\"menu\" style=\"max-height: 400px;overflow-y: auto;\">";
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            success: function (result) {
+                var firstClick = "";
+                var isother = false;
+                var i = 0;
+                $.each(result, function (key, value) {
+                    var isactive = false;
+                    if (i == 0) {
+                        html += "<li name=\"" + key + "\" class=\"nav-item\">";
+                        isactive = true;
+                    }
+                    else {
+                        if (i < 10)
+                            html += "<li name=\"" + key + "\" class=\"nav-item\">";
+                        else {
+                            otherhtml += "<li name=\"" + key + "\" class=\"nav-item\">";
+                            isother = true;
+                        }
+                    }
+                    if (isother) {
+                        otherhtml += "<a onclick=\"$('#filtertabOther').html('Other-" + value + "');CancelSearchDocument('" + EntityName + "','" + dataurl + "&FileType=" + key + "')\" class=\"nav-link\">" + value + "</a>";
+                    }
+                    else {
+                        html += "<a data-toggle=\"tab\"  onclick=\"CancelSearchDocument('" + EntityName + "','" + dataurl + "&FileType=" + key + "','" + UserName + "')\"class=\"nav-link\">" + value + "</a>";
+                    }
+                    html += "</li>";
+                    if (isother)
+                        otherhtml += "</li>";
+                    if (isactive) {
+                        firstClick = dataurl + "&FileType=" + key;
+                    }
+                    i += 1;
+                });
+                //html += "<li name=\"" + "null" + "\">";
+                //html += "<a data-toggle=\"tab\"  onclick=\"CancelSearchBizRule('" + EntityName + "','" + dataurl + "','" + UserName + "')\">" + "All Record" + "</a>";
+                //html += "</li>";
+                //
+                if (isother) {
+                    otherhtml += "</ul></li>";
+                    html += "<li>";
+                    html += otherhtml;
+                    html += "</li>";
+                }
+                //
+                html += "</ul>";
+                $("#dv" + EntityName + "Filter").html($(html));
+                if (firstClick.length > 0 && firstClick.indexOf("FirstCall=True") > 0) {
+                    CancelSearchDocument(EntityName, firstClick.replace("FirstCall=true&", ""));
+                }
+            }
+        });
+    }
+
+    function CancelSearchDocument(dvName, url, UserName) {
+        //remove pagination cookies
+        if ($.cookie("pagination" + UserName + dvName) != null)
+            $.removeCookie("pagination" + UserName + dvName);
+        var IsFilter = (getHostingEntityID(url)["IsFilter"]);
+        $.ajax({
+            url: url,
+            cache: false,
+            success: function (data) {
+                if (data != null) {
+                    try {
+                        $('#' + dvName).html(data);
+                    } catch (ex) { }
+                }
+            }
+        })
+        return false;
+    }
+</script>

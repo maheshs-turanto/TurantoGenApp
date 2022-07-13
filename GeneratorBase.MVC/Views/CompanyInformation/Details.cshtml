@@ -1,0 +1,698 @@
+﻿@model GeneratorBase.MVC.Models.CompanyInformation
+@using PagedList;
+@{
+    ViewBag.Title = "View CompanyInformation";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CompanyInformation");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "CompanyInformation";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "CompanyInformation" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "CompanyInformation", true);
+    }
+	var backUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+		}
+<script>
+    $(document).ready(function () {
+			 if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			 }
+			 $("[inlinegrid]").each(function() {
+                $(this).click();
+            });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsSetValueUIRule);
+    }
+}
+<div>
+<style>
+.formbuttonfix {
+    margin-right: 4px;
+   
+}
+
+.CEntityCount {
+display:none !important;
+}
+</style>
+<div class="content-heading">
+    <strong><a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">@EntityDisplayName</a>
+	<small>Details - <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span></span>
+	</small>
+	</strong>
+    <div class="ml-auto">
+
+			<ul class="dropdown-menu pull-left">               
+				<li>
+                    @if ( User.CanEdit("CompanyInformation"))
+                    {
+                        <a href="@Url.Action("Edit","CompanyInformation", new {UrlReferrer = backUrl,id = Model.Id,AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if ( User.CanDelete("CompanyInformation"))
+                    {
+                        <a href="@Url.Action("Delete", "CompanyInformation", new { UrlReferrer = backUrl,id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left" id="AddAssociationdropmenuCompanyInformation">
+	 @{ var dropmenu = false; }
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if ( User.CanAdd("FooterSection"))
+				{ dropmenu = true;
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FooterSection", 
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="CompanyInformationFooterSectionAssociation", 
+							HostingEntityName = "CompanyInformation",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="fa fa-plus"></i>  Footer Section 
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+@if(!dropmenu)
+{
+    <script>
+        $("#AddAssociationdropmenuCompanyInformation").hide();
+    </script>
+}
+			</ul>
+		
+		<a href="#" class="btn btn-primary btn-xs closeall pull-right" style="display:none"><i class="fa fa-chevron-up"></i> Collapse All</a> <a href="#" class="btn btn-xs openall pull-right" style="margin-right:5px; display:none;"><i class="fa fa-chevron-down"></i> Expand All</a>
+   </div>
+</div>
+</div>
+	<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+            <div class="tabs-container card card-body">
+    <ul class="nav nav-tabs tabellipsis">
+	 <li class="nav-item">
+	 <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" title="Details">Details</a>
+	 </li>
+			<li class="nav-item" style="display:none">
+		 
+		 <a class="nav-link"   inlinegrid=true id="dvGroupCompanyInformationFooterSectionAssociation" onclick="$(document).ready(function () {LoadTab('CompanyInformationFooterSectionAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "FooterSection", new {RenderPartial=true, HostingEntity ="CompanyInformation", HostingEntityID = @Model.Id, AssociatedType = "CompanyInformationFooterSectionAssociation",TabToken = DateTime.Now.Ticks,}))')});" href="#CompanyInformationFooterSectionAssociation" data-toggle="tab" title="Footer Section ">
+		 Footer Section 
+		 <span class="badge bg-primary"><div id="dvcnt_CompanyInformationFooterSectionAssociation">@ViewBag.CompanyInformationFooterSectionAssociationCount</div></span>
+		 		 </a></li>
+		 }
+
+ @if(User.CanView("CompanyInformationCompanyListAssociation") )
+        {
+			<li class="nav-item">
+		 
+		 <a class="nav-link"    id="dvGroupCompanyInformation" onclick="LoadTab('CompanyInformationCompanyListAssociation_CompanyInformation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "CompanyList", new {RenderPartial=true, HostingEntity ="CompanyInformation", HostingEntityID = @Model.Id, AssociatedType = "CompanyInformationCompanyListAssociation_CompanyInformation",TabToken = DateTime.Now.Ticks,}))')" href="#CompanyInformationCompanyListAssociation_CompanyInformation" data-toggle="tab" title="CompanyList">
+		 CompanyList
+		 </a></li>
+		 }
+
+    </ul>
+	  @Html.HiddenFor(model => model.Id)
+	    <div class="tab-content">
+		   <div class="tab-pane fade show active" id="Details">
+				 <div class="AppForm">
+					<div class="">
+
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupCompanyInformationCompanyInformation">
+                <div class="card-header clearfix">
+					
+								<h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#companyinformationbody"><span class="fa fa-chevron-down"></span> Company Information</a></h3>
+                               </div>
+							  <div class="card-body row card-collapse in" id="companyinformationbody">					
+                                  
+
+@if(User.CanView("CompanyInformation","CompanyName")  && !hiddenProperties.Contains("CompanyName") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyName">
+	<div class='form-group' title="@Model.CompanyName">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyName) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyName" class="viewlabel">@Model.CompanyName</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyEmail")  && !hiddenProperties.Contains("CompanyEmail") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyEmail">
+	<div class='form-group' title="@Model.CompanyEmail">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyEmail) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyEmail" class="viewlabel">@Model.CompanyEmail</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyAddress")  && !hiddenProperties.Contains("CompanyAddress"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyAddress">
+	<div class='form-group' title="@Model.CompanyAddress">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyAddress)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		<p class="viewlabelmultiline">@Model.CompanyAddress</p>
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyCountry")  && !hiddenProperties.Contains("CompanyCountry") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyCountry">
+	<div class='form-group' title="@Model.CompanyCountry">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyCountry) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyCountry" class="viewlabel">@Model.CompanyCountry</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyState")  && !hiddenProperties.Contains("CompanyState") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyState">
+	<div class='form-group' title="@Model.CompanyState">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyState) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyState" class="viewlabel">@Model.CompanyState</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyCity")  && !hiddenProperties.Contains("CompanyCity") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyCity">
+	<div class='form-group' title="@Model.CompanyCity">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyCity) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyCity" class="viewlabel">@Model.CompanyCity</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","CompanyZipCode")  && !hiddenProperties.Contains("CompanyZipCode") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyZipCode">
+	<div class='form-group' title="@Model.CompanyZipCode">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.CompanyZipCode) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblCompanyZipCode" class="viewlabel">@Model.CompanyZipCode</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","ContactNumber1")  && !hiddenProperties.Contains("ContactNumber1") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvContactNumber1">
+	<div class='form-group' title="@Model.ContactNumber1">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.ContactNumber1) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblContactNumber1" class="viewlabel">@Model.ContactNumber1</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","ContactNumber2")  && !hiddenProperties.Contains("ContactNumber2") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvContactNumber2">
+	<div class='form-group' title="@Model.ContactNumber2">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.ContactNumber2) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblContactNumber2" class="viewlabel">@Model.ContactNumber2</p>
+								</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupCompanyInformationChangeIcons">
+                <div class="card-header clearfix">
+					
+								<h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#changeiconsbody"><span class="fa fa-chevron-down"></span> Change Icons</a></h3>
+                               </div>
+							  <div class="card-body row card-collapse in" id="changeiconsbody">					
+							  <div class='col-sm-12'>
+							   <div class="row">
+                                   
+ @if(User.CanView("CompanyInformation","LoginBg") && User.CanView("Document") && !hiddenProperties.Contains("LoginBg"))
+{
+                                if (!string.IsNullOrEmpty(Html.DisplayFor(model => model.LoginBg).ToString()))
+                                {
+																					<div class="col-sm-2 col-md-2" id="dvLoginBg">
+                                                    <a class="" href="#" data-image-id=""
+                                                       data-toggle="modal"
+                                                      onclick="OpenPopUpEntityImage('@Html.Raw("image-galleryLoginBg" + Model.Id)','@Html.DisplayNameFor(model => model.LoginBg)','dv_@Html.Raw("image-galleryLoginBg"+Model.Id)','@Url.Action("DisplayImageAfterhover", "Document", new { id = Model.LoginBg })');"
+                                                       data-target="#image-galleryLoginBg">
+                                                        <img src="@Url.Action("DisplayImageMobile", "Document", new { id = Model.LoginBg, maxSize = 30 })" alt="LoginBg" class="picupload" />
+                                                    </a>
+                                                <div class="caption">
+                                                    <h5 class="text-center mt-2">@Html.DisplayNameFor(model => model.LoginBg)</h5>
+                                                </div>
+                                           </div>
+                                        <div class="modal fade" id="image-galleryLoginBg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+													 <h4 class="modal-title" id="image-gallery-title">@Html.DisplayNameFor(model => model.LoginBg)</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="fa fa-close"></span><span class="sr-only">Close</span></button>
+                                                       
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img id="dv_@Html.Raw("image-galleryLoginBg"+Model.Id)" class="img-fluid" src="#">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2 col-md-2" id="dvLoginBg">
+                                        <div>
+                                            <img src="~/Content/images/user.png" alt="" class="img-thumbnail">
+                                            <div class="caption" style="margin: -31px 0px -15px 0">
+                                                <h5 class="text-center">@Html.DisplayNameFor(model => model.LoginBg)</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+ @if(User.CanView("CompanyInformation","Logo") && User.CanView("Document") && !hiddenProperties.Contains("Logo"))
+{
+                                if (!string.IsNullOrEmpty(Html.DisplayFor(model => model.Logo).ToString()))
+                                {
+																					<div class="col-sm-2 col-md-2" id="dvLogo">
+                                                    <a class="" href="#" data-image-id=""
+                                                       data-toggle="modal"
+                                                      onclick="OpenPopUpEntityImage('@Html.Raw("image-galleryLogo" + Model.Id)','@Html.DisplayNameFor(model => model.Logo)','dv_@Html.Raw("image-galleryLogo"+Model.Id)','@Url.Action("DisplayImageAfterhover", "Document", new { id = Model.Logo })');"
+                                                       data-target="#image-galleryLogo">
+                                                        <img src="@Url.Action("DisplayImageMobile", "Document", new { id = Model.Logo, maxSize = 30 })" alt="Logo" class="picupload" />
+                                                    </a>
+                                                <div class="caption">
+                                                    <h5 class="text-center mt-2">@Html.DisplayNameFor(model => model.Logo)</h5>
+                                                </div>
+                                           </div>
+                                        <div class="modal fade" id="image-galleryLogo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+													 <h4 class="modal-title" id="image-gallery-title">@Html.DisplayNameFor(model => model.Logo)</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="fa fa-close"></span><span class="sr-only">Close</span></button>
+                                                       
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img id="dv_@Html.Raw("image-galleryLogo"+Model.Id)" class="img-fluid" src="#">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2 col-md-2" id="dvLogo">
+                                        <div>
+                                            <img src="~/Content/images/user.png" alt="" class="img-thumbnail">
+                                            <div class="caption" style="margin: -31px 0px -15px 0">
+                                                <h5 class="text-center">@Html.DisplayNameFor(model => model.Logo)</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+ @if(User.CanView("CompanyInformation","Icon") && User.CanView("Document") && !hiddenProperties.Contains("Icon"))
+{
+                                if (!string.IsNullOrEmpty(Html.DisplayFor(model => model.Icon).ToString()))
+                                {
+																					<div class="col-sm-2 col-md-2" id="dvIcon">
+                                                    <a class="" href="#" data-image-id=""
+                                                       data-toggle="modal"
+                                                      onclick="OpenPopUpEntityImage('@Html.Raw("image-galleryIcon" + Model.Id)','@Html.DisplayNameFor(model => model.Icon)','dv_@Html.Raw("image-galleryIcon"+Model.Id)','@Url.Action("DisplayImageAfterhover", "Document", new { id = Model.Icon })');"
+                                                       data-target="#image-galleryIcon">
+                                                        <img src="@Url.Action("DisplayImageMobile", "Document", new { id = Model.Icon, maxSize = 30 })" alt="Icon" class="picupload" />
+                                                    </a>
+                                                <div class="caption">
+                                                    <h5 class="text-center mt-2">@Html.DisplayNameFor(model => model.Icon)</h5>
+                                                </div>
+                                           </div>
+                                        <div class="modal fade" id="image-galleryIcon" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+													 <h4 class="modal-title" id="image-gallery-title">@Html.DisplayNameFor(model => model.Icon)</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" class="fa fa-close"></span><span class="sr-only">Close</span></button>
+                                                       
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <img id="dv_@Html.Raw("image-galleryIcon"+Model.Id)" class="img-fluid" src="#">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2 col-md-2" id="dvIcon">
+                                        <div>
+                                            <img src="~/Content/images/user.png" alt="" class="img-thumbnail">
+                                            <div class="caption" style="margin: -31px 0px -15px 0">
+                                                <h5 class="text-center">@Html.DisplayNameFor(model => model.Icon)</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+				</div>
+				<hr>
+		</div>
+
+@if(User.CanView("CompanyInformation","LoginBackgroundWidth")  && !hiddenProperties.Contains("LoginBackgroundWidth") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvLoginBackgroundWidth">
+	<div class='form-group' title="@Model.LoginBackgroundWidth">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.LoginBackgroundWidth) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblLoginBackgroundWidth" class="viewlabel">@Model.LoginBackgroundWidth</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","LoginBackgroundHeight")  && !hiddenProperties.Contains("LoginBackgroundHeight") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvLoginBackgroundHeight">
+	<div class='form-group' title="@Model.LoginBackgroundHeight">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.LoginBackgroundHeight) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblLoginBackgroundHeight" class="viewlabel">@Model.LoginBackgroundHeight</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","LogoWidth")  && !hiddenProperties.Contains("LogoWidth") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvLogoWidth">
+	<div class='form-group' title="@Model.LogoWidth">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.LogoWidth) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblLogoWidth" class="viewlabel">@Model.LogoWidth</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","LogoHeight")  && !hiddenProperties.Contains("LogoHeight") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvLogoHeight">
+	<div class='form-group' title="@Model.LogoHeight">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.LogoHeight) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblLogoHeight" class="viewlabel">@Model.LogoHeight</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","IconWidth")  && !hiddenProperties.Contains("IconWidth") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvIconWidth">
+	<div class='form-group' title="@Model.IconWidth">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.IconWidth) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblIconWidth" class="viewlabel">@Model.IconWidth</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","IconHeight")  && !hiddenProperties.Contains("IconHeight") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvIconHeight">
+	<div class='form-group' title="@Model.IconHeight">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.IconHeight) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblIconHeight" class="viewlabel">@Model.IconHeight</p>
+								</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupCompanyInformationSMTPDetails">
+                <div class="card-header clearfix">
+					
+								<h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#smtpdetailsbody"><span class="fa fa-chevron-down"></span> SMTP Details</a></h3>
+                               </div>
+							  <div class="card-body row card-collapse in" id="smtpdetailsbody">					
+                                  
+
+@if(User.CanView("CompanyInformation","SMTPUser")  && !hiddenProperties.Contains("SMTPUser") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPUser">
+	<div class='form-group' title="@Model.SMTPUser">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.SMTPUser) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblSMTPUser" class="viewlabel">@Model.SMTPUser</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","SMTPServer")  && !hiddenProperties.Contains("SMTPServer") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPServer">
+	<div class='form-group' title="@Model.SMTPServer">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.SMTPServer) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblSMTPServer" class="viewlabel">@Model.SMTPServer</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","SMTPPassword")  && !hiddenProperties.Contains("SMTPPassword") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPPassword">
+	<div class='form-group' title="@Model.SMTPPassword">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.SMTPPassword) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblSMTPPassword" class="viewlabel">@Model.SMTPPassword</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","SMTPPort")  && !hiddenProperties.Contains("SMTPPort") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPPort">
+	<div class='form-group' title="@Model.SMTPPort">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.SMTPPort) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+						<p id="lblSMTPPort" class="viewlabel">@Model.SMTPPort</p>
+								</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","SSL")  && !hiddenProperties.Contains("SSL") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvSSL">
+	<div class='form-group' title="@Model.SSL">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.SSL) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+				@Html.DisplayFor(model => model.SSL)
+		</div>
+	</div>
+</div>
+}
+@if(User.CanView("CompanyInformation","UseAnonymous")  && !hiddenProperties.Contains("UseAnonymous") )
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvUseAnonymous">
+	<div class='form-group' title="@Model.UseAnonymous">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.UseAnonymous) </label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+		
+				@Html.DisplayFor(model => model.UseAnonymous)
+		</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupCompanyInformationFooter">
+                <div class="card-header clearfix">
+					
+								<h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#footerbody"><span class="fa fa-chevron-down"></span> Footer</a></h3>
+                               </div>
+							  <div class="card-body row card-collapse in" id="footerbody">					
+                                  
+
+		@if (User.CanView("FooterSection"))
+                    {						    
+        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+            <div class="card card-default" id="dvGroupCompanyInformationFooterSectionAssociation_InlineGrid">
+					
+
+                <div class="card-body">
+												<a class="btn-visibility-trigger" data-toggle="collapse" aria-expanded="false" href="#FooterSectionGridHeader">
+                        <i class="fa fa-chevron-down"></i>
+                    </a>
+												
+												<div class="tab-pane fade in" id="CompanyInformationFooterSectionAssociation">
+								</div>
+								                    
+					<div class="inlinegridoption pull-right">
+													 @if (User.CanAdd("FooterSection"))
+                    {
+						<a class="btn-primary btn-sm" onclick="$('#addFooterSection').click();" alt="Add Footer Section " title="Add Footer Section ">
+								<i class="fa fa-plus"></i> Add
+						</a>
+                    } 
+								                   
+						
+					</div>
+                </div>
+            </div>
+        </div>
+		}   
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12" id="accordion">
+			<div class="card card-default" id="dvGroupCompanyInformationAbout">
+                <div class="card-header clearfix">
+					
+								<h3 class="card-title"> <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#aboutbody"><span class="fa fa-chevron-down"></span> About</a></h3>
+                               </div>
+							  <div class="card-body row card-collapse in" id="aboutbody">					
+                                  
+
+@if(User.CanView("CompanyInformation","AboutCompany")  && !hiddenProperties.Contains("AboutCompany"))
+{
+<div class='col-sm-6 col-md-6 col-xs-12' id="dvAboutCompany">
+	<div class='form-group' title="@Html.Raw(Model.AboutCompany)">
+		<label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.DisplayNameFor(model => model.AboutCompany)</label>
+		<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+            <p class="viewlabelmultiline">@Html.Raw(Model.AboutCompany)</p>
+		</div>
+	</div>
+</div>
+}
+ 
+			</div>
+        </div>
+	</div>
+	</div>
+				@if(User.CanView("CompanyInformation","Disclaimer") && !hiddenProperties.Contains("Disclaimer"))
+				{
+						<div class='col-sm-12' id="dvDisclaimer">
+							<div class='form-group' title="Disclaimer">
+                                            <div class="card card-default">
+                                                <div class="card-header clearfix">
+                                                  <h3 class="card-title">@Html.LabelFor(model => model.Disclaimer)</h3>   
+                                                </div>
+                                                <div class="card-body" style="margin: 0px; padding: 8px; background-color: #ebeaea;">
+                                                   @Html.Raw(Model.Disclaimer)
+                                                </div>
+                                            </div>
+                                        </div>
+						</div>
+				}
+  				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sm-12 col-xs-12">
+				<a class="btn btn-white btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index","CompanyInformation")');">Back</a>
+				@*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = backUrl }, new { @class = "btn btn-white btn-sm pull-left formbuttonfix" })*@
+					 @if ( User.CanEdit("CompanyInformation"))
+                     {
+                          @Html.ActionLink("Edit", "Edit", new { UrlReferrer = backUrl, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                     }
+ @{ var dropmenubottom = false; }
+<div class="dropdown pull-left formbuttonfix" style="" id="AddAssociationdropmenubottomCompanyInformation">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+			@if (User.CanAdd("FooterSection"))
+            {
+			    dropmenubottom = true;
+                <li><a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FooterSection",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="CompanyInformationFooterSectionAssociation", 
+						HostingEntityName = "CompanyInformation",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                   Add  Footer Section 
+                </a>
+				</li>
+            }
+</ul>
+</div>
+@if(!dropmenubottom)
+{
+    <script>
+        $("#AddAssociationdropmenubottomCompanyInformation").hide();
+    </script>
+}
+			</div> 
+			</div><div class="clearfix" style="clear:both"></div>
+	</div>    
+<div class="tab-pane fade in" id="CompanyInformationCompanyListAssociation_CompanyInformation">
+</div>
+ 	</div> <!-- /tab-content -->
+</div>
+</div>
+<script type='text/javascript'>
+    $(document).ready(function ()
+    {
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'CompanyInformation','details',false,'CompanyInformation')
+    });
+	</script>
+	
+ 

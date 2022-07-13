@@ -1,0 +1,1105 @@
+﻿@model GeneratorBase.MVC.Models.T_DocumentTemplate
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Document Template";
+    var EditPermission = User.CanEditItem("T_DocumentTemplate", Model, User);
+    //var DeletePermission = User.CanDeleteItem("T_DocumentTemplate", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_DocumentTemplate");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document Template";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_DocumentTemplate" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_DocumentTemplate", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=wizard";
+    }
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_DocumentTemplate");
+    var NonViewableProperties = User.CanNotView("T_DocumentTemplate");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+
+
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_DocumentTemplate", User, groupcontaininginlinegrid);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (Property == "T_AutoNo")
+            return new { @class = "form-control", @readonly = "readonly" };
+        if (User.CanEdit("T_DocumentTemplate", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+        window.onload = function(){
+            JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+        }
+    </script>
+}
+@if (ViewBag.TenantList != null)
+{
+    <script>
+        $(document).ready(function () {
+            var tenants = "@Model.T_Tenants".split(",");
+            var eletenants = document.getElementById("TenantList");
+            for (i = 0; i < tenants.length; i++) {
+                for (var o = 0; o < eletenants.options.length; o++) {
+                    if (eletenants.options[o].value == tenants[i])
+                        eletenants.options[o].selected = true;
+                }
+            }
+        });
+        </script>
+}
+<script>
+    $(document).ready(function () {
+
+        var roles = "@Model.T_AllowedRoles".split(",");
+        var eleRoles = document.getElementById("RoleList");
+        for (i = 0; i < roles.length; i++) {
+            for (var o = 0; o < eleRoles.options.length; o++) {
+                if (eleRoles.options[o].value == roles[i])
+                    eleRoles.options[o].selected = true;
+            }
+        }
+        try {
+            LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+            $("[inlinegrid]").each(function() {
+                //$(this).click();
+                eval($(this).attr('onclick'));
+                var targetpanel = $(this).attr('id').replace('dvGroup','');
+                $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+    </script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_DocumentTemplateRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_DocumentTemplateRestrictDropdownValueRule);
+    }
+}
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .formbuttonfix {
+            float: right !important;
+            margin-right: 5px !important;
+            padding: 4px 18px !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 20px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index")">@EntityDisplayName Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.LabelForUIProperty(Model, "Label")
+            </small>
+        </strong>
+    </div>
+    @if (string.IsNullOrEmpty(wizardid))
+    {
+        <div class="ml-auto">
+            @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+            {
+                <div class="btn-group float-right" style="margin-left:8px;">
+                    <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Action
+                    </a>
+                    <ul class="dropdown-menu multi-level">
+                        @if (EditPermission)
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Edit","T_DocumentTemplate", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                            </li>
+                        }
+                        @if (EditPermission && User.CanDelete("T_DocumentTemplate"))
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Delete", "T_DocumentTemplate", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_DocumentTemplateDisplayValueEdit != null && !HideAction)
+            {
+                <div class="pull-right">
+                    <button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('T_DocumentTemplate',event,'hdnNextPrevId')")" alt="Next" title="Next" style="height: 23px;border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                    @Html.DropDownList("EntityT_DocumentTemplateDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('T_DocumentTemplate','frmT_DocumentTemplate','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+                    <button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('T_DocumentTemplate',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="height: 23px;border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+                Details
+            </a>
+        </li>
+
+        @if (User.CanView("JournalEntry"))
+        {
+            <li class="nav-item" @(!User.CanView("JournalEntry") ? "style=display:none;" : "")>
+                <a class="nav-link" onclick="LoadTab('JournalEntryToT_DocumentTemplateRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "T_DocumentTemplate", HostingEntity = "T_DocumentTemplate", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToT_DocumentTemplateRelation" data-toggle="tab" alt="Document Template Journal" title="Document Template Journal">
+                    Document Template Journal
+                </a>
+            </li>
+        }
+
+    </ul>
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "T_DocumentTemplate", new { UrlReferrer = Convert.ToString(ViewData["T_DocumentTemplateParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmT_DocumentTemplate" }))
+            {
+                if (!string.IsNullOrEmpty(wizardid))
+                { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+                else { Html.ValidationSummary(true); }
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                if (NonViewableProperties != null)
+                {
+                    @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+                }
+                @Html.Hidden("OriginalTenants",Model.T_Tenants)
+                <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+                </div>
+                <div class="AppForm" @wizardid>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        <ol id="olwizard" class="bwizard-steps clearfix clickable d-none" role="tablist">
+                            <li role="tab" class="step-number" id="liGroupT_DocumentTemplateBasicInformation" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">Basic Information</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupT_DocumentTemplateUIInformation" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">UI Information</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupT_DocumentTemplateForInternalUseOnly" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">For Internal Use Only</a>
+                            </li>
+
+
+                        </ol>
+                        <script>
+                            $(document).ready(function(){
+                                $(".formbuttonfix:not([dataurl]").hide();
+                                $(".pager").show();
+                                $(".pager.bwizard-buttons").show();
+                                $("ol#olwizard").removeClass("d-none");
+                                $("#tabcontent").removeClass("d-none");
+                            });
+                        </script>
+                        @Html.Hidden("wizardstep", ViewData["wizardstep"])
+                    }
+                    <div class="row bgwizard" id="wzGroupT_DocumentTemplateBasicInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_DocumentTemplateBasicInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_AutoNo") && !hiddenProperties.Contains("T_AutoNo"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                            <div class='form-group' title="Auto No.">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_AutoNo, getHtmlAttributes("T_AutoNo"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AutoNo"))
+                                        { @Html.HiddenFor(model => model.T_AutoNo, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_EntityName") && !hiddenProperties.Contains("T_EntityName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EntityName">
+                                            <div class='form-group' title="Entity Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_EntityName)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_EntityName, getHtmlAttributes("T_EntityName"))*@
+                                                    @Html.DropDownList("T_EntityName", null, "-- Select --", new { @id = "T_EntityName", @Name = "T_EntityName", @required = "required", @class = "form-control" })
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_EntityName)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_EntityName"))
+                                        { @Html.HiddenFor(model => model.T_EntityName, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_Name") && !hiddenProperties.Contains("T_Name"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                            <div class='form-group' title="Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">Button Text  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_Name, getHtmlAttributes("T_Name"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Name)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Name"))
+                                        { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+                                    }
+
+                                    @if (User.CanView("T_DocumentTemplate", "T_Document") && User.CanView("Document"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Document">
+                                            <div class='form-group' title="Document">
+                                                @Html.TextBoxFor(model => model.T_Document, new { @class = "d-none" })
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Document) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    <div style="position:relative;">
+                                                        <a class='btn btn-primary btnupload' href='javascript:;' style="float:left; margin-right:5px;">
+                                                            Upload File
+                                                            <input id="File_T_Document" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_T_Document" onchange='uploadedFileName("upload-file-infoFile_T_Document",$(this).val());'>
+                                                        </a>
+                                                        @if (Model.T_Document > 0)
+                                                        {
+                                                            <a href="@Url.Action("Download", "Document", new { id = Model.T_Document })" class="small pull-left" style="vertical-align:middle;font-size: 11px;" id='@Html.Raw("adownloadEditT_Document"+Model.Id)'></a>
+                                                            if (User.CanEdit("T_DocumentTemplate") && User.CanDelete("Document") && !isRecordReadOnly)
+                                                            {
+                                                                <a id='@Html.Raw("aDeleteT_Document"+Model.Id)' onclick="DocumentDeassociate('@Url.Action("DocumentDeassociate", "T_DocumentTemplate", new { docid = Model.T_Document })', '@Model.Id','T_Document');"><i class="fa fa-times text-danger" style="margin-left:5px;"></i></a>
+                                                            }
+                                                            <script>
+                                                                displayDocumentNameEdit('@Url.Action("GetDocumentName", "Document", new { id = Model.T_Document})', '@Model.Id','T_Document')
+                                                            </script>
+                                                        }
+                                                        <span class='label uploadlblFix pull-left' style="color: brown; vertical-align: middle; font-size: 10px;" id="upload-file-infoFile_T_Document"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Document"))
+                                        { @Html.HiddenFor(model => model.T_Document, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_DocumentType") && !hiddenProperties.Contains("T_DocumentType"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DocumentType">
+                                            <div class='form-group' title="Document Type">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DocumentType)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    <select id="T_DocumentType" name="T_DocumentType" class="form-control">
+                                                        <option value="docx">DOCX</option>
+                                                        <option value="xlsx" disabled>XLSX</option>
+                                                        <option value="pptx" disabled>PPTX</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_DocumentType)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_DocumentType"))
+                                        { @Html.HiddenFor(model => model.T_DocumentType, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_ActionType") && !hiddenProperties.Contains("T_ActionType"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ActionType" style="display:none;">
+                                            <div class='form-group' title="Action Type">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ActionType)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_ActionType, getHtmlAttributes("T_ActionType"))*@
+                                                    <select id="T_ActionType" name="T_ActionType" class="form-control">
+                                                        <option value="single">Single</option>
+                                                        <option value="list">List</option>
+                                                    </select>
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_ActionType)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_ActionType"))
+                                        { @Html.HiddenFor(model => model.T_ActionType, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_DefaultOutputFormat") && !hiddenProperties.Contains("T_DefaultOutputFormat"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DefaultOutputFormat">
+                                            <div class='form-group' title="Default Output Format">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DefaultOutputFormat)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_DefaultOutputFormat, getHtmlAttributes("T_DefaultOutputFormat"))*@
+                                                    <select id="T_DefaultOutputFormat" name="T_DefaultOutputFormat" class="form-control">
+                                                        <option value="pdf">PDF</option>
+                                                        <option value="docx">DOCX</option>
+                                                        <option value="xlsx" disabled>XLSX</option>
+                                                        <option value="pptx" disabled>PPTX</option>
+                                                    </select>
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_DefaultOutputFormat)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_DefaultOutputFormat"))
+                                        { @Html.HiddenFor(model => model.T_DefaultOutputFormat, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_AllowedRoles") && !hiddenProperties.Contains("T_AllowedRoles"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AllowedRoles">
+                                            <div class='form-group' title="Allowed Roles">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AllowedRoles)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_AllowedRoles, getHtmlAttributes("T_AllowedRoles"))*@
+                                                    @Html.DropDownList("RoleList", null, new { @multiple = "multiple" })
+                                                    @Html.Hidden("T_AllowedRoles", null, new { @Value = "" })
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AllowedRoles)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AllowedRoles"))
+                                        { @Html.HiddenFor(model => model.T_AllowedRoles, new { @class = "form-control" })}
+                                    }
+                                    @if (ViewBag.TenantList != null)
+                                    {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvTenantList">
+                                        <div class='form-group' title="Select Tenant(s)">
+                                            <label class="col-sm-5 col-md-5 float-left col-xs-12">Select Tenant(s) </label>
+                                            <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                @Html.DropDownList("TenantList", null, null, new { @multiple = "multiple", })
+                                                @Html.Hidden("T_Tenants", null, new { @Value = "" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    }
+                                    @*@if (!NonViewableProperties.Contains("T_AttachDocumentTo") && !hiddenProperties.Contains("T_AttachDocumentTo"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AttachDocumentTo">
+                                            <div class='form-group' title="Attach Document  To">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AttachDocumentTo)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_AttachDocumentTo, getHtmlAttributes("T_AttachDocumentTo"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AttachDocumentTo)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AttachDocumentTo"))
+                                        { @Html.HiddenFor(model => model.T_AttachDocumentTo, new { @class = "form-control" })}
+                                    }*@
+                                    @if (!NonViewableProperties.Contains("T_EnableDownload") && !hiddenProperties.Contains("T_EnableDownload"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EnableDownload">
+                                            <div class="form-group" title="Disable?">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_EnableDownload)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.CheckBox("T_EnableDownload", Model.T_EnableDownload.HasValue ? Model.T_EnableDownload : false)
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_EnableDownload)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_EnableDownload"))
+                                        { @Html.HiddenFor(model => model.T_EnableDownload, new { @class = "form-control" })}
+                                    }
+                                     @if (!NonViewableProperties.Contains("T_EnablePreview") && !hiddenProperties.Contains("T_EnablePreview"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EnablePreview">
+                                            <div class="form-group" title="Disable?">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_EnablePreview)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.CheckBox("T_EnablePreview", Model.T_EnablePreview.HasValue ? Model.T_EnablePreview : false)
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_EnablePreview)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_EnablePreview"))
+                                        { @Html.HiddenFor(model => model.T_EnablePreview, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_Description") && !hiddenProperties.Contains("T_Description"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                            <div class='form-group' title="Description">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Description) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Description)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Description"))
+                                        { @Html.HiddenFor(model => model.T_Description, new { @class = "form-control" })}
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupT_DocumentTemplateUIInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_DocumentTemplateUIInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="UI Information" title="UI Information">UI Information</h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_DisplayType") && !hiddenProperties.Contains("T_DisplayType"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayType">
+                                            <div class='form-group' title="Display Type">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DisplayType)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_DisplayType, getHtmlAttributes("T_DisplayType"))*@
+                                                    <select id="T_DisplayType" name="T_DisplayType" class="form-control">
+                                                        <option value="Button">Button</option>
+                                                        <option value="CheckBox">CheckBox</option>
+                                                    </select>
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_DisplayType)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_DisplayType"))
+                                        { @Html.HiddenFor(model => model.T_DisplayType, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_DisplayOrder") && !hiddenProperties.Contains("T_DisplayOrder"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_DisplayOrder">
+                                            <div class='form-group' title="Display Order">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_DisplayOrder)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_DisplayOrder, getHtmlAttributes("T_DisplayOrder"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_DisplayOrder)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_DisplayOrder"))
+                                        { @Html.HiddenFor(model => model.T_DisplayOrder, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_ToolTip") && !hiddenProperties.Contains("T_ToolTip"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+                                            <div class='form-group' title="ToolTip">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ToolTip)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_ToolTip, getHtmlAttributes("T_ToolTip"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_ToolTip)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_ToolTip"))
+                                        { @Html.HiddenFor(model => model.T_ToolTip, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_BackGroundColor") && !hiddenProperties.Contains("T_BackGroundColor"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackGroundColor">
+                                            <div class='form-group' title="">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_BackGroundColor)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_BackGroundColor, getHtmlAttributes("T_BackGroundColor"))
+
+                                                    <span class="input-group-addon btn btn-default">
+                                                        <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                    </span>
+                                                    <script>
+                                                        $(function() {$('#dvT_BackGroundColor').colorpicker({align:'right', colorSelectors: { }});});
+                                                    </script>
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_BackGroundColor)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_BackGroundColor"))
+                                        { @Html.HiddenFor(model => model.T_BackGroundColor, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_FontColor") && !hiddenProperties.Contains("T_FontColor"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FontColor">
+                                            <div class='form-group' title="">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_FontColor)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_FontColor, getHtmlAttributes("T_FontColor"))
+
+                                                    <span class="input-group-addon btn btn-default">
+                                                        <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                    </span>
+                                                    <script>
+                                                        $(function() {$('#dvT_FontColor').colorpicker({align:'right', colorSelectors: { }});});
+                                                    </script>
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_FontColor)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_FontColor"))
+                                        { @Html.HiddenFor(model => model.T_FontColor, new { @class = "form-control" })}
+                                    }
+                                    @if (!NonViewableProperties.Contains("T_Disable") && !hiddenProperties.Contains("T_Disable"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+                                            <div class="form-group" title="Disable?">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_Disable)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.CheckBox("T_Disable", Model.T_Disable.HasValue ? Model.T_Disable : false)
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Disable)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Disable"))
+                                        { @Html.HiddenFor(model => model.T_Disable, new { @class = "form-control" })}
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupT_DocumentTemplateForInternalUseOnly">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_DocumentTemplateForInternalUseOnly">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="For Internal Use Only" title="For Internal Use Only">For Internal Use Only</h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_RecordAdded") && !hiddenProperties.Contains("T_RecordAdded"))
+                                    {
+
+                                        <div class='col-sm-7 col-md-7 col-xs-12' id="dvT_RecordAddedInsertDate">
+                                            <label class="col-sm-3 col-md-3 col-xs-12 float-left text-right pt-2">
+
+                                                @Html.LabelFor(model => model.T_RecordAddedInsertBy)
+                                            </label>
+                                            <div class="form-group" title="Insert Record On">
+                                                <div class="input-group col-sm-9 col-md-9 col-xs-12">
+                                                    <div class="input-group" id="datetimepickerT_RecordAddedInsertDate" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                        <div class="input-group" style="padding-left:0px; padding-right:0px; width:100%">
+                                                            @Html.TextBoxFor(model => model.T_RecordAddedInsertBy, new { @class = "form-control", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class='col-sm-5 col-md-5 col-xs-12' id="dvT_RecordAddedInsertDate">
+
+                                            <div class="form-group" title="Insert Record On">
+                                                <label class="col-sm-3 mb-4 col-md-3 col-xs-12 float-left text-right pt-2">
+                                                    @Html.LabelFor(model => model.T_RecordAddedInsertDate)
+                                                </label>
+                                                <div class="input-group col-sm-9 col-md-9 col-xs-9">
+                                                    <div class="input-group" id="datetimepickerT_RecordAddedInsertDate" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                        <div class="input-group" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                            @Html.TextBoxFor(model => model.T_RecordAddedInsertDate, modelproperties.FirstOrDefault(p => p.Name == "T_RecordAdded").DisplayFormat, new { @class = "form-control", @readonly = "readonly", @format = modelproperties.FirstOrDefault(p => p.Name == "T_RecordAdded").UIDisplayFormat })
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            $(function () {
+                                                $("#T_RecordAddedInsertDate").datetimepicker({  });
+                                            });
+                                        </script>
+
+                                        <div class='col-sm-7 col-md-7 col-xs-12' id="dvT_RecordAdded">
+
+                                            <label class="col-sm-3 col-md-3 col-xs-12 float-left text-right pt-2">
+                                                @Html.LabelFor(model => model.T_RecordAddedUser)
+                                            </label>
+                                            <div class="form-group" title="Update Record On">
+                                                <div class="input-group col-sm-9 col-md-9 col-xs-12">
+                                                    <div class="input-group" id="datetimepickerT_RecordAdded" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                        <div class="input-group" style="padding-left:0px; padding-right:0px; width:100%">
+                                                            @Html.TextBoxFor(model => model.T_RecordAddedUser, new { @class = "form-control", @readonly = "readonly" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class='col-sm-5 col-md-5 col-xs-12' id="dvT_RecordAdded">
+                                            <label class="col-sm-3 mb-4 col-md-3 col-xs-12 float-left text-right pt-2">
+                                                @Html.LabelFor(model => model.T_RecordAdded)
+                                            </label>
+
+                                            <div class="form-group" title="Update Record On">
+
+                                                <div class="input-group col-sm-9 col-md-9 col-xs-9">
+                                                    <div class="input-group" id="datetimepickerT_RecordAdded" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                        <div class="input-group" style="padding-left:0px; padding-right:0px; width:100%">
+
+                                                            @Html.TextBoxFor(model => model.T_RecordAdded, modelproperties.FirstOrDefault(p => p.Name == "T_RecordAdded").DisplayFormat, new { @class = "form-control", @readonly = "readonly", @format = modelproperties.FirstOrDefault(p => p.Name == "T_RecordAdded").UIDisplayFormat })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            $(function () {
+                                                $("#T_RecordAdded").datetimepicker({  });
+                                            });
+                                        </script>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+
+                    }
+                </div>
+                <div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+                        @Html.AntiForgeryToken()
+                        @if (ViewBag.IsPartial == null)
+                        {
+                            <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index", "T_DocumentTemplate")');" alt="Cancel" title="Cancel">Cancel</a>
+                        }
+                        @if (EditPermission)
+                        {
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                            }
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                                <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                            }
+                            <input type="hidden" name="hdncommand" value="" />
+                            <input type="hidden" name="hdnNextPrevId" value="" />
+                        }
+
+
+                        @{var dropmenubottom = false;}
+
+                        <div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomT_DocumentTemplate">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                                Add
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1"></ul>
+                        </div>
+                        @if (!dropmenubottom || !EditPermission)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenubottomT_DocumentTemplate").hide();
+                            </script>
+                        }
+                    </div>
+                </div>} @*end form*@
+                <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+                <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+                <div id="divDisplayBRmsgMandatory1"></div>
+                <div id="divDisplayLockRecord1"></div>
+                <div id="divDisplayBRReadOnly1"></div>
+                <div id="divDisplayCodeFragment1"></div>
+            </div>
+            @if (string.IsNullOrEmpty(wizardid))
+            {
+                <div class="tab-pane fade in" id="JournalEntryToT_DocumentTemplateRelation"></div>
+
+            }
+        </div> <!-- /tab-content -->
+    </div>
+    <script>
+        function SetRoles()
+        {
+            $('#T_AllowedRoles').val($('#RoleList').val());
+            $('#T_Tenants').val($('#TenantList').val());
+        }
+        $(document).ready(function () {
+            $('select[name=RoleList]').multiselect({
+                buttonWidth: '100%'
+            });
+            $('select[name=TenantList]').multiselect({
+                buttonWidth: '100%'
+            });
+        });
+        $(function () {
+            ApplyAreYouSure();
+        });
+
+        $('#T_DefaultOutputFormat').on('change', function () {
+            if (this.value == 'pdf') {
+                $("#dvT_EnablePreview").show();
+            }
+            else {
+                $("#dvT_EnablePreview").hide();
+            }
+        });
+
+    </script>
+    @{
+        var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "T_DocumentTemplate").ToList();
+
+        var isbrrequired = false;
+        if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+        {
+            isbrrequired = true;
+        }
+    }
+    @{
+        if (ViewBag.IsPartial == true)
+        {
+            var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+            <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+            <script type="text/javascript">
+                var config = {
+                    '.chosen-select': {},
+                    '.chosen-select-deselect': { allow_single_deselect: true },
+                    '.chosen-select-no-single': { disable_search_threshold: 10 },
+                    '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                    '.chosen-select-width': { width: "95%" }
+                }
+                for (var selector in config) {
+                    $(selector).chosen(config[selector]);
+                }
+            </script>
+            <script>
+                function ApplyBusinessRule(form) {
+                    var flag = true;
+                    dataurl = "@Url.Action("businessruletype", "T_DocumentTemplate", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "T_DocumentTemplate", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+                    if (flag) {
+                        $("#frmT_DocumentTemplate").find(':input').removeAttr('disabled');
+                        $("#divDisplayBRmsgMandatory").hide();
+                        $("#divDisplayBRmsgBeforeSaveProp").hide();
+                        $("#divDisplayLockRecord").hide();
+                        $("#divDisplayBRReadOnly").hide();
+                    }
+                    return flag;
+                }
+            </script>
+        }
+    }
+    @{
+        var businessrule = User.businessrules.Where(p => p.EntityName == "T_DocumentTemplate").ToList();
+        if ((businessrule != null && businessrule.Count > 0))
+        {
+            var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script>
+                $(document).ready(function () {
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmT_DocumentTemplate");
+                    dataurl = "@Url.Action("businessruletype", "T_DocumentTemplate", new { ruleType = "OnEdit"})";
+                    ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_DocumentTemplate", false, "ErrMsg", form);
+                    //business rules on inline associations
+                    if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                    {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                        $('.input-group-append').hide();
+                        $('.input-group-addon').hide();
+                    }
+                });
+            </script>
+            <script>
+                $("form input[type=submit]").click(function() {
+                    var actionName = $(this).attr("actionName")
+                    if (actionName == undefined)
+                        actionName = $(this).val();
+                    $('input:hidden[name="hdncommand"]').val(actionName);
+                });
+                $("form").submit(function (event) {
+                    SetRoles();
+                    $('[businessrule="mandatory"]').each(function () {
+                        $(this).removeAttr('required');
+                    });
+                    if (!$("#frmT_DocumentTemplate").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmT_DocumentTemplate").serialize();
+                    dataurl = "@Url.Action("businessruletype", "T_DocumentTemplate", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "T_DocumentTemplate", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+
+                    if (flag)
+                    {
+                        //$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+                        //if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                        //$('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                        $("#frmT_DocumentTemplate").find(':input').removeAttr('disabled');
+                    }
+                    return flag;
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                $("input[type='submit']").click(function (event) {
+                    SetRoles();
+                    if (!$("#frmT_DocumentTemplate").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    var $this = $(this);
+                    var actionName = $this.attr("actionName")
+                    if (actionName == undefined)
+                        actionName = $this.val();
+                    $('input:hidden[name="hdncommand"]').val(actionName);
+                });
+            </script>
+        }
+    }
+
+    <script type='text/javascript'>
+        $(document).ready(function ()
+        {
+            $("#T_DocumentType").val('@Model.T_DocumentType');
+            $("#T_ActionType").val('@Model.T_ActionType');
+            $("#T_DefaultOutputFormat").val('@Model.T_DefaultOutputFormat');
+            $("#T_DisplayType").val('@Model.T_DisplayType');
+            @*$("#T_AttachDocumentTo").val('@Model.T_AttachDocumentTo');*@
+            try {
+                focusOnControl('frmT_DocumentTemplate');
+            }
+            catch (ex) { }
+            ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_DocumentTemplate','edit',false,'Document Template')
+            //instruction feature
+            ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_DocumentTemplate','edit',false,'Document Template')
+            var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+        });
+    </script>
+    @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_DocumentTemplateDisplayValueEdit != null)
+    {
+        <script type='text/javascript'>
+            $(document).ready(function () {
+                NextPrev("T_DocumentTemplate");
+            });
+        </script>
+    }

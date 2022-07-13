@@ -1,0 +1,793 @@
+﻿@model T_ExportDataLogIndexViewModel
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+        if (!string.IsNullOrEmpty(Request.QueryString["backurlhome"]))
+        {
+            BackUrl = Request.QueryString["backurlhome"];
+        }
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Export Data Log";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_ExportDataLog");
+    var viewbagname = Convert.ToString(Model.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+    var nonbridgecontrol = true;
+
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+
+<div id="T_ExportDataLog">
+    @if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    }
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var divId = $("#dvGroup" + "@ViewData["AssociatedType"]" + "Pivot");
+        var divIdlist = $("#dvGroup" + "@ViewData["AssociatedType"]" + "PivotList");
+        if (divId != undefined) {
+            divId.show();
+        }
+        if (divIdlist != undefined)
+            divIdlist.hide();
+	if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+            $("#T_ExportDataLogGridHeader").addClass('collapse in');
+             if ($("#dropdownMenuButtonMatrix") != undefined)
+            $("#dropdownMenuButtonMatrix").hide()
+    }
+
+
+	 $(".pagination a").click(function (e) {
+			PaginationClick(e, 'T_ExportDataLog','@User.JavaScriptEncodedName')
+        })
+	    if("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH")
+        {
+            $("#fsearchT_ExportDataLog").addClass('show');
+			FSearchColumnsShowHide('@ViewData["HideColumns"]', 'T_ExportDataLog');
+        }
+	    $("#SearchStringT_ExportDataLog").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				 $("#T_ExportDataLogSearch").bind("click", (function () {
+                        }));
+                $('#T_ExportDataLogSearch').trigger("click");
+                return false;
+			}
+        })
+        var usrName = "@User.JavaScriptEncodedName";
+		var myCookie = usrName + "T_ExportDataLog" + "@ViewData["AssociatedType"]";
+		if ($.cookie(myCookie) != null) {
+			$("#btnShowHideT_ExportDataLog").click();
+            $("#dvShowHideT_ExportDataLog").hide();
+		}
+		if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+              $(".float-left.actionbar").hide();
+			  if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+		        $(".inlinegridoption").hide();
+                divId.remove();
+                divIdlist.remove();
+
+		    }
+		}
+    });
+	$("input[datatype='Double']").addClass("pull-right text-right");
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = Model.CurrentSort,
+                    IsAsc = Model.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = Model.currentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+
+                    t_exportdataconfigurationexportdatalogassociation = Request.QueryString["t_exportdataconfigurationexportdatalogassociation"],
+                    t_associatedexportdatalogstatus = Request.QueryString["t_associatedexportdatalogstatus"],
+                    T_AutoNoFrom = Request.QueryString["T_AutoNoFrom"],
+                    T_AutoNoFromhdn = Request.QueryString["T_AutoNoFromhdn"],
+                    T_AutoNoTo = Request.QueryString["T_AutoNoTo"],
+                    T_AutoNoTohdn = Request.QueryString["T_AutoNoTohdn"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    IsAsc = (Model.IsAsc == "ASC" ? "DESC" : ""),
+                    page = Model.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = Model.FSFilter == null ? "Fsearch" : Model.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = Model.IsDivRender,
+                    IsDeepSearch = Model.IsDeepSearch,
+                    t_exportdataconfigurationexportdatalogassociation = Request.QueryString["t_exportdataconfigurationexportdatalogassociation"],
+                    t_associatedexportdatalogstatus = Request.QueryString["t_associatedexportdatalogstatus"],
+                    T_AutoNoFrom = Request.QueryString["T_AutoNoFrom"],
+                    T_AutoNoFromhdn = Request.QueryString["T_AutoNoFromhdn"],
+                    T_AutoNoTo = Request.QueryString["T_AutoNoTo"],
+                    T_AutoNoTohdn = Request.QueryString["T_AutoNoTohdn"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = Model.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = Model.GroupByColumn,
+                    FilterCondition = Model.FilterCondition,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    <div id="T_ExportDataLogGridHeader" class="">
+        @if (Model.IsdrivedTab == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="float-left actionbar">
+                    @if (User.CanAdd("T_ExportDataLog"))
+                    {
+                        <a id="addInlineRowT_ExportDataLog" style="display:none;"
+                           onclick="@Html.Raw("OpenInlineEntity(this,'T_ExportDataLog','" + Url.Action("CreateInline", "T_ExportDataLog", new {AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+                        </a>
+                        <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_T_ExportDataLog'>
+                           
+                        </div>
+                    }
+
+
+                    @if (Model.IsDivRender == null || Model.IsDivRender == false)
+                    {
+                        if (nonbridgecontrol && (((User.CanEdit("T_ExportDataLog") && User.CanUseVerb("BulkUpdate", "T_ExportDataLog", User)) || (User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete", "T_ExportDataLog", User)) || User.CanUseVerb("BulkDocumentDownload", "T_ExportDataLog", User) || User.CanUseVerb("T_RestoreData", "T_ExportDataLog", User) || User.CanUseVerb("T_PurgeData", "T_ExportDataLog", User))))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanUseVerb("T_RestoreData", "T_ExportDataLog", User) && User.CanEdit("T_ExportDataLog"))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Restore Data','@Url.Action("T_RestoreData", "T_ExportDataLog", new { UrlReferrer = BackUrl })');">Restore Data </a>
+                                        }
+                                        @if (User.CanUseVerb("T_PurgeData", "T_ExportDataLog", User) && User.CanEdit("T_ExportDataLog"))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Purge Data','@Url.Action("T_PurgeData", "T_ExportDataLog", new { UrlReferrer = BackUrl })');">Purge Data </a>
+                                        }
+                                        @if (User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete", "T_ExportDataLog", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'T_ExportDataLog','Bulk Delete','@Url.Action("DeleteBulk", "T_ExportDataLog")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        }
+        <div class="float-right" style="">
+            <div class="input-group">
+                @Html.TextBox("SearchStringT_ExportDataLog", Model.currentFilter as string, null, new { @class = "form-control listsearchbox", @value = Model.HomeVal, @placeholder = "Search" })
+                <div class="input-group-btn">
+                    <a id="T_ExportDataLogSearch" onclick="SearchClick(event, 'T_ExportDataLog', '@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                    <a id="T_ExportDataLogCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                    <a id="T_ExportDataLogSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("Index", "T_ExportDataLog", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(Model.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                        <span class="fa fa-sync-alt"></span>
+                    </a>
+                    <a id="T_ExportDataLogRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(Model.CurrentSort, false,null, false)))','@User.Name')"></a>
+                    @if (ViewData["HostingEntity"] == null)
+                    {
+                        <a data-toggle="dropdown" data-original-title="Queries" class="btn btn-secondary tip-top" alt="Queries" title="Queries"><span class="fa fa-binoculars"> <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-item">
+                                <a href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" data-placement="top" alt="Define new query" title="Define new query">
+                                    <span class="fa fa-plus" style="margin-right:3px;"></span> New Query
+                                </a>
+                            </li>
+
+
+                            @if (User.CanView("T_ExportDataConfiguration") || User.CanView("T_ExportDataLogstatus"))
+                            {
+                                <li>
+                                    <a class="dropdown-item" data-toggle="collapse" id="T_ExportDataLogSetFSearchGridbtn" onclick="@Html.Raw("LoadSetFSearchGridfun(this,'"+Url.Action("SetFSearchGrid", "T_ExportDataLog", new {HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType= @Convert.ToString(ViewData["AssociatedType"]) })+"','T_ExportDataLog');")">
+                                        <i class="fa fa-filter"> </i> Filter
+                                    </a>
+                                </li>
+
+                            }
+                            <li style="border-bottom: 1px solid #ddd;
+    color: #194969!important;
+    padding-left: 15px;
+    font-weight: bold;
+    font-size: 16px!important;
+    background: #f3f5f9;
+    border-top: 1px solid #ddd; margin-top:5px; margin-bottom:5px">Saved Queries</li>
+                            <li class="dropdown-item">
+                                @foreach (var fsearch in User.GetFacetedSearch("T_ExportDataLog", User))
+                                {
+                                    <a href="~/@fsearch.T_LinkAddress&FsearchId=@fsearch.Id&ShowDeleted=@Convert.ToString(ViewData["ShowDeleted"])" data-placement="top" alt="@fsearch.T_Description" title="@fsearch.T_Description">
+                                        <span class="fa fa-filter" style="margin-right:3px;"></span> @fsearch.T_Name
+                                    </a>
+                                }
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div style="clear:both"></div>
+
+
+    </div>
+    <div class="row">
+
+        <div id="LoadT_ExportDataLogSetFSearchGrid" class="collapse">
+        </div>
+        @*@{Html.RenderPartial("~/Views/T_ExportDataLog/SetFSearchGrid.cshtml", new GeneratorBase.MVC.Models.T_ExportDataLog());}*@
+        <div class="col" style="width:200px; float:left; ">
+            @if (Model.SearchResult != "" && Model.IsdrivedTab == null)
+            {
+                <div id="fsearchT_ExportDataLog" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                    <div class="col-sm-6">  @Html.Raw(Html.Encode(Model.SearchResult).Replace(Environment.NewLine, ""))</div>
+                    <div class="col-sm-6 text-right">
+                        @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            <a class="btn btn-primary btn-sm ExpandAllOpen">Expand All</a>
+                        }
+                        @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                        {
+                            <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "T_ExportDataLog",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                        }
+                        <a href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                        @if (User.CanAdd("T_FacetedSearch"))
+                        {
+                            if (!string.IsNullOrEmpty(Model.FsearchId))
+                            {
+                                <a id='aBtnQuickEditT_FacetedSearch_@Convert.ToInt32(Model.FsearchId)' onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit FacetedSearch','dvPopup','" + Url.Action("EditQuick", "T_FacetedSearch", new
+																			{
+																				id = Convert.ToInt32(Model.FsearchId),
+																				 UrlReferrer = Html.Raw(Request.Url.PathAndQuery),
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                                                                                FsearchId=Model.FsearchId
+																			}) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Edit</a>
+                            }
+                            else
+                            {
+                                <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="T_ExportDataLog",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(null, true, page, false)),
+                        new PagedListRenderOptions
+                        {
+                            FunctionToTransformEachPageLink = (liTag, aTag) =>
+                            {
+                                aTag.Attributes.Add("class", "page-link");
+                                liTag.InnerHtml = aTag.ToString();
+                                return liTag;
+                            },
+                            LiElementClasses = new[] { "page-item" },
+                            UlElementClasses = new[] { "pagination pagination-sm" }
+                        })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistT_ExportDataLog",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataLog','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataLog",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistT_ExportDataLog"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div style="clear:both"></div>
+            }
+            @if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+            {
+                <script>
+                    $(document).ready(function () {
+                        $('.hideTr').slideUp(600);
+                        $('[data-toggle="toggle"]').click(function () {
+                            var tag = $(this).find("p").attr("id");
+                            if ($(this).parents().next(".hideTr").is(':visible')) {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideUp(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('+');
+                                $(this).css('background-color', 'white');
+                            }
+                            else {
+                                $(this).parents().nextAll('.hideTr[tag="' + tag + '"]').slideDown(600);
+                                $(".plusminus_" + $(this).children().children().attr("id")).text('-');
+                                $(this).css('background-color', '#c1eaff');
+                            }
+                        });
+                        $('.ExpandAllOpen').click(function () {
+                            var link = $(this);
+                            if (link.text() == "Expand All") {
+                                $('.hideTr').slideDown(600);
+                                link.text('Collapse All');
+                                $("[class^='plusminus_']").text('-');
+                            }
+                            else {
+                                $('.hideTr').slideUp(600);
+                                link.text('Expand All');
+                                $("[class^='plusminus_']").text('+');
+                            }
+
+                        });
+                    });
+                </script>
+            }
+
+            <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                <table class="table table-hover default-bordered default-condensed newlist">
+                    <thead id="theaderT_ExportDataLog">
+                        <tr>
+                            @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("T_ExportDataLog") && User.CanUseVerb("BulkUpdate", "T_ExportDataLog", User)) || (User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete", "T_ExportDataLog", User)) || User.CanUseVerb("T_RestoreData", "T_ExportDataLog", User) || User.CanUseVerb("T_PurgeData", "T_ExportDataLog", User)))
+                            {
+                                <th class="col0" style="width:30px" scope="col" data-sort-ignore="true">
+                                    <div style="width:10px">
+                                        <div class="CheckboxHeaderFix">
+                                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this,'T_ExportDataLog');" />
+                                            @Html.Hidden("SelectedItems")
+                                            <div>
+                                                <div>
+                                </th>
+                            }
+                            <th scope="col" class="col1" alt="Actions" title="Actions" data-sort-ignore="true">
+                                <div style="width: 65px;"><span class="ActionsHeaderFix">Actions </span></div>
+                            </th>
+
+                            @if (User.CanView("T_ExportDataLog", "T_AutoNo"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_AutoNo");
+                                <th scope="col" class="col2">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_AutoNo", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_AutoNo")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_AutoNo")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataLog", "T_ExportDataConfigurationExportDataLogAssociationID"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_ExportDataConfigurationExportDataLogAssociationID");
+                                <th scope="col" class="col3" @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataConfiguration" && Convert.ToString(ViewData["AssociatedType"]) == "T_ExportDataConfigurationExportDataLogAssociation" ? "hidden" : "")>
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_ExportDataConfigurationExportDataLogAssociationID", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_ExportDataConfigurationExportDataLogAssociationID")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_ExportDataConfigurationExportDataLogAssociationID")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataLog", "T_Tag"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Tag");
+                                <th scope="col" class="col4">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_Tag", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_Tag")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_Tag")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataLog", "T_Notes"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_Notes");
+                                <th scope="col" class="col5">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_Notes", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_Notes")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_Notes")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog", "T_AssociatedExportDataLogStatusID"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_AssociatedExportDataLogStatusID");
+                                <th scope="col" class="col6" @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataLogstatus" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedExportDataLogStatus" ? "hidden" : "")>
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_AssociatedExportDataLogStatusID", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_AssociatedExportDataLogStatusID")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_AssociatedExportDataLogStatusID")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @*OneDrive Changes*@
+                            @if (User.CanView("T_ExportDataLog", "T_OneDriveUrl"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_OneDriveUrl");
+                                <th scope="col" class="col5">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_OneDriveUrl", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_OneDriveUrl")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_OneDriveUrl")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                            @if (User.CanView("T_ExportDataLog", "T_GoogleDriveUrl"))
+                            {
+                                var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "T_GoogleDriveUrl");
+                                <th scope="col" class="col5">
+                                    @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes("T_GoogleDriveUrl", false, null, false), new { @onclick = "SortLinkClick(event,'T_ExportDataLog');" })
+                                    @if (Model.IsAsc == "DESC" && Model.CurrentSort == "T_GoogleDriveUrl")
+                                    {<i class="fa fa-sort-amount-asc" title="Descending"></i>}
+                                    @if (Model.IsAsc == "ASC" && Model.CurrentSort == "T_GoogleDriveUrl")
+                                    {<i class="fa fa-sort-amount-desc" title="Ascending"></i>}
+                                </th>
+                            }
+                        </tr>
+                        <tr id="trInlineT_ExportDataLog" style="display:none; padding:0px!important">
+                            <th id="tdInlineT_ExportDataLog" colspan="7" style="padding: 0px!important;">
+
+                            </th>
+                        </tr>
+                    </thead>
+                    @{
+                        var RowCounter = 0;
+                        var RowCounter1 = 0;
+                    }
+                    @{ bool isFirst = true; string oldKey = null; }
+                    @foreach (var item in Model.list)
+                    {
+                        List<string> hiddenProperties = new List<string>();
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(6)))
+                        {
+                            hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_ExportDataLog");
+                        }
+                        List<string> hiddenVerb = new List<string>(); var Verblist = "";
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(16)))
+                        {
+                            hiddenVerb = item.ApplyHiddenVerbRule(User.businessrules, "T_ExportDataLog");
+                            Verblist = string.Join(",", hiddenVerb.ToList());
+                        }
+                        bool isRecordReadOnly = false;
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))))
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)item, User, User.businessrules.Where(p => p.EntityName == "T_ExportDataLog" && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), "T_ExportDataLog");
+                        }
+                        if (ViewData["HostingEntity"] != null && !isRecordReadOnly)
+                        {
+                            isRecordReadOnly = item.ApplyLockRecordRule((object)ViewBag.HostingEntityIDData, User, User.businessrules.Where(p => p.EntityName == ViewData["HostingEntity"].ToString() && (p.ActionTypeID.Contains(1) || p.ActionTypeID.Contains(11))).ToList(), ViewData["HostingEntity"].ToString());
+                        }
+                        if (!isRecordReadOnly)
+                        {
+                            isRecordReadOnly = !User.CanEditItemInHierarchy("T_ExportDataLog", item, User);
+                        }
+                        if (Model.IsGroupBy != null && Convert.ToBoolean(Model.IsGroupBy))
+                        {
+                            var groupKey = item.m_DisplayValue;
+                            if (oldKey != groupKey)
+                            {
+                                isFirst = true;
+                                oldKey = item.m_DisplayValue;
+                            }
+                            if (isFirst || oldKey == null)
+                            {
+                                isFirst = false;
+                                string groupString = string.Empty;
+
+                                <tr data-toggle="toggle">
+                                    <td colspan="7" style="background: #EDF5FA; font-weight:bold; cursor: pointer;">
+                                        <p id="@(++RowCounter)">
+                                            <b>
+                                                <span class="plusminus_@(++RowCounter1)">+</span>
+
+                                            </b> @groupKey @groupString
+
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        <tbody class="hideTr" tag="@RowCounter1">
+                            <tr scope="row">
+                                @if ((Model.IsDivRender == null || Model.IsDivRender == false) && ((User.CanEdit("T_ExportDataLog") && User.CanUseVerb("BulkUpdate", "T_ExportDataLog", User)) || (User.CanDelete("T_ExportDataLog") && User.CanUseVerb("BulkDelete", "T_ExportDataLog", User)) || User.CanUseVerb("T_RestoreData", "T_ExportDataLog", User) || User.CanUseVerb("T_PurgeData", "T_ExportDataLog", User)))
+                                {
+                                    <td>
+                                        <div class="CheckboxrowFix">
+                                            @if (item.t_associatedexportdatalogstatus.DisplayValue.ToLower() == "open")
+                                            {
+                                                <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id','T_ExportDataLog');" autocomplete="off" />
+                                            }
+                                            </div>
+                                    </td>
+                                }
+                                <td class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                                    <div style="display:none;">
+                                        <div class="btn-group tdDoubleClickGroup">
+                                            <a onclick="SavePropertiesValue(this,'T_ExportDataLog',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                                <i class="fa fa-save"></i>
+                                            </a>
+                                            <a onclick="$('#T_ExportDataLogRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div id="DivbutEdit" class="DivbutEditFix" style="width: 65px;">
+                                        <div class="btn-group">
+                                            @if (User.CanEdit("T_ExportDataLog"))
+                                            {
+                                                var editIconClass = isRecordReadOnly ? "fa fa-eye" : "fas fa-pencil-alt";
+                                                var edittitle = isRecordReadOnly ? "View" : "Edit";
+                                                if (Model.IsDivRender == true)
+                                                {
+                                                    <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "T_ExportDataLog", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = Model.IsDivRender, viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  }, null))')" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@Url.Action("Edit","T_ExportDataLog", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  },null)" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                                        <i class="@editIconClass"></i>
+                                                    </a>
+                                                }
+                                            }
+                                            @if (!User.CanEdit("T_ExportDataLog"))
+                                            {
+                                                <a href="@Url.Action("Details", "T_ExportDataLog", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                            }
+                                            <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                                <span class="sr-only"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @if (User.CanEdit("T_ExportDataLog") && isRecordReadOnly)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Edit","T_ExportDataLog", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly },null)"><i class="fa fa-eye"></i>  View</a>
+                                                    </li>
+
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Details", "T_ExportDataLog", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" alt="View" title="View"><i class="fa fa-eye"></i>  View</a>
+                                                    </li>
+                                                }
+
+
+                                                @if (!User.CanEdit("T_ExportDataLog"))
+                                                {
+                                                }
+
+                                                <div class="dropdown-divider"></div>
+
+                                                @if (item.t_exportdataconfigurationexportdatalogassociation.T_EnableDelete != null && item.t_exportdataconfigurationexportdatalogassociation.T_EnableDelete.Value && item.t_associatedexportdatalogstatus.DisplayValue.ToLower() == "open")
+                                                {
+                                                    if (User.CanUseVerb("T_Purge", "T_ExportDataLog", User) && User.CanEdit("T_ExportDataLog"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="" onclick="ExcuteSingleVerb('T_ExportDataLog',this);" id="T_Purge_@item.Id" dataurl="@Url.Action("T_Purge", "T_ExportDataLog", new { id = item.Id }, null)"><i class="fa fa-edit"></i>  Purge</a>
+                                                        </li>
+                                                    }
+                                                    if (User.CanUseVerb("T_Restore", "T_ExportDataLog", User) && User.CanEdit("T_ExportDataLog"))
+                                                    {
+                                                        <li>
+                                                            <a class="dropdown-item" href="" onclick="ExcuteSingleVerb('T_ExportDataLog',this);" id="T_Restore_@item.Id" dataurl="@Url.Action("T_Restore", "T_ExportDataLog", new { id = item.Id }, null)"><i class="fa fa-edit"></i>  Restore</a>
+                                                        </li>
+                                                    }
+                                                }
+                                                @if (User.CanEdit("T_ExportDataLog") && !isRecordReadOnly)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Edit","T_ExportDataLog", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname },null)"><i class="fa fa-edit"></i>  Edit</a>
+                                                    </li>
+
+                                                }
+                                                <div class="dropdown-divider"></div>
+
+                                                @if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLog" && p.ActionTypeID.Contains(16)))
+                                                {
+                                                    <script>
+			var array = '@Verblist'.split(',');
+			for (var i = 0; i < array.length; i++) {
+				var verbId = array[i] + "_@item.Id";
+				$("#" + verbId).remove();
+			}
+                                                    </script>
+                                                }
+                                                <div class="dropdown-divider"></div>
+                                                @if (nonbridgecontrol && User.CanDelete("T_ExportDataLog") && !isRecordReadOnly)
+                                                {
+                                                    <li class="divider" style="clear:both"></li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="@Url.Action("Delete", "T_ExportDataLog", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                                @if (User.CanView("T_ExportDataLog", "T_AutoNo"))
+                                {
+
+                                    <td title="@item.T_AutoNo">
+
+                                        @Html.DisplayFor(modelItem => item.T_AutoNo)
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataLog", "T_ExportDataConfigurationExportDataLogAssociationID"))
+                                {
+
+                                    <td title="@Html.DisplayFor(modelItem => item.t_exportdataconfigurationexportdatalogassociation.DisplayValue)" @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataConfiguration" && Convert.ToString(ViewData["AssociatedType"]) == "T_ExportDataConfigurationExportDataLogAssociation" ? "hidden" : "") onclick="OpenQuickEdit('T_ExportDataLog','@item.Id',event);">
+                                        @Html.DisplayFor(modelItem => item.t_exportdataconfigurationexportdatalogassociation.DisplayValue)
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataLog", "T_Tag"))
+                                {
+
+                                    <td title="@item.T_Tag">
+
+                                        @Html.DisplayFor(modelItem => item.T_Tag)
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataLog", "T_Notes"))
+                                {
+
+                                    <td title="@item.T_Notes">
+
+                                        @Html.DisplayFor(modelItem => item.T_Notes)
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataLogstatus") && User.CanView("T_ExportDataLog", "T_AssociatedExportDataLogStatusID"))
+                                {
+
+                                    <td title="@Html.DisplayFor(modelItem => item.t_associatedexportdatalogstatus.DisplayValue)" @(Convert.ToString(ViewData["HostingEntity"]) == "T_ExportDataLogstatus" && Convert.ToString(ViewData["AssociatedType"]) == "T_AssociatedExportDataLogStatus" ? "hidden" : "")>
+                                        @Html.DisplayFor(modelItem => item.t_associatedexportdatalogstatus.DisplayValue)
+                                    </td>
+                                }
+                                @*OneDrive Changes*@
+                                @if (User.CanView("T_ExportDataLog", "T_OneDriveUrl"))
+                                {
+                                    <td title="@item.T_OneDriveUrl">
+                                        @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.T_OneDriveUrl).ToString()))
+                                        {
+                                            <a href="@item.T_OneDriveUrl" target="_blank"> Download</a>
+                                        }
+                                        else
+                                        { <label>NA</label>}
+                                    </td>
+                                }
+                                @if (User.CanView("T_ExportDataLog", "T_GoogleDriveUrl"))
+                                {
+                                    <td title="@item.T_GoogleDriveUrl">
+                                        @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.T_GoogleDriveUrl).ToString()))
+                                        {
+                                            <<a href="@item.T_GoogleDriveUrl" target="_blank"> Download</a>
+                                        }
+                                        else
+                                        { <label>NA</label>}
+                                    </td>
+                                }
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+
+            @if (Model.list.Count > 0 && Model.list.TotalItemCount > 10)
+            {
+                <div id="pagination">
+                    @if (Model.list.TotalItemCount > Convert.ToInt32(Model.PageSize))
+                    {
+                        @Html.PagedListPager(Model.list, page => Url.Action(ActionNameUrl, "T_ExportDataLog", getSortHtmlAttributes(null, true, page, false)),
+                          new PagedListRenderOptions
+                          {
+                              FunctionToTransformEachPageLink = (liTag, aTag) =>
+                              {
+                                  aTag.Attributes.Add("class", "page-link");
+                                  liTag.InnerHtml = aTag.ToString();
+                                  return liTag;
+                              },
+                              LiElementClasses = new[] { "page-item" },
+                              UlElementClasses = new[] { "pagination pagination-sm" }
+                          })
+                    }
+                    <div class="fixPageSize">
+                        Page Size :
+                        @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Value", "Key")
+                        , new
+                             {
+                                 @class = "ignorefield",
+                                 @id = "pagesizelistT_ExportDataLog",
+                         @onchange = @Html.Raw("pagesizelistChange(event,'T_ExportDataLog','"
+                         + @User.JavaScriptEncodedName + "')"),
+                         @Url = Html.Raw(@Url.Action(ActionNameUrl, "T_ExportDataLog",
+                         getSortHtmlAttributes(Model.CurrentSort, Model.Pages == 1 ? false : true,
+                         null, false), null))
+                             })
+                        <span style="text-align:right;"> Total Count: @(Model.list.TotalItemCount)</span>
+                        <script>
+                            $(document).ready(function () {
+                                $.validator.setDefaults({
+                                    ignore: "#pagesizelistT_ExportDataLog"
+                                })
+                            });
+                        </script>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    @Html.DropDownList("EntityT_ExportDataLogDisplayValue", null, null, new { @Style = "display:none;" })
+</div>
+

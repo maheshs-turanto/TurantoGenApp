@@ -1,0 +1,125 @@
+﻿@{
+    GeneratorBase.MVC.Models.FavoriteItem FavObj = null;
+    using (var favdb = (new ApplicationContext(new GeneratorBase.MVC.Models.SystemUser(), 1)))
+    {
+        FavObj = favdb.FavoriteItems.Where(p => p.LastUpdatedByUser == User.Name && HttpContext.Current.Request.Url.PathAndQuery.EndsWith(p.LinkAddress)).FirstOrDefault();
+    }
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var AppName = commonObj.AppName();
+    var CompanyProfile = commonObj.getCompanyProfile(User);
+    var timeoutAlert = commonObj.ApplicationSessionTimeOutAlert();
+    var onloadEvent = timeoutAlert == "true" ? "onload=initSession()".ToString() : "";
+    string AppUrl = System.Configuration.ConfigurationManager.AppSettings["AppUrl"];
+    var url = Url.Content("~/logo/" + CompanyProfile.Icon);
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    { url = Url.Content("~/logo/" + CompanyProfile.Icon); }
+    var AppIcon = url;
+    if (!CompanyProfile.Icon.Contains("logo"))
+    {
+        if (User.CanView("Document"))
+        {
+            AppIcon = Url.Action("DisplayImageMobile", "Document", new { id = Convert.ToInt64(CompanyProfile.Icon) }) + "?637489848794789107";
+        }
+        else
+        {
+            AppIcon = Url.Content("~/logo/logo.gif");
+        }
+    }
+    var AppIconWidth = CompanyProfile.IconWidth == null ? "28px" : CompanyProfile.IconWidth;
+    var AppIconHeight = CompanyProfile.IconHeight == null ? "28px" : CompanyProfile.IconHeight;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @RenderSection("scripts", required: false)
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/layoutcss")
+    @Styles.Render("~/Content/bootstrapcss")
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="@Url.Content("~/Content/" + commonObj.getTenantSiteScript(User))" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Content/csstheme")
+</head>
+<body id="webapiBody">
+    <div id="wrapper" class="wrapper">
+        @if (Request.Cookies["sidebartoggle" + HttpUtility.UrlEncode(User.Name) + ""] == null || Request.Cookies["sidebartoggle" + HttpUtility.UrlEncode(User.Name) + ""].Value == "")
+        {
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+                <!-- Sidebar - Brand -->
+                <a class="sidebar-brand d-flex align-items-center justify-content-center mt-2 mb-1" href="@Url.Action("Index", "Home" )">
+                    <img class="img-fluid" src="@AppIcon" alt="App Logo" style="width:@AppIconWidth; height:@AppIconHeight;">
+                </a>
+                <div class="user-block-info mb-1" style="text-align:center; color:white; font-size:14px;">
+                    <span class="user-block-role">
+                        @if (User != null && User.userroles != null && !(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+                        {
+                            if (!(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+                            {
+                                <span class="block m-t-xs"> Role : @string.Join(", ", User.userroles) </span>
+                            }
+                        }
+                    </span>
+                </div>
+                @if (User != null && User.userroles != null)
+                {
+                    @Html.Partial("_Sidebar", commonObj)
+                }
+
+            </ul>
+        }
+        else
+        {
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+                <!-- Sidebar - Brand -->
+                <a class="sidebar-brand d-flex align-items-center justify-content-center mt-2 mb-1" href="@Url.Action("Index", "Home" )">
+                    <img class="img-fluid" src="@AppIcon" alt="App Logo" style="width:@AppIconWidth; height:@AppIconHeight;">
+                </a>
+                <div class="user-block-info mb-1" style="text-align:center; color:white; font-size:14px;">
+                    <span class="user-block-role">
+                        @if (User != null && User.userroles != null && !(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+                        {
+                            if (!(User.userroles.Count() > 1 && Request.Cookies[AppUrl + "CurrentRole"] == null))
+                            {
+                                <span class="block m-t-xs"> Role : @string.Join(", ", User.userroles) </span>
+                            }
+                        }
+                    </span>
+                </div>
+                @if (User != null && User.userroles != null)
+                {
+                    @Html.Partial("_Sidebar", commonObj)
+                }
+
+            </ul>
+        }
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content -->
+            <div id="content">
+                @if (User != null && User.userroles != null)
+                {
+                    @Html.Partial("_TopNavbar", CompanyProfile)
+                }
+                <div class="container-fluid">
+                    
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+            <!-- Footer -->
+            <footer class="card rounded-0 mb-0 border-0 wfooter">
+
+                <div class="card-body">
+                    <span>@Html.Partial("_Footer")</span>
+                </div>
+
+            </footer>
+            <!-- End of Footer -->
+        </div>
+    </div>
+
+    @RenderBody()
+</body>
+
+</html>

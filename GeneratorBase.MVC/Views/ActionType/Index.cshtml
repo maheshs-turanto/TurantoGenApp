@@ -1,0 +1,57 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ActionType>
+@{
+    ViewBag.Title = "Action Type List";
+    if (ViewBag.CurrentSort != null || ViewBag.Pages != null || ViewData["HostingEntity"] != null || ViewBag.CurrentFilter != null || ViewBag.CurrentItemsPerPage != null)
+    {
+        if (ViewBag.FSFilter == null)
+        {
+            Layout = null;
+        }
+    }
+}
+<div id="ActionType">
+    <div class="content-heading">
+        <div class="TitleName"><strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="ActionType"})"> Action Type </a><small>List</small></strong></div>
+    </div>
+    <a style="display:none;" href="@Url.Action("SwitchView", "Account", new { mobile = true, returnUrl = Request.Url.PathAndQuery })" id="ShowMobileView">
+        <span class="glyphicon glyphicon-globe" style="color:white;"></span> D<span class="icon"></span>
+    </a>
+    <script>
+        $(document).ready(function () {
+            ClickFilterBtn();
+            $('.edit').find('input[type=text]').hover(function () {
+                $(this).attr("title", $(this).val());
+
+            });
+        });
+    </script>
+
+    <div class="card">
+        <div class="card-body">
+            <div id="dvActionTypeFilter"></div> @Html.Partial("~/Views/ActionType/IndexPartial.cshtml", Model)
+        </div>
+    </div>
+    <style>
+        .CEntityCount {
+            display: none !important;
+        }
+    </style>
+    <script>
+        window.onresize = function (event) {
+            if (SetWidthHeight() != undefined)
+                SetWidthHeight()
+        }
+    </script>
+    <script>
+        function SetWidthHeight() {
+            if ($(window).width() <= 767) {
+                $("#ShowMobileView")[0].click();
+            }
+        }
+    </script>
+
+
+</div>
+
+
+

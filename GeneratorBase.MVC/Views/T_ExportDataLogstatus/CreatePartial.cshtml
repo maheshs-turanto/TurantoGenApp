@@ -1,0 +1,399 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataLogstatus
+@{
+    ViewBag.Title = "Create ExportDataLog Status";
+	var modelproperties = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLogstatus").Properties;
+	var NonViewableProperties = User.CanNotView("T_ExportDataLogstatus");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+	List<string> hiddenProperties = new List<string>();
+	string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_ExportDataLogstatus", User);
+	var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+	string footerclassdiv1 = "card ButtonFooter1";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {	footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@{
+
+		if (ViewBag.IsPartial == true)
+		{
+			<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+			if (appTheme == "Default1")
+        {
+            <link href="@Url.Content("~/Content/chosen1.css")" rel="stylesheet" type="text/css" />
+        }
+        else
+        {
+            <link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+        }
+			<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+			<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+			<script type="text/javascript">
+				var config = {
+					'.chosen-select': {},
+					'.chosen-select-deselect': { allow_single_deselect: true },
+					'.chosen-select-no-single': { disable_search_threshold: 10 },
+					'.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+					'.chosen-select-width': { width: "95%" }
+				}
+				for (var selector in config) {
+					$(selector).chosen(config[selector]);
+				}
+			</script>
+		}
+}
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+	.pager {
+    padding-left: 0;
+    margin: 8px 0;
+    list-style: none;
+    text-align: center;
+	}
+
+	.nav-tabs .nav-item {
+		margin-bottom: -0px!important;
+	}
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+@@media (max-width: 767px) {
+
+
+            .arrowCount {
+                background-color: #1d5072 !important;
+            }
+
+            #dvGroupT_StudentPersonalInformation {
+                margin-top: 10px!important;
+            }
+
+            .nav-tabs .nav-item.active a {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+
+            .nav-tabs .nav-item.active a:hover {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+            .sw-theme-arrows > ul.step-anchor {
+                border-top-right-radius: 0!important;
+            }
+
+                .sw-theme-arrows > ul.step-anchor > li.active > a {
+                    display: block!important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
+                    display: none!important;
+                    color: #1d5072!important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor.open > li > a {
+                    display: block !important;
+                }
+
+            .responsive-tabs .dropdown-arrow {
+                border-color: #fff!important;
+                display: block!important;
+                z-index:1000;
+                position:absolute;
+            }
+
+            #WizardBtnCancel {
+                margin-top: unset !important;
+                float: unset !important;
+                display: block !important;
+                margin-right: 8px !important;
+                margin-top: 3px !important;
+            }
+        }
+    </style>
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogstatusIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogstatusIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogstatusIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogstatusIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogstatusIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogstatusIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataLogstatusRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataLogstatusRestrictDropdownValueRule);
+    }
+}
+@using (Html.BeginForm("Create", "T_ExportDataLogstatus",new {UrlReferrer = Convert.ToString(ViewData["T_ExportDataLogstatusParentUrl"]), IsDDAdd = ViewBag.IsDDAdd , viewmode = viewmode}, FormMethod.Post, new { enctype = "multipart/form-data",id="frmT_ExportDataLogstatus" }))
+{
+        @Html.AntiForgeryToken();
+		if (!string.IsNullOrEmpty(wizardid))
+		{ @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+		else { Html.ValidationSummary(true); }
+		Html.EnableClientValidation();
+	<input type="hidden" id="ErrMsg" />
+    <div id="errorContainer" style="display: none">
+        <div id="errorsMsg"></div>
+        <div id="errors"></div>
+    </div>
+   @Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+    <a id="seturlT_ExportDataLogstatus" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_ExportDataLogstatus")).ToHtmlString()"></a>
+	<div class="row">
+	        <div class="col-md-12 col-sm-12 col-xs-12 @(string.IsNullOrEmpty(wizardid)?"card":"")">
+            <div class="AppForm tabs-container" @wizardid>
+				@if (!string.IsNullOrEmpty(wizardid))
+                {
+                    <ul id="olwizard" class="nav nav-tabs responsive-tabs" role="tablist">
+		<li role="tab" class="nav-item" id="liGroupT_ExportDataLogstatusBasicInformation">
+			<a href="#wzGroupT_ExportDataLogstatusBasicInformation" class="hidden-phone">Basic Information</a>
+		</li>
+                    </ul>
+                    <script>
+                        $(document).ready(function(){
+                            $(".formbuttonfix").hide();
+                            $(".pager").show();
+                            $(".pager.bwizard-buttons").show();	
+							 $(".hidetools").hide();						
+                        });
+                    </script>
+					 @Html.Hidden("wizardstep")
+                }
+                <div class="">
+               					<div class="row bgwizard" id="wzGroupT_ExportDataLogstatusBasicInformation">
+				  
+								<div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                    <div class="card card-default" id="dvGroupT_ExportDataLogstatusBasicInformation">
+                                        <div class="card-header">
+                                      
+											
+									<h3 class="card-title" alt="Basic Information" title="Basic Information">Basic Information</h3>
+								</div>
+                                <div class="card-body row">
+			 @if(User.CanView("T_ExportDataLogstatus","T_Name"))
+								{
+     <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Name)">
+                                   <label class="col-sm-5 col-md-5 float-left col-xs-12" >@Html.LabelFor(model => model.T_Name) <span class="text-danger-reg">*</span></label>
+									<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+									
+                                    @Html.TextBoxFor(model => model.T_Name, new { @class = "form-control"  })
+                                    
+									</div>
+                                </div>
+								@Html.ValidationMessageFor(model => model.T_Name)
+					</div>
+				}
+						@if(User.CanView("T_ExportDataLogstatus","T_Description"))
+								{
+						<div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                <div class='form-group' title="@Html.DisplayNameFor(model => model.T_Description)">
+                                   <label class="col-sm-5 col-md-5 float-left col-xs-12" >@Html.LabelFor(model => model.T_Description) </label>
+									<div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                    @Html.TextAreaFor(model => model.T_Description, new { @class = "form-control"  })
+                                   
+									</div>
+                                </div>
+								 @Html.ValidationMessageFor(model => model.T_Description)
+						</div>
+						}
+							</div>
+                         </div>
+                      </div>
+       </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+	<div id="divDisplayThresholdLimit1">
+    </div>
+    <div id="divDisplayBRmsgMandatory1">
+    </div>
+    <div id="divDisplayBRmsgBeforeSaveProp1">
+    </div>
+    <div id="divDisplayCodeFragment1">
+    </div>
+	<div class="@footerclassdiv1">
+		<div class="@footerclassdiv2">
+
+		<a id="btnformcancel" class="btn btn-default btn-sm formbuttonfix" onclick="goBack('@Url.Action("Index","T_ExportDataLogstatus")');" alt="Cancel" title="Cancel">Cancel</a>
+
+
+	<input type="submit" name="command" value="Create" class="btn btn-primary btn-sm formbuttonfix" alt="Create" title="Create"/>
+
+@if (ViewBag.IsPartial == null)
+{
+    if (ViewBag.IsDDAdd == null && User.CanEdit("T_ExportDataLogstatus"))
+    {
+	<input id="btnsavereturn" type="submit" name="command" value="Create & Continue" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Continue" title="Create & Continue"/>
+	<input type="submit" name="command" value="Create & Add another" class="btn btn-primary btn-sm formbuttonfix" alt="Create & Add another" title="Create & Add another" />
+	}
+}
+	 <input type="hidden" name="hdncommand" value="" />
+	 </div></div>
+	<br/><br/>
+}
+	<script>
+	$(function () {
+        ApplyAreYouSure();
+    });
+	</script>
+@{
+		var businessrule = User.businessrules.Where(p => p.EntityName == "T_ExportDataLogstatus").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{
+		var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+    
+		<script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+				form = $("#frmT_ExportDataLogstatus");
+				dataurl = "@Url.Action("businessruletype", "T_ExportDataLogstatus", new { ruleType = "OnCreate"})";
+                ApplyBusinessRuleOnCreate("@typelist",dataurl, "T_ExportDataLogstatus", false, "ErrMsg", form);
+				
+    });
+        </script>
+
+
+        <script>
+			$("input[type='submit']").click(function() {
+                $('input:hidden[name="hdncommand"]').val($(this).val());
+            });
+            $("form").submit(function (event) {
+			//if (!$("#frmT_ExportDataLogstatus").valid()) return;
+			var flag = true;
+				document.getElementById("ErrMsg").innerHTML = "";
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                //var form = $(this).serialize();
+ form = $("#frmT_ExportDataLogstatus").serialize();
+  
+                dataurl = "@Url.Action("businessruletype", "T_ExportDataLogstatus", new { ruleType = "OnCreate"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "T_ExportDataLogstatus", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+                    //$('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+					 $("#frmT_ExportDataLogstatus").find(':input').removeAttr('disabled');
+                }
+				else
+					  $("html, body").animate({ scrollTop: 0 }, "fast");
+				return flag;
+			 });	
+        </script>
+    }
+    else
+    {
+	<script>
+            $("input[type='submit']").click(function (event) {
+			if (!$("#frmT_ExportDataLogstatus").valid()) return;
+                var $this = $(this);
+                $('input:hidden[name="hdncommand"]').val($this.val());
+            });
+	</script>
+           
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+
+		 focusOnControl('frmT_ExportDataLogstatus');
+        }
+        catch (ex) { }
+			 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_ExportDataLogstatus','create',false,'ExportDataLog Status')
+		//instruction feature
+        ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_ExportDataLogstatus','create',false,'ExportDataLog Status')
+		var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        try {
+			LockHostDropdownOnCreate('@Convert.ToString(ViewData["AssociatedType"])');
+        }
+        catch (ex) { }
+		});
+</script>
+<script>
+
+    $('.closeall').click(function () {
+        $('#accordion .collapse').attr("data-parent", "#accordion");
+        $('#accordion .collapse').collapse('hide');
+    });
+    $('.openall').click(function () {
+        $('#accordion .collapse').removeAttr("data-parent");
+        $('#accordion .collapse').collapse('show');
+    });
+
+    $(document).ready(function () {
+        $('.collapse')
+            .on('shown.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-down")
+                    .removeClass("fa-chevron-down")
+                    .addClass("fa-chevron-up");
+            })
+            .on('hidden.bs.collapse', function () {
+                $(this)
+                    .parent()
+                    .find(".fa-chevron-up")
+                    .removeClass("fa-chevron-up")
+                    .addClass("fa-chevron-down");
+            });
+    });
+</script>
+

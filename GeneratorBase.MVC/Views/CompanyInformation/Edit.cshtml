@@ -1,0 +1,1333 @@
+﻿@model GeneratorBase.MVC.Models.CompanyInformation
+@using PagedList;
+@{
+    ViewBag.Title = "Edit CompanyInformation";
+    var EditPermission = User.CanEditItem("CompanyInformation", Model, User);
+    //var DeletePermission = User.CanDeleteItem("CompanyInformation", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "CompanyInformation");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "CompanyInformation";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "CompanyInformation" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "CompanyInformation", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=wizard";
+    }
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("CompanyInformation");
+    var NonViewableProperties = User.CanNotView("CompanyInformation");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+    groupcontaininginlinegrid.Add("Footer");
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "CompanyInformation", User, groupcontaininginlinegrid);
+    //
+    var path = Url.Content("~/logo/");
+    var url = path + "logo.gif";
+    var url1 = path + "logo_white.png";
+    var url2 = path + "Loginbg.jpg";
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    {
+        path = Url.Content("~/logo/");
+        url = path + "logo.gif";
+        url1 = path + "logo_white.png";
+        url2 = path + "Loginbg.jpg";
+    }
+    //
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("CompanyInformation", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+        window.onload = function(){
+            JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+        }
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+            $("[inlinegrid]").each(function() {
+                //$(this).click();
+                eval($(this).attr('onclick'));
+                var targetpanel = $(this).attr('id').replace('dvGroup','');
+                $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.CompanyInformationRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.CompanyInformationRestrictDropdownValueRule);
+    }
+}
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .formbuttonfix {
+            float: right !important;
+            margin-right: 5px !important;
+            padding: 4px 18px !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 20px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+            .pager li > a, .pager li > span {
+                display: inline-block;
+                padding: 5px 14px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 4px !important;
+            }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")">@EntityDisplayName </a> Edit
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.DisplayFor(model => model.DisplayValue)
+            </small>
+        </strong>
+    </div>
+    @if (string.IsNullOrEmpty(wizardid))
+    {
+        <div class="ml-auto">
+            @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+            {
+                <div class="btn-group float-right" style="margin-left:8px;">
+                    <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Action
+                    </a>
+                    <ul class="dropdown-menu multi-level">
+                        @if (EditPermission)
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Edit","CompanyInformation", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                            </li>
+                        }
+                        @if (EditPermission && User.CanDelete("CompanyInformation") && Model.Id != 1)
+                        {
+                            <li class="dropdown-item">
+                                <a href="@Url.Action("Delete", "CompanyInformation", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+                            </li>
+                        }
+                        <li class="divider" style="clear:both"></li>
+                        <li class="dropdown-submenu dropdown-item pull-left" id="AddAssociationdropmenuCompanyInformation">
+                            @{ var dropmenu = false; }
+                            <a class="" tabindex="-1" href="#">
+                                <i class="fa fa-plus-circle"></i> Add
+                            </a>
+                            <ul class="dropdown-menu pull-left" style="left: 0px;top: 22px;">
+                                @if (User.CanAdd("FooterSection"))
+                                {
+                                    dropmenu = true;
+                                    <li class="dropdown-item">
+                                        <a class="dropdown-link" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FooterSection",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="CompanyInformationFooterSectionAssociation",
+							HostingEntityName = "CompanyInformation",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+                                            <i class="fa fa-plus"></i>  Footer Section
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        @if (!dropmenu)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenuCompanyInformation").hide();
+                            </script>
+                        }
+                    </ul>
+                </div>
+
+                <div class="btn-group float-right" style="margin-top:3px; margin-right:3px; display:none;">
+                    <a href="#" class="btn btn-white btn-xs closeall"><i class="fa fa-chevron-up"></i> Collapse All</a> <a href="#" class="btn btn-xs openall">
+                        <i class="fa fa-chevron-down"></i> Expand All
+                    </a>
+                </div>
+            }
+            @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityCompanyInformationDisplayValueEdit != null && !HideAction)
+            {
+                <div class="pull-right">
+                    <button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('CompanyInformation',event,'hdnNextPrevId')")" alt="Next" title="Next" style="border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                    @Html.DropDownList("EntityCompanyInformationDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('CompanyInformation','frmCompanyInformation','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+                    <button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('CompanyInformation',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+                Details
+            </a>
+        </li>
+        <li class="nav-item" style="display:none">
+            <a class="nav-link" inlinegrid=true id="dvGroupCompanyInformationFooterSectionAssociation" onclick="$(document).ready(function () {LoadTab('CompanyInformationFooterSectionAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "FooterSection", new {inlinegrid = true,  RenderPartial=true, HostingEntity ="CompanyInformation", HostingEntityID = @Model.Id, AssociatedType = "CompanyInformationFooterSectionAssociation",TabToken = DateTime.Now.Ticks,}))')});" href="#CompanyInformationFooterSectionAssociation" data-toggle="tab" alt="Footer Section " title="Footer Section ">
+                Footer Section
+                @if (ViewBag.CompanyInformationFooterSectionAssociationCount != null)
+                {
+                    <span class="badge bg-primary"><div id="dvcnt_CompanyInformationFooterSectionAssociation">@ViewBag.CompanyInformationFooterSectionAssociationCount</div></span>
+                }
+            </a>
+        </li>
+
+    </ul>
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "CompanyInformation", new { UrlReferrer = Convert.ToString(ViewData["CompanyInformationParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmCompanyInformation" }))
+            {
+                if (!string.IsNullOrEmpty(wizardid))
+                { @Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+                else { Html.ValidationSummary(true); }
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                if (NonViewableProperties != null)
+                {
+                    @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+                }
+                <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+                </div>
+                <div class="AppForm" @wizardid>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        <ol id="olwizard" class="bwizard-steps clearfix clickable d-none" role="tablist">
+                            <li role="tab" class="step-number" id="liGroupCompanyInformationCompanyInformation" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">Company Information</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupCompanyInformationChangeIcons" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">Change Icons</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupCompanyInformationSMTPDetails" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">SMTP Details</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupCompanyInformationFooter" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">Footer</a>
+                            </li>
+                            <li role="tab" class="step-number" id="liGroupCompanyInformationAbout" onclick="bwizard_SaveOnClick(event);">
+                                <div></div><a class="hidden-phone">About</a>
+                            </li>
+                            @if (User.CanView("CompanyInformationCompanyListAssociation"))
+                            {
+                                <li role="tab" class="step-number" id="liGroupCompanyInformation" onclick="$('#dvGroupCompanyInformationCompanyListAssociation_CompanyInformation').click();">
+                                    <div></div><a class="hidden-phone">CompanyList</a>
+                                </li>
+                            }
+
+
+                        </ol>
+                        <script>
+                            $(document).ready(function () {
+                                $(".formbuttonfix:not([dataurl]").hide();
+                                $(".pager").show();
+                                $(".pager.bwizard-buttons").show();
+                                $("ol#olwizard").removeClass("d-none");
+                                $("#tabcontent").removeClass("d-none");
+                            });
+                        </script>
+                        @Html.Hidden("wizardstep", ViewData["wizardstep"])
+                    }
+                    <div class="row bgwizard" id="wzGroupCompanyInformationCompanyInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationCompanyInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+                                    <h3 class="card-title" alt="Company Information" title="Company Information">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#companyinformationbody">
+                                            <span class="fa fa-chevron-down"></span> Company Information
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse show" id="companyinformationbody">
+                                    @if (ViewBag.SelectedCompanyList_CompanyInformationCompanyListAssociation != null && Model.Id != 1)
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyInformation">
+                                            <div class='form-group'>
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">Select Tenant(s)</label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    <div class="input-group" style="width:100%;">
+                                                        @Html.DropDownList("SelectedCompanyList_CompanyInformationCompanyListAssociation", null, new { @multiple = "multiple" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('select[name=SelectedCompanyList_CompanyInformationCompanyListAssociation]').multiselect({
+                                                    buttonWidth: '100%'
+                                                });
+                                            });
+                                        </script>
+                                    }
+                                    @if (!NonViewableProperties.Contains("CompanyName") && !hiddenProperties.Contains("CompanyName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyName">
+                                            <div class='form-group' title="Company Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyName)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyName, getHtmlAttributes("CompanyName"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyName)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyName"))
+                                        { @Html.HiddenFor(model => model.CompanyName, new { @class = "form-control" })}
+                                }
+
+
+                                    @if (!NonViewableProperties.Contains("CompanyEmail") && !hiddenProperties.Contains("CompanyEmail"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyEmail">
+                                            <div class='form-group' title="Company Email">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyEmail)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyEmail, getHtmlAttributes("CompanyEmail"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyEmail)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyEmail"))
+                                        { @Html.HiddenFor(model => model.CompanyEmail, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("CompanyAddress") && !hiddenProperties.Contains("CompanyAddress"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyAddress">
+                                            <div class='form-group' title="Company Address">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyAddress) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.TextAreaFor(model => model.CompanyAddress, getHtmlAttributes("CompanyAddress"))
+
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyAddress)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyAddress"))
+                                        { @Html.HiddenFor(model => model.CompanyAddress, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("CompanyCountry") && !hiddenProperties.Contains("CompanyCountry"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyCountry">
+                                            <div class='form-group' title="Company Country">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyCountry)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyCountry, getHtmlAttributes("CompanyCountry"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyCountry)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyCountry"))
+                                        { @Html.HiddenFor(model => model.CompanyCountry, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("CompanyState") && !hiddenProperties.Contains("CompanyState"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyState">
+                                            <div class='form-group' title="Company State">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyState)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyState, getHtmlAttributes("CompanyState"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyState)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyState"))
+                                        { @Html.HiddenFor(model => model.CompanyState, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("CompanyCity") && !hiddenProperties.Contains("CompanyCity"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyCity">
+                                            <div class='form-group' title="Company City">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyCity)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyCity, getHtmlAttributes("CompanyCity"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyCity)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyCity"))
+                                        { @Html.HiddenFor(model => model.CompanyCity, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("CompanyZipCode") && !hiddenProperties.Contains("CompanyZipCode"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvCompanyZipCode">
+                                            <div class='form-group' title="Company Zip-Code">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.CompanyZipCode)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.CompanyZipCode, getHtmlAttributes("CompanyZipCode"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.CompanyZipCode)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("CompanyZipCode"))
+                                        { @Html.HiddenFor(model => model.CompanyZipCode, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("ContactNumber1") && !hiddenProperties.Contains("ContactNumber1"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvContactNumber1">
+                                            <div class='form-group' title="Contact Number 1">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.ContactNumber1)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.ContactNumber1, getHtmlAttributes("ContactNumber1"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ContactNumber1)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("ContactNumber1"))
+                                        { @Html.HiddenFor(model => model.ContactNumber1, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("ContactNumber2") && !hiddenProperties.Contains("ContactNumber2"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvContactNumber2">
+                                            <div class='form-group' title="Contact Number 2">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.ContactNumber2)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.ContactNumber2, getHtmlAttributes("ContactNumber2"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.ContactNumber2)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("ContactNumber2"))
+                                        { @Html.HiddenFor(model => model.ContactNumber2, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupCompanyInformationChangeIcons">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationChangeIcons">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+                                    <h3 class="card-title" alt="Change Icons" title="Change Icons">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#changeiconsbody">
+                                            <span class="fa fa-chevron-down"></span> Change Icons
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="changeiconsbody">
+                                    <div class="card-deck" style="margin-right: 0.25rem; margin-left: 0.25rem;">
+                                        <div class='card border-right p-2 m-1'>
+                                            <h4>Upload Login Background</h4>
+                                            <p>Select a file to upload background image.</p>
+                                            <div style="position:relative;">
+                                                @Html.TextBoxFor(model => model.LoginBg, new { @class = "d-none" })
+                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                    Click to upload
+                                                    <input id="File_LoginBg" type="file" style='position:absolute;opacity:0;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";background-color:transparent;color:transparent;'
+                                                           name="File_LoginBg" onchange='$("#upload-file-infoLoginBG").html($(this).val());'>
+                                                </a>
+                                                <span class='label uploadlblFix' id="upload-file-infoLoginBG"></span>
+                                            </div>
+                                            @{
+                                                var srcvalue1 = Model.LoginBg == null ? url2 : Url.Action("DisplayImageMobile", "Document", new { id = Model.LoginBg });
+                                            }
+                                            <img class="border-rught pt-2" src='@srcvalue1' style="width: 100%;" alt="NA" alt="LoginBg" title="LoginBg" />
+                                        </div>
+                                        <div class="card p-2 m-1 border-right">
+                                            <h4>Upload Login Logo</h4>
+                                            <p>Select a file to upload logo image.</p>
+
+                                            <div>
+                                                <div style="position:relative;">
+                                                    @Html.TextBoxFor(model => model.Logo, new { @class = "d-none" })
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Click to upload
+                                                        <input id="File_Logo" type="file" style=' opacity:0; position:absolute; z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:200px;'
+                                                               name="File_Logo" onchange='$("#upload-file-infoLogo").html($(this).val());'>
+                                                    </a>
+                                                    <span class='label uploadlblFix' id="upload-file-infoLogo"></span>
+                                                </div>
+                                                @{
+                                                    var srcvalue = Model.Logo == null ? url1 : Url.Action("DisplayImageMobile", "Document", new { id = Model.Logo });
+                                                }
+                                                <img class="mt-2" src='@srcvalue' style="width: 200px; background:#4b4b4b" alt="NA" alt="LoginPage Logo" title="LoginPage Logo" />
+                                            </div>
+                                            <hr>
+                                            <div class='col-sm-12'>
+                                                <p><strong>Set logo size </strong> (i.e.: 150px * 30px)</p>
+                                                <div class="card-deck">
+                                                    <div class="card border-0">
+                                                        Width @Html.TextBoxFor(model => model.LogoWidth, getHtmlAttributes("LogoWidth"))
+                                                        @Html.ValidationMessageFor(model => model.LogoWidth)
+                                                    </div>
+                                                    <div class="card border-0">
+                                                        Height @Html.TextBoxFor(model => model.LogoHeight, getHtmlAttributes("LogoHeight"))
+                                                        @Html.ValidationMessageFor(model => model.LogoHeight)
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="card p-2 m-1">
+                                            <h4>Upload Header Logo</h4>
+                                            <p>Select a file to upload header logo.</p>
+                                            <div style="position:relative;">
+                                                @Html.TextBoxFor(model => model.Icon, new { @class = "d-none" })
+                                                <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                    Click to upload
+                                                    <input id="File_Icon" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;'
+                                                           name="File_Icon" onchange='$("#upload-file-infoIcon").html($(this).val());'>
+                                                </a>
+                                                <span class='label uploadlblFix' id="upload-file-infoIcon"></span>
+                                            </div>
+                                            @{
+                                                var srcvalue2 = Model.Icon == null ? url : Url.Action("DisplayImageMobile", "Document", new { id = Model.Icon });
+                                            }
+                                            <img src="@srcvalue2" class="mt-2" style="width:50px; background:#4b4b4b;" alt="MaterPage Logo" title="MasterPage Logo" />
+                                            <hr>
+                                            <div>
+                                                <p><strong>Set logo size </strong> (i.e.: 50px * 30px)</p>
+                                                <div class='form-group card-deck'>
+                                                    <div class="card border-0">
+                                                        Width @Html.TextBoxFor(model => model.IconWidth, getHtmlAttributes("IconWidth"))
+                                                        @Html.ValidationMessageFor(model => model.IconWidth)
+                                                        @Html.HiddenFor(model => model.IconWidth, new { @class = "form-control" })
+                                                    </div>
+                                                    <div class="card border-0">
+                                                        Height @Html.TextBoxFor(model => model.IconHeight, getHtmlAttributes("IconHeight"))
+                                                        @Html.ValidationMessageFor(model => model.IconHeight)
+                                                        @Html.HiddenFor(model => model.IconHeight, new { @class = "form-control" })
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupCompanyInformationSMTPDetails">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationSMTPDetails">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+                                    <h3 class="card-title" alt="SMTP Details" title="SMTP Details">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#smtpdetailsbody">
+                                            <span class="fa fa-chevron-down"></span> SMTP Details
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="smtpdetailsbody">
+                                    @if (!NonViewableProperties.Contains("SMTPUser") && !hiddenProperties.Contains("SMTPUser"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPUser">
+                                            <div class='form-group' title="SMTP User">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.SMTPUser)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.SMTPUser, getHtmlAttributes("SMTPUser"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.SMTPUser)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("SMTPUser"))
+                                        { @Html.HiddenFor(model => model.SMTPUser, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("SMTPServer") && !hiddenProperties.Contains("SMTPServer"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPServer">
+                                            <div class='form-group' title="SMTP Server">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.SMTPServer)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.SMTPServer, getHtmlAttributes("SMTPServer"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.SMTPServer)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("SMTPServer"))
+                                        { @Html.HiddenFor(model => model.SMTPServer, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("SMTPPassword") && !hiddenProperties.Contains("SMTPPassword"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPPassword">
+                                            <div class='form-group' title="SMTP Password">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.SMTPPassword)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    <input class="form-control valid" data-val="true" data-val-length="SMTP Password cannot be longer than 255 characters." data-val-length-max="255" data-val-required="The SMTP Password field is required." id="SMTPPassword" name="SMTPPassword" placeholder="●●●●●●●●●●●" type="password" value="">
+                                                    @*@Html.TextBoxFor(model => model.SMTPPassword, new { @class = "form-control", @type = "password", @value = "", @placeholder = "*******" })*@
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.SMTPPassword)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("SMTPPassword"))
+                                        { @Html.HiddenFor(model => model.SMTPPassword, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("SMTPPort") && !hiddenProperties.Contains("SMTPPort"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSMTPPort">
+                                            <div class='form-group' title="SMTP Port">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.SMTPPort)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.SMTPPort, getHtmlAttributes("SMTPPort"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.SMTPPort)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("SMTPPort"))
+                                        { @Html.HiddenFor(model => model.SMTPPort, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("SSL") && !hiddenProperties.Contains("SSL"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvSSL">
+                                            <div class="form-group" title="SSL Authentication">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.SSL)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.CheckBox("SSL", Model.SSL.HasValue ? Model.SSL : false)
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.SSL)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("SSL"))
+                                        { @Html.HiddenFor(model => model.SSL, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("UseAnonymous") && !hiddenProperties.Contains("UseAnonymous"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvUseAnonymous">
+                                            <div class="form-group" title="Use Anonymous">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.UseAnonymous)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.CheckBox("UseAnonymous", Model.UseAnonymous.HasValue ? Model.UseAnonymous : false)
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.UseAnonymous)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("UseAnonymous"))
+                                        { @Html.HiddenFor(model => model.UseAnonymous, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupCompanyInformationFooter">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationFooter">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+                                    <h3 class="card-title" alt="Footer" title="Footer">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#footerbody">
+                                            <span class="fa fa-chevron-down"></span> Footer
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="footerbody">
+                                    @if (User.CanView("FooterSection"))
+                                    {
+                                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                            <div class="card card-default InlineGrid_Default" id="dvGroupCompanyInformationFooterSectionAssociation_InlineGrid">
+
+
+                                                <div class="card-body">
+                                                    <a class="btn-visibility-trigger" data-toggle="collapse" aria-expanded="false" href="#FooterSectionGridHeader">
+                                                        <i class="fa fa-chevron-down"></i>
+                                                    </a>
+
+                                                    <div class="tab-pane fade in" id="CompanyInformationFooterSectionAssociation">
+                                                    </div>
+
+                                                    <div class="inlinegridoption pull-right">
+                                                        @if (User.CanAdd("FooterSection"))
+                                                        {
+                                                            <a class="btn-primary btn-sm" onclick="$('#addFooterSection').click()"
+                                                               alt="Add Footer Section " title="Add Footer Section ">
+                                                                <i class="fa fa-plus"></i> Add
+                                                            </a>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupCompanyInformationAbout">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationAbout">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+                                    <h3 class="card-title" alt="About" title="About">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#aboutbody">
+                                            <span class="fa fa-chevron-down"></span> About
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="aboutbody">
+                                    @if (!NonViewableProperties.Contains("AboutCompany") && !hiddenProperties.Contains("AboutCompany"))
+                                    {
+                                        <div class='col-sm-12 col-md-12 col-xs-12' id="dvAboutCompany">
+                                            <div class='form-group' title="About">
+                                                <div>
+                                                    @Html.TextAreaFor(model => model.AboutCompany, getHtmlAttributes("AboutCompany"))
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.AboutCompany)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("AboutCompany"))
+                                        { @Html.HiddenFor(model => model.AboutCompany, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row bgwizard" id="wzGroupCompanyInformationDisclaimer">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationDisclaimer">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+                                    <h3 class="card-title" alt="Disclaimer" title="Disclaimer">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#disclaimerbody">
+                                            <span class="fa fa-chevron-down"></span> Disclaimer
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="disclaimerbody">
+                                    @if (!NonViewableProperties.Contains("Disclaimer") && !hiddenProperties.Contains("Disclaimer"))
+                                    {
+                                        <div class='col-sm-12 col-md-12 col-xs-12' id="dvDisclaimer">
+                                            <div class='form-group' title="Disclaimer">
+                                                <div>
+                                                    @Html.TextAreaFor(model => model.Disclaimer, getHtmlAttributes("Disclaimer"))
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.Disclaimer)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("Disclaimer"))
+                                        { @Html.HiddenFor(model => model.Disclaimer, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupCompanyInformationOneDriveDetails">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupCompanyInformationOneDriveDetails">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+                                    <h3 class="card-title" alt="OneDrive Details" title="OneDrive Details">
+                                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#onedrivedetailsbody">
+                                            <span class="fa fa-chevron-down"></span> OneDrive Details
+                                        </a>
+                                    </h3>
+                                </div>
+                                <div class="card-body row card-collapse collapse" id="onedrivedetailsbody">
+                                    @if (!NonViewableProperties.Contains("OneDriveClientId") && !hiddenProperties.Contains("OneDriveClientId"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDriveClientId">
+                                            <div class='form-group' title="OneDrive ClientId">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDriveClientId)</label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.OneDriveClientId, getHtmlAttributes("OneDriveClientId"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDriveClientId)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDriveClientId"))
+                                        { @Html.HiddenFor(model => model.OneDriveClientId, new { @class = "form-control" })}
+                                }
+
+                                    @if (!NonViewableProperties.Contains("OneDriveTenantId") && !hiddenProperties.Contains("OneDriveTenantId"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDriveTenantId">
+                                            <div class='form-group' title="OneDrive TenantId">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDriveTenantId) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.TextBoxFor(model => model.OneDriveTenantId, getHtmlAttributes("OneDriveTenantId"))
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDriveTenantId)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDriveTenantId"))
+                                        { @Html.HiddenFor(model => model.OneDriveTenantId, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("OneDriveUserName") && !hiddenProperties.Contains("OneDriveUserName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDriveUserName">
+                                            <div class='form-group' title="OneDrive UserName">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDriveUserName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.OneDriveUserName, getHtmlAttributes("OneDriveUserName"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDriveUserName)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDriveUserName"))
+                                        { @Html.HiddenFor(model => model.OneDriveUserName, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("OneDrivePassword") && !hiddenProperties.Contains("OneDrivePassword"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDrivePassword">
+                                            <div class='form-group' title="OneDrive Password">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDrivePassword) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.OneDrivePassword, new { @class = "form-control", @type = "password" })
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDrivePassword)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDrivePassword"))
+                                        { @Html.HiddenFor(model => model.OneDrivePassword, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("OneDriveSecret") && !hiddenProperties.Contains("OneDriveSecret"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDriveSecret">
+                                            <div class='form-group' title="OneDrive Secret">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDriveSecret)</label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.OneDriveSecret, getHtmlAttributes("OneDriveSecret"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDriveSecret)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDriveSecret"))
+                                        { @Html.HiddenFor(model => model.OneDriveSecret, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("OneDriveFolderName") && !hiddenProperties.Contains("OneDriveFolderName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvOneDriveFolderName">
+                                            <div class='form-group' title="OneDrive FolderName">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.OneDriveFolderName) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.OneDriveFolderName, new { @class = "form-control" })
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.OneDriveFolderName)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("OneDriveFolderName"))
+                                        { @Html.HiddenFor(model => model.OneDriveFolderName, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        if (User.CanView("CompanyList") && User.CanView("CompanyInformationCompanyListAssociation"))
+                        {<div id="wzGroupCompanyInformationCompanyListAssociation_CompanyInformation" class="bgwizard">
+                                <div class="tab-pane fade in" id="CompanyInformationCompanyListAssociation_CompanyInformation"></div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="@footerclassdiv1">
+                    <div class="@footerclassdiv2">
+                        @Html.AntiForgeryToken()
+                        @if (ViewBag.IsPartial == null)
+                        {
+                            <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index", "CompanyInformation")');" alt="Cancel" title="Cancel">Cancel</a>
+                        }
+                        @if (EditPermission)
+                        {
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                            }
+                            if (ViewBag.IsPartial == null)
+                            {
+                                <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                                <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                            }
+                            <input type="hidden" name="hdncommand" value="" />
+                            <input type="hidden" name="hdnNextPrevId" value="" />
+                        }
+
+
+                        @{var dropmenubottom = false;}
+
+                        <div class="dropdown pull-left formbuttonfix" id="AddAssociationdropmenubottomCompanyInformation">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                                Add
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+                                @if (User.CanAdd("FooterSection"))
+                                {
+                                    dropmenubottom = true;
+                                    <li>
+                                        <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FooterSection",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="CompanyInformationFooterSectionAssociation",
+						HostingEntityName = "CompanyInformation",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                                            Add  Footer Section
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        @if (!dropmenubottom || !EditPermission)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenubottomCompanyInformation").hide();
+                            </script>
+                        }
+                    </div>
+                </div>} @*end form*@
+                <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+                <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+                <div id="divDisplayBRmsgMandatory1"></div>
+                <div id="divDisplayLockRecord1"></div>
+                <div id="divDisplayBRReadOnly1"></div>
+                <div id="divDisplayCodeFragment1"></div>
+                <div style="display:none">
+                    @if (!NonViewableProperties.Contains("LoginBackgroundWidth") && !hiddenProperties.Contains("LoginBackgroundWidth"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvLoginBackgroundWidth">
+                            <div class='form-group' title="Login  Background Width">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.LoginBackgroundWidth)   </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    @Html.TextBoxFor(model => model.LoginBackgroundWidth, getHtmlAttributes("LoginBackgroundWidth"))
+
+                                </div>
+
+                            </div>
+                            @Html.ValidationMessageFor(model => model.LoginBackgroundWidth)
+                        </div>
+
+                    }
+                    else
+                    {
+                        if (!NonViewableProperties.Contains("LoginBackgroundWidth"))
+                        { @Html.HiddenFor(model => model.LoginBackgroundWidth, new { @class = "form-control" })}
+                    }
+                    @if (!NonViewableProperties.Contains("LoginBackgroundHeight") && !hiddenProperties.Contains("LoginBackgroundHeight"))
+                    {
+                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvLoginBackgroundHeight">
+                            <div class='form-group' title="Login  Background Height">
+                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.LoginBackgroundHeight)   </label>
+                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                    @Html.TextBoxFor(model => model.LoginBackgroundHeight, getHtmlAttributes("LoginBackgroundHeight"))
+
+                                </div>
+
+                            </div>
+                            @Html.ValidationMessageFor(model => model.LoginBackgroundHeight)
+                        </div>
+
+                    }
+                    else
+                    {
+                        if (!NonViewableProperties.Contains("LoginBackgroundHeight"))
+                        { @Html.HiddenFor(model => model.LoginBackgroundHeight, new { @class = "form-control" })}
+                    }
+                </div>
+
+            </div>
+            @if (string.IsNullOrEmpty(wizardid))
+            {
+                <div class="tab-pane fade in" id="CompanyInformationCompanyListAssociation_CompanyInformation"></div>
+
+            }
+        </div> <!-- /tab-content -->
+    </div>
+    <script>
+        $(function () {
+            ApplyAreYouSure();
+        });
+    </script>
+    @{
+        var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "CompanyInformation").ToList();
+
+        var isbrrequired = false;
+        if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+        {
+            isbrrequired = true;
+        }
+    }
+    @{
+        if (ViewBag.IsPartial == true)
+        {
+            var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+            <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+            <script type="text/javascript">
+                var config = {
+                    '.chosen-select': {},
+                    '.chosen-select-deselect': { allow_single_deselect: true },
+                    '.chosen-select-no-single': { disable_search_threshold: 10 },
+                    '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                    '.chosen-select-width': { width: "95%" }
+                }
+                for (var selector in config) {
+                    $(selector).chosen(config[selector]);
+                }
+            </script>
+            <script>
+                function ApplyBusinessRule(form) {
+                    var flag = true;
+                    dataurl = "@Url.Action("businessruletype", "CompanyInformation", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "CompanyInformation", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+                    if (flag) {
+                        $("#frmCompanyInformation").find(':input').removeAttr('disabled');
+                        $("#divDisplayBRmsgMandatory").hide();
+                        $("#divDisplayBRmsgBeforeSaveProp").hide();
+                        $("#divDisplayLockRecord").hide();
+                        $("#divDisplayBRReadOnly").hide();
+                    }
+                    return flag;
+                }
+            </script>
+        }
+    }
+    @{
+        var businessrule = User.businessrules.Where(p => p.EntityName == "CompanyInformation").ToList();
+        if ((businessrule != null && businessrule.Count > 0))
+        {
+            var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+            <script>
+                $(document).ready(function () {
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmCompanyInformation");
+                    dataurl = "@Url.Action("businessruletype", "CompanyInformation", new { ruleType = "OnEdit"})";
+                    ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "CompanyInformation", false, "ErrMsg", form);
+                    //business rules on inline associations
+                    if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                    {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+                        $('.input-group-append').hide();
+                        $('.input-group-addon').hide();
+                    }
+                });
+            </script>
+            <script>
+                $("form").submit(function (event) {
+                    $('[businessrule="mandatory"]').each(function () {
+                        $(this).removeAttr('required');
+                    });
+                    if($($("#frmCompanyInformation")[0]["SMTPPassword"]).val().length==0)
+                        $($("#frmCompanyInformation")[0]["SMTPPassword"]).val("****")
+
+                    if (!$("#frmCompanyInformation").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    document.getElementById("ErrMsg").innerHTML = "";
+                    var flag = true;
+                    var dataurl = "";
+                    var form = "";
+                    var inlinecount = "0";
+                    form = $("#frmCompanyInformation").serialize();
+                    dataurl = "@Url.Action("businessruletype", "CompanyInformation", new { ruleType = "OnEdit"})";
+                    flag = ApplyBusinessRuleOnSubmit(dataurl, "CompanyInformation", false, "ErrMsg", form,"@typelist");
+                    //business rules on inline associations
+
+                    if (flag)
+                    {
+                        $('input:hidden[name="hdncommand"]').val($(document.activeElement).val());
+                        if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                            $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                        $("#frmCompanyInformation").find(':input').removeAttr('disabled');
+                    }
+                    return flag;
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+                $("input[type='submit']").click(function (event) {
+                    if($($("#frmCompanyInformation")[0]["SMTPPassword"]).val().length==0)
+                    $($("#frmCompanyInformation")[0]["SMTPPassword"]).val("****")
+                    if (!$("#frmCompanyInformation").valid()) return;
+                    $("#divDisplayBRmsgBeforeSaveProp").html("");
+                    $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                    $("#divDisplayCodeFragment").html("");
+                    var $this = $(this);
+                    var actionName = $this.attr("actionName")
+                    if (actionName == undefined)
+                        actionName = $this.val();
+                    $('input:hidden[name="hdncommand"]').val(actionName);
+                });
+            </script>
+        }
+    }
+    <link href='@Url.Content("~/Scripts/summernote.css")' rel='stylesheet' type='text/css' />
+    <script src='@Url.Content("~/Scripts/summernote.js")' type='text/javascript'></script>
+    <script type='text/javascript'>$(document).ready(function () {  $('#AboutCompany').summernote();    });</script>
+    <script type='text/javascript'>$(document).ready(function () {  $('#Disclaimer').summernote();    });</script>
+    <script type='text/javascript'>
+        $(document).ready(function ()
+        {
+            $.validator.setDefaults({ ignore: "#pagesizelistFooterSection" });
+            try {
+                focusOnControl('frmCompanyInformation');
+            }
+            catch (ex) { }
+            ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'CompanyInformation','edit',false,'CompanyInformation')
+            //instruction feature
+            ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'CompanyInformation','edit',false,'CompanyInformation')
+            var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+        });
+    </script>
+    @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityCompanyInformationDisplayValueEdit != null)
+    {
+        <script type='text/javascript'>
+            $(document).ready(function () {
+                NextPrev("CompanyInformation");
+            });
+        </script>
+    }

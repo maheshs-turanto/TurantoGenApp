@@ -1,0 +1,852 @@
+﻿@model GeneratorBase.MVC.Models.CompanyProfile
+@{
+    ViewBag.Title = "Edit Company Profile";
+    var url = Url.Content("~/logo/" + Model.Icon);
+    var url1 = Url.Content("~/logo/logo_white.png");
+    var url2 = Url.Content("~/logo/Loginbg.jpg");
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    {
+        url = Url.Content("~/logo/" + Model.Icon);
+        url1 = Url.Content("~/logo/logo_white.png");
+    }
+    if (HttpContext.Current.Request.Url.Host == "localhost")
+    {
+        url = Url.Content("~/logo/" + Model.Icon);
+        url1 = Url.Content("~/logo/logo_white.png");
+        url2 = Url.Content("~/logo/Loginbg.jpg");
+    }
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        return new { @class = "form-control" };
+    }
+}
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    function initHtmlEditor() {
+        $('#summernote').summernote();
+        $('#summernote1').summernote();
+    }
+    $(document).ready(function () {
+        initHtmlEditor();
+    });
+    function ChangeProfile(obj) {
+        var element = $(obj);
+        var value = element.val();
+        var url = '@Url.Action("Edit", "CompanyProfile", new { tenantId = "_tenantid" })'.replace("_tenantid", value);
+        window.location.href = url;
+    }
+</script>
+<div class="content-heading">
+    <div class="col-lg-8">
+        <strong>
+            <a href="@Url.Action("Index","Admin")">Admin</a>
+            <small>Edit Company Profile</small>
+        </strong>
+    </div>
+</div>
+<div class="">
+    <div class="">
+        <div class="">
+            <div class="col-sm-12">
+                <ul class="nav nav-tabs">
+                    <li class="active nav-item">
+                        <a href="#Details" data-toggle="tab" class="nav-link active">Company Information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#change-icons" data-toggle="tab" class="nav-link">Change Icons</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#set-smtp-details" data-toggle="tab" class="nav-link">Set SMTP Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="afooter" href="#footer" data-toggle="tab" class="nav-link">Footer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#about" data-toggle="tab" class="nav-link">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#disclaimer" data-toggle="tab" class="nav-link">Disclaimer</a>
+                    </li>
+                </ul>
+                @using (Html.BeginForm("Edit", "CompanyProfile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="Details">
+                            <div class="col-md-12 col-sm-12 col-xs-12 m-0 p-0">
+                                <div class="">
+                                    <div class="card-body">
+                                        <div class="card-heading">
+                                            <h3 class="card-title">Company Informations</h3>
+                                        </div>
+                                        <div class="row">
+                                            @Html.ValidationSummary(true)
+                                            @if (ViewBag.TenantList != null)
+                                            {
+                                                <div class='col-sm-6 col-md-6 col-xs-12'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">Select Tenant</label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.DropDownList("TenantList", null, null, new { @onchange = "ChangeProfile(this);", @class = "form-control" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Name) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.Name, getHtmlAttributes("Name"))
+                                                        @Html.ValidationMessageFor(model => model.Name)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12  p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Email) <span class="text-danger-reg">*</span> </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.Email, getHtmlAttributes("Email"))
+                                                        @Html.ValidationMessageFor(model => model.Email)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Address) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.Address, getHtmlAttributes("Address"))
+                                                        @Html.ValidationMessageFor(model => model.Address)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Country) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.Country, getHtmlAttributes("Country"))
+                                                        @Html.ValidationMessageFor(model => model.Country)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.State) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.State, getHtmlAttributes("State"))
+                                                        @Html.ValidationMessageFor(model => model.State)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.City) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.City, getHtmlAttributes("City"))
+                                                        @Html.ValidationMessageFor(model => model.City)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Zip) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.Zip, getHtmlAttributes("Zip"))
+                                                        @Html.ValidationMessageFor(model => model.Zip)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ContactNumber1) </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.ContactNumber1, getHtmlAttributes("ContactNumber1"))
+                                                        @Html.ValidationMessageFor(model => model.ContactNumber1)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                <div class='form-group'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.ContactNumber2)</label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.TextBoxFor(model => model.ContactNumber2, getHtmlAttributes("ContactNumber2"))
+                                                        @Html.ValidationMessageFor(model => model.ContactNumber2)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="change-icons" class="tab-pane">
+                            <div class="col-md-12 col-sm-12 col-xs-12 m-0 p-0">
+                                <div class="">
+                                    <div class="card-body">
+                                        <div class="card-heading">
+                                            <h3 class="card-title">Change Icons</h3>
+                                        </div>
+                                        <div class="card-deck">
+                                            <div class='card border-right p-2 m-1'>
+                                                <h4>Upload Login Background</h4>
+                                                <p>Select a file to upload background image.</p>
+                                                <div style="position:relative;">
+                                                    @Html.TextBoxFor(model => model.LoginBg, new { @class = "d-none" })
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Click to upload
+                                                        <input id="LoginBg" type="file" style='position:absolute;opacity:0;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";background-color:transparent;color:transparent;'
+                                                               name="LoginBg" onchange='$("#upload-file-infoLoginBG").html($(this).val());'>
+                                                    </a>
+                                                    <span class='label uploadlblFix' id="upload-file-infoLoginBG"></span>
+                                                </div>
+                                                @{
+                    var srcvalue1 = Model.LoginBg == null || Model.LoginBg == "Loginbg.png" ? url2 : url2;
+                                                }
+                                                <img class="border-rught pt-2" src='@srcvalue1' style="width: 100%;" alt="NA" alt="LoginBg" title="LoginBg" />
+                                            </div>
+                                            <div class="card p-2 m-1 border-right">
+                                                <h4>Upload Login Logo</h4>
+                                                <p>Select a file to upload logo image.</p>
+                                                @if (!Model.TenantId.HasValue || Model.TenantId.Value == 0)
+                                            {
+                                                    <div>
+                                                        <div style="position:relative;">
+                                                            @Html.TextBoxFor(model => model.Logo, new { @class = "d-none" })
+                                                            <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                Click to upload
+                                                                <input id="Logo" type="file" style=' opacity:0; position:absolute; z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:200px;'
+                                                                       name="Logo" onchange='$("#upload-file-infoLogo").html($(this).val());'>
+                                                            </a>
+                                                            <span class='label uploadlblFix' id="upload-file-infoLogo"></span>
+                                                        </div>
+                                                        @{
+                                                var srcvalue = Model.Logo == null || Model.Logo == "logo_white.png" ? url1 : url1;
+                                                        }
+                                                        <img class="mt-2" src='@srcvalue' style="width: 200px; background:#4b4b4b" alt="NA" alt="LoginPage Logo" title="LoginPage Logo" />
+                                                    </div>
+                                                    <hr>
+                                                    <div class='col-sm-12'>
+                                                        <p><strong>Set logo size </strong> (i.e.: 150px * 30px)</p>
+                                                        <div class="card-deck">
+                                                            <div class="card border-0">
+                                                                Width @Html.TextBoxFor(model => model.LogoWidth, getHtmlAttributes("LogoWidth"))
+                                                                @Html.ValidationMessageFor(model => model.LogoWidth)
+                                                            </div>
+                                                            <div class="card border-0">
+                                                                Height @Html.TextBoxFor(model => model.LogoHeight, getHtmlAttributes("LogoHeight"))
+                                                                @Html.ValidationMessageFor(model => model.LogoHeight)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            }
+                                            </div>
+                                            <div class="card p-2 m-1">
+                                                <h4>Upload Header Logo</h4>
+                                                <p>Select a file to upload header logo.</p>
+                                                <div style="position:relative;">
+                                                    @Html.TextBoxFor(model => model.Icon, new { @class = "d-none" })
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Click to upload
+                                                        <input id="Icon" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;'
+                                                               name="Icon" onchange='$("#upload-file-infoIcon").html($(this).val());'>
+                                                    </a>
+                                                    <span class='label uploadlblFix' id="upload-file-infoIcon"></span>
+                                                </div>
+                                                <img src="@url" class="mt-2" style="width:50px; background:#4b4b4b;" alt="MaterPage Logo" title="MasterPage Logo" />
+                                                <hr>
+                                                <div>
+                                                    <p><strong>Set logo size </strong> (i.e.: 50px * 30px)</p>
+                                                    <div class='form-group card-deck'>
+                                                        <div class="card border-0">
+                                                            Width @Html.TextBoxFor(model => model.IconWidth, getHtmlAttributes("IconWidth"))
+                                                            @Html.ValidationMessageFor(model => model.IconWidth)
+                                                        </div>
+                                                        <div class="card border-0">
+                                                            Height @Html.TextBoxFor(model => model.IconHeight, getHtmlAttributes("IconHeight"))
+                                                            @Html.ValidationMessageFor(model => model.IconHeight)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="set-smtp-details" class="tab-pane">
+                                <div class="col-md-12 col-sm-12 col-xs-12 m-0 p-0">
+                                    <div class="">
+                                        <div class="card-body">
+                                            <div class="card-heading">
+                                                <h3 class="card-title">Set SMTP Details</h3>
+                                            </div>
+                                            <div class="row">
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">SMTP User </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.TextBoxFor(model => model.SMTPUser, getHtmlAttributes("SMTPUser"))
+                                                            @Html.ValidationMessageFor(model => model.SMTPUser)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPServer) <span class="text-danger-reg">*</span> </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.TextBoxFor(model => model.SMTPServer, getHtmlAttributes("SMTPServer"))
+                                                            @Html.ValidationMessageFor(model => model.SMTPServer)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPPassword) <span class="text-danger-reg">*</span> </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.TextBoxFor(model => model.SMTPPassword, new { @class = "form-control", @type = "Password" })
+                                                            @Html.ValidationMessageFor(model => model.SMTPPassword)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SMTPPort) <span class="text-danger-reg">*</span> </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.TextBoxFor(model => model.SMTPPort, getHtmlAttributes("SMTPPort"))
+                                                            @Html.ValidationMessageFor(model => model.SMTPPort)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <div class='form-group'>
+                                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.SSL)  </label>
+                                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                            @Html.EditorFor(model => model.SSL, getHtmlAttributes("SSL"))
+                                                            @Html.ValidationMessageFor(model => model.SSL)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class='col-sm-6 col-md-6 col-xs-12 p-0'>
+                                                    <label class="col-sm-5 col-md-5 col-xs-12">Use Anonymous  </label>
+                                                    <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                        @Html.CheckBoxFor(model => model.UseAnonymous, new { @class = "", @checked = Model.UseAnonymous })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="footer" class="tab-pane">                            
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 m-0 p-0">
+                                    <div class="">
+                                        <div class="card-body">
+                                            <div class="card-heading">
+                                                <h3 class="card-title">
+                                                    Footer
+                                                </h3>
+                                            </div>                                            
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Name
+                                                            </th>
+                                                            <th>
+                                                                Document Display
+                                                            </th>
+                                                            <th>
+                                                                Web Link
+                                                            </th>
+                                                            <th>
+                                                                Document
+                                                            </th>
+                                                            <th width="50px">Edit</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @*Legal Information*@
+                                                        <tr id="trGridLegal">
+                                                            <td>
+                                                                @commonObj.Legal(User)
+                                                            </td>
+                                                            <td>
+                                                                <select disabled>
+                                                                    <option value="1" @(commonObj.LegalDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.LegalDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.LegalDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.LegalDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.LegalLink(User))' target="_blank">@commonObj.Legal(User)</a>
+                                                            </td>
+                                                            <td>
+                                                                @*<span class='label uploadlblFix' id="upload-file-infoLegalInformationAttach">@LegalAttach</span>*@
+                                                                @commonObj.LegalAttach(User)
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="EditLegal()" id="aLegalEdit" alt="Edit Footer Information" title="Edit Footer Information"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditLegal">
+                                                            <td>
+                                                                <input name="LegalInformation" placeholder="@commonObj.Legal(User)" id="LegalInformation" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <select name="LegalInformationDisplay">
+                                                                    <option value="1" @(commonObj.LegalDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.LegalDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.LegalDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.LegalDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="LegalInformationLink" placeholder="@commonObj.LegalLink(User)" id="LegalInformationLink" value='' />
+                                                            </td>
+                                                            <td>
+                                                                <div style="position:relative;">
+                                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                        Upload File
+                                                                        <input type="file" name="LegalInformationAttach" id="LegalInformationAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelLegal()" id="aCancelLegal"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        @*Privacy Policy*@
+                                                        <tr id="trGridPrivacy">
+                                                            <td>
+                                                                @commonObj.Policy(User)
+                                                            </td>
+                                                            <td>
+                                                                <select disabled>
+                                                                    <option value="1" @(commonObj.PolicyDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.PolicyDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.PolicyDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.PolicyDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.PolicyLink(User))' target="_blank">@commonObj.Policy(User)</a>
+                                                            </td>
+                                                            <td>
+                                                                @*<span class='label uploadlblFix' id="upload-file-infoPrivacyAttach">@PolicyAttach</span>*@
+                                                                @commonObj.PolicyAttach(User)
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="EditPrivacy()" id="aPrivacyEdit"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditPrivacy">
+                                                            <td>
+                                                                <input name="PrivacyPolicy" placeholder="@commonObj.Policy(User)" id="PrivacyPolicy" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <select name="PrivacyPolicyDisplay">
+                                                                    <option value="1" @(commonObj.PolicyDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.PolicyDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.PolicyDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.PolicyDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="PrivacyPolicyLink" placeholder="@commonObj.PolicyLink(User)" id="PrivacyPolicyLink" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <div style="position:relative;">
+                                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                        Upload File
+                                                                        <input type="file" name="PrivacyPolicyAttach" id="PrivacyPolicyAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelPrivacy()" id="aCancelPrivacy"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        @*Terms Of Service*@
+                                                        <tr id="trGridTerms">
+                                                            <td>
+                                                                @commonObj.Terms(User)
+                                                            </td>
+                                                            <td>
+                                                                <select disabled>
+                                                                    <option value="1" @(commonObj.TermsDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.TermsDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.TermsDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.TermsDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.TermsLink(User))' target="_blank">@commonObj.Terms(User)</a>
+                                                            </td>
+                                                            <td>
+                                                                @*<span class='label uploadlblFix' id="upload-file-infoTermsOfServiceAttach">@TermsAttach</span>*@
+                                                                @commonObj.TermsAttach(User)
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="EditTerms()" id="aTermsEdit"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditTerms">
+                                                            <td>
+                                                                <input name="TermsOfService" placeholder="@commonObj.Terms(User)" id="Terms Of Service" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <select name="TermsOfServiceDisplay">
+                                                                    <option value="1" @(commonObj.TermsDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.TermsDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.TermsDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.TermsDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="TermsOfServiceLink" placeholder="@commonObj.TermsLink(User)" id="TermsOfServiceLink" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <div style="position:relative;">
+                                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                        Upload File
+                                                                        <input type="file" name="TermsOfServiceAttach" id="TermsOfServiceAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelTerms()" id="aCancelTerms"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trGridThirdParty">
+                                                            <td>
+                                                                @commonObj.ThirdParty(User)
+                                                            </td>
+                                                            <td>
+                                                                <select disabled>
+                                                                    <option value="1" @(commonObj.ThirdPartyDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.ThirdPartyDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.ThirdPartyDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.ThirdPartyDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.ThirdPartyLink(User))' target="_blank">@commonObj.ThirdParty(User)</a>
+                                                            </td>
+                                                            <td>
+                                                                @*<span class='label uploadlblFix' id="upload-file-infoTermsOfServiceAttach">@TermsAttach</span>*@
+                                                                @commonObj.ThirdPartyAttach(User)
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="EditThirdParty()" id="aThirdPartyEdit"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditThirdParty">
+                                                            <td>
+                                                                <input name="ThirdParty" placeholder="@commonObj.ThirdParty(User)" id="ThirdParty" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <select name="ThirdPartyDisplay">
+                                                                    <option value="1" @(commonObj.ThirdPartyDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.ThirdPartyDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.ThirdPartyDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.ThirdPartyDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="ThirdPartyLink" placeholder="@commonObj.ThirdPartyLink(User)" id="ThirdPartyLink" value="@commonObj.ThirdPartyLink(User)" disabled />
+                                                            </td>
+                                                            <td>
+                                                                <div style="position:relative;">
+                                                                    @*<a class='btn btn-primary btnupload' href='javascript:;'>
+                                    Upload File
+                                    <input type="file" name="ThirdPartyAttach" id="ThirdPartyAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                    </a>*@
+                                                                </div>
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelThirdParty()" id="aCancelThirdParty"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        @*Cookie Information*@
+                                                        <tr id="trGridCookie">
+                                                            <td>
+                                                                @commonObj.Cookie(User)
+                                                            </td>
+                                                            <td>
+                                                                <select disabled>
+                                                                    <option value="1" @(commonObj.CookieDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.CookieDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.CookieDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.CookieDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <a href='@Html.Raw(commonObj.getBaseUri() + commonObj.CookieLink(User))' target="_blank">@commonObj.Cookie(User)</a>
+                                                            </td>
+                                                            <td>
+                                                                @*<span class='label uploadlblFix' id="upload-file-infoCookieInformationAttach">@CookieAttach</span>*@
+                                                                @commonObj.CookieAttach(User)
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="EditCookie()" id="aLegalEdit" alt="Edit Footer Information" title="Edit Footer Information"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditCookie">
+                                                            <td>
+                                                                <input name="CookielInformation" placeholder="@commonObj.Cookie(User)" id="CookieInformation" value="" />
+                                                            </td>
+                                                            <td>
+                                                                <select name="CookieInformationDisplay">
+                                                                    <option value="1" @(commonObj.CookieDisplay(User) == "1" ? "selected" : "")>Login and Master</option>
+                                                                    <option value="2" @(commonObj.CookieDisplay(User) == "2" ? "selected" : "")>Login Only</option>
+                                                                    <option value="3" @(commonObj.CookieDisplay(User) == "3" ? "selected" : "")>Master Only</option>
+                                                                    <option value="4" @(commonObj.CookieDisplay(User) == "4" ? "selected" : "")>Never</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="CookieInformationLink" placeholder="@commonObj.ThirdPartyLink(User)" id="CookieInformationLink" value="@commonObj.ThirdPartyLink(User)" disabled />
+                                                            </td>
+                                                            <td>
+                                                                <div style="position:relative;">
+                                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                                        Upload File
+                                                                        <input type="file" name="CookieInformationAttach" id="CookieInformationAttach" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' />
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelCookie()" id="aCancelCookie"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        @*Email*@
+                                                        <tr id="trGridEmailto">
+                                                            <td>
+                                                                @commonObj.Emailto(User)
+                                                            </td>
+                                                            <td></td>
+                                                            <td>
+                                                                <a href='@Html.Raw("mailto:" + commonObj.EmailtoAddress(User))'>@commonObj.EmailtoAddress(User)</a>
+                                                            </td>
+                                                            <td></td>
+                                                            <td align="center">
+                                                                <a onclick="EditEmailto()" id="aEmailtoEdit"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditEmailto">
+                                                            <td>
+                                                                <input name="Emailto" placeholder="@commonObj.Emailto(User)" id="Emailto" value="" />
+                                                            </td>
+                                                            <td></td>
+                                                            <td>
+                                                                <input name="EmailtoAddress" placeholder="@commonObj.EmailtoAddress(User)" id="EmailtoAddress" value="" />
+                                                            </td>
+                                                            <td></td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelEmailto()" id="aCancelEmailto"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        @* Created With*@
+                                                        <tr id="trGridCreatedBy">
+                                                            <td>
+                                                                @commonObj.CreatedBy(User)
+                                                            </td>
+                                                            <td></td>
+                                                            <td>
+                                                                <a href="@commonObj.CreatedByLink(User)" target="_blank">@commonObj.CreatedByName(User)</a>
+                                                            </td>
+                                                            <td></td>
+                                                            <td align="center">
+                                                                <a onclick="EditCreatedBy()" id="aCreatedByEdit"><i class="fa fa-edit"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trEditCreatedBy">
+                                                            <td>
+                                                                <input name="CreatedBy" placeholder="@commonObj.CreatedBy(User)" id="Create By" value="" />
+                                                            </td>
+                                                            <td></td>
+                                                            <td>
+                                                                <input name="CreatedByLink" placeholder="@commonObj.CreatedByLink(User)" id="CreatedByLink" value="" />
+                                                                <input name="CreatedByName" placeholder="@commonObj.CreatedByName(User)" id="CreatedByName" value="" />
+                                                            </td>
+                                                            <td></td>
+                                                            <td align="center">
+                                                                <a onclick="SaveAndRefresh()"><i class="fa fa-edit"></i></a>
+                                                                <a onclick="CancelCreatedBy()" id="aCancelCreatedBy"><i class="fa fa-remove"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>    
+                                            @Html.HiddenFor(model => model.TenantId)
+                                            @Html.HiddenFor(model => model.Type)                                        
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="about" class="tab-pane">
+       
+                                <div class="">
+                                    <div class="">
+                                        <div class="card-body">
+                                            <div class="card-heading">
+                                                <h3 class="card-title">About</h3>
+                                            </div>
+                                            
+                                                @Html.TextAreaFor(model => model.AboutCompany, new { @id = "summernote" })
+                                                @Html.ValidationMessageFor(model => model.AboutCompany)
+                                            
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="disclaimer" class="tab-pane">
+                            @if (!Model.TenantId.HasValue || Model.TenantId.Value == 0)
+                            {
+                                
+                                    <div class="">
+                                        <div class="">
+                                            <div class="card-body">
+                                                <div class="card-heading">
+                                                    <h3 class="card-title">Disclaimer</h3>
+                                                </div>
+                                                
+                                                    @Html.TextAreaFor(model => model.Disclaimer, new { @id = "summernote1" })
+                                                    @Html.ValidationMessageFor(model => model.Disclaimer)
+                                             
+                                            </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <br>
+                    </div>
+            <!-- /tab-content --><br />
+                    @Html.ActionLink("Back to Admin Settings", "Index", "Admin", null, new { @class = "btn btn-secondary btn-sm" })
+                    <input type="submit" value="Save" class="btn btn-primary btn-sm" />
+    <input type="hidden" name="hdncommand" value="" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#trEditLegal").hide();
+        $("#trEditTerms").hide();
+        $("#trEditPrivacy").hide();
+        $("#trEditThirdParty").hide();
+        $("#trEditCookie").hide();
+        $("#trEditEmailto").hide();
+        $("#trEditCreatedBy").hide();
+        if ('@ViewData["footer"]' == 'True')
+            $('#afooter').click();
+        $("#SSL").children('option[Value=""]').hide();
+    });
+    //Legal
+    function DeleteLegal() {
+        // alert('aLegalDelete')
+    }
+    function EditLegal() {
+        $("#trEditLegal").show()
+        $("#trGridLegal").hide();
+        //alert('aLegalEdit')
+    }
+    function SaveAndRefresh()
+    {
+        $('input:hidden[name="hdncommand"]').val('Refresh');
+        $("input[type='submit']").click();
+    }
+    function CancelLegal() {
+        $("#trEditLegal").hide()
+        $("#trGridLegal").show();
+    }
+    //
+    //Terms
+    function DeleteTerms() {
+        //alert('aTermsDelete')
+    }
+    function EditTerms() {
+        $("#trEditTerms").show()
+        $("#trGridTerms").hide();
+    }
+    function CancelTerms() {
+        $("#trEditTerms").hide()
+        $("#trGridTerms").show();
+    }
+    //
+    //Privacy
+    function DeletePrivacy() {
+        //alert('aPrivacyDelete')
+    }
+    function EditPrivacy() {
+        $("#trEditPrivacy").show()
+        $("#trGridPrivacy").hide();
+    }
+    function CancelPrivacy() {
+        $("#trEditPrivacy").hide()
+        $("#trGridPrivacy").show();
+    }
+    //
+    //ThirdParty
+    function DeleteThirdParty() {
+        //alert('aThirdPartyDelete')
+    }
+    function EditThirdParty() {
+        $("#trEditThirdParty").show()
+        $("#trGridThirdParty").hide();
+    }
+    function CancelThirdParty() {
+        $("#trEditThirdParty").hide()
+        $("#trGridThirdParty").show();
+    }
+    //
+    //Legal
+    function DeleteCookie() {
+        // alert('aLegalDelete')
+    }
+    function EditCookie() {
+        $("#trEditCookie").show()
+        $("#trGridCookie").hide();
+        //alert('aLegalEdit')
+    }
+    function CancelCookie() {
+        $("#trEditCookie").hide()
+        $("#trGridCookie").show();
+    }
+    //
+    //Emailto
+    function DeleteEmailto() {
+        //alert('aEmailtoDelete')
+    }
+    function EditEmailto() {
+        $("#trEditEmailto").show()
+        $("#trGridEmailto").hide();
+    }
+    function CancelEmailto() {
+        $("#trEditEmailto").hide()
+        $("#trGridEmailto").show();
+    }
+    //
+    //CreatedBy
+    function DeleteCreatedBy() {
+        //alert('aCreatedByDelete')
+    }
+    function EditCreatedBy() {
+        $("#trEditCreatedBy").show()
+        $("#trGridCreatedBy").hide();
+    }
+    function CancelCreatedBy() {
+        $("#trEditCreatedBy").hide()
+        $("#trGridCreatedBy").show();
+    }
+    //
+</script>

@@ -1,0 +1,466 @@
+﻿@model GeneratorBase.MVC.Models.PropertyHelpPage
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Property Help Page";
+    var EditPermission = User.CanEditItem("PropertyHelpPage", Model, User);
+    var DeletePermission = User.CanDeleteItem("PropertyHelpPage", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "PropertyHelpPage");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Property Help Page";
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("PropertyHelpPage", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                // $('#' + hostingEntityName + 'ID').trigger("change");
+                $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+            if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+                $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyHelpPageIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyHelpPageIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyHelpPageIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyHelpPageIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyHelpPageIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.PropertyHelpPageIsSetValueUIRule);
+    }
+}
+
+<style>
+    .dropdown-submenu.pull-left > .dropdown-menu {
+        left: auto;
+        right: 100%;
+    }
+</style>
+<div class="content-heading">
+    <div class="col-lg-8 p-0">
+       
+        <strong>
+            <a href="@Url.Action("Index")"> @EntityDisplayName</a>
+
+            <small> Edit</small>
+        </strong>
+                
+           
+    </div>
+    <div class="col-lg-6">
+        @if (ViewBag.IsPartial == null)
+        {
+            <div class="btn-group text-right p-0">
+                <a data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle" alt="Action" title="Action">
+                    Action                    
+                </a>
+                <ul class="dropdown-menu pull-left">
+                    <li class="dropdown-item">
+                        @if (EditPermission)
+                        {
+                            <a href="@Url.Action("Edit", "PropertyHelpPage", new { id = Model.Id, UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                        }
+                    </li>
+                    <li class="dropdown-item">
+                        @if (EditPermission && User.CanDelete("PropertyHelpPage"))
+                        {
+                            <a href="@Url.Action("Delete", "PropertyHelpPage", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                        }
+                    </li>
+                    <li class="divider" style="clear:both"></li>
+                    <li class="dropdown-submenu dropdown-item pull-left">
+                        <a tabindex="-1" href="#">Find Matching</a>
+                        <ul class="dropdown-menu pull-left">
+                            <li class="dropdown-item">
+                                <a href="@Url.Action("FindFSearch", "EntityHelpPage", new {sourceEntity="PropertyHelpPage",id=Model.Id}, null)">Entity Help Page</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        }
+        @if (ViewBag.IsPartial == null && EditPermission)
+        {
+            <div class="pull-right">
+                <button class="btn btn-primary btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('PropertyHelpPage',event,'hdnNextPrevId')")" alt="Next" title="Next" style="border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                @Html.DropDownList("EntityPropertyHelpPageDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('PropertyHelpPage','frmPropertyHelpPage','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 22px;width: 170px;" })
+                <button class="btn btn-primary btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('PropertyHelpPage',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+            </div>}
+    </div>
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<div id="divDisplayCodeFragment" style="display:none;">
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce card card-body">
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active"  href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">Details</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="Details">
+                <span id="HostingEntityDisplayValue" class="EntityDisplayName p-0 mb-2" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+                @using (Html.BeginForm("Edit", "PropertyHelpPage", new { UrlReferrer = Convert.ToString(ViewData["PropertyHelpPageParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmPropertyHelpPage" }))
+                {
+                    Html.ValidationSummary(true);
+                    Html.EnableClientValidation();
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.ConcurrencyKey)
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                        <div class="card card-default AppForm">
+                            <div class="card-body">
+                                <div class="row">
+                                    
+                                    @if (User.CanView("PropertyHelpPage", "PropertyHelpOfEntityID"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvPropertyHelpOfEntityID">
+                                            <div class='form-group'>
+                                                <label>@Html.LabelFor(model => model.PropertyHelpOfEntityID) </label>
+
+                                                <div class="input-group" style="width:100%;">
+                                                    @if (User.CanEdit("PropertyHelpPage", "PropertyHelpOfEntityID"))
+                                                    {
+                                                        @Html.DropDownList("PropertyHelpOfEntityID", null, "-- Select --", new { @derivedurl = Url.Action("GetDerivedDetails", "PropertyHelpPage", new { source = "PropertyHelpOfEntity", IgnoreEditable = Convert.ToString(ViewData["AssociatedType"]) }), @onchange = Html.Raw("FillDerivedDetails(this,event);"), @class = "chosen-select form-control", @HostingName = "EntityPage", @dataurl = Url.Action("GetAllValue", "EntityPage", new { caller = "PropertyHelpOfEntityID" }) })
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.HiddenFor(model => model.PropertyHelpOfEntityID, new { @class = "form-control" })
+                                                        @Html.DropDownList("PropertyHelpOfEntityID", null, "-- Select --", new { @onchange = Html.Raw("FillDerivedDetails(this,event);"), @class = "chosen-select form-control", @disabled = "disabled", @HostingName = "EntityPage", @dataurl = Url.Action("GetAllValue", "EntityPage", new { caller = "PropertyHelpOfEntityID" }) })
+                                                    }
+                                                    @Html.ValidationMessageFor(model => model.PropertyHelpOfEntityID)
+                                                    @if (User.CanAdd("EntityPage"))
+                                                    {
+                                                        <div class="input-group-btn">
+                                                            <a class="btn btn-default btn ie8fix" id="addEntityPage" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Entity Name','dvPopup','" + Url.Action("CreateQuick", "EntityPage", new { UrlReferrer = Request.Url.PathAndQuery, HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), IsAddPop = true }) + "')")">
+                                                                <span class="glyphicon glyphicon-plus-sign"></span>
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.PropertyHelpOfEntityID, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyHelpPage", "PropertyName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvPropertyName">
+                                            <div class='form-group' title="Property Name">
+                                                <label>@Html.LabelFor(model => model.PropertyName)  <span class="text-danger-reg">*</span> </label>
+
+
+                                                @Html.TextBoxFor(model => model.PropertyName, getHtmlAttributes("PropertyName"))
+                                                @Html.ValidationMessageFor(model => model.PropertyName)
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.PropertyName, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyHelpPage", "PropertyDataType"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvPropertyDataType">
+                                            <div class='form-group' title="Property Data Type">
+                                                <label>@Html.LabelFor(model => model.PropertyDataType)   </label>
+
+
+                                                @Html.TextBoxFor(model => model.PropertyDataType, getHtmlAttributes("PropertyDataType"))
+                                                @Html.ValidationMessageFor(model => model.PropertyDataType)
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.PropertyDataType, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyHelpPage", "HelpText"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvHelpText">
+                                            <div class='form-group' title="Help Text">
+                                                <label>@Html.LabelFor(model => model.HelpText) </label>
+
+                                                @Html.TextAreaFor(model => model.HelpText, getHtmlAttributes("HelpText"))
+                                                @Html.ValidationMessageFor(model => model.HelpText)
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.HelpText, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyHelpPage", "EntityName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                            <div class='form-group' title="Entity Name">
+                                                <label>@Html.LabelFor(model => model.EntityName)   </label>
+
+
+                                                @Html.TextBoxFor(model => model.EntityName, getHtmlAttributes("EntityName"))
+                                                @Html.ValidationMessageFor(model => model.EntityName)
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Html.AntiForgeryToken();
+                if (ViewBag.IsPartial == null)
+                {
+                        <a class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "PropertyHelpPage")');" alt="Cancel" title="Cancel">Cancel</a>
+                    }
+                    @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["PropertyHelpPageParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix", @alt="Cancel", @title="Cancel" })*@if (EditPermission)
+                {
+                    if (ViewBag.IsPartial == null)
+                    {
+                        <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                    }
+                    if (ViewBag.IsPartial == null)
+                    {
+                        <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                        <input type="submit" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />}
+                    <input type="hidden" name="hdncommand" value="" />
+                    <input type="hidden" name="hdnNextPrevId" value="" />
+                    }
+                }
+                @{
+                    var dropmenubottom = false;
+                }
+                <div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomPropertyHelpPage">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                        Add
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1"></ul>
+                </div>
+                @if (!dropmenubottom || !EditPermission)
+                {
+                    <script>
+                        $("#AddAssociationdropmenubottomPropertyHelpPage").hide();
+                    </script>
+                }
+                <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+            </div>
+        </div> <!-- /tab-content --><br />
+        <br />
+    </div>
+</div>
+<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "PropertyHelpPage").ToList();
+
+    var ruleidsforemailpage = businessruleforemailpage.Select(q => q.Id).ToList();
+    var typelistforemailpage = string.Join(",", (new GeneratorBase.MVC.Models.RuleActionContext()).RuleActions.Where(p => ruleidsforemailpage.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+    if (ViewBag.IsPartial == true)
+    {
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+        <script>
+            function CancelFromDivTab_PropertyHelpPage() {
+                var associationname = '@Convert.ToString(ViewData["AssociatedType"])';
+                if (associationname != '' && associationname != null) {
+                }
+            }
+            function EditFromDivTab_PropertyHelpPage(obj) {
+                $('input:hidden[name="hdncommand"]').val(obj);
+                var associationname = '@Convert.ToString(ViewData["AssociatedType"])';
+                var form2 = $("#frmPropertyHelpPage");
+                if (!form2.valid()) { return; }
+                var form = "";
+                form = $("#frmPropertyHelpPage").serialize();
+                if ('@isbrrequired') {
+                    if (!ApplyBusinessRule(form))
+                        return false;
+                }
+                var frmUrl = form2.attr('action') + "&RenderPartial=true";
+                var fdata = new FormData(form2[0]);
+                $.ajax({
+                    url: frmUrl,
+                    type: "POST",
+                    cache: false,
+                    data: fdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('failed');
+                        return false;
+                    }
+                });
+            }
+            function ApplyBusinessRule(form) {
+                var flag = true;
+                dataurl = "@Url.Action("businessruletype", "PropertyHelpPage", new { ruleType = "OnEdit"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "PropertyHelpPage", false, "ErrMsg", form);
+                //business rules on inline associations
+                if (flag) {
+                    $("#frmPropertyHelpPage").find(':input').removeAttr('disabled');
+                    $("#divDisplayBRmsgMandatory").hide();
+                    $("#divDisplayBRmsgBeforeSaveProp").hide();
+                    $("#divDisplayLockRecord").hide();
+                    $("#divDisplayBRReadOnly").hide();
+                }
+                return flag;
+            }
+        </script>
+    }
+}
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "PropertyHelpPage").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var ruleids = businessrule.Select(q => q.Id).ToList();
+        var typelist = string.Join(",", (new GeneratorBase.MVC.Models.RuleActionContext()).RuleActions.Where(p => ruleids.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmPropertyHelpPage");
+                dataurl = "@Url.Action("businessruletype", "PropertyHelpPage", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "PropertyHelpPage", false, "ErrMsg", form);
+                //business rules on inline associations
+            });
+        </script>
+        <script>
+            $("form").submit(function (event) {
+                if (!$("#frmPropertyHelpPage").valid()) return;
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmPropertyHelpPage").serialize();
+                dataurl = "@Url.Action("businessruletype", "PropertyHelpPage", new { ruleType = "OnEdit"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "PropertyHelpPage", false, "ErrMsg", form);
+                //business rules on inline associations
+                if (flag) {
+                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+                    if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                        $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                    $("#frmPropertyHelpPage").find(':input').removeAttr('disabled');
+                }
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmPropertyHelpPage").valid()) return;
+                var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            focusOnControl('frmPropertyHelpPage');
+        }
+        catch (ex) { }
+    });
+    $(document).ready(function () {
+        var RecIdEdit = $("#frmPropertyHelpPage").find("input:hidden[name='Id']").val();
+        $("#EntityPropertyHelpPageDisplayValueEdit").val(RecIdEdit);
+        var textedit = $("option:selected", $("#EntityPropertyHelpPageDisplayValueEdit")).text();
+        $("#EntityPropertyHelpPageDisplayValueEdit").attr('data-toggle', 'tooltip')
+        $("#EntityPropertyHelpPageDisplayValueEdit").attr('title', textedit);
+        var lastOptionValEdit = $('#EntityPropertyHelpPageDisplayValueEdit option:last-child').val();
+        var fristOptionValEdit = $('#EntityPropertyHelpPageDisplayValueEdit option:first-child').val();
+        if (lastOptionValEdit == RecIdEdit) {
+            $('#nextEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+        }
+        if (fristOptionValEdit == RecIdEdit)
+            $('#prevEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+    });
+</script>

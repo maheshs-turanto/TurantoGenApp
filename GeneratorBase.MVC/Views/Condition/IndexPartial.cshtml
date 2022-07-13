@@ -1,0 +1,148 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.Condition>
+@using PagedList.Mvc;
+<div id="Claims">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div>
+                <div>
+                    <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                        <table id="tblConditionList" class="table table-hover table-striped default-bordered default-condensed">
+                            <thead>
+                                <tr>
+                                    @if (User.CanView("Condition", "PropertyName"))
+                                    {
+                                        <th class="col1">
+                                            Property
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "Operator"))
+                                    {
+                                        <th class="col1">
+                                            Operator
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "Value"))
+                                    {
+                                        <th class="col1">
+                                            Value
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "LogicalConnector"))
+                                    {
+                                        <th class="col1">
+                                            Connector
+                                        </th>
+                                    }
+                                    @if (User.CanView("Condition", "RuleConditionsID"))
+                                    {
+                                        @*<th class="col1" @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                                                Business Rule
+                                            </th>*@
+                                    }
+                                    <th class="col1">Remove</th>
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    var displayTag = "";
+                                    if (item.PropertyName == "Id")
+                                    {
+                                        displayTag = "id = idAlways " + "style=display:none";
+                                    }
+                                    <tr @displayTag>
+                                        @if (User.CanView("Condition", "PropertyName"))
+                                        {
+                                            if (item.PropertyName != "Id")
+                                            {
+                                                if (item.PropertyName.StartsWith("[") && item.PropertyName.EndsWith("]"))
+                                                {
+                                                    <td>@item.PropertyName</td>
+                                                }
+                                                else if (((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName) != null)
+                                                {
+                                                    <td>
+                                                        @(((List<ModelReflector.Property>)(ViewBag.PropertyList)).FirstOrDefault(p => p.Name == item.PropertyName).DisplayName)
+                                                    </td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <td>Id</td>
+                                            }
+                                        }
+                                        @if (User.CanView("Condition", "Operator"))
+                                        {
+                                            <td>
+                                                @if (item.Operator == ">")
+                                                {
+                                                    <label> Greater than</label>
+                                                }
+                                                @if (item.Operator == "<")
+                                                {
+                                                    <label> Less than</label>
+                                                }
+                                                @if (item.Operator == "<=")
+                                                {
+                                                    <label> Less than Or Equals to</label>
+                                                }
+                                                @if (item.Operator == ">=")
+                                                {
+                                                    <label> Greater than Or Equals to</label>
+                                                }
+                                                @if (item.Operator == "=")
+                                                {
+                                                    <label>Equals to</label>
+                                                }
+                                                @if (item.Operator == "Contains")
+                                                {
+                                                    <label>Contains</label>
+                                                }
+												@if (item.Operator == "!Contains")
+                                                {
+                                                    <label>!Contains</label>
+                                                }
+                                                @if (item.Operator == "!=")
+                                                {
+                                                    <label>Not Equals to</label>
+                                                }
+												@if (item.Operator == "Changes to anything")
+                                                {
+                                                    <label>Changes to anything</label>
+                                                }
+                                                @if (item.Operator == "Regular Expression")
+                                                {
+                                                    <label>Regular Expression</label>
+                                                }
+                                            </td>
+                                        }
+                                        @if (User.CanView("Condition", "Value"))
+                                        {
+                                            <td>
+                                                @item.Value.ToString().Replace("&#44;", ",").Replace("&#63;", "?")
+                                                @*@Html.DisplayFor(modelItem => item.Value)*@
+                                            </td>
+                                        }
+                                        @if (User.CanView("Condition", "LogicalConnector"))
+                                        {
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.LogicalConnector)
+                                            </td>
+                                        }
+                                        @if (User.CanView("Condition", "RuleConditionsID"))
+                                        {
+                                            @*<td @(Convert.ToString(ViewData["HostingEntity"]) == "BusinessRule" ? "hidden" : "")>
+                                                    @Html.DisplayFor(modelItem => item.ruleconditions.DisplayValue)
+                                                </td>*@
+                                        }
+                                        <td>
+                                            <a href="@Url.Action("Delete", "Condition", new { id = item.Id }, null)"><i class="fa fa-times"></i> </a>
+                                        </td>
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

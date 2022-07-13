@@ -1,0 +1,246 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@using PagedList;
+@{
+    ViewBag.Title = "View Property Validation and Format";
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "PropertyValidationandFormat");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Property Validation and Format";
+}
+<script>
+    $(document).ready(function () {
+        if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+            $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+        }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsSetValueUIRule);
+    }
+}
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-6">
+        <ol class="breadcrumb">
+            <li>
+                <strong><a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li class="active">
+                Details
+            </li>
+            <li class="active">
+                <span class="EntityDisplayName"> @Html.DisplayFor(model => model.DisplayValue)</span>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-6">
+        <div class="btn-group pull-right fixactionbut" style="margin:0px 0px 0px 0px;">
+            <button data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle pull-right">
+                Action
+                <span class="caret">    </span>
+            </button>
+            <ul class="dropdown-menu pull-left">
+                <li>
+                    @if (User.CanEdit("PropertyValidationandFormat"))
+                    {
+                        <a href="@Url.Action("Edit", "PropertyValidationandFormat", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>
+                <li>
+                    @if (User.CanDelete("PropertyValidationandFormat"))
+                    {
+                        <a href="@Url.Action("Delete", "PropertyValidationandFormat", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab">Details</a></li>
+        </ul>
+        @Html.HiddenFor(model => model.Id)
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="Details">
+                <div class="panel panel-default AppForm">
+                    <div class="panel-body">
+
+                        <div class="row">
+
+                            @if (User.CanView("PropertyValidationandFormat", "EntityName"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                    <div class='form-group' title="@Model.EntityName">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.EntityName) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblEntityName" class="viewlabel">@Model.EntityName</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "PropertyName"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvPropertyName">
+                                    <div class='form-group' title="@Model.PropertyName">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.PropertyName) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblPropertyName" class="viewlabel">@Model.PropertyName</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "RegExPattern"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvRegExPattern">
+                                    <div class='form-group' title="@Model.RegExPattern">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.RegExPattern) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblRegExPattern" class="viewlabel">@Model.RegExPattern</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "MaskPattern"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvMaskPattern">
+                                    <div class='form-group' title="@Model.MaskPattern">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.MaskPattern) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblMaskPattern" class="viewlabel">@Model.MaskPattern</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "ErrorMessage"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvErrorMessage">
+                                    <div class='form-group' title="@Model.ErrorMessage">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.ErrorMessage) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblErrorMessage" class="viewlabel">@Model.ErrorMessage</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "LowerBound"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvLowerBound">
+                                    <div class='form-group' title="@Model.LowerBound">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.LowerBound) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblLowerBound" class="viewlabel">@Model.LowerBound</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "UpperBound"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvUpperBound">
+                                    <div class='form-group' title="@Model.UpperBound">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.UpperBound) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblUpperBound" class="viewlabel">@Model.UpperBound</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "DisplayFormat"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayFormat">
+                                    <div class='form-group' title="@Model.DisplayFormat">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.DisplayFormat) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblDisplayFormat" class="viewlabel">@Model.DisplayFormat</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "IsEnabled"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvIsEnabled">
+                                    <div class='form-group' title="@Model.IsEnabled">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.IsEnabled) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            @Html.DisplayFor(model => model.IsEnabled)
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "Other1"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvOther1">
+                                    <div class='form-group' title="@Model.Other1">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Other1) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblOther1" class="viewlabel">@Model.Other1</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (User.CanView("PropertyValidationandFormat", "Other2"))
+                            {
+                                <div class='col-sm-6 col-md-6 col-xs-12' id="dvOther2">
+                                    <div class='form-group' title="@Model.Other2">
+                                        <label class="col-sm-5 col-md-5 col-xs-12">@Html.DisplayNameFor(model => model.Other2) </label>
+                                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                            <p id="lblOther2" class="viewlabel">@Model.Other2</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <a class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index","PropertyValidationandFormat")');">Back</a>
+                        @*@Html.ActionLink("Back", "Cancel", new { UrlReferrer = Request.UrlReferrer }, new { @class = "btn btn-default btn-sm pull-left formbuttonfix" })*@
+                        @if (User.CanEdit("PropertyValidationandFormat"))
+                        {
+                            @Html.ActionLink("Edit", "Edit", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, new { @class = "btn btn-primary btn-sm pull-left formbuttonfix" })
+                        }
+                        @{ var dropmenubottom = false; }
+                        <div class="dropdown pull-left formbuttonfix" style="display:none;" id="AddAssociationdropmenubottomPropertyValidationandFormat">
+                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                                Add
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"></ul>
+                        </div>
+                        @if (!dropmenubottom)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenubottomPropertyValidationandFormat").hide();
+                            </script>
+                        }
+                    </div>
+                </div><div class="clearfix" style="clear:both"></div>
+            </div>
+        </div> <!-- /tab-content --><br />
+        <br />
+    </div>
+</div>

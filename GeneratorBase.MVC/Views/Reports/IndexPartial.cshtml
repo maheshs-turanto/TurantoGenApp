@@ -1,0 +1,206 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.WebReference.CatalogItem>
+@using PagedList.Mvc;
+<div id="Reports">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#SearchStringReports").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $('#ReportsSearch').click();
+                    return true;
+                }
+            })
+            $(".pagination a").click(function (e) {
+                var thelink = e.target.href;//get the url that would be navigated to on sort
+                //var thelink = '@Url.Action("Index", "Reports")';
+                if (thelink != '') {
+                    eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+                    var controllerName = "";
+                    if (query.AssociatedType == null)
+                        controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+                    else
+                        controllerName = query.AssociatedType;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $.ajax({
+                        url: thelink,
+                        data: {},
+                        success: function (data) {
+                            if (data != null) {
+                                $("#" + controllerName).html(data);
+                            }
+                        }
+                    })
+                }
+                return false;
+            })
+            $('#pagesizelist').change(function (e) {
+                var thelink = '@Url.Action("Index", "Reports")';
+                $.ajax({
+                    url: thelink,
+                    data: { searchString: $('#SearchStringReports').val(), itemsPerPage: $('#pagesizelist').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#Reports").html(data);
+                        }
+                    }
+                })
+                return false;
+            })
+            $("#ReportsSearch").click(function (e) {
+                var thelink = e.target.href;//get the url that would be navigated to on sort
+                if (thelink.split("?")[1] != undefined)
+                    eval("query = {" + thelink.split("?")[1].replace(/&/ig, "\",").replace(/=/ig, ":\"") + "\"};");
+                var controllerName = "";
+                if (thelink.split("?")[1] == undefined)
+                    controllerName = "@HttpContext.Current.Request.RequestContext.RouteData.Values["controller"].ToString()";
+                else
+                    controllerName = query.AssociatedType;
+                e.preventDefault();
+                e.stopPropagation();
+                $.ajax({
+                    url: thelink,
+                    data: { searchString: $('#SearchStringReports').val(), itemsPerPage: $('#pagesizelist').val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#" + controllerName).html(data);
+                        }
+                    }
+                })
+                return false;
+            })
+        });
+    </script>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="card card-default">
+                <div class="card-header clearfix" style="margin:0px; padding:8px;">
+                    Reports List
+                    <div class="pull-right" style="width:200px;">
+                        <div class="input-group">
+                            @Html.TextBox("SearchStringReports", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @placeholder = "Search", @style = "height:31px" })
+                            <div class="input-group-btn">
+                                <a id="ReportsSearch" onclick="SearchClick(event, 'T_Employee', '@Html.Raw(Url.Action("Index", "Reports", new { IsFilter = ViewData["IsFilter"], searchString = "_SearchString", SearchTimeStamp = DateTime.Now.Ticks.ToString() }))','@User.JavaScriptEncodedName');" class="btn btn-white btn-sm"><span class="fa fa-search"></span></a>
+                                <a id="ReportsSearchCancel" class="btn btn-white btn-sm" onclick="CancelSearch('Reports','@Html.Raw(Url.Action("Index", "Reports"))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid"><span class="fa fa-remove"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" style="margin:0px; padding:8px;">
+                    <div class="table-responsive" style="overflow-x:auto;">
+                        @using (var appcontext = (new ApplicationContext(User)))
+                        {
+                            <table class="table table-hover table-striped default-bordered default-condensed">
+                                <thead>
+                                    @if (Model.Count > 0)
+                                    {
+                                        <tr>
+                                            <th>Run</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            @if (User.CanEditAdminFeature("ReportRoles") || User.CanAddAdminFeature("ReportRoles") || User.CanDeleteAdminFeature("ReportRoles"))
+                                            {
+                                                <th>Roles</th>
+                                            }
+                                        </tr>
+                                            var RoleList = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetAllRolesReport();
+                                            foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td style="width:30px;">
+                                                        <div style="width:60px;">
+                                                            <div class="btn-group" style="position:absolute;">
+                                                                <a href="@Url.Action("ResultShow", "Reports", new { ReportName = item.Path })"><i class="glyphicon glyphicon-eye-open"></i> </a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Name)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Description)
+                                                    </td>
+                                                    @if (User.CanEditAdminFeature("ReportRoles") || User.CanAddAdminFeature("ReportRoles") || User.CanDeleteAdminFeature("ReportRoles"))
+                                                    {
+                                                        var reportroles = appcontext.ReportsInRoles.Where(r => r.ReportId == item.ID).ToList();
+                                                        <td>
+                                                            @foreach (var chkitem in reportroles)
+                                                            {
+                                                                var RoleName = RoleList.FirstOrDefault(r => r.Key == chkitem.RoleId);
+                                                                if (RoleName.Value != null)
+                                                                {
+                                                                    <input type="checkbox" disabled name="Selected" checked /> @RoleName.Value
+
+                                                                }
+                                                            }
+                                                            <a style="margin-left:5px;" href="#" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Assign Roles','dvPopup','" + Url.Action("Edit", "Reports", new { id = item.ID, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"><i class="glyphicon glyphicon-edit"></i> </a>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span style="color: Red; padding: 5px;">No Reports Available For Display !</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </thead>
+                            </table>
+                        }
+                    </div>
+
+                    @if (Model.Count > 0)
+                    {
+                        <div id="pagination" class="MyPagination1">
+                            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewBag.CurrentFilter, itemsPerPage = ViewBag.CurrentItemsPerPage }))
+                            <div class="fixPageSize">
+                                Page Size :
+                                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "30", 30 }, { "40", 40 }, { "50", 50 }, { "100", 100 } }, "Key", "Value"), new { @id = "pagesizelist" })
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-sx-12">
+            <div class="card card-default">
+                <div class="card-header clearfix" style="margin:0px; padding:8px;">
+                    Custom Reports List
+                </div>
+                <div class="card-body" style="margin:0px; padding:8px;">
+                    <div class="table-responsive">
+                        @if (User.CanView("CustomReports"))
+                        {
+                            Html.RenderAction("Index", "CustomReports", new { RenderPartial = true });
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

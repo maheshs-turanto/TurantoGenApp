@@ -1,0 +1,135 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@{
+    ViewBag.Title = "Bulk Update Property Validation and Format";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('.form-control:input').change(function () {
+            var $this = $(this);
+            $("input[type=checkbox][value=" + $this.attr('id') + "]").prop("checked", $this.val() != '' ? true : false);
+            var ChildDDids = $this.attr('ChildDDids');
+            if (ChildDDids != undefined) {
+                var ids = ChildDDids.split(",");
+                for (var i = 0; i < ids.length; i++) {
+                    $("input[type=checkbox][value=" + ids[i] + "]").prop("checked", $this.val() != '' ? true : false);
+                }
+            }
+        })
+    });
+</script>
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("BulkUpdate", "PropertyValidationandFormat", new { UrlReferrer = Convert.ToString(ViewData["PropertyValidationandFormatParentUrl"]), IsDDAdd = ViewBag.IsDDAdd }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    @Html.Hidden("BulkUpdate", (object)ViewBag.BulkUpdate);
+    <div class="alert alert-info" style="margin-top:-10px;">
+        <strong>Warning!</strong> This action updates all the selected records in this list.
+        Select the desired properties using check boxes in the pop-up window.
+        This is an irreversible action, which results in modification of all the selected properties.
+        If you want to proceed with the action on the selected records, click "Update".
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default AppForm">
+                <div class="panel-body">
+                    <table class="table table-striped default-bordered table-hover default-condensed">
+                        <thead>
+                            <tr>
+                                <th>Update</th>
+                                <th>Property</th>
+                                <th>Set Value</th>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="EntityName" /></td>
+                                <td>@Html.LabelFor(model => model.EntityName)</td>
+                                <td> @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="PropertyName" /></td>
+                                <td>@Html.LabelFor(model => model.PropertyName)</td>
+                                <td> @Html.TextBoxFor(model => model.PropertyName, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="RegExPattern" /></td>
+                                <td>@Html.LabelFor(model => model.RegExPattern)</td>
+                                <td> @Html.TextBoxFor(model => model.RegExPattern, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="MaskPattern" /></td>
+                                <td>@Html.LabelFor(model => model.MaskPattern)</td>
+                                <td> @Html.TextBoxFor(model => model.MaskPattern, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="ErrorMessage" /></td>
+                                <td>@Html.LabelFor(model => model.ErrorMessage)</td>
+                                <td> @Html.TextBoxFor(model => model.ErrorMessage, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="LowerBound" /></td>
+                                <td>@Html.LabelFor(model => model.LowerBound)</td>
+                                <td> @Html.TextBoxFor(model => model.LowerBound, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="UpperBound" /></td>
+                                <td>@Html.LabelFor(model => model.UpperBound)</td>
+                                <td> @Html.TextBoxFor(model => model.UpperBound, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="DisplayFormat" /></td>
+                                <td>@Html.LabelFor(model => model.DisplayFormat)</td>
+                                <td> @Html.TextBoxFor(model => model.DisplayFormat, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="IsEnabled" /></td>
+                                <td>@Html.LabelFor(model => model.IsEnabled)</td>
+                                <td>@Html.CheckBox("IsEnabled", false, new { @class = "form-control", @style="height:15px;padding:0px;" })</td>
+                            </tr>
+                            @*<tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="Other1" /></td>
+                                <td>@Html.LabelFor(model => model.Other1)</td>
+                                <td> @Html.TextBoxFor(model => model.Other1, new { @class = "form-control" })</td>
+                            </tr>
+                            <tr>
+                                <td align="center"><input type="checkbox" name="chkUpdate" value="Other2" /></td>
+                                <td>@Html.LabelFor(model => model.Other2)</td>
+                                <td> @Html.TextBoxFor(model => model.Other2, new { @class = "form-control" })</td>
+                            </tr>*@
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    if (ViewBag.IsDDAdd == null && User.CanEdit("PropertyValidationandFormat"))
+    {
+        <input type="submit" value="Update" class="btn btn-primary btn-sm" />
+    }
+    <br /><br />
+}
+<script src="~/Scripts/Common3/chosen.jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+

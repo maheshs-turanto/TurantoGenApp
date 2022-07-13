@@ -1,0 +1,15 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    var linkPrefix = Url.Content("~/");
+    if (Convert.ToBoolean(ViewData["FromHome"]))
+    {
+        linkPrefix = "";
+    }
+}
+<canvas id="Metric_@Model.Id" class="col-sm-6 m-0 rounded-left rounded-right mt-2 p-8 GraphMetrics" style="float:left; border:1px solid #cfdbe2"></canvas>
+
+<script>
+$(document).ready(function () {
+    LoadGraphMetric('Metric_@Model.Id', '@Html.Raw(linkPrefix + Model.t_associatedfacetedsearch.T_LinkAddress)', '@Model.T_Aggregate', '@Model.T_AggregatePropertyName','@Model.T_GraphType','@Model.T_Name');
+});
+</script>

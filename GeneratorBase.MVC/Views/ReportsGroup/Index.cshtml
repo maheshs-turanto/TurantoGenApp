@@ -1,0 +1,36 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.ReportsGroup>
+@{
+    ViewBag.Title = "Reports Group List";
+	string templatename = ("~/Views/ReportsGroup/" + ViewBag.TemplatesName + ".cshtml").Replace("?IsAddPop=true", "");
+	 var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportsGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Reports Group";
+}
+<style>
+   
+
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+<div class="content-heading">
+    <strong class="TitleName"><a href="@Url.Action("Index")">@EntityDisplayName</a><small>List</small></strong>
+    <div class="ml-auto">
+        @if (User.CanAdd("Reports") || User.CanEdit("ReportList"))
+        {
+            <a class="btn btn-secondary btn-sm collapse-data-btn tip-top float-right" href="@Url.Action("Index", "ReportList")"> Report</a>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        ClickFilterBtn();
+    });
+</script>
+<div class="card">
+    <div class="card-body">
+        <div id="dvReportsGroupFilter"></div>
+        @Html.Partial(templatename, Model)
+    </div>
+</div>

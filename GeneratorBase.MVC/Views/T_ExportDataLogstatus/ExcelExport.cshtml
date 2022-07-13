@@ -1,0 +1,43 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.T_ExportDataLogstatus>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"ExportDataLog Status.xls\"");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("T_ExportDataLogstatus","T_Name"))
+{
+		<th>Name</th>
+}
+@if(User.CanView("T_ExportDataLogstatus","T_Description"))
+{
+		<th>Description</th>
+}
+    </tr>
+@foreach (var item in Model) {
+List<string> hiddenProperties = new List<string>();
+if (User.businessrules.Any(p => p.EntityName == "T_ExportDataLogstatus" && p.ActionTypeID.Contains(6)))
+{
+	hiddenProperties = item.ApplyHiddenRule(User.businessrules, "T_ExportDataLogstatus");
+}
+    <tr>
+	@if(User.CanView("T_ExportDataLogstatus","T_Name"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Name)
+        </td>
+}
+@if(User.CanView("T_ExportDataLogstatus","T_Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.T_Description)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               
+			   

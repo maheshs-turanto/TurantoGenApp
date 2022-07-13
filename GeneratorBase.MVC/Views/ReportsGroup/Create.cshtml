@@ -1,0 +1,63 @@
+﻿@model GeneratorBase.MVC.Models.ReportsGroup
+@{
+    ViewBag.Title = "Create Reports Group";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportsGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Reports Group";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+<style>
+   
+
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+<div class="content-heading">
+    <div class="col-lg-8">
+        @{
+            var hostingValue = "";
+            if (ViewBag.DisplayVal != null)
+            {
+                hostingValue = " - " + ViewBag.DisplayVal;
+            }
+        }
+       
+        <strong>
+            <a href="@Url.Action("Index")"> @EntityDisplayName</a>
+
+           <small> Add Reports Group @hostingValue</small>
+        </strong>
+                <span>@Html.DisplayFor(model => model.DisplayValue) </span>
+      
+    </div>
+    <div class="col-lg-4">
+        <div class="pull-right">
+            @if (ViewBag.IsPartial == null)
+            {
+                if (ViewData["HostingEntity"] == null)
+                {
+                    <a href="@(Url.Action("SetFSearch", "ReportsGroup")+Request.Url.Query)" data-original-title="Query" class="btn btn-primary btn-sm" alt="Query" title="Query"><i class="glyphicon glyphicon-search"></i> Query</a>
+                }
+            }
+            @if (ViewBag.IsPartial == null)
+            {
+                <a class="btn btn-primary btn-sm" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "ReportsGroup") + "');") alt="Search" title="List">
+                    <i class="fa fa-list"></i> List
+                </a>
+            }
+
+        </div>
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+<div class="">
+            <div class="card">
+                <div class="card-body">
+@Html.Partial("~/Views/ReportsGroup/CreatePartial.cshtml", Model)
+</div>
+            </div>
+     </div>

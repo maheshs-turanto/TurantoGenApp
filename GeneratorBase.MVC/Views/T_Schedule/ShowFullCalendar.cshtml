@@ -1,0 +1,159 @@
+﻿@model List<GeneratorBase.MVC.Models.T_Schedule>
+@{
+   
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+			Calendar (Session/NonPSR) 
+        </h1>
+        <h2 class="text-primary"> </h2>
+    </div>
+   
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <i class="icon-calendar"></i>
+                    <h3 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> Session </a>
+                    </h3>
+                </div>
+                <div id="collapseTwo" class="panel-collapse in">
+                    <div class="panel-body">
+@if (ViewBag.t_sessiontimeslotsassociation!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Time Slots">
+							<label class="col-sm-5 col-md-5 col-xs-12"> Time Slots</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_sessiontimeslotsassociation">
+                                    		
+	 @Html.DropDownList("t_sessiontimeslotsassociation", null, new {   @multiple = "multiple", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllMultiSelectValue", "T_TimeSlots",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.t_sessiongroupmanagementassociation!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Group Management">
+							<label class="col-sm-5 col-md-5 col-xs-12"> Group Management</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_sessiongroupmanagementassociation">
+                                    		
+	 @Html.DropDownList("t_sessiongroupmanagementassociation", null, new {   @multiple = "multiple", @HostingName = "T_GroupManagement", @dataurl = Url.Action("GetAllMultiSelectValue", "T_GroupManagement",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.schedulesession!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Session Schedule">
+							<label class="col-sm-5 col-md-5 col-xs-12"> Session Schedule</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvschedulesession">
+                                    		
+	 @Html.DropDownList("schedulesession", null, new {   @multiple = "multiple", @HostingName = "T_Schedule", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Schedule",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+	@if (ViewBag.t_sessionclientassociation!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="t_sessionclientassociation">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Client</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_session">
+                                   		
+	 @Html.DropDownList("t_sessionclientassociation", null, new {   @multiple = "multiple", @HostingName = "T_Client", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Client",null) })
+
+								
+                                </div>
+                            </div>
+                        </div>
+		}
+	@if (ViewBag.t_sessionemployeeassociation!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="t_sessionemployeeassociation">
+                                <label class="col-sm-5 col-md-5 col-xs-12"> Employee</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_session">
+                                   		
+	 @Html.DropDownList("t_sessionemployeeassociation", null, new {   @multiple = "multiple", @HostingName = "T_Employee", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Employee",null) })
+
+								
+                                </div>
+                            </div>
+                        </div>
+		}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+   
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <i class="icon-calendar"></i>
+                    <h3 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"><i class="glyphicon glyphicon-chevron-down pull-left" style="padding-top:5px; padding-right:5px;"></i> NonPSR </a>
+                    </h3>
+                </div>
+                <div id="collapseTwo" class="panel-collapse in">
+                    <div class="panel-body">
+@if (ViewBag.t_nonpsrtimeslotassociaton!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="Time Slot">
+							<label class="col-sm-5 col-md-5 col-xs-12"> Time Slot</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvt_nonpsrtimeslotassociaton">
+                                    		
+	 @Html.DropDownList("t_nonpsrtimeslotassociaton", null, new {   @multiple = "multiple", @HostingName = "T_TimeSlots", @dataurl = Url.Action("GetAllMultiSelectValue", "T_TimeSlots",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+@if (ViewBag.schedulenonpsr!=null)
+                    {
+ <div class='col-sm-6 col-md-6 col-xs-12'>
+                            <div class='form-group' title="NonPSR Schedule">
+							<label class="col-sm-5 col-md-5 col-xs-12"> NonPSR Schedule</label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvschedulenonpsr">
+                                    		
+	 @Html.DropDownList("schedulenonpsr", null, new {   @multiple = "multiple", @HostingName = "T_Schedule", @dataurl = Url.Action("GetAllMultiSelectValue", "T_Schedule",null) })
+                                </div>
+                            </div>
+                        </div>
+		}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+    <button id="fSearchCalendar" class="btn btn-primary btn-sm" type="button" dataurl="@(Url.Action("ShowFullCalendar", "T_Schedule", null) )"
+            onclick="SearchCalendar(this);" style="margin-left:15px;">
+        Search
+    </button>
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/T_Schedule/CalendarView.cshtml", null, new ViewDataDictionary { { "TimeSlots", ViewData["TimeSlots"] }})
+<script>
+    $(document).ready(function () {
+        $('.fc-agendaWeek-button').click();
+    });
+</script>
+<script>
+    function SearchCalendar(obj)
+    {
+        var dataurl = $(obj).attr("dataurl");
+        dataurl = addParameterToURL(dataurl, 't_sessiontimeslotsassociation', $('#t_sessiontimeslotsassociation').val());dataurl = addParameterToURL(dataurl, 't_sessiongroupmanagementassociation', $('#t_sessiongroupmanagementassociation').val());dataurl = addParameterToURL(dataurl, 'schedulesession', $('#schedulesession').val());dataurl = addParameterToURL(dataurl, 't_sessionclientassociation', $('#t_sessionclientassociation').val());dataurl = addParameterToURL(dataurl, 't_sessionemployeeassociation', $('#t_sessionemployeeassociation').val());dataurl = addParameterToURL(dataurl, 't_nonpsrtimeslotassociaton', $('#t_nonpsrtimeslotassociaton').val());dataurl = addParameterToURL(dataurl, 'schedulenonpsr', $('#schedulenonpsr').val());
+        location.href = dataurl;
+    }
+    $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({ buttonWidth: '100%', nonSelectedText: 'ALL' });
+        });
+    });
+</script>
+

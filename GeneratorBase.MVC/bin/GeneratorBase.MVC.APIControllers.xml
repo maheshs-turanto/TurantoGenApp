@@ -1,0 +1,928 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GeneratorBase.MVC.APIControllers</name>
+    </assembly>
+    <members>
+        <member name="T:GeneratorBase.MVC.Controllers.ApiBaseController">
+            <summary>A API base controller.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.Token">
+            <summary>The user token (for authentication).</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.ApiBaseController.db">
+             <summary>Gets or sets the database.</summary>
+            
+             <value>The database.</value>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.UserContext">
+            <summary>Context for the user.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.ApiBaseController.User">
+             <summary>Gets or sets the user.</summary>
+            
+             <value>The user.</value>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.Origin">
+            <summary>The origin.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.AccessControlRequestMethod">
+            <summary>The access control request method.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.AccessControlRequestHeaders">
+            <summary>The access control request headers.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.AccessControlAllowOrigin">
+            <summary>The access control allow origin.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.AccessControlAllowMethods">
+            <summary>The access control allow methods.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseController.AccessControlAllowHeaders">
+            <summary>The access control allow headers.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseController.ExecuteAsync(System.Web.Http.Controllers.HttpControllerContext,System.Threading.CancellationToken)">
+             <summary>Executes the asynchronous operation.</summary>
+            
+             <param name="controllerContext">The controller context for a single HTTP operation.</param>
+             <param name="cancellationToken">    The cancellation token assigned for the HTTP operation.</param>
+            
+             <returns>An asynchronous result that yields the execute.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.NoCacheAttribute">
+            <summary>Attribute for no cache.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.NoCacheAttribute.OnResultExecuting(System.Web.Mvc.ResultExecutingContext)">
+             <summary>Called by the ASP.NET MVC framework before the action result executes.</summary>
+            
+             <param name="filterContext">The filter context.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.ApiBaseControllerv1">
+            <summary>An API base controller v1.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.PageSize">
+            <summary>Size of the page.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.Token">
+            <summary>The token.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.TimeZone">
+            <summary>The time zone.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.db">
+             <summary>Gets or sets the database.</summary>
+            
+             <value>The database.</value>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.UserContext">
+            <summary>Context for the user.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.User">
+             <summary>Gets or sets the user.</summary>
+            
+             <value>The user.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.timezone">
+             <summary>Gets or sets the timezone.</summary>
+            
+             <value>The timezone.</value>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.Origin">
+            <summary>The origin.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.AccessControlRequestMethod">
+            <summary>The access control request method.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.AccessControlRequestHeaders">
+            <summary>The access control request headers.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.AccessControlAllowOrigin">
+            <summary>The access control allow origin.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.AccessControlAllowMethods">
+            <summary>The access control allow methods.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.AccessControlAllowHeaders">
+            <summary>The access control allow headers.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.ExecuteAsync(System.Web.Http.Controllers.HttpControllerContext,System.Threading.CancellationToken)">
+             <summary>Executes the asynchronous operation.</summary>
+            
+             <param name="controllerContext">The controller context for a single HTTP operation.</param>
+             <param name="cancellationToken">    The cancellation token assigned for the HTTP operation.</param>
+            
+             <returns>An asynchronous result that yields the execute.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.setDateTimeToClientTime``1(System.String,System.Object)">
+             <summary>Sets date time to client time.</summary>
+            
+             <typeparam name="T">Generic type parameter.</typeparam>
+             <param name="timezone">The timezone.</param>
+             <param name="obj">     The object.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.Page``1(System.Linq.IQueryable{``0},System.Int32,System.Int32)">
+             <summary>Pages.</summary>
+            
+             <typeparam name="T">Generic type parameter.</typeparam>
+             <param name="list">The list.</param>
+             <param name="page">The page.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.Sort``1(System.Linq.IQueryable{``0},System.String,System.Boolean)">
+             <summary>Sorts.</summary>
+            
+             <typeparam name="T">Generic type parameter.</typeparam>
+             <param name="list">     The list.</param>
+             <param name="sortBy">   Describes who sort this object.</param>
+             <param name="ascending">True to ascending.</param>
+            
+             <returns>The sorted values.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.ConditionExpression(System.String,System.String,System.String,System.String)">
+             <summary>Condition expression.</summary>
+            
+             <param name="entityname">The entityname.</param>
+             <param name="property">  The property.</param>
+             <param name="operators"> The operators.</param>
+             <param name="value">     The value.</param>
+            
+             <returns>A string.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.GetDataTypeOfProperty(System.String,System.String,System.Boolean)">
+             <summary>Gets data type of property.</summary>
+            
+             <param name="entityName">  Name of the entity.</param>
+             <param name="propertyName">Name of the property.</param>
+             <param name="valueType">   (Optional) True to value type.</param>
+            
+             <returns>The data type of property.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.DeleteDocument(System.Nullable{System.Int64})">
+             <summary>Deletes the document described by docID.</summary>
+            
+             <param name="docID">Identifier for the document.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiBaseControllerv1.DeleteImageGalleryDocument(System.String)">
+             <summary>Deletes the image gallery document described by docIDs.</summary>
+            
+             <param name="docIDs">The document i ds.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.AuthorizationRequiredAttribute">
+            <summary>Attribute for authorization required.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.AuthorizationRequiredAttribute.Token">
+            <summary>The token.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.AuthorizationRequiredAttribute.OnActionExecuting(System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Occurs before the action method is invoked.</summary>
+            
+             <param name="filterContext">The action context.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.ApiAuthenticationFilter">
+            <summary>Custom Authentication Filter Extending basic Authentication.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiAuthenticationFilter.#ctor">
+            <summary>Default Authentication Constructor.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiAuthenticationFilter.#ctor(System.Boolean)">
+             <summary>AuthenticationFilter constructor with isActive parameter.</summary>
+            
+             <param name="isActive">.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.ApiAuthenticationFilter.OnAuthorizeUser(System.String,System.String,System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Protected overriden method for authorizing user.</summary>
+            
+             <param name="username">     .</param>
+             <param name="password">     .</param>
+             <param name="actionContext">.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.BasicAuthenticationIdentity">
+            <summary>Basic Authentication identity.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.BasicAuthenticationIdentity.Password">
+             <summary>Get/Set for password.</summary>
+            
+             <value>The password.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.BasicAuthenticationIdentity.UserName">
+             <summary>Get/Set for UserName.</summary>
+            
+             <value>The name of the user.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.BasicAuthenticationIdentity.UserId">
+             <summary>Get/Set for UserId.</summary>
+            
+             <value>The identifier of the user.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.BasicAuthenticationIdentity.#ctor(System.String,System.String)">
+             <summary>Basic Authentication Identity Constructor.</summary>
+            
+             <param name="userName">.</param>
+             <param name="password">.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter">
+            <summary>Generic basic Authentication filter.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.#ctor">
+            <summary>Public default Constructor.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.#ctor(System.Boolean)">
+             <summary>parameter isActive explicitly enables/disables this filter.</summary>
+            
+             <param name="isActive">.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.OnAuthorization(System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Checks basic authentication request.</summary>
+            
+             <param name="filterContext">.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.OnAuthorizeUser(System.String,System.String,System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Virtual method.Can be overriden with the custom Authorization.</summary>
+            
+             <param name="user">         .</param>
+             <param name="pass">         .</param>
+             <param name="filterContext">.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.FetchAuthHeader(System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Checks for autrhorization header in the request and parses it, creates user
+             credentials and returns as BasicAuthenticationIdentity.</summary>
+            
+             <param name="filterContext">.</param>
+            
+             <returns>The authentication header.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.GenericAuthenticationFilter.ChallengeAuthRequest(System.Web.Http.Controllers.HttpActionContext)">
+             <summary>Send the Authentication Challenge request.</summary>
+            
+             <param name="filterContext">.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.TokenServicesController">
+            <summary>A controller for handling token services.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.TokenServicesController.db">
+             <summary>Gets or sets the database.</summary>
+            
+             <value>The database.</value>
+        </member>
+        <member name="F:GeneratorBase.MVC.Controllers.TokenServicesController.UserContext">
+            <summary>Context for the user.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.TokenServicesController.User">
+             <summary>Gets or sets the user.</summary>
+            
+             <value>The user.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.TokenServicesController.GenerateToken(System.String)">
+             <summary>Function to generate unique token with expiry against the provided userId. Also add a
+             record in database for generated token.</summary>
+            
+             <param name="userId">.</param>
+            
+             <returns>The user token.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.TokenServicesController.ValidateToken(System.String)">
+             <summary>Method to validate token against expiry and existence in database.</summary>
+            
+             <param name="tokenId">.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.TokenServicesController.Kill(System.String)">
+             <summary>Method to kill the provided token id.</summary>
+            
+             <param name="tokenId">true for successful delete.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.TokenServicesController.DeleteByUserId(System.String)">
+             <summary>Delete tokens for the specific deleted user.</summary>
+            
+             <param name="userId">.</param>
+            
+             <returns>true for successful delete.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.Controllers.UserServicesController">
+            <summary>A controller for handling user services.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.Controllers.UserServicesController.UserManager">
+             <summary>Gets or sets the manager for user.</summary>
+            
+             <value>The user manager.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.Controllers.UserServicesController.Authenticate(System.String,System.String)">
+             <summary>Authenticates.</summary>
+            
+             <param name="userName">Name of the user.</param>
+             <param name="password">The password.</param>
+            
+             <returns>A string.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController">
+            <summary>A controller for handling authentications.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.ForgotPassword(System.String)">
+             <summary>(An Action that handles HTTP POST requests) forgot password.</summary>
+            
+             <param name="name">The name.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.ResetPassword(GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.ResetPasswordViewModel)">
+             <summary>(An Action that handles HTTP POST requests) resets the password.</summary>
+            
+             <param name="name">       The name.</param>
+             <param name="newPassword">The new password.</param>
+             <param name="token">      The token.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.ChangePassword(GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.ChangePasswordViewModel)">
+             <summary>(An Action that handles HTTP POST requests) change password.</summary>
+            
+             <param name="name">       The name.</param>
+             <param name="password">   The password.</param>
+             <param name="newPassword">The new password.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.Login(GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.LoginViewModel)">
+             <summary>(An Action that handles HTTP POST requests) login.</summary>
+            
+             <param name="UserName">Name of the user.</param>
+             <param name="Password">The password.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.Logout">
+             <summary>(An Action that handles HTTP POST requests) logout.</summary>
+            
+             <param name="token">The token.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.BadRequest(GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult)">
+             <summary>Bad request.</summary>
+            
+             <param name="result">The result.</param>
+            
+             <returns>An IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.Unauthorized(GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult)">
+             <summary>Unauthorized the given result.</summary>
+            
+             <param name="result">The result.</param>
+            
+             <returns>An IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationController.StatusCode(System.Net.HttpStatusCode,GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult)">
+             <summary>Status code.</summary>
+            
+             <param name="code">  The code.</param>
+             <param name="result">The result.</param>
+            
+             <returns>An IHttpActionResult.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper">
+            <summary>An authentication helper.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.UserDb">
+            <summary>The user database.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.db">
+            <summary>The database.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.applySecurityPolicy">
+            <summary>True to apply security policy.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.um">
+            <summary>The um.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.user">
+            <summary>The user.</summary>
+        </member>
+        <member name="F:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.cancellationToken">
+            <summary>A token that allows processing to be cancelled.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.UserManager">
+             <summary>Gets the manager for user.</summary>
+            
+             <value>The user manager.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.User">
+             <summary>Gets the user.</summary>
+            
+             <value>The user.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.Create(System.String,System.Threading.CancellationToken)">
+             <summary>Creates a new Task&lt;AuthenticationHelper&gt;</summary>
+            
+             <param name="userName">         Name of the user.</param>
+             <param name="cancellationToken">    (Optional) A token that allows processing to be cancelled.</param>
+            
+             <returns>An asynchronous result that yields an AuthenticationHelper.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.#ctor(GeneratorBase.MVC.Models.ApplicationDbContext,GeneratorBase.MVC.ApplicationContext)">
+             <summary>Constructor.</summary>
+            
+             <param name="userDb">The user database.</param>
+             <param name="db">    The database.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.Initialize(System.String,System.Threading.CancellationToken)">
+             <summary>Initializes this object.</summary>
+            
+             <param name="userName">         Name of the user.</param>
+             <param name="cancellationToken">A token that allows processing to be cancelled.</param>
+            
+             <returns>An asynchronous result.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.SetApplySecurityPolicy">
+             <summary>Sets apply security policy.</summary>
+            
+             <returns>An asynchronous result.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.CreateUserManager">
+             <summary>Creates user manager.</summary>
+            
+             <returns>An asynchronous result.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.SetCurrentUserByName(System.String)">
+             <summary>Sets current user by name.</summary>
+            
+             <param name="userName">Name of the user.</param>
+            
+             <returns>An asynchronous result.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.HasUser">
+             <summary>Has user.</summary>
+            
+             <returns>An AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.NotLockedOut">
+             <summary>Not locked out.</summary>
+            
+             <returns>An AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.PasswordIsCorrectOrIncrementAsync(System.String)">
+             <summary>Password is correct or increment asynchronous.</summary>
+            
+             <exception cref="T:System.Exception">Thrown when an exception error condition occurs.</exception>
+            
+             <param name="password">The password.</param>
+            
+             <returns>An asynchronous result that yields the password is correct or increment.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.PasswordHasNotExpiredAsync">
+             <summary>Password has not expired asynchronous.</summary>
+            
+             <returns>An asynchronous result that yields the password has not expired.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.NewPasswordIsValid(System.String)">
+             <summary>Creates a new password is valid.</summary>
+            
+             <param name="password">The password.</param>
+            
+             <returns>An asynchronous result that yields an AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.PasswordNotRecentlyUsed(System.String)">
+             <summary>Password not recently used.</summary>
+            
+             <param name="password">The password.</param>
+            
+             <returns>An asynchronous result that yields an AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.PasswordUsedRecently(Microsoft.AspNet.Identity.UserManager{GeneratorBase.MVC.Models.ApplicationUser},GeneratorBase.MVC.Models.ApplicationUser,System.String,System.Int32)">
+             <summary>Password used recently.</summary>
+            
+             <param name="um">         The um.</param>
+             <param name="user">       The user.</param>
+             <param name="NewPassword">The new password.</param>
+             <param name="count">      Number of.</param>
+            
+             <returns>An asynchronous result that yields true if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.ConfirmSuccessfulLogin">
+             <summary>Confirm successful login.</summary>
+            
+             <returns>An asynchronous result.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.SaveNewPasswordInHistory">
+            <summary>Saves the new password in history.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.LoginApiAsync">
+             <summary>Login API asynchronous.</summary>
+            
+             <returns>An asynchronous result that yields the login API.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.CreateToken(System.String)">
+             <summary>Creates a token.</summary>
+            
+             <param name="userId">Identifier for the user.</param>
+            
+             <returns>The new token.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult">
+            <summary>Based on IdentityResult.</summary>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.Good">
+             <summary>Gets the good.</summary>
+            
+             <value>The good.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.Bad">
+             <summary>Bads.</summary>
+            
+             <returns>An AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.Bad(System.String)">
+             <summary>Bads.</summary>
+            
+             <param name="message">The message.</param>
+            
+             <returns>An AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.Bad(System.String,System.Object)">
+             <summary>Bads.</summary>
+            
+             <param name="message">The message.</param>
+             <param name="value">  The value.</param>
+            
+             <returns>An AuthenticationResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.#ctor(System.Boolean)">
+             <summary>Constructor.</summary>
+            
+             <param name="good">True to good.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.#ctor">
+            <summary>Default constructor.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.#ctor(System.String)">
+             <summary>Constructor.</summary>
+            
+             <param name="message">The message.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult.#ctor(System.String,System.Object)">
+             <summary>Constructor.</summary>
+            
+             <param name="message">The message.</param>
+             <param name="value">  The value.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1">
+             <summary>Encapsulates the result of an authentication.</summary>
+            
+             <typeparam name="T">Generic type parameter.</typeparam>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Good">
+             <summary>Gets the good.</summary>
+            
+             <value>The good.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Bad">
+             <summary>Bads.</summary>
+            
+             <returns>An AuthenticationResult&lt;T&gt;</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Bad(System.String)">
+             <summary>Bads.</summary>
+            
+             <param name="message">The message.</param>
+            
+             <returns>An AuthenticationResult&lt;T&gt;</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Bad(System.String,`0)">
+             <summary>Bads.</summary>
+            
+             <param name="message">The message.</param>
+             <param name="value">  The value.</param>
+            
+             <returns>An AuthenticationResult&lt;T&gt;</returns>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.IsGood">
+             <summary>Gets or sets a value indicating whether this object is good.</summary>
+            
+             <value>True if this object is good, false if not.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Message">
+             <summary>Gets or sets the message.</summary>
+            
+             <value>The message.</value>
+        </member>
+        <member name="P:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.Value">
+             <summary>Gets or sets the value.</summary>
+            
+             <value>The value.</value>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.op_Implicit(GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult{`0})~System.Boolean">
+             <summary>Implicit cast that converts the given AuthenticationResult&lt;T&gt; to a bool.</summary>
+            
+             <param name="result">The result.</param>
+            
+             <returns>The result of the operation.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.#ctor(System.Boolean)">
+             <summary>Constructor.</summary>
+            
+             <param name="good">True to good.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.#ctor">
+            <summary>Default constructor.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.#ctor(System.String)">
+             <summary>Constructor.</summary>
+            
+             <param name="message">The message.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.AuthenticationHelper.AuthenticationResult`1.#ctor(System.String,`0)">
+             <summary>Constructor.</summary>
+            
+             <param name="message">The message.</param>
+             <param name="value">  The value.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.DocumentController">
+            <summary>A controller for handling documents.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Get(GeneratorBase.MVC.Models.SearchOptions.DocumentSearchOptions)">
+             <summary>Gets a task&lt; i HTTP action result&gt; using the given identifier.</summary>
+            
+             <param name="options">Options for controlling the operation.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Get(System.Int32)">
+             <summary>Gets a task&lt; i HTTP action result&gt; using the given identifier.</summary>
+            
+             <param name="id">The Identifier to delete.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Display(System.String,System.Nullable{System.Int32})">
+             <summary>GET api/Document/display.</summary>
+            
+             <param name="q">   (Optional) The question text.</param>
+             <param name="page">(Optional) The page.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Count(GeneratorBase.MVC.Models.SearchOptions.DocumentSearchOptions)">
+             <summary>(An Action that handles HTTP GET requests) counts the given options.</summary>
+            
+             <param name="options">Options for controlling the operation.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.SearchInternal(System.Linq.IQueryable{GeneratorBase.MVC.Models.Document},GeneratorBase.MVC.Models.SearchOptions.DocumentSearchOptions)">
+             <summary>Searches for the first internal.</summary>
+            
+             <param name="list">The list.</param>
+             <param name="opt"> The option.</param>
+            
+             <returns>The found internal.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Filter(System.Linq.IQueryable{GeneratorBase.MVC.Models.Document},System.String,System.Nullable{System.Boolean})">
+             <summary>Filters.</summary>
+            
+             <param name="list">        The list.</param>
+             <param name="searchString">The search string.</param>
+             <param name="deepSearch">  The deep search.</param>
+            
+             <returns>An IQueryable&lt;Document&gt;</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Post(GeneratorBase.MVC.Models.Document)">
+             <summary>POST api/DocumentApi.</summary>
+            
+             <param name="_document">The document.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Put(System.Int32,GeneratorBase.MVC.Models.Document)">
+             <summary>PUT api/DocumentApi/5.</summary>
+            
+             <param name="id">       The Identifier to delete.</param>
+             <param name="_document">The document.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.DocumentController.Delete(System.Int32)">
+             <summary>DELETE api/DocumentApi/5.</summary>
+            
+             <param name="id">The Identifier to delete.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController">
+            <summary>A controller for handling journal entries.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController.Get(GeneratorBase.MVC.Models.SearchOptions.JournalEntrySearchOptions)">
+             <summary>Gets a task&lt; i HTTP action result&gt; using the given identifier.</summary>
+            
+             <param name="options">The options to get.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController.Get(System.Int32)">
+             <summary>Gets a task&lt; i HTTP action result&gt; using the given identifier.</summary>
+            
+             <param name="id">The Identifier to get.</param>
+            
+             <returns>An asynchronous result that yields an IHttpActionResult.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController.Get(System.String)">
+             <summary>Gets.</summary>
+            
+             <param name="EntityName">Name of the entity.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController.SearchInternal(System.Linq.IQueryable{GeneratorBase.MVC.Models.JournalEntry},GeneratorBase.MVC.Models.SearchOptions.JournalEntrySearchOptions)">
+             <summary>Searches for the first internal.</summary>
+            
+             <param name="list">The list.</param>
+             <param name="opt"> The option.</param>
+            
+             <returns>The found internal.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.JournalEntryController.Filter(System.Linq.IQueryable{GeneratorBase.MVC.Models.JournalEntry},System.String,System.Nullable{System.Boolean})">
+             <summary>Filters.</summary>
+            
+             <param name="list">        The list.</param>
+             <param name="searchString">The search string.</param>
+             <param name="deepSearch">  The deep search.</param>
+            
+             <returns>An IQueryable&lt;JournalEntry&gt;</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.PermissionController">
+            <summary>A controller for handling permissions.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.PermissionController.GetUserPermission">
+             <summary>GET api/GetPermission.</summary>
+            
+             <returns>The user permission.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.SwitchRolesApiController.SwitchRole(System.String)">
+            <summary>Switch role of logged-in user.</summary>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.v1.UserPermissionApiController">
+            <summary>A controller for handling permissions.</summary>
+            <summary>A controller for handling permissions.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.UserPermissionApiController.GetUserDataMetrics">
+             <summary>GET api/GetPermission.</summary>
+            
+             <returns>The user permission.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.v1.UserPermissionApiController.GetUserPermission">
+             <summary>GET api/GetPermission.</summary>
+            
+             <returns>The user permission.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.AuthenticationController">
+            <summary>A controller for handling authentications.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.AuthenticationController.AuthenticateUser(GeneratorBase.MVC.ApiControllers.AuthenticationController.LoginViewModel)">
+             <summary>Authenticate user.</summary>
+            
+             <param name="UserName">Name of the user.</param>
+             <param name="Password">The password.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.AuthenticationController.GetTokenByUserId(System.String)">
+             <summary>Gets token by user identifier.</summary>
+            
+             <param name="id">The identifier.</param>
+            
+             <returns>The token by user identifier.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.AuthenticationController.GetTokenByUserNamePassword(GeneratorBase.MVC.ApiControllers.AuthenticationController.LoginViewModel)">
+             <summary>Gets token by user name password.</summary>
+            
+             <param name="UserName">Name of the user.</param>
+             <param name="Password">The password.</param>
+            
+             <returns>The token by user name password.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.DocumentController">
+            <summary>A controller for handling documents.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.Get">
+             <summary>GET api/DocumentApi.</summary>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.Get(System.Int64)">
+             <summary>GET api/DocumentApi/5.</summary>
+            
+             <param name="id">The Identifier to delete.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.Post(GeneratorBase.MVC.Models.Document)">
+             <summary>POST api/DocumentApi.</summary>
+            
+             <param name="Document">The document.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.Put(System.Int32,GeneratorBase.MVC.Models.Document)">
+             <summary>PUT api/DocumentApi/5.</summary>
+            
+             <param name="id">      The Identifier to delete.</param>
+             <param name="Document">The document.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.Delete(System.Int32)">
+             <summary>DELETE api/DocumentApi/5.</summary>
+            
+             <param name="id">The Identifier to delete.</param>
+            
+             <returns>True if it succeeds, false if it fails.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.DeleteDocument(System.Nullable{System.Int64})">
+             <summary>Deletes the document described by docID.</summary>
+            
+             <param name="docID">Identifier for the document.</param>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.DocumentController.DeleteImageGalleryDocument(System.String)">
+             <summary>Deletes the image gallery document described by docIDs.</summary>
+            
+             <param name="docIDs">The document i ds.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.ConcurrencyExceptionFilterAttribute">
+            <summary>Attribute for concurrency exception filter.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.ConcurrencyExceptionFilterAttribute.OnException(System.Web.Http.Filters.HttpActionExecutedContext)">
+             <summary>Raises the exception event.</summary>
+            
+             <param name="actionExecutedContext">The context for the action.</param>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.JournalEntryController">
+            <summary>A controller for handling journal entries.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.Get">
+             <summary>Gets.</summary>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.Get(System.Int64)">
+             <summary>Gets.</summary>
+            
+             <param name="id">The Identifier to get.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.Get(System.String)">
+             <summary>Gets.</summary>
+            
+             <param name="EntityName">Name of the entity.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.GetByRecordId(System.String,System.Int64)">
+             <summary>Gets by record identifier.</summary>
+            
+             <param name="EntityName">Name of the entity.</param>
+             <param name="recordid">  The recordid.</param>
+            
+             <returns>The by record identifier.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.Get(System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String)">
+             <summary>Gets.</summary>
+            
+             <param name="skip">           The skip.</param>
+             <param name="take">           The take.</param>
+             <param name="orderKey">       The order key.</param>
+             <param name="searchKey">      The search key.</param>
+             <param name="hostingentity">  The hostingentity.</param>
+             <param name="hostingentityid">The hostingentityid.</param>
+             <param name="associatedtype"> The associatedtype.</param>
+            
+             <returns>A HttpResponseMessage.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.JournalEntryController.searchRecords(System.Linq.IQueryable{GeneratorBase.MVC.Models.JournalEntry},System.String,System.Nullable{System.Boolean})">
+             <summary>Searches for the first records.</summary>
+            
+             <param name="lst">         The list.</param>
+             <param name="searchString">The search string.</param>
+             <param name="IsDeepSearch">The is deep search.</param>
+            
+             <returns>The found records.</returns>
+        </member>
+        <member name="T:GeneratorBase.MVC.ApiControllers.PermissionController">
+            <summary>A controller for handling permissions.</summary>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.PermissionController.GetUserPermission">
+             <summary>GET api/GetPermission.</summary>
+            
+             <returns>The user permission.</returns>
+        </member>
+        <member name="M:GeneratorBase.MVC.ApiControllers.SwitchRolesApiController.SwitchRole(System.String)">
+            <summary>Switch role of logged-in user.</summary>
+        </member>
+    </members>
+</doc>

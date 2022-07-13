@@ -1,0 +1,245 @@
+﻿@model IEnumerable<long>
+@{
+    ViewBag.Title = "KanBan";
+    string templatename = ("~/Views/T_ExportDataLog/" + "CardIndexPartial" + ".cshtml").Replace("?IsAddPop=true", "");
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Log";
+	var ActionNameUrl = "KanBan";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ?  Request.UrlReferrer.PathAndQuery : "";
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataLog");
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    ViewBag.TemplatesName = "CardIndexPartial";
+}
+<link href="~/Content/plugins/slick/slicks.css" rel="stylesheet" />
+<link href="~/Content/plugins/slick/slick-theme.css" rel="stylesheet" />
+<link href="~/Content/KanBan.css" rel="stylesheet" />
+<style>
+.slick-prev:before { 
+    color: #000;
+}
+.slick-next:before {
+    color: #000;
+}
+
+.slick-next {
+    right: -6px;
+}
+.slick-prev {
+    left: -6px;
+	    z-index: 1;
+}
+
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+</style>
+@if (!ViewBag.RenderPartial)
+{ 
+<div class="content-heading">
+    <div class="col-lg-10">
+
+                <strong>
+				<a href="@Url.Action("KanBan")"> @EntityDisplayName</a>
+
+                <small>KanBan View</small>
+				</strong>        
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+}
+@functions {
+    object getSortHtmlAttributes(long item)
+    {
+            return new
+            {
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                IsExport = false,
+                FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                IsDivRender = ViewBag.IsDivRender,
+                              
+t_exportdataconfigurationexportdatalogassociation = Request.QueryString["t_exportdataconfigurationexportdatalogassociation"],
+t_associatedexportdatalogstatus = Request.QueryString["t_associatedexportdatalogstatus"],
+  T_AutoNoFrom = Request.QueryString["T_AutoNoFrom"],
+  T_AutoNoFromhdn = Request.QueryString["T_AutoNoFromhdn"],
+  T_AutoNoTo = Request.QueryString["T_AutoNoTo"],
+  T_AutoNoTohdn = Request.QueryString["T_AutoNoTohdn"],
+                search = Request.QueryString["search"],
+                SortOrder = Request.QueryString["SortOrder"],
+                viewtype = ViewBag.TemplatesName,
+                HideColumns = ViewData["HideColumns"],
+                GroupByColumn = ViewBag.GroupByColumn,
+                FilterCondition = ViewBag.FilterCondition,
+                inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                ShowDeleted = ViewData["ShowDeleted"],
+                RenderPartial = true,
+                HostingEntityID = item 
+            };
+        }
+    }
+<div class="" id="T_ExportDataLogKanBan">
+    <div class="row">
+<div id="LoadT_ExportDataLogSetFSearchGrid" class="collapse">
+        </div>
+        <div class="col" style="width:200px; float:left; ">
+		@if (ViewData["IsdrivedTab"] == null)
+            {
+                <div class="pull-left actionbar group-shadow">
+                   
+					                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                        {
+                        <div class="btn-group">
+						<div class="dropdown">
+						
+                            <a href="" class="btn btn-secondary dropdown-toggle" data-original-title="View As" data-toggle="dropdown">
+                                <span class="fa fa fa-table"></span> View As
+                               
+                            </a>
+                            <ul class="dropdown-menu" role="menu" style="min-width:110px">
+				<li>
+					@Html.ActionLink("KanBan (Status)", "KanBan", new { UrlReferrer = BackUrl, AssociatedType = "T_AssociatedExportDataLogStatus", HostingEntity = "T_ExportDataLogstatus", TS = DateTime.Now, viewtype = "CardIndexPartial" },new {@class="dropdown-item"})
+				</li>
+                                <li>
+                                    @Html.ActionLink("List", "Index", new { UrlReferrer = BackUrl, TS = DateTime.Now, viewtype = "IndexPartial" } ,new {@class="dropdown-item"})
+                                </li>
+								                            </ul>
+                        </div>
+						 </div>
+                        }
+                </div>
+                 <div class="pull-right">
+                    <div class="input-group">
+                        @Html.TextBox("SearchStringT_ExportDataLogKanBan", ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox",  @value = ViewBag.Homeval, @placeholder = "Search" })
+                        <div class="btn-group">
+                            <a id="T_ExportDataLogKanBanSearch" onclick="SearchClick(event, 'T_ExportDataLogKanBan', '@Html.Raw(Url.Action("KanBan", "T_ExportDataLog", new { RenderPartial = true, HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                            <a class="btn btn-secondary collapse-data-btn" onclick="window.location.reload();" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                                <span class="fa fa-minus-circle"></span>
+                            </a>
+							<a id="T_ExportDataLogKanBanCancel" class="d-none" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("KanBan", "T_ExportDataLog", new { RenderPartial = true, HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                                <span class="fa fa-minus-circle"></span>
+                            </a>
+                            <a id="T_ExportDataLogKanBanSearchCancel" class="d-none" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action("KanBan", "T_ExportDataLog", new { RenderPartial = true, HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], itemsPerPage = Convert.ToInt32(ViewBag.PageSize), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                                <span class="fa fa-refresh"></span>
+                            </a>
+                            <a id="T_ExportDataLogKanBanRefresh" class="d-none" onclick="CancelSearch('T_ExportDataLog','@Html.Raw(Url.Action(ActionNameUrl, "T_ExportDataLog", new { RenderPartial = true, HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]) }))','@User.Name')"></a>
+                            <a data-toggle="dropdown" data-original-title="Queries" class="btn btn-secondary" alt="Queries" title="Queries"><span class="fa fa-binoculars"> <span class="caret"></span></a>
+                           <ul class="dropdown-menu" role="menu">
+                                <li class="dropdown-item">
+                                    <a class="dropdown-link" href="@(Url.Action("SetFSearch", "T_ExportDataLog")+Request.Url.Query)" data-placement="top" alt="Define new query" title="Define new query">
+                                        <span style="margin-right:3px"></span> + New Query
+                                    </a>
+                                </li>
+                               
+                                @if (User.CanView("T_ExportDataLogtype") || User.CanView("T_ExportDataLogstatus"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item" data-toggle="collapse" id="T_ExportDataLogSetFSearchGridbtn" onclick="@Html.Raw("LoadSetFSearchGridfun(this,'"+Url.Action("SetFSearchGrid", "T_ExportDataLog", new {HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), AssociatedType= @Convert.ToString(ViewData["AssociatedType"]),viewtype= "CardIndexPartial" })+"','T_ExportDataLog');")">
+                                            <i class="fa fa-filter"> </i> Filter
+                                        </a>
+                                    </li>
+
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div style="clear:both"></div>
+
+        <div class="slick_demo_2 row  ml-1 mt-2">
+             @foreach (var item in Model)
+                {
+                    <div>
+                        <div class="card m-2">
+                            <div class="card-body">
+                                <strong class="text-template">@GeneratorBase.MVC.Models.EntityComparer.GetDisplayValueForAssociation(ViewBag.HostingEntity, Convert.ToString(item)) <i class="fa fa-search float-right pointer" data-toggle="collapse" data-target="#search-toggle"></i></strong>
+                                <div id="@ViewData["AssociatedType"]@item">
+                                    @{ Html.RenderAction("Index", getSortHtmlAttributes(item)); }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+        </div>
+    </div>
+</div>
+</div>
+<script src="~/Scripts/NewTheme/plugins/slick/slick.min.js"></script>
+
+@if (User.CanEdit("T_ExportDataLog") && User.CanEdit("T_ExportDataLog", ViewBag.AssociatedType+"ID"))
+{
+<script>
+    $(document).ready(function () {
+        $(".sortable-list").sortable({
+            connectWith: ".connectList",
+            update: function (event, ui) {
+                if (this === ui.item.parent()[0]) {
+                    var ObjectId = ui.item.attr("id");
+                    var oldHost = $(this).parent().attr("host");
+                    var newHost = ui.item.parent().attr("host");
+                    var associatedtype = ui.item.parent().attr("associatedtype");
+                    var postdata = [];
+                    postdata.push({ Key: associatedtype + "ID", Value: newHost });
+                    $.ajax({
+                        type: "POST",
+                        data: { id: ObjectId, properties: postdata },
+                        url: '@Url.Action("SavePropertiesValue")',
+                        asyc: false,
+                        complete: function (jsonObj) {
+						$("body").css('cursor', 'default');
+                        },
+                        success: function (jsonObj) {
+                            if (jsonObj.Result == "Success") {
+                            }
+                            else {
+                                OpenAlertPopUp("Record not updated.", jsonObj.data);
+                                $("#" + entityName + "Refresh").click();
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            OpenAlertPopUp("Record not updated.", "");
+                            $("#T_ExportDataLogRefresh").click();
+                        }
+                    });
+                }
+            },
+        }).disableSelection();
+    });
+</script>
+}
+<script>
+    $(document).ready(function () {
+        $('.slick_demo_1').slick({
+            dots: true
+        });
+        $('.slick_demo_2').slick({
+            infinite: false,
+            slidesToShow: 3,//change to show number of columns
+            slidesToScroll: 1,
+            centerMode: false,
+            draggable: false,
+            swipe: false
+        });
+        $('.slick_demo_3').slick({
+            infinite: true,
+            speed: 500,
+            fade: true,
+            cssEase: 'linear',
+            adaptiveHeight: true
+        });
+    });
+</script>
+

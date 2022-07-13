@@ -1,0 +1,107 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ReportList>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    Response.ContentType = "application/vnd.ms-excel";
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"SSRS Report.xls\"");
+}
+                    <table>
+                            <tr>
+@if(User.CanView("ReportList","ReportNo"))
+{
+		<th>Report No</th>
+}
+@if(User.CanView("ReportList","DisplayName"))
+{
+		<th>Display Name</th>
+}
+@if(User.CanView("ReportList","Description"))
+{
+		<th>Description</th>
+}
+@if(User.CanView("ReportList","ReportsGroupSSRSReportAssociationID"))
+{
+		<th  @(Convert.ToString(ViewData["HostingEntity"]) == "ReportsGroup"?"hidden":"")>Group</th>
+}
+@if(User.CanView("ReportList","Name"))
+{
+		<th>Name</th>
+}
+@if(User.CanView("ReportList","ReportID"))
+{
+		<th>ReportID</th>
+}
+@if(User.CanView("ReportList","ReportPath"))
+{
+		<th>Report Path</th>
+}
+@if(User.CanView("ReportList","IsHidden"))
+{
+		<th>Is Hidden</th>
+}
+@if(User.CanView("ReportList","EntityName"))
+{
+		<th>Entity Name</th>
+}
+    </tr>
+@foreach (var item in Model) {
+    <tr>
+	@if(User.CanView("ReportList","ReportNo"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportNo)
+        </td>
+}
+@if(User.CanView("ReportList","DisplayName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.DisplayName)
+        </td>
+}
+@if(User.CanView("ReportList","Description"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+}
+@if(User.CanView("ReportList","ReportsGroupSSRSReportAssociationID"))
+{
+		<td @(Convert.ToString(ViewData["HostingEntity"]) == "ReportsGroup"?"hidden":"")>
+            @Html.DisplayFor(modelItem => item.reportsgroupssrsreportassociation.DisplayValue)
+        </td>
+}
+@if(User.CanView("ReportList","Name"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+}
+@if(User.CanView("ReportList","ReportID"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportID)
+        </td>
+}
+@if(User.CanView("ReportList","ReportPath"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.ReportPath)
+        </td>
+}
+@if(User.CanView("ReportList","IsHidden"))
+{
+		<td>
+            @item.IsHidden
+        </td>
+}
+@if(User.CanView("ReportList","EntityName"))
+{
+		<td>
+            @Html.DisplayFor(modelItem => item.EntityName)
+        </td>
+}
+                                </tr>
+                            }
+</table>
+               

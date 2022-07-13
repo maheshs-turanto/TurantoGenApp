@@ -1,0 +1,95 @@
+﻿@model GeneratorBase.MVC.Models.CreateRoleViewModel
+@{
+    ViewBag.Title = "Create Role";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    function bindForm() {
+        $.ajax({
+            url: '@Url.Action("CreateRole", "Account")',
+            data: $('#createForm').serialize(),
+            type: 'post',
+            success: function (data) {
+                if (data.success) {
+                    if ('@ViewData["UrlReferrer"]'.length > 0) {
+                        window.location.href = '@ViewData["UrlReferrer"]';
+                    }
+                    else {
+                        var url = '@Url.Action("RoleList", "Account")';
+                        window.location.href = url;
+                    }
+                }
+                else {
+                    fillErrorList(data);
+                    showValidationErrors(true);
+                }
+            },
+            error: function (xhr, status) {
+                //Display error message
+            }
+        });
+        return false;
+    }
+    function showValidationErrors(isShown) {
+        if (isShown) {
+            $("#errorContainer").show();
+        } else {
+            $("#errorContainer").hide();
+        }
+    }
+    function fillErrorList(errors) {
+        $("#errors").html("");
+        var list = document.createElement('ul');
+        for (var i = 0; i < errors.length; i++) {
+            var item = document.createElement('li');
+            item.appendChild(document.createTextNode(errors[i]));
+            list.appendChild(item);
+        }
+        $("#errors").html(list);
+    }
+</script>
+@using (Html.BeginForm("CreateRole", "Account", FormMethod.Post, new { id = "createForm", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <div id="errorContainer" class="alert alert-danger" style="display: none">
+        <div id="errors"></div>
+    </div>
+    <div class="container-page">
+        <div class="form-group row">
+            <div class="col-lg-6">
+                <label>@Html.LabelFor(m => m.Name)  <span class="text-danger-reg">*</span></label>
+                @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Name)
+            </div>
+            <div class="col-lg-6">
+                <label>@Html.LabelFor(m => m.Description) </label>
+                @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+            </div>
+            <div class="col-lg-6">
+                <label>Import Permission from</label>
+                @Html.DropDownList("RoleList", null, "-- Blank Template --", new { @class = "form-control" })
+            </div>
+        </div>
+        @if (ViewData["TenantId"] != null)
+        {
+            @Html.Hidden("RoleType", "TenantSpecific")
+            @Html.Hidden("TenantId", ViewData["TenantId"])
+        }
+        else
+        {
+            @Html.Hidden("RoleType", "Global")
+        }
+
+        <div class="form-group">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            @if (User.CanAddAdminFeature("Role"))
+            {
+                <input type="submit" class="btn btn-primary " value="Create" onclick="return bindForm();" />
+            }
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+}
+@Scripts.Render("~/bundles/jqueryval")

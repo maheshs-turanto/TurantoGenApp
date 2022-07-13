@@ -1,0 +1,79 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.AppSetting>
+@{
+    ViewBag.Title = "Application Setting";
+
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@if (appTheme == "Angular")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small> Application Setting</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary pull-right dropdown-toggle text-white" type="button" data-toggle="dropdown"> Add Application Setting or Group </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting Group','dvPopup','" + Url.Action("CreateGroup", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting Group</a></li>
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting','dvPopup','" + Url.Action("CreateSetting", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting</a></li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="contaner">
+        <div class="card">
+            <div class="card-body">
+                @Html.Partial("~/Views/AppSetting/IndexPartial.cshtml", Model)
+            </div>
+        </div>
+    </div>
+}
+@if (appTheme == "Default")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small> Application Setting</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary pull-right dropdown-toggle" type="button" data-toggle="dropdown"> Add Application Setting or Group </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting Group','dvPopup','" + Url.Action("CreateGroup", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting Group</a></li>
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting','dvPopup','" + Url.Action("CreateSetting", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting</a></li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="contaner">
+        @Html.Partial("~/Views/AppSetting/IndexPartial.cshtml", Model)
+    </div>
+
+}
+@if (appTheme == "Default1")
+{
+    <div class="content-heading">
+        <div class="col-lg-8">
+            <strong>
+                <a href="@Url.Action("Index", "Admin" )">Admin</a>
+                <small> Application Setting</small>
+            </strong>
+        </div>
+        <div class="col-lg-4">
+            <a href="#" class="btn btn-primary pull-right dropdown-toggle" type="button" data-toggle="dropdown"> Add Application Setting or Group </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting Group','dvPopup','" + Url.Action("CreateGroup", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting Group</a></li>
+                <li><a class="dropdown-item" data-placement="top" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Application Setting','dvPopup','" + Url.Action("CreateSetting", "AppSetting", new { UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")"> Add Application Setting</a></li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="contaner">
+        @Html.Partial("~/Views/AppSetting/IndexPartial.cshtml", Model)
+    </div>
+
+}

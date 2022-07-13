@@ -1,0 +1,358 @@
+﻿@model GeneratorBase.MVC.Models.Document
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Document";
+    var EditPermission = User.CanEditItem("Document", Model, User);
+    var DeletePermission = User.CanDeleteItem("Document", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "Document");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Document";
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("Document", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+                $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+            if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+                $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+            }
+
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.DocumentIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.DocumentIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.DocumentIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.DocumentIsGroupsHiddenRule);
+    }
+}
+
+@{
+    if (!string.IsNullOrEmpty(ViewBag.DocumentIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.DocumentIsSetValueUIRule);
+    }
+}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-title">
+            <i class="glyphicon glyphicon-edit text-primary"></i> @EntityDisplayName  <i class="glyphicon glyphicon-chevron-right small"></i> <span>Edit</span>
+
+            <div class="btn-group pull-right" style="margin-top:3px;">
+
+
+
+                <a data-toggle="dropdown" class="btn btn-xs dropdown-toggle" alt="Action" title="Action">
+                    Action
+                    <span class="caret" style="margin-bottom:2px">    </span>
+                </a>
+                <ul class="dropdown-menu pull-left">
+
+                    <li>
+                        @if (User.CanEdit("Document"))
+                        {
+                            <a href="@Url.Action("Edit", "Document", new { id = Model.Id, UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                        }
+                    </li>
+                    <li>
+                        @if (User.CanDelete("Document"))
+                        {
+                            <a href="@Url.Action("Delete", "Document", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                        }
+                    </li>
+                    <li class="divider" style="clear:both"></li>
+                    <li class="dropdown-submenu pull-left">
+                        <a tabindex="-1" href="#" style="margin-bottom:10px;">Find Matching</a>
+                        <ul class="dropdown-menu pull-left">
+                            <li>
+                                <a href="@Url.Action("FindFSearch", "T_Employee", new {sourceEntity="Document",id=Model.Id}, null)">Employee</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("FindFSearch", "T_Tests", new {sourceEntity="Document",id=Model.Id}, null)">Tests</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("FindFSearch", "T_FacilityConfiguration", new {sourceEntity="Document",id=Model.Id}, null)">Facility Configuration</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+        </h1>
+
+        <h2 class="text-primary" style="padding:0px 5px 15px 0px; display:none;">
+            <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+            @if (EditPermission)
+            {
+                <div class="pull-right" style="margin-top:-3px">
+                    <button class="btn btn-default btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('Document',event,'hdnNextPrevId')")" alt="Next" title="Next">Next >></button>
+                    @Html.DropDownList("EntityDocumentDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('Document','frmDocument','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 22px;width: 170px; font-size:12px; color:#333;" })
+                    <button class="btn btn-default btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('Document',event,'hdnNextPrevId')")" alt="Prev" title="Prev"><< Prev</button>
+                </div>
+            }
+        </h2>
+
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<div class="tabbable responsive">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">Details</a></li>
+
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+            @using (Html.BeginForm("Edit", "Document", new { UrlReferrer = Convert.ToString(ViewData["DocumentParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmDocument" }))
+            {
+                Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.ConcurrencyKey)
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+                        <div class="panel-body">
+
+                            <div class="row">
+
+                                @if (User.CanView("Document", "DocumentName"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvDocumentName">
+                                        <div class='form-group' title="">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.DocumentName)  <span class="text-danger-reg">*</span> </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.DocumentName, getHtmlAttributes("DocumentName"))
+                                                @Html.ValidationMessageFor(model => model.DocumentName)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.DocumentName, new { @class = "form-control" })}
+                                @if (User.CanView("Document", "Description"))
+                                {
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+                                        <div class='form-group' title="">
+                                            <label class="col-sm-5 col-md-5 col-xs-12">@Html.LabelFor(model => model.Description)   </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+
+                                                @Html.TextBoxFor(model => model.Description, getHtmlAttributes("Description"))
+                                                @Html.ValidationMessageFor(model => model.Description)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+                                @if (User.CanView("Document", "Byte") && User.CanView("Document"))
+                                {
+
+                                    <div class='col-sm-6 col-md-6 col-xs-12' id="dvByte">
+                                        <div class='form-group' title="">
+                                            @Html.TextBoxFor(model => model.Byte, new { @class = "hidden" })
+                                            <label class="col-sm-5 col-md-5 col-xs-12">Document </label>
+                                            <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                                                <div style="position:relative;">
+                                                    <a class='btn btn-primary btnupload' href='javascript:;'>
+                                                        Upload File
+                                                        <input id="File_Byte" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;width:105px;' name="File_Byte" onchange='uploadedFileName("upload-file-infoFile_Byte", $(this).val());'>
+                                                    </a>
+
+
+                                                    <p>
+                                                        @if (!string.IsNullOrEmpty(Model.FileName))
+                                                        {
+                                                            @Html.ActionLink(Model.FileName, "Download", new { id = Model.Id }, new { @Class = "small pull-left", @Style = "vertical-align:middle;font-size: 11px;" })
+
+
+                                                        }
+                                                        <span class='label uploadlblFix pull-left' style="color: brown; vertical-align: middle; font-size: 10px;" id="upload-file-infoFile_Byte"></span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                { @Html.HiddenFor(model => model.Byte, new { @class = "form-control" })}
+                      
+                                   
+
+
+
+                                @Html.HiddenFor(model => model.DateCreated, new { @class = "form-control" })
+                               
+
+                                  
+
+
+
+                             
+                                @Html.HiddenFor(model => model.DateLastUpdated, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @Html.AntiForgeryToken();
+                <a class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index","Document")');" alt="Cancel" title="Cancel">Cancel</a>
+                @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["DocumentParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix", @alt="Cancel", @title="Cancel" })*@
+                if (EditPermission)
+                {
+                    <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                    <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                    <input type="submit" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                }
+                <input type="hidden" name="hdncommand" value="" />
+                <input type="hidden" name="hdnNextPrevId" value="" />
+            }
+            @{ var dropmenubottom = false; }
+            <div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomDocument">
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                    Add Association
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1"></ul>
+            </div>
+            @if (!dropmenubottom)
+            {
+                <script>
+                    $("#AddAssociationdropmenubottomDocument").hide();
+                </script>
+            }
+            <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+        </div>
+
+    </div> <!-- /tab-content --><br />
+
+    <br />
+</div>
+<script>
+</script>
+
+
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "Document").ToList();
+
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var ruleids = businessrule.Select(q => q.Id).ToList();
+        var typelist = string.Join(",", (new GeneratorBase.MVC.Models.RuleActionContext()).RuleActions.Where(p => ruleids.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+
+                form = $("#frmDocument").serialize();
+                dataurl = "@Url.Action("businessruletype", "Document", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "Document", false, "ErrMsg", form);
+                //business rules on inline associations
+
+            });
+        </script>
+        <script>
+            $("form").submit(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmDocument").serialize();
+
+                dataurl = "@Url.Action("businessruletype", "Document", new { ruleType = "OnEdit"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "Document", false, "ErrMsg", form);
+
+                //business rules on inline associations
+
+                if (flag) {
+                    SaveServerTime(this, true);
+                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+                    if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                        $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                    $("#frmDocument").find(':input').removeAttr('disabled');
+                }
+                return flag;
+            });
+            //$(document).ready(function () {
+            //      $("input[type='submit']").on('blur', function () {
+            //         $("input[type='submit']").removeAttr('disabled');
+            //     });
+            // });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                var $this = $(this);
+                SaveServerTime(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+            focusOnControl('frmDocument');
+        }
+        catch (ex) { }
+    });
+    $(document).ready(function () {
+        var RecIdEdit = $("#frmDocument").find("input:hidden[name='Id']").val();
+        $("#EntityDocumentDisplayValueEdit").val(RecIdEdit);
+
+        var textedit = $("option:selected", $("#EntityDocumentDisplayValueEdit")).text();
+        $("#EntityDocumentDisplayValueEdit").attr('data-toggle', 'tooltip')
+        $("#EntityDocumentDisplayValueEdit").attr('title', textedit);
+
+        var lastOptionValEdit = $('#EntityDocumentDisplayValueEdit option:last-child').val();
+        var fristOptionValEdit = $('#EntityDocumentDisplayValueEdit option:first-child').val();
+        if (lastOptionValEdit == RecIdEdit) {
+            $('#nextEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+        }
+        if (fristOptionValEdit == RecIdEdit)
+            $('#prevEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+    });
+</script>

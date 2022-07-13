@@ -1,0 +1,75 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataDetails
+@{
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataDetails");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Details";
+	List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_ExportDataDetails" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_ExportDataDetails", true);
+    }
+	Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        var IdExist = '@Model.Id';
+        console.log('Id', IdExist);
+      if (IdExist == 0) {
+          $('#@Model.Id').removeAttr("style");
+        }
+    });
+</script>
+
+<div class="card card-default CardHide" id="@Model.Id" style="width: 350px; margin-bottom:0px">
+	 @if (Model.Id > 0)
+    {
+	<div class="card-header clearfix">
+        <h3 class="card-title">
+			<div class="truncate">
+				@if(User.CanEdit("T_ExportDataDetails"))
+                {
+                   <i class="fa fa-info-circle"></i><a href = "@Url.Action("Edit", "T_ExportDataDetails", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+                else if (User.CanView("T_ExportDataDetails"))
+                {
+                     <i class="fa fa-info-circle"></i><a href="@Url.Action("Details", "T_ExportDataDetails", new { id = Model.Id }, null)" onclick="event.stopImmediatePropagation();"> @EntityDisplayName > @Model.DisplayValue</a>
+                }
+            </div>
+        </h3>
+		<a href="" class="pull-right" style="margin-top:-16px"><i class="fa fa-times-circle" onclick="event.stopImmediatePropagation();ClosePopupCard(event)"></i></a>
+    </div>
+	  @Html.HiddenFor(model => model.Id)
+	  }
+	    <div class="card-body">
+		   <div class="col-12" style="padding:0px;">
+
+	@if(User.CanView("T_ExportDataConfiguration") && User.CanView("T_ExportDataDetails","T_ExportDataConfigurationExportDataDetailsAssociationID") && !hiddenProperties.Contains("T_ExportDataConfigurationExportDataDetailsAssociationID"))
+{
+ <div class="form-group col-6 float-left">
+		<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_ExportDataConfigurationExportDataDetailsAssociationID)</label>
+ @if (Model.t_exportdataconfigurationexportdatadetailsassociation!=null && !string.IsNullOrEmpty(Model.t_exportdataconfigurationexportdatadetailsassociation.DisplayValue))
+        {
+		 <p class="truncate1" id="lblT_ExportDataConfigurationExportDataDetailsAssociation">
+				@Html.ActionLink(HttpUtility.HtmlDecode(Html.DisplayFor(model => model.t_exportdataconfigurationexportdatadetailsassociation.DisplayValue).ToString()), "Details", "T_ExportDataConfiguration", new { Id = Html.DisplayFor(model => model.t_exportdataconfigurationexportdatadetailsassociation.Id).ToString() }, null)
+		</p>
+		}
+</div>
+}
+						@if(User.CanView("T_ExportDataDetails","T_ChildEntity")  && !hiddenProperties.Contains("T_ChildEntity"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_ChildEntity)</label>
+										<p class="truncate1">@Model.T_ChildEntity</p>
+									</div>
+						}
+												@if(User.CanView("T_ExportDataDetails","T_ParentEntity")  && !hiddenProperties.Contains("T_ParentEntity"))
+						{
+								  <div class="form-group col-6 float-left">
+										<label class="font-weight-bold truncate1">@Html.LabelFor(model => model.T_ParentEntity)</label>
+										<p class="truncate1">@Model.T_ParentEntity</p>
+									</div>
+						}
+								</div> <!-- /tab-content -->
+	</div>
+</div>
+ 

@@ -1,0 +1,895 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBar
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Menu Bar";
+    var EditPermission = User.CanEditItem("T_MenuBar", Model, User);
+    //var DeletePermission = User.CanDeleteItem("T_MenuBar", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_MenuBar");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Menu Bar";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_MenuBar", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_MenuBar");
+    var NonViewableProperties = User.CanNotView("T_MenuBar");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+
+
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_MenuBar", User, groupcontaininginlinegrid);
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (Property == "T_AutoNo")
+            return new { @class = "form-control", @readonly = "readonly" };
+        if (User.CanEdit("T_MenuBar", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+    object getHtmlAttributesForCheckBox(string Property)
+    {
+        if (User.CanEdit("T_MenuBar", Property))
+        {
+            return null;
+        }
+        return new { @disabled = "@disabled" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+window.onload = function(){
+	JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+}
+    </script>
+}
+@*@if (Model != null)
+    {
+        <script>
+        $(document).ready(function () {
+            var roles = "@HttpUtility.JavaScriptStringEncode(Model.T_Roles)".split(",");
+            var eleRoles = document.getElementById("RoleList");
+            for (i = 0; i < roles.length; i++) {
+                for (var o = 0; o < eleRoles.options.length; o++) {
+                    if (eleRoles.options[o].value == roles[i])
+                        eleRoles.options[o].selected = true;
+                }
+            }
+        });
+        </script>
+    }*@
+<script>
+    $(document).ready(function () {
+        try {
+     LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+			$("[inlinegrid]").each(function() {
+                //$(this).click();
+				 eval($(this).attr('onclick'));
+			    var targetpanel = $(this).attr('id').replace('dvGroup','');
+			    $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_MenuBarRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_MenuBarRestrictDropdownValueRule);
+    }
+}
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .formbuttonfix {
+            float: right !important;
+            margin-right: 5px !important;
+            padding: 4px 18px !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 8px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -0px !important;
+        }
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+
+        .vrbButtons {
+            padding: 4px 40px !important;
+            font-size: 20px;
+            margin-top: -40px;
+        }
+
+        @@media (max-width: 767px) {
+
+
+            .arrowCount {
+                background-color: #1d5072 !important;
+            }
+
+            #dvGroupT_StudentPersonalInformation {
+                margin-top: 10px !important;
+            }
+
+            .nav-tabs .nav-item.active a {
+                display: block !important;
+                border-color: #1d5072 !important;
+                color: #fff !important;
+                background: #1d5072 !important;
+            }
+
+                .nav-tabs .nav-item.active a:hover {
+                    display: block !important;
+                    border-color: #1d5072 !important;
+                    color: #fff !important;
+                    background: #1d5072 !important;
+                }
+
+            .sw-theme-arrows > ul.step-anchor {
+                border-top-right-radius: 0 !important;
+            }
+
+                .sw-theme-arrows > ul.step-anchor > li.active > a {
+                    display: block !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor > li > a, .sw-theme-arrows > ul.step-anchor > li > a:hover {
+                    display: none !important;
+                    color: #1d5072 !important;
+                }
+
+                .sw-theme-arrows > ul.step-anchor.open > li > a {
+                    display: block !important;
+                }
+
+            .responsive-tabs .dropdown-arrow {
+                border-color: #fff !important;
+                display: block !important;
+                z-index: 1000;
+                position: absolute;
+            }
+
+            #WizardBtnCancel {
+                margin-top: unset !important;
+                float: unset !important;
+                display: block !important;
+                margin-right: 8px !important;
+                margin-top: 3px !important;
+            }
+        }
+    </style>
+}
+
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index")">@EntityDisplayName Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.DisplayFor(model => model.DisplayValue)
+            </small>
+        </strong>
+    </div>
+    @if (string.IsNullOrEmpty(wizardid))
+    {
+        <div class="ml-auto">
+            @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+            {
+                <div class="btn-group float-right" style="margin-left:8px;">
+                    <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Action
+                    </a>
+                    <ul class="dropdown-menu multi-level">
+                        @if (EditPermission)
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Edit","T_MenuBar", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                            </li>
+
+                        }
+                        @if (EditPermission && User.CanDelete("T_MenuBar"))
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Delete", "T_MenuBar", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+
+                            </li>
+                        }
+                        @if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+                        {
+                            <li class="dropdown-item">
+                                <a data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+            @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_MenuBarDisplayValueEdit != null && !HideAction)
+            {
+                <div class="pull-right">
+                    <button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('T_MenuBar',event,'hdnNextPrevId')")" alt="Next" title="Next" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                    @Html.DropDownList("EntityT_MenuBarDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('T_MenuBar','frmT_MenuBar','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+                    <button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('T_MenuBar',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlT_MenuBar" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_MenuBar")).ToHtmlString()"></a>
+<div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+                Details
+            </a>
+        </li>
+
+        @if (User.CanView("T_MenuBarMenuItemAssociation"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" id="dvGroupT_MenuBarMenuItemAssociation_T_MenuBar" onclick="LoadTab('T_MenuBarMenuItemAssociation_T_MenuBar','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_MenuItem", new { RenderPartial=true, HostingEntity ="T_MenuBar", HostingEntityID = @Model.Id, AssociatedType = "T_MenuBarMenuItemAssociation_T_MenuBar",TabToken = DateTime.Now.Ticks,}))')" href="#T_MenuBarMenuItemAssociation_T_MenuBar" data-toggle="tab" alt="Menu Item" title="Menu Item">
+                    Menu Item
+                </a>
+            </li>
+        }
+
+        @if (User.CanView("JournalEntry"))
+        {
+            <li class="nav-item" @(!User.CanView("JournalEntry") ? "style=display:none;" : "")>
+                <a class="nav-link" onclick="LoadTab('JournalEntryToT_MenuBarRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "T_MenuBar", HostingEntity = "T_MenuBar", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToT_MenuBarRelation" data-toggle="tab" alt="Menu Bar Journal" title="Menu Bar Journal">
+                    Menu Bar Journal
+                </a>
+            </li>
+        }
+
+    </ul>
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "T_MenuBar", new { UrlReferrer = Convert.ToString(ViewData["T_MenuBarParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmT_MenuBar" }))
+            {
+                if (!string.IsNullOrEmpty(wizardid))
+                {@Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+            else { Html.ValidationSummary(true); }
+            Html.EnableClientValidation();
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.ConcurrencyKey)
+            if (NonViewableProperties != null)
+            {
+                @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+            }
+            <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+            </div>
+            <div class="AppForm tabs-container" @wizardid>
+                @if (!string.IsNullOrEmpty(wizardid))
+                {
+                    <ul id="olwizard" class="nav nav-tabs responsive-tabs" role="tablist">
+                        <li role="tab" class="nav-item" id="liGroupT_MenuBarBasicInformation">
+                            <a href="#wzGroupT_MenuBarBasicInformation" class="hidden-phone">Basic Information</a>
+                        </li>
+                        <li role="tab" class="nav-item" id="liGroupT_MenuBarMenuBarDisplayInformation">
+                            <a href="#wzGroupT_MenuBarMenuBarDisplayInformation" class="hidden-phone">Menu Bar Display Information</a>
+                        </li>
+
+                        @if ((User.CanView("T_MenuItem") && User.CanView("T_MenuBarMenuItemAssociation")))
+                        {
+                            <li role="tab" class="nav-item" id="liGroupT_MenuBar" onclick="$('#dvGroupT_MenuBar').click();">
+                                <a href="#wzGroupT_MenuBar" class="hidden-phone">Menu Item</a>
+                            </li>
+                        }
+
+
+                    </ul>
+                    <script>
+                        $(document).ready(function () {
+                            $(".formbuttonfix:not([dataurl]").hide();
+                            $(".pager").show();
+                            $(".pager.bwizard-buttons").show();
+                            $("ol#olwizard").removeClass("d-none");
+                            $("#tabcontent").removeClass("d-none");
+                        });
+                    </script>
+                    @Html.Hidden("wizardstep", ViewData["wizardstep"])
+                }
+                <div>
+                    <div class="row bgwizard" id="wzGroupT_MenuBarBasicInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_MenuBarBasicInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="Basic Information" title="Basic Information">
+                                        Basic Information
+
+
+
+                                    </h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_AutoNo") && !hiddenProperties.Contains("T_AutoNo"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                            <div class='form-group' title="Auto No.">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_AutoNo, getHtmlAttributes("T_AutoNo"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AutoNo"))
+                                        { @Html.HiddenFor(model => model.T_AutoNo, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Name") && !hiddenProperties.Contains("T_Name"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                            <div class='form-group' title="Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_Name, getHtmlAttributes("T_Name"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Name)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Name"))
+                                        { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Roles") && !hiddenProperties.Contains("T_Roles"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Roles">
+                                            <div class='form-group' title="Roles">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Roles) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextAreaFor(model => model.T_Roles, getHtmlAttributes("T_Roles"))
+
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Roles)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Roles"))
+                                        { @Html.HiddenFor(model => model.T_Roles, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupT_MenuBarMenuBarDisplayInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_MenuBarMenuBarDisplayInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="Menu Bar Display Information" title="Menu Bar Display Information">
+                                        Menu Bar Display Information
+
+
+
+                                    </h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_Disabled") && !hiddenProperties.Contains("T_Disabled"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disabled">
+                                            <div class="form-group" title="Disabled?">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_Disabled)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @if (Model.T_Disabled.HasValue)
+                                                    {
+                                                        @Html.CheckBox("T_Disabled", Model.T_Disabled.Value, getHtmlAttributesForCheckBox("T_Disabled"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBox("T_Disabled", false, getHtmlAttributesForCheckBox("T_Disabled"))
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Disabled)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Disabled"))
+                                        { @Html.HiddenFor(model => model.T_Disabled, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Horizontal") && !hiddenProperties.Contains("T_Horizontal"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Horizontal">
+                                            <div class="form-group" title="Horizontal?">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_Horizontal)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @if (Model.T_Horizontal.HasValue)
+                                                    {
+                                                        @Html.CheckBox("T_Horizontal", Model.T_Horizontal.Value, getHtmlAttributesForCheckBox("T_Horizontal"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBox("T_Horizontal", false, getHtmlAttributesForCheckBox("T_Horizontal"))
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Horizontal)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Horizontal"))
+                                        { @Html.HiddenFor(model => model.T_Horizontal, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        if (User.CanView("T_MenuItem") && User.CanView("T_MenuBarMenuItemAssociation"))
+                        {<div steptype="association" id="wzGroupT_MenuBarMenuItemAssociation_T_MenuBar" class="bgwizard">
+                                <div class="tab-pane fade in" id="T_MenuBarMenuItemAssociation_T_MenuBar"></div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="@footerclassdiv1">
+                <div class="@footerclassdiv2">
+                    @Html.AntiForgeryToken()
+
+                    <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "T_MenuBar")');" alt="Cancel" title="Cancel">Cancel</a>
+
+                    @if (EditPermission)
+                    {
+
+                        <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+
+                        if (ViewBag.IsPartial == null)
+                        {
+                            <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                            <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                        }
+                        <input type="hidden" name="hdncommand" value="" />
+                        <input type="hidden" name="hdnNextPrevId" value="" />
+                    }
+                    @foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+                    {
+                        if (item.T_DisplayType == "Button")
+                        {
+                            var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                            var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+                            if (ispreview)
+                            {
+                                <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "T_MenuBar", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+                                    <i class="fa fa-file-pdf"></i> @item.T_Name
+                                </a>
+                            }
+                            else
+                            {
+
+                                <a class="btn btn-primary btn-sm pull-left formbuttonfix vrbButtons" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick="@Html.Raw("GenerateDocumentFromButton(this,'"+isdownload + "');")" dataurl="@Url.Action("GenerateDocument", "T_MenuBar", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+                            }
+                        }
+                    }
+                    @if (ViewBag.ExportDataTemplates != null)
+                    {
+                        foreach (var item in (List<GeneratorBase.MVC.Models.T_ExportDataConfiguration>)ViewBag.ExportDataTemplates)
+                        {
+                            <a class="btn btn-primary btn-sm pull-left formbuttonfix" data-placement="top" data-original-title="@item.T_Name" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Note','dvPopup','" + Url.Action("ExportDataNote", "T_MenuBar", new { btnid = item.Id, Ids = Model.Id, UrlReferrer = BackUrl, TS = DateTime.Now }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+                                @item.T_Name
+                            </a>
+                        }
+                    }
+
+
+                    @if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+                    {
+                        <div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                            @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                            {
+                                                var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                                <div class="col-sm-4">
+                                                    <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload ? "download=true" : "download:false") dataurl='@Url.Action("GenerateDocument", "T_MenuBar", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="card-body row pull-right">
+                                            <label id="lblGenerateDocument" class="text-primary"></label>
+                                            <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                            <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                            <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                        </div>
+                                    </div>
+
+                                    <div style="clear:both"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="btn btn-primary btn-sm pull-left formbuttonfix vrbButtons" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+                    }
+                    @{List<string> hiddenVerb = new List<string>(); var Verblist = "";
+                        if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(16)))
+                        {
+                            hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "T_MenuBar");
+                            Verblist = string.Join(",", hiddenVerb.ToList());
+                        }
+                        if (User.businessrules.Any(p => p.EntityName == "T_MenuBar" && p.ActionTypeID.Contains(16)))
+                        {
+                            <script>HideVerbFromBR('@Verblist');</script>
+                        }
+                    }
+
+
+
+                    @{var dropmenubottom = false;}
+
+                    <div class="pull-left formbuttonfix dropup" style="display:none" id="AddAssociationdropmenubottomT_MenuBar">
+                        <button type="button" class="btn btn-primary btn-sm" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                            <span class="fa fa-plus"></span> Add
+
+                        </button>
+                        <ul class="dropdown-menu BtnVerb" role="menu" aria-labelledby="dropdownMenu1" style="padding:0px; margin-bottom:5px;">
+                        </ul>
+                    </div>
+                    @if (!dropmenubottom || !EditPermission)
+                    {
+                        <script>
+                            $("#AddAssociationdropmenubottomT_MenuBar").hide();
+                        </script>
+                    }
+                </div>
+            </div>} @*end form*@
+            <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+            <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+            <div id="divDisplayBRmsgMandatory1"></div>
+            <div id="divDisplayLockRecord1"></div>
+            <div id="divDisplayBRReadOnly1"></div>
+            <div id="divDisplayCodeFragment1"></div>
+        </div>
+        @if (string.IsNullOrEmpty(wizardid))
+        {
+            <div class="tab-pane fade in" id="JournalEntryToT_MenuBarRelation"></div>
+            <div class="tab-pane fade in" id="T_MenuBarMenuItemAssociation_T_MenuBar"></div>
+
+        }
+    </div> <!-- /tab-content -->
+</div>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+$('#printButton').click(function (evt) {
+                evt.preventDefault();
+                $('body').append('<iframe src="@Url.Action("Details", "T_MenuBar", new { id = Model.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" id="printIFrame" name="printIFrame" style="display:none;"></iframe>');
+                $('#printIFrame').bind('load',
+                    function () {
+                        window.frames['printIFrame'].focus();
+                        window.frames['printIFrame'].print();
+
+                    }
+                 );
+
+            });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "T_MenuBar").ToList();
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+    if (ViewBag.IsPartial == true)
+    {
+        var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+        <script>
+					 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBar", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+					$("#frmT_MenuBar").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+            $("#divDisplayBRmsgBeforeSaveProp").hide();
+            $("#divDisplayLockRecord").hide();
+            $("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+        </script>
+    }
+}
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_MenuBar").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmT_MenuBar");
+				dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_MenuBar", false, "ErrMsg", form);
+				//business rules on inline associations
+				if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+						$("a.btnupload").each(function(index) {$(this).remove() });
+                  }
+    });
+        </script>
+        <script>
+   $("form input[type=submit]").click(function() {
+		var actionName = $(this).attr("actionName")
+        if (actionName == undefined)
+            actionName = $(this).val();
+        $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+    $("form").submit(function (event) {
+	 $('[businessrule="mandatory"]').each(function () {
+       $(this).removeAttr('required');
+     });
+	if (!$("#frmT_MenuBar").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_MenuBar").serialize();
+				 dataurl = "@Url.Action("businessruletype", "T_MenuBar", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_MenuBar", false, "ErrMsg", form,"@typelist");
+  				 //business rules on inline associations
+
+			 if (flag)
+				{
+
+					 $("#frmT_MenuBar").find(':input').removeAttr('disabled');
+					}
+					else
+					{
+						}
+            return flag;
+		});
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmT_MenuBar").valid()) return;
+                $("#divDisplayBRmsgBeforeSaveProp").html("");
+                $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                $("#divDisplayCodeFragment").html("");
+                var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+$("input[datatype='Double']").addClass("pull-right text-right");
+    $(document).ready(function ()
+	{
+				try {
+		focusOnControl('frmT_MenuBar');
+        }
+        catch (ex) { }
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_MenuBar','edit',false,'Menu Bar')
+		 //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_MenuBar','edit',false,'Menu Bar')
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_MenuBarDisplayValueEdit != null)
+{
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            NextPrev("T_MenuBar");
+        });
+    </script>
+}
+<div id="tmpRoles" style="display:none;">
+    @Html.DropDownList("RoleList", null, new { @required = "required", @multiple = "multiple",@onchange = "SetRoles();" })
+    @Html.Hidden("T_Roles", null, new { @Value = "" })
+</div>
+<script>
+    $(document).ready(function () {
+        $("textarea[id$='T_Roles']").each(function () {
+            $this = $(this);
+            id = $this.attr('id');
+            $this.replaceWith($("#tmpRoles").html());
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        var roles = "@HttpUtility.JavaScriptStringEncode(Model.T_Roles)".split(",");
+        var eleRoles = document.getElementById("RoleList");
+        for (i = 0; i < roles.length; i++) {
+            for (var o = 0; o < eleRoles.options.length; o++) {
+                if (eleRoles.options[o].value == roles[i])
+                    eleRoles.options[o].selected = true;
+            }
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('select[name=RoleList]').multiselect({
+            buttonWidth: '100%'
+        });
+    });
+
+    function SetRoles() {
+        $('#T_Roles').val($('#RoleList').val());
+    }
+</script>
+

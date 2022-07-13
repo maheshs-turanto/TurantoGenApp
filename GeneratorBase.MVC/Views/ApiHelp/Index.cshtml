@@ -1,0 +1,331 @@
+@using System.Web.Http
+@using System.Web.Http.Description
+@using System.Collections.ObjectModel
+@using GeneratorBase.MVC.Models
+@model Collection<ApiDescription>
+
+@{
+
+
+    ViewBag.Title = "ASP.NET Web API Help Page";
+    // Group APIs by controller
+    ILookup<string, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor.ControllerName);
+}
+
+<style>
+    .card .card-header[data-toggle=collapse].collapsed::after {
+        content: '\f106';
+    }
+
+    .nav-pills-custom .nav-link {
+        color: #1d5072;
+        background: #fff;
+        position: relative;
+    }
+
+        .nav-pills-custom .nav-link.active {
+            color: #ffffff;
+            background: #1d5072;
+        }
+
+
+    /* Add indicator arrow for the active tab */
+    @@media (min-width: 992px) {
+        .nav-pills-custom .nav-link::before {
+            content: '';
+            display: block;
+            border-top: 8px solid transparent;
+            border-left: 10px solid #1d5072;
+            border-bottom: 8px solid transparent;
+            position: absolute;
+            top: 50%;
+            right: -10px;
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+    }
+
+    .nav-pills-custom .nav-link.active::before {
+        opacity: 1;
+    }
+
+
+
+    body {
+        min-height: 100vh;
+    }
+
+
+    .APIUrlLink {
+        width: 450px;
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .ellipsis {
+        position: relative;
+    }
+
+        .ellipsis:before {
+            content: '&nbsp;';
+            visibility: hidden;
+        }
+
+        .ellipsis span {
+            position: absolute;
+            left: 0;
+            right: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .btn_GET {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 80px;
+        padding: 3px 12px;
+        text-align: center;
+        border-radius: 2px;
+        text-shadow: 0 1px 0 rgb(0 0 0 / 10%);
+        font-family: sans-serif;
+        color: #fff;
+        background: #61affe;
+    }
+
+    .btn_POST {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 80px;
+        padding: 3px 12px;
+        text-align: center;
+        border-radius: 2px;
+        text-shadow: 0 1px 0 rgb(0 0 0 / 10%);
+        font-family: sans-serif;
+        color: #fff;
+        background: #49cc90;
+    }
+
+    .btn_PUT {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 80px;
+        padding: 3px 12px;
+        text-align: center;
+        border-radius: 2px;
+        text-shadow: 0 1px 0 rgb(0 0 0 / 10%);
+        font-family: sans-serif;
+        color: #fff;
+        background: #fca130;
+    }
+    .btn_DELETE {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 80px;
+        padding: 3px 12px;
+        text-align: center;
+        border-radius: 2px;
+        text-shadow: 0 1px 0 rgb(0 0 0 / 10%);
+        font-family: sans-serif;
+        color: #fff;
+        background: #f93e3e;
+    }
+    .td_POST {
+        border-color: #49cc90;
+        background: rgba(73,204,144,.1);
+        border-top: 1px solid #49cc90!important;
+        border-bottom: 1px solid #49cc90!important;
+    }
+    .td_POST:first-child {
+       
+        border-left: 1px solid #49cc90 !important;
+       
+    }
+
+    .td_POST:last-child {
+       
+        border-right: 1px solid #49cc90 !important;
+    }
+    .td_GET {
+        border-color: #61affe;
+        background: rgba(97,175,254,.1);
+        border-top: 2px solid #61affe !important;
+        border-bottom: 2px solid #61affe !important;
+    }
+
+        .td_GET:first-child {
+            border-left: 1px solid #61affe !important;
+        }
+
+        .td_GET:last-child {
+            border-right: 1px solid #61affe !important;
+        }
+
+    .td_PUT {
+        border-color: #fca130;
+        background: rgba(252,161,48,.1);
+        border-top: 2px solid #fca130 !important;
+        border-bottom: 2px solid #fca130;
+    }
+
+    .td_PUT:first-child {
+        border-left: 1px solid #fca130 !important;
+    }
+
+    .td_PUT:last-child {
+        border-right: 1px solid #fca130 !important;
+    }
+    .td_DELETE {
+        border-color: #f93e3e;
+        background: rgba(249,62,62,.1);
+        border-top: 2px solid #f93e3e !important;
+        border-bottom: 2px solid #f93e3e !important;
+    }
+    .td_DELETE:first-child {
+        border-left: 1px solid #f93e3e !important;
+    }
+
+    .td_DELETE:last-child {
+        border-right: 1px solid #f93e3e !important;
+    }
+    .ApiTable {
+        border-collapse: separate;
+        border-spacing: 0 .5em;
+        
+    }
+    .ApiTable a{
+        color:black;
+        text-decoration:none;
+        font-weight:700;
+        font-size:16px;
+
+    }
+        .ApiTable tbody tr:hover {
+            background-color: #e7eaec;
+        }
+</style>
+
+
+<div class="col-lg-12" style="border-radius: .35rem; background: #ffffff; color: #000; padding: 8px; margin-top: 10px; border: 1px solid #d1d9dc; font-size: 16px; font-weight: 700;">
+    Web Api Access for
+
+    @User.Name
+    @if (@ViewData["Token"] != null)
+    {
+        <span style="float:right; font-weight:800; color:#1c4f71">Token : @ViewData["Token"]</span>
+    }
+
+    <span style="float:right;margin-right:50px;">
+        <a href="@Url.Content("~/Swagger/docs/v1")" data-toggle="tooltip" target="_blank"
+           data-placement="top" title="Web Api Json">Web Api Json</a>
+    </span>
+
+
+</div>
+
+<!-- Demo header-->
+<section style="margin-top:10px">
+
+
+    <div class="row mb-3" >
+        <div class="col-md-3">
+            <!-- Tabs nav -->
+            <div class="nav flex-column nav-pills nav-pills-custom" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                @foreach (var group in apiGroups.OrderBy(p => p.Key))
+                {
+                    var name = group.Key;
+                    var nametar = group.Key;
+                    var modelentity = ModelReflector.Entities.FirstOrDefault(p => p.Name == group.Key);
+                    var Nameint = "";
+                    if (modelentity != null)
+                    {
+                        name = modelentity.DisplayName;
+                        Nameint = modelentity.Name;
+                    }
+                    if (User.CanView(Nameint))
+                    {
+
+                        <a class="nav-link mb-1 p-2 shadow" id="v-pills-@nametar.Trim()-tab" data-toggle="pill" href="#v-pills-@nametar.Trim()" role="tab" aria-controls="v-pills-@nametar.Trim()" aria-selected="true">
+                            <i class="fa fa-chevron-right mr-1"></i>
+                            <span class="font-weight-bold text-uppercase">@name</span>
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+
+
+        <div class="col-md-9">
+            <!-- Tabs content -->
+            <div class="tab-content" id="v-pills-tabContent" style="padding:0px">
+                @foreach (var group in apiGroups.OrderBy(p => p.Key))
+                {
+                    var name = group.Key;
+                    var nametar = group.Key;
+                    var modelentity = ModelReflector.Entities.FirstOrDefault(p => p.Name == group.Key);
+                    var Nameint = "";
+                    if (modelentity != null)
+                    {
+                        name = modelentity.DisplayName;
+                        Nameint = modelentity.Name;
+                    }
+                    if (User.CanView(Nameint))
+                    {
+                        <div class="tab-pane fade shadow rounded bg-white show p-3 " id="v-pills-@nametar.Trim()" role="tabpanel" aria-labelledby="v-pills-@nametar.Trim()-tab">
+                            <h4 class="font-italic mb-2">@name</h4>
+                            <p class="mb-2">
+                                @Html.DisplayFor(m => group, "ApiGroup", ViewData["Token"])
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+<script>
+    $(".nav .nav-link:first-child").addClass("active");
+    $(".tab-content .tab-pane:first-child").addClass("active");
+</script>
+
+
+
+
+@*<section class="content-wrapper main-content clear-fix">
+        @foreach (var group in apiGroups.OrderBy(p => p.Key))
+        {
+            var name = group.Key;
+            var nametar = group.Key;
+            var modelentity = ModelReflector.Entities.FirstOrDefault(p => p.Name == group.Key);
+            var Nameint = "";
+            if (modelentity != null)
+            {
+                name = modelentity.DisplayName;
+                Nameint = modelentity.Name;
+            }
+            if (User.CanView(Nameint))
+            {
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="card card-default">
+                        <div class="card-header clearfix" data-toggle="collapse" data-target="#@nametar.Trim()">
+                            <a href="#">@name</a>
+                        </div>
+                        <div id='@nametar.Trim()' class="collapse">
+                            <div class="card-body">
+                                @Html.DisplayFor(m => group, "ApiGroup", ViewData["Token"])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </section>*@
+
+
+@section Scripts {
+    <link type="text/css" href="~/Content/HelpPage.css" rel="stylesheet" />
+}

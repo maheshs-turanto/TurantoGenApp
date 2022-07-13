@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNet.Identity
+@model GeneratorBase.MVC.Models.ResendViewModel
+@{
+    ViewBag.Title = "Verify Email";
+}
+<style>
+    .sidebar-dark .sidebar-brand {
+    color: #fff;
+    display: none !important;
+}
+    .sidebar-dark hr.sidebar-divider {
+    border-top: 1px solid rgba(255,255,255,.15);
+    display: none !important;
+}
+    .sidebar-dark #sidebarToggle {
+    background-color: rgba(255,255,255,.2);
+    display: none;
+}
+    .wrapper .aside-container {
+    background-color: #62a8d1;
+}
+</style>
+
+<div class="content-heading">
+    <strong>
+        <img class="img-fluid" src="@Url.Content("~/logo/logo.gif")" alt="App Logo" width="40px" height="40px">
+        <a class=""></a>
+        <small class="">Verify Email</small>
+    </strong>
+</div>
+<div class="card">
+    <div class="card-body">
+        @using (Html.BeginForm("EmailNotVerified", "Account", new { UserId = Model.UserId,  ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { enctype = "multipart/form-data", id = "frmReSendCode" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row">
+                @ViewBag.errorMessage
+               <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="AppForm">
+                        <div class="card-header clearfix">
+                            <h3 class="card-title">Verify Email</h3>
+                        </div>
+                        <div class="">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                                    <div class="card card-default">
+                                        <div class="card-body row">
+                                            <div class='col-sm-12 col-md-12 col-xs-12'>
+                                                <label class="alert alert-warning d-block">You have not verified your registered email account yet.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   <input type="submit" value="Send Verification Email" class="btn btn-primary btn-sm" />
+                   <a href="@Url.Action("Index","Home")" class="btn btn-primary btn-sm">Cancel</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+

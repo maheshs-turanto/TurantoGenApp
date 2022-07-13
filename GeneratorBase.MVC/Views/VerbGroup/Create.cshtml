@@ -1,0 +1,42 @@
+﻿@model GeneratorBase.MVC.Models.VerbGroup
+@{
+    ViewBag.Title = "Create Verb Group";
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "VerbGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Verb Group";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+
+<div class="content-heading">
+@{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+    <strong><a href="@Url.Action("RedirectToEntity","Home", new { EntityName="VerbGroup"})">@EntityDisplayName</a><small>Create - Add @EntityDisplayName @hostingValue @Html.DisplayFor(model => model.DisplayValue)</small></strong>
+   
+    <div class="ml-auto hidetools">
+			 
+			             
+
+
+@if (ViewBag.IsPartial == null)
+{
+			<a class="btn btn-secondary btn-sm"  data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "VerbGroup") + "');") alt="Search" title="List">
+				<i class="fa fa-list"></i> List
+			</a>
+}
+	
+        
+    </div>
+    <!-- /.col-lg-12 No Email-->
+</div>
+
+
+@Html.Partial("~/Views/VerbGroup/CreatePartial.cshtml", Model)
+
+     

@@ -1,0 +1,553 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Property Validation and Format";
+    var EditPermission = User.CanEditItem("PropertyValidationandFormat", Model, User);
+    var DeletePermission = User.CanDeleteItem("PropertyValidationandFormat", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "PropertyValidationandFormat");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Property Validation and Format";
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("PropertyValidationandFormat", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+            if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+                $('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#dvRegExPattern").hide();
+        $("#dvMaskPattern").hide();
+        $("#dvErrorMessage").hide();
+        $("#dvDisplayFormat").hide();
+        //$("#dvOther1").hide();
+        if ('@Model.RegExPattern'.length > 0) {
+            $("#dvRegExPattern").show();
+            $("#dvMaskPattern").show();
+            $("#dvErrorMessage").show();
+        }
+        if ('@Model.DisplayFormat'.length > 0) {
+            $("#dvDisplayFormat").show();
+            //$("#dvOther1").show();
+        }
+        $('#EntityName').change(function () {
+            var SelectedText = $('#EntityName :selected').val();
+            if (SelectedText.length == 0) {
+                window.location.reload();
+                return false;
+            }
+            $('#EntityName').val(SelectedText);
+            $.ajax({
+                url: '@Url.Action("GetPropertiesofEntity")' + '?Entity=' + SelectedText,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+                    var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
+                    for (i = 0; i < result.length; i++) {
+                        optionDOM += '<option datatype="' + result[i].DataType + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    }
+                    $("#" + "PropertyName").html(optionDOM);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            })
+        });
+        $('#PropertyName').change(function () {
+            var SelectedText = $('#EntityName :selected').val();
+            var SelectedTextProperty = $('#PropertyName :selected').val();
+            $("#dvRegExPattern").hide();
+            $("#dvMaskPattern").hide();
+            $("#dvErrorMessage").hide();
+            $("#dvDisplayFormat").hide();
+            //$("#dvOther1").hide();
+            $.ajax({
+                url: '@Url.Action("GetRegExofProperty")' + '?Entity=' + SelectedText + '&Property=' + SelectedTextProperty,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+                    $("#RegExPattern").val(result.regex);
+                    $("#MaskPattern").val(result.mask);
+                    if (result.regex.length > 0) {
+                        $("#dvRegExPattern").show();
+                        $("#dvMaskPattern").show();
+                        $("#dvErrorMessage").show();
+                    }
+                    $("#DisplayFormat").val(result.displayformat);
+                    //$("#Other1").val(result.uidisplayformat);
+                    if (result.displayformat.length > 0) {
+                        $("#dvDisplayFormat").show();
+                        //$("#dvOther1").show();
+                    }
+                    $("#ErrorMessage").val("Invalid " + $('#PropertyName :selected').text());
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            })
+        });
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsSetValueUIRule);
+    }
+}
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-6">
+        <ol class="breadcrumb">
+            <li class="active">
+                <strong><a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li>
+                Edit
+            </li>
+            <li>
+                <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+            </li>
+        </ol>
+    </div>
+    <div class="col-lg-6">
+        @if (ViewBag.IsPartial == null)
+        {
+            <div class="btn-group pull-right" style="margin-left:8px;">
+                <a data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle" alt="Action" title="Action">
+                    Action
+                    <span class="caret" style="margin-bottom:2px">    </span>
+                </a>
+                <ul class="dropdown-menu pull-left">
+                    <li>
+                        @if (EditPermission)
+                        {
+                            <a href="@Url.Action("Edit", "PropertyValidationandFormat", new { id = Model.Id, UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                        }
+                    </li>
+                    <li>
+                        @if (EditPermission && User.CanDelete("PropertyValidationandFormat"))
+                        {
+                            <a href="@Url.Action("Delete", "PropertyValidationandFormat", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                        }
+                    </li>
+                </ul>
+            </div>
+        }
+        @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityPropertyValidationandFormatDisplayValueEdit != null)
+        {
+            <div class="pull-right">
+                <button class="btn btn-primary btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('PropertyValidationandFormat',event,'hdnNextPrevId')")" alt="Next" title="Next" style="border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                @Html.DropDownList("EntityPropertyValidationandFormatDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('PropertyValidationandFormat','frmPropertyValidationandFormat','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 22px;width: 170px;" })
+                <button class="btn btn-primary btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('PropertyValidationandFormat',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+            </div>
+        }
+    </div>
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<div id="divDisplayCodeFragment" style="display:none;">
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">Details</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="Details">
+                @using (Html.BeginForm("Edit", "PropertyValidationandFormat", new { UrlReferrer = Convert.ToString(ViewData["PropertyValidationandFormatParentUrl"]) }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmPropertyValidationandFormat" }))
+                {
+                    Html.ValidationSummary(true);
+                    Html.EnableClientValidation();
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.ConcurrencyKey)
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+
+                        <div class="panel panel-default AppForm">
+                            <div class="panel-body">
+                                <div class="row">
+                                    @if (User.CanView("PropertyValidationandFormat", "EntityName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvEntityName">
+                                            <div class='form-group' title="Entity Name">
+                                                <label>@Html.LabelFor(model => model.EntityName)  <span class="text-danger-reg">*</span> </label>
+                                                @Html.DropDownList("EntityName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                @*@Html.TextBoxFor(model => model.EntityName, getHtmlAttributes("EntityName"))*@
+                                                @Html.ValidationMessageFor(model => model.EntityName)
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.EntityName, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyValidationandFormat", "PropertyName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvPropertyName">
+                                            <div class='form-group' title="Property Name">
+                                                <label>@Html.LabelFor(model => model.PropertyName)  <span class="text-danger-reg">*</span> </label>
+                                                @Html.DropDownList("PropertyName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                @*@Html.TextBoxFor(model => model.PropertyName, getHtmlAttributes("PropertyName"))*@
+                                                @Html.ValidationMessageFor(model => model.PropertyName)
+
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.PropertyName, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyValidationandFormat", "RegExPattern"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvRegExPattern">
+                                            <div class='form-group' title="RegEx Pattern">
+                                                <label>@Html.LabelFor(model => model.RegExPattern)   </label>
+
+
+                                                @Html.TextBoxFor(model => model.RegExPattern, getHtmlAttributes("RegExPattern"))
+                                                @Html.ValidationMessageFor(model => model.RegExPattern)
+
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.RegExPattern, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyValidationandFormat", "MaskPattern"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvMaskPattern">
+                                            <div class='form-group' title="Mask Pattern">
+                                                <label>@Html.LabelFor(model => model.MaskPattern)   </label>
+
+
+                                                @Html.TextBoxFor(model => model.MaskPattern, getHtmlAttributes("MaskPattern"))
+                                                @Html.ValidationMessageFor(model => model.MaskPattern)
+
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.MaskPattern, new { @class = "form-control" })}
+                                    @if (User.CanView("PropertyValidationandFormat", "ErrorMessage"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvErrorMessage">
+                                            <div class='form-group' title="Error Message">
+                                                <label>@Html.LabelFor(model => model.ErrorMessage)   </label>
+
+
+                                                @Html.TextBoxFor(model => model.ErrorMessage, getHtmlAttributes("ErrorMessage"))
+                                                @Html.ValidationMessageFor(model => model.ErrorMessage)
+
+
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.ErrorMessage, new { @class = "form-control" })}
+                                    @*@if (User.CanView("PropertyValidationandFormat", "LowerBound"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvLowerBound">
+                                                <div class='form-group' title="Lower Bound">
+                                                    <label>@Html.LabelFor(model => model.LowerBound)   </label>
+
+
+                                                    @Html.TextBoxFor(model => model.LowerBound, getHtmlAttributes("LowerBound"))
+                                                    @Html.ValidationMessageFor(model => model.LowerBound)
+
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.LowerBound, new { @class = "form-control" })}
+                                        @if (User.CanView("PropertyValidationandFormat", "UpperBound"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvUpperBound">
+                                                <div class='form-group' title="Upper Bound">
+                                                    <label>@Html.LabelFor(model => model.UpperBound)   </label>
+
+
+                                                    @Html.TextBoxFor(model => model.UpperBound, getHtmlAttributes("UpperBound"))
+                                                    @Html.ValidationMessageFor(model => model.UpperBound)
+
+
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.UpperBound, new { @class = "form-control" })}*@
+                                    @if (User.CanView("PropertyValidationandFormat", "DisplayFormat"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayFormat">
+                                            <div class='form-group' title="Display Format">
+                                                <label>@Html.LabelFor(model => model.DisplayFormat)   </label>
+                                                @Html.TextBoxFor(model => model.DisplayFormat, getHtmlAttributes("DisplayFormat"))
+                                                @Html.ValidationMessageFor(model => model.DisplayFormat)
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    { @Html.HiddenFor(model => model.DisplayFormat, new { @class = "form-control" })}
+                                    @*@if (User.CanView("PropertyValidationandFormat", "Other1"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvOther1">
+                                                <div class='form-group' title="UI Display Format">
+                                                    <label>@Html.LabelFor(model => model.Other1)   </label>
+                                                    @Html.TextBoxFor(model => model.Other1, getHtmlAttributes("Other1"))
+                                                    @Html.ValidationMessageFor(model => model.Other1)
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        { @Html.HiddenFor(model => model.DisplayFormat, new { @class = "form-control" })}*@
+                                    @Html.HiddenFor(model => model.DisplayFormat, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+                    <div id="divDisplayBRmsgMandatory1"></div>
+                    <div id="divDisplayLockRecord1"></div>
+                    <div id="divDisplayBRReadOnly1"></div>
+                    <div id="divDisplayCodeFragment1"></div>
+                    @Html.AntiForgeryToken();
+                                            if (ViewBag.IsPartial == null)
+                                            {
+                                                <a class="btn btn-default btn-sm pull-left formbuttonfix" onclick="goBack('@Url.Action("Index", "PropertyValidationandFormat")');" alt="Cancel" title="Cancel">Cancel</a>
+                                            }
+                                            @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["PropertyValidationandFormatParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix", @alt="Cancel", @title="Cancel" })*@
+                    if (EditPermission)
+                    {
+                        if (ViewBag.IsPartial == null)
+                        {
+                            <input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+                        }
+
+                        <input type="hidden" name="hdncommand" value="" />
+                        <input type="hidden" name="hdnNextPrevId" value="" />
+
+                    }
+                }
+                @{
+                    var dropmenubottom = false;
+                }
+                <div class="dropdown pull-left formbuttonfix" style="display:none" id="AddAssociationdropmenubottomPropertyValidationandFormat">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                        Add
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1"></ul>
+                </div>
+                @if (!dropmenubottom || !EditPermission)
+                {
+                    <script>
+                        $("#AddAssociationdropmenubottomPropertyValidationandFormat").hide();
+                    </script>
+                }
+                <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+                <div class="panel-body panel-collapse">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" href="#Des_Table">
+                        <span class="glyphicon glyphicon-chevron-down"></span> Help - Date Time Format
+                    </a>
+                    <div id="Des_Table" class="table-responsive collapse" style="overflow-x:auto;">
+                        <table class="table table-hover table-striped default-bordered default-condensed">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Format
+                                    </th>
+                                    <th>
+                                        Result
+                                    </th>
+                                </tr>
+                                <tr> <td>{0:MM/dd/yyyy} </td><td>	05/29/2015 </td></tr>
+                                <tr> <td>{0:dd/MM/yyyy} </td><td>	29/05/2015 </td></tr>
+                                <tr> <td>{0:dd/MMM/yyyy} </td><td>	29/May/2015 </td></tr>
+                                <tr> <td>{0:dd-MMM-yyyy} </td><td>	29-May-2015 </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy} </td><td>	Friday, 29 May 2015 </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy HH:mm} </td><td>	Friday, 29 May 2015 05:50 </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy hh:mm tt} </td><td>	Friday, 29 May 2015 05:50 AM </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy H:mm} </td><td>	Friday, 29 May 2015 5:50 </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy h:mm tt} </td><td>	Friday, 29 May 2015 5:50 AM </td></tr>
+                                <tr> <td>{0:dddd, dd MMMM yyyy HH:mm:ss} </td><td>	Friday, 29 May 2015 05:50:06 </td></tr>
+                                <tr> <td>{0:MM/dd/yyyy HH:mm} </td><td>	5/29/2015 5:50 </td></tr>
+                                <tr> <td>{0:MM/dd/yyyy hh:mm tt} </td><td>	5/29/2015 5:50 AM</td></tr>
+                                <tr> <td>{0:MM/dd/yyyy H:mm} </td><td>	5/29/2015 5:50 </td></tr>
+                                <tr> <td>{0:MM/dd/yyyy h:mm tt} </td><td>	5/29/2015 5:50 AM</td></tr>
+                                <tr> <td>{0:MM/dd/yyyy HH:mm:ss} </td><td>	5/29/2015 5:50:06 </td></tr>
+                                <tr> <td>{0:MMMM dd} </td><td>	May 29 </td></tr>
+                                <tr> <td>{0:HH:mm} </td><td>	5:50 </td></tr>
+                                <tr> <td>{0:hh:mm tt} </td><td>	5:50 AM </td></tr>
+                                <tr> <td>{0:H:mm} </td><td>	5:50 </td></tr>
+                                <tr> <td>{0:h:mm tt} </td><td>	5:50 AM </td></tr>
+                                <tr> <td>{0:HH:mm:ss} </td><td>	5:50:06 </td></tr>
+                                <tr> <td>{0:yyyy MMMM} </td><td>	2015 May </td></tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /tab-content --><br />
+        <br />
+    </div>
+</div>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "PropertyValidationandFormat").ToList();
+
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+    if (ViewBag.IsPartial == true)
+    {
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+        <script>
+            function ApplyBusinessRule(form) {
+                var flag = true;
+                dataurl = "@Url.Action("businessruletype", "PropertyValidationandFormat", new { ruleType = "OnEdit"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "PropertyValidationandFormat", false, "ErrMsg", form);
+                //business rules on inline associations
+                if (flag) {
+                    $("#frmPropertyValidationandFormat").find(':input').removeAttr('disabled');
+                    $("#divDisplayBRmsgMandatory").hide();
+                    $("#divDisplayBRmsgBeforeSaveProp").hide();
+                    $("#divDisplayLockRecord").hide();
+                    $("#divDisplayBRReadOnly").hide();
+                }
+                return flag;
+            }
+        </script>
+    }
+}
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "PropertyValidationandFormat").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+            $(document).ready(function () {
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmPropertyValidationandFormat");
+                dataurl = "@Url.Action("businessruletype", "PropertyValidationandFormat", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist", dataurl, "PropertyValidationandFormat", false, "ErrMsg", form);
+                //business rules on inline associations
+            });
+        </script>
+        <script>
+            $("form").submit(function (event) {
+                $('[businessrule="mandatory"]').each(function () {
+                    $(this).removeAttr('required');
+                });
+                if (!$("#frmPropertyValidationandFormat").valid()) return;
+                $("#divDisplayBRmsgBeforeSaveProp").html("");
+                $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                $("#divDisplayCodeFragment").html("");
+                document.getElementById("ErrMsg").innerHTML = "";
+                var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+                form = $("#frmPropertyValidationandFormat").serialize();
+                dataurl = "@Url.Action("businessruletype", "PropertyValidationandFormat", new { ruleType = "OnEdit"})";
+                flag = ApplyBusinessRuleOnSubmit(dataurl, "PropertyValidationandFormat", false, "ErrMsg", form);
+                //business rules on inline associations
+                if (flag) {
+                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+                    if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+                        $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+                    $("#frmPropertyValidationandFormat").find(':input').removeAttr('disabled');
+                }
+                return flag;
+            });
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmPropertyValidationandFormat").valid()) return;
+                $("#divDisplayBRmsgBeforeSaveProp").html("");
+                $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                $("#divDisplayCodeFragment").html("");
+                var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+}
+
+
+@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityPropertyValidationandFormatDisplayValueEdit != null)
+{
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            NextPrev("PropertyValidationandFormat");
+        });
+    </script>
+}
+

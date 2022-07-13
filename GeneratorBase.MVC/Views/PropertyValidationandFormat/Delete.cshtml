@@ -1,0 +1,128 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@{
+    ViewBag.Title = "Delete Property Validation and Format";
+}
+<div class="content-heading">
+    <div class="col-lg-10">
+        <strong>
+            Property Validation and Format
+            <small>Delete - @Html.DisplayFor(model => model.DisplayValue)</small>
+        </strong>
+    </div>
+    <div class="col-lg-2">
+    </div>
+</div>
+<div class="col-md-12 col-sm-12 col-xs-12">
+    <label id="ErrMsg" class="text-primary small" style="color:red; vertical-align:middle; font-weight:100;"></label>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ConcurrencyKey)
+        @Html.HiddenFor(model => model.Id)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="card AppForm">
+                    <div class="card-header text-white bg-danger clearfix">
+                        <h6>Are you sure you want to delete this? - <strong>@Html.DisplayFor(model => model.DisplayValue)</strong> </h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.EntityName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.EntityName)
+                                @Html.HiddenFor(model => model.EntityName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.PropertyName)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.PropertyName)
+                                @Html.HiddenFor(model => model.PropertyName)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.RegExPattern)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.RegExPattern)
+                                @Html.HiddenFor(model => model.RegExPattern)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.MaskPattern)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.MaskPattern)
+                                @Html.HiddenFor(model => model.MaskPattern)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.ErrorMessage)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.ErrorMessage)
+                                @Html.HiddenFor(model => model.ErrorMessage)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.LowerBound)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.LowerBound)
+                                @Html.HiddenFor(model => model.LowerBound)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.UpperBound)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.UpperBound)
+                                @Html.HiddenFor(model => model.UpperBound)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.DisplayFormat)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.DisplayFormat)
+                                @Html.HiddenFor(model => model.DisplayFormat)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.IsEnabled)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.IsEnabled)
+                                @Html.HiddenFor(model => model.IsEnabled)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Other1)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Other1)
+                                @Html.HiddenFor(model => model.Other1)
+                            </dd>
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Other2)
+                            </dt>
+                            <dd class="clearfix">
+                                @Html.DisplayFor(model => model.Other2)
+                                @Html.HiddenFor(model => model.Other2)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row deletefix">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <a class="btn btn-default btn-sm" onclick="goBack('@Url.Action("Index","PropertyValidationandFormat")');">Back</a>
+                @*@Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default btn-sm" })*@
+
+                @if (User.CanDelete("PropertyValidationandFormat"))
+                {
+                    <input type="submit" value="Delete" class="btn btn-primary btn-sm" />
+                }
+            </div>
+        </div>
+    <br />
+    }
+
+</div>
+

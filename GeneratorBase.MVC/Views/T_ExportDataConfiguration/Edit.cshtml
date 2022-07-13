@@ -1,0 +1,1106 @@
+﻿@model GeneratorBase.MVC.Models.T_ExportDataConfiguration
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Export Data Configuration";
+    var EditPermission = User.CanEditItem("T_ExportDataConfiguration", Model, User);
+    //var DeletePermission = User.CanDeleteItem("T_ExportDataConfiguration", Model, User);
+    var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "T_ExportDataConfiguration");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Export Data Configuration";
+    var modelproperties = EntityDisplayNameReflector.Properties;
+    if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+
+    List<string> hiddenProperties = new List<string>();
+    if (User.businessrules.Any(p => p.EntityName == "T_ExportDataConfiguration" && p.ActionTypeID.Contains(6)))
+    {
+        hiddenProperties = Model.ApplyHiddenRule(User.businessrules, "T_ExportDataConfiguration", true);
+    }
+    bool isRecordReadOnly = false;
+    if (ViewData["RecordReadOnly"] != null && Convert.ToBoolean(ViewData["RecordReadOnly"]) == true)
+    {
+        isRecordReadOnly = true;
+        ViewData["RecordReadOnly"] = true;
+    }
+    var viewmode = Convert.ToString(ViewData["viewmode"]);
+    string wizardid = "";
+    string footerclassdiv1 = "card ButtonFooter";
+    string footerclassdiv2 = "card-footer container-fluid";
+    if (viewmode == "wizard")
+    {
+        footerclassdiv1 = footerclassdiv2 = "";
+        wizardid = "id=smartwizard";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var backUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("T_ExportDataConfiguration");
+    var NonViewableProperties = User.CanNotView("T_ExportDataConfiguration");
+    var proplstgroupby = modelproperties.Where(p => p.Proptype.ToLower() == "group").GroupBy(p => p.PropText);
+    List<string> groupcontaininginlinegrid = new List<string>();
+
+
+    string lstHiddenGroupFLS = GeneratorBase.MVC.Models.CustomHelperMethod.HideGroupsForFLSHiddenBR(NonViewableProperties, hiddenProperties, proplstgroupby, "T_ExportDataConfiguration", User, groupcontaininginlinegrid);
+
+    var IsSoftDeleteEnabled = bool.Parse(CommonFunction.Instance.SoftDeleteEnabled());
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (Property == "T_AutoNo")
+            return new { @class = "form-control", @readonly = "readonly" };
+        if (User.CanEdit("T_ExportDataConfiguration", Property))
+        {
+            return new { @class = "form-control" };
+        }
+        return new { @class = "form-control", @readonly = "readonly" };
+    }
+    object getHtmlAttributesForCheckBox(string Property)
+    {
+        if (User.CanEdit("T_ServiceMember", Property))
+        {
+            return null;
+        }
+        return new { @disabled = "@disabled" };
+    }
+}
+@if (string.IsNullOrEmpty(wizardid))
+{
+    <script>
+window.onload = function(){
+	JumpToTab('@User.JavaScriptEncodedName@Model.Id');
+}
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        try {
+     LockHostDropdownOnEdit('@Convert.ToString(ViewData["AssociatedType"])');
+			$("[inlinegrid]").each(function() {
+                //$(this).click();
+				 eval($(this).attr('onclick'));
+			    var targetpanel = $(this).attr('id').replace('dvGroup','');
+			    $('#'+targetpanel).removeClass('fade in');
+            });
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationIsSetValueUIRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.T_ExportDataConfigurationRestrictDropdownValueRule))
+    {
+        @Html.Raw(ViewBag.T_ExportDataConfigurationRestrictDropdownValueRule);
+    }
+}
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+<link href="@Url.Content("~/Content/dist/css/bootstrap-colorpicker.min.css")" rel="stylesheet" type="text/css" />
+<style>
+    .formbuttonfix {
+        margin-right: 4px;
+    }
+
+
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+@if (!string.IsNullOrEmpty(wizardid))
+{
+    <style>
+        .formbuttonfix {
+            float: right !important;
+            margin-right: 5px !important;
+            padding: 4px 18px !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .pager li {
+            display: inline;
+        }
+
+        .pager {
+            padding-left: 0;
+            margin: 8px 0;
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-tabs .nav-item {
+            margin-bottom: -0px !important;
+        }
+
+        .pager li > a, .pager li > span {
+            display: inline-block;
+            padding: 5px 14px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px !important;
+        }
+
+        .next a {
+            float: right;
+        }
+
+        .previous a {
+            float: left;
+        }
+    </style>
+}
+
+<div class="content-heading">
+    <div class="TitleName">
+        <strong>
+            <a href="@Url.Action("Index")">@EntityDisplayName Edit</a>
+            <small id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">
+                @Html.LabelForUIProperty(Model, "Label")
+            </small>
+        </strong>
+    </div>
+    @if (string.IsNullOrEmpty(wizardid))
+    {
+        <div class="ml-auto">
+            @if (ViewBag.IsPartial == null && !HideAction && EditPermission)
+            {
+                <div class="btn-group float-right" style="margin-left:8px;">
+                    <a data-toggle="dropdown" class="btn btn-secondary btn-xs dropdown-toggle " alt="Action" title="Action" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Action
+                    </a>
+                    <ul class="dropdown-menu multi-level">
+                        @if (EditPermission)
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Edit","T_ExportDataConfiguration", new { id = Model.Id,  UrlReferrer = backUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) },null)"><i class="fa fa-edit"></i>  Edit</a>
+
+                            </li>
+
+                        }
+                        @if (EditPermission && User.CanDelete("T_ExportDataConfiguration"))
+                        {
+                            <li class="dropdown-item">
+
+                                <a href="@Url.Action("Delete", "T_ExportDataConfiguration", new {UrlReferrer = backUrl, id = Model.Id, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="fa fa-trash"></i>  Delete</a>
+
+                            </li>
+                        }
+                        @if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+                        {
+                            <li class="dropdown-item">
+                                <a data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+                            </li>
+                        }
+                        <li class="divider" style="clear:both"></li>
+                        <li class="dropdown-submenu dropdown-item pull-left" id="AddAssociationdropmenuT_ExportDataConfiguration">
+                            @{ var dropmenu = false; }
+                            <a class="" tabindex="-1" href="#">
+                                <i class="fa fa-plus-circle"></i> Add
+                            </a>
+                            <ul class="dropdown-menu pull-left" style="left: 0px;top: 22px;">
+                                @if (User.CanAdd("T_ExportDataDetails"))
+                                {
+                                    dropmenu = true;
+                                    <li class="dropdown-item">
+                                        <a class="dropdown-link" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_ExportDataDetails",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="T_ExportDataConfigurationExportDataDetailsAssociation",
+							HostingEntityName = "T_ExportDataConfiguration",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+                                            <i class="fa fa-plus"></i>  Export Data Details
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        @if (!dropmenu)
+                        {
+                            <script>
+                                $("#AddAssociationdropmenuT_ExportDataConfiguration").hide();
+                            </script>
+                        }
+                    </ul>
+                </div>
+            }
+            @if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_ExportDataConfigurationDisplayValueEdit != null && !HideAction)
+            {
+                <div class="pull-right">
+                    <button class="btn btn-info btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('T_ExportDataConfiguration',event,'hdnNextPrevId')")" alt="Next" title="Next" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+                    @Html.DropDownList("EntityT_ExportDataConfigurationDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('T_ExportDataConfiguration','frmT_ExportDataConfiguration','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 23px;width: 170px; font-size:12px;" })
+                    <button class="btn btn-info btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('T_ExportDataConfiguration',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="height:23px;border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+    <div id="errorsMsgEdit"></div>
+    <div id="errorsEdit"></div>
+</div>
+@Html.Partial("~/Views/Shared/ErrorTemplate.cshtml")
+<a id="seturlT_ExportDataConfiguration" dataurl="@Html.Raw(Url.Action("GetPropertyValueByEntityId", "T_ExportDataConfiguration")).ToHtmlString()"></a>
+<div class="tabs-container">
+    <ul class="nav nav-tabs tabellipsis" @(!string.IsNullOrEmpty(wizardid) ? "style=display:none;" : "")>
+        <li class="nav-item">
+            <a class="nav-link active" href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">
+                Details
+            </a>
+        </li>
+
+        @if (User.CanView("T_ExportDataDetails"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" id="dvGroupT_ExportDataConfigurationExportDataDetailsAssociation" onclick="LoadTab('T_ExportDataConfigurationExportDataDetailsAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_ExportDataDetails", new { RenderPartial=true, HostingEntity ="T_ExportDataConfiguration", HostingEntityID = @Model.Id, AssociatedType = "T_ExportDataConfigurationExportDataDetailsAssociation",TabToken = DateTime.Now.Ticks,}))')" href="#T_ExportDataConfigurationExportDataDetailsAssociation" data-toggle="tab" alt="Export Data Details" title="Export Data Details">
+                    Export Data Details
+                    @if (ViewBag.T_ExportDataConfigurationExportDataDetailsAssociationCount != null)
+                    {
+                        <span class="badge bg-primary"><div id="dvcnt_T_ExportDataConfigurationExportDataDetailsAssociation">@ViewBag.T_ExportDataConfigurationExportDataDetailsAssociationCount</div></span>
+                    }
+                </a>
+            </li>
+        }
+
+        @if (User.CanView("T_ExportDataLog"))
+        {
+            <li class="nav-item">
+                <a class="nav-link" id="dvGroupT_ExportDataConfigurationExportDataLogAssociation" onclick="LoadTab('T_ExportDataConfigurationExportDataLogAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "T_ExportDataLog", new { RenderPartial=true, HostingEntity ="T_ExportDataConfiguration", HostingEntityID = @Model.Id, AssociatedType = "T_ExportDataConfigurationExportDataLogAssociation",TabToken = DateTime.Now.Ticks,}))')" href="#T_ExportDataConfigurationExportDataLogAssociation" data-toggle="tab" alt="Export Data Log" title="Export Data Log">
+                    Export Data Log
+                    @if (ViewBag.T_ExportDataConfigurationExportDataLogAssociationCount != null)
+                    {
+                        <span class="badge bg-primary"><div id="dvcnt_T_ExportDataConfigurationExportDataLogAssociation">@ViewBag.T_ExportDataConfigurationExportDataLogAssociationCount</div></span>
+                    }
+                </a>
+            </li>
+        }
+
+        @if (User.CanView("JournalEntry"))
+        {
+            <li class="nav-item" @(!User.CanView("JournalEntry") ? "style=display:none;" : "")>
+                <a class="nav-link" onclick="LoadTab('JournalEntryToT_ExportDataConfigurationRelation','@User.JavaScriptEncodedName@Model.Id','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, RelatedEntityRecords = "T_ExportDataConfiguration", HostingEntity = "T_ExportDataConfiguration", HostingEntityID = @Model.Id, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks })')" href="#JournalEntryToT_ExportDataConfigurationRelation" data-toggle="tab" alt="Export Data Configuration Journal" title="Export Data Configuration Journal">
+                    Export Data Configuration Journal
+                </a>
+            </li>
+        }
+
+    </ul>
+    <div id="tabcontent" class=@(string.IsNullOrEmpty(wizardid)?"tab-content":"d-none")>
+        <div class="tab-pane fade show active" id="Details">
+            @using (Html.BeginForm("Edit", "T_ExportDataConfiguration", new { UrlReferrer = Convert.ToString(ViewData["T_ExportDataConfigurationParentUrl"]), viewmode = viewmode }, FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmT_ExportDataConfiguration" }))
+            {
+                if (!string.IsNullOrEmpty(wizardid))
+                {@Html.ValidationSummary(false, "", new { @class = "text-danger d-none" }) }
+            else { Html.ValidationSummary(true); }
+            Html.EnableClientValidation();
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.ConcurrencyKey)
+            if (NonViewableProperties != null)
+            {
+                @Html.Hidden("cannotViewProperties", Html.Raw(string.Join(",", NonViewableProperties)))
+            }
+            <div class="text-danger validation-summary-errors" id="errorSummDiv" style="display:none;">
+            </div>
+            <div class="AppForm" @wizardid>
+                @if (!string.IsNullOrEmpty(wizardid))
+                {
+                    <ul id="olwizard" class="nav" role="tablist">
+                        <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationBasicInformation">
+                            <a href="#wzGroupT_ExportDataConfigurationBasicInformation" class="hidden-phone">Basic Information</a>
+                        </li>
+                        <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationUIInformation">
+                            <a href="#wzGroupT_ExportDataConfigurationUIInformation" class="hidden-phone">UI Information</a>
+                        </li>
+
+                        @if (User.CanView("T_ExportDataDetails"))
+                        {
+                            <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationExportDataDetailsAssociation" onclick="$('#dvGroupT_ExportDataConfigurationExportDataDetailsAssociation').click();">
+                                <a href="#wzGroupT_ExportDataConfigurationExportDataDetailsAssociation" class="hidden-phone">Export Data Details</a>
+                            </li>
+                        }
+                        @if (User.CanView("T_ExportDataDetails"))
+                        {
+                            <li role="tab" class="nav-item" id="liGroupT_ExportDataConfigurationExportDataLogAssociation" onclick="$('#dvGroupT_ExportDataConfigurationExportDataLogAssociation').click();">
+                                <a href="#wzGroupT_ExportDataConfigurationExportDataLogAssociation" class="hidden-phone">Export Data Log</a>
+                            </li>
+                        }
+
+                    </ul>
+                    <script>
+                        $(document).ready(function () {
+                            $(".formbuttonfix:not([dataurl]").hide();
+                            $(".pager").show();
+                            $(".pager.bwizard-buttons").show();
+                            $("ol#olwizard").removeClass("d-none");
+                            $("#tabcontent").removeClass("d-none");
+                        });
+                    </script>
+                    @Html.Hidden("wizardstep", ViewData["wizardstep"])
+                }
+                <div>
+                    <div class="row bgwizard" id="wzGroupT_ExportDataConfigurationBasicInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_ExportDataConfigurationBasicInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="Basic Information" title="Basic Information">
+                                        Basic Information
+
+
+
+                                    </h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_AutoNo") && !hiddenProperties.Contains("T_AutoNo"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AutoNo">
+                                            <div class='form-group' title="Auto No.">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AutoNo)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_AutoNo, getHtmlAttributes("T_AutoNo"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AutoNo)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AutoNo"))
+                                        { @Html.HiddenFor(model => model.T_AutoNo, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Name") && !hiddenProperties.Contains("T_Name"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Name">
+                                            <div class='form-group' title="Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Name)  <span class="text-danger-reg">*</span> </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_Name, getHtmlAttributes("T_Name"))
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Name)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Name"))
+                                        { @Html.HiddenFor(model => model.T_Name, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_EntityName") && !hiddenProperties.Contains("T_EntityName"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EntityName">
+                                            <div class='form-group' title="Entity Name">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_EntityName)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @*@Html.TextBoxFor(model => model.T_EntityName, getHtmlAttributes("T_EntityName"))*@
+                                                    @Html.DropDownList("T_EntityName", null, "-- Select --", new { @class = "form-control", @onchange = "GetNodeData();" })
+
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_EntityName)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_EntityName"))
+                                        { @Html.HiddenFor(model => model.T_EntityName, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_AllowedRoles") && !hiddenProperties.Contains("T_AllowedRoles"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_AllowedRoles">
+                                            <div class='form-group' title="Allowed Roles">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_AllowedRoles) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @*@Html.TextAreaFor(model => model.T_AllowedRoles, getHtmlAttributes("T_AllowedRoles"))*@
+                                                    @Html.DropDownList("T_AllowedRoles", null, "-- Select --", new { @class = "form-control" })
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_AllowedRoles)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_AllowedRoles"))
+                                        { @Html.HiddenFor(model => model.T_AllowedRoles, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Description") && !hiddenProperties.Contains("T_Description"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Description">
+                                            <div class='form-group' title="Description">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_Description) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.TextAreaFor(model => model.T_Description, getHtmlAttributes("T_Description"))
+
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Description)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Description"))
+                                        { @Html.HiddenFor(model => model.T_Description, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_Disable") && !hiddenProperties.Contains("T_Disable"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_Disable">
+                                            <div class="form-group" title="Disable">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_Disable)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @if (Model.T_Disable.HasValue)
+                                                    {
+                                                        @Html.CheckBox("T_Disable", Model.T_Disable.Value, getHtmlAttributesForCheckBox("T_Disable"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBox("T_Disable", false, getHtmlAttributesForCheckBox("T_Disable"))
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_Disable)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_Disable"))
+                                        { @Html.HiddenFor(model => model.T_Disable, new { @class = "form-control" })}
+                                }
+                                    @if (IsSoftDeleteEnabled)
+                                    {
+                                        if (!NonViewableProperties.Contains("T_EnableDelete") && !hiddenProperties.Contains("T_EnableDelete"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_EnableDelete">
+                                                <div class="form-group" title="Enable Delete">
+                                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                        @Html.LabelFor(model => model.T_EnableDelete)
+                                                    </label>
+                                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                        @if (Model.T_EnableDelete.HasValue)
+                                                        {
+                                                            @Html.CheckBox("T_EnableDelete", Model.T_EnableDelete.Value, getHtmlAttributesForCheckBox("T_EnableDelete"))
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.CheckBox("T_EnableDelete", false, getHtmlAttributesForCheckBox("T_EnableDelete"))
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_EnableDelete)
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            if (!NonViewableProperties.Contains("T_EnableDelete"))
+                                            { @Html.HiddenFor(model => model.T_EnableDelete, new { @class = "form-control" })}
+                                    }
+                                }
+
+                                    @if (IsSoftDeleteEnabled)
+                                    {
+                                        if (!NonViewableProperties.Contains("T_IsRootDeleted") && !hiddenProperties.Contains("T_IsRootDeleted"))
+                                        {
+                                            <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_IsRootDeleted">
+                                                <div class="form-group" title="Is Root Deleted">
+                                                    <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                        @Html.LabelFor(model => model.T_IsRootDeleted)
+                                                    </label>
+                                                    <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                        @if (Model.T_IsRootDeleted.HasValue)
+                                                        {
+                                                            @Html.CheckBox("T_IsRootDeleted", Model.T_EnableDelete.Value, getHtmlAttributesForCheckBox("T_IsRootDeleted"))
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.CheckBox("T_IsRootDeleted", false, getHtmlAttributesForCheckBox("T_IsRootDeleted"))
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                                @Html.ValidationMessageFor(model => model.T_IsRootDeleted)
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            if (!NonViewableProperties.Contains("T_IsRootDeleted"))
+                                            { @Html.HiddenFor(model => model.T_IsRootDeleted, new { @class = "form-control" })}
+                                    }
+                                }
+
+
+                                @*OneDrive Changes*@
+                                    @if (!NonViewableProperties.Contains("T_UploadOneDrive") && !hiddenProperties.Contains("T_UploadOneDrive"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_UploadOneDrive">
+                                            <div class="form-group" title="Upload One Drive">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_UploadOneDrive)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @if (Model.T_UploadOneDrive.HasValue)
+                                                    {
+                                                        @Html.CheckBox("T_UploadOneDrive", Model.T_UploadOneDrive.Value, getHtmlAttributesForCheckBox("T_UploadOneDrive"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBox("T_UploadOneDrive", false, getHtmlAttributesForCheckBox("T_UploadOneDrive"))
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_UploadOneDrive)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_UploadOneDrive"))
+                                        { @Html.HiddenFor(model => model.T_UploadOneDrive, new { @class = "form-control" })}
+                                }
+
+                                    @if (!NonViewableProperties.Contains("T_UploadGoogleDrive") && !hiddenProperties.Contains("T_UploadGoogleDrive"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_UploadGoogleDrive">
+                                            <div class="form-group" title="Upload Google Drive">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">
+                                                    @Html.LabelFor(model => model.T_UploadGoogleDrive)
+                                                </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @if (Model.T_UploadGoogleDrive.HasValue)
+                                                    {
+                                                        @Html.CheckBox("T_UploadGoogleDrive", Model.T_UploadGoogleDrive.Value, getHtmlAttributesForCheckBox("T_UploadGoogleDrive"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.CheckBox("T_UploadGoogleDrive", false, getHtmlAttributesForCheckBox("T_UploadGoogleDrive"))
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_UploadGoogleDrive)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_UploadGoogleDrive"))
+                                        { @Html.HiddenFor(model => model.T_UploadGoogleDrive, new { @class = "form-control" })}
+                                }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bgwizard" id="wzGroupT_ExportDataConfigurationUIInformation">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default" id="dvGroupT_ExportDataConfigurationUIInformation">
+                                <div class="card-header clearfix">
+                                    <!--  <i class="icon-calendar"></i> -->
+
+
+
+                                    <h3 class="card-title" alt="UI Information" title="UI Information">
+                                        UI Information
+
+
+
+                                    </h3>
+                                </div>
+                                <div class="card-body row">
+                                    @if (!NonViewableProperties.Contains("T_BackGroundColor") && !hiddenProperties.Contains("T_BackGroundColor"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_BackGroundColor">
+                                            <div class='form-group' title="">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_BackGroundColor)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_BackGroundColor, getHtmlAttributes("T_BackGroundColor"))
+
+                                                    <span class="input-group-addon btn btn-default">
+                                                        <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                    </span>
+                                                    <script>
+                                                        $(function () { $('#dvT_BackGroundColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                    </script>
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_BackGroundColor)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_BackGroundColor"))
+                                        { @Html.HiddenFor(model => model.T_BackGroundColor, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_FontColor") && !hiddenProperties.Contains("T_FontColor"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_FontColor">
+                                            <div class='form-group' title="">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_FontColor)   </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+
+                                                    @Html.TextBoxFor(model => model.T_FontColor, getHtmlAttributes("T_FontColor"))
+
+                                                    <span class="input-group-addon btn btn-default">
+                                                        <i class="btn-primary" style="border-color:black;border-style:solid;border-width:1px;"></i>
+                                                    </span>
+                                                    <script>
+                                                        $(function () { $('#dvT_FontColor').colorpicker({ align: 'right', colorSelectors: {} }); });
+                                                    </script>
+                                                </div>
+
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_FontColor)
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_FontColor"))
+                                        { @Html.HiddenFor(model => model.T_FontColor, new { @class = "form-control" })}
+                                }
+                                    @if (!NonViewableProperties.Contains("T_ToolTip") && !hiddenProperties.Contains("T_ToolTip"))
+                                    {
+                                        <div class='col-sm-6 col-md-6 col-xs-12' id="dvT_ToolTip">
+                                            <div class='form-group' title="Tool Tip">
+                                                <label class="col-sm-5 col-md-5 float-left col-xs-12">@Html.LabelFor(model => model.T_ToolTip) </label>
+                                                <div class="input-group col-sm-7 col-md-7 float-left col-xs-12">
+                                                    @Html.TextAreaFor(model => model.T_ToolTip, getHtmlAttributes("T_ToolTip"))
+
+
+                                                </div>
+                                            </div>
+                                            @Html.ValidationMessageFor(model => model.T_ToolTip)
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        if (!NonViewableProperties.Contains("T_ToolTip"))
+                                        { @Html.HiddenFor(model => model.T_ToolTip, new { @class = "form-control" })}
+                                }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row bgwizard">
+                        <div class="col-md-12 col-sm-12 col-xs-12" id="accordion">
+                            <div class="card card-default">
+                                <div class="card-header">
+                                    <h3 class="card-title" alt="Export Data Details" title="Export Data Details">Export Data Details</h3>
+                                </div>
+                                <div class="card-body row">
+                                    <div id="ExportDatails" class="form-control">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(wizardid))
+                    {
+                        if (User.CanView("T_ExportDataDetails"))
+                        {<div steptype="association" id="wzGroupT_ExportDataConfigurationExportDataDetailsAssociation" class="bgwizard">
+                                <div class="tab-pane fade in" id="T_ExportDataConfigurationExportDataDetailsAssociation"></div>
+                            </div>
+                        }
+
+                        if (User.CanView("T_ExportDataLog"))
+                        {<div steptype="association" id="wzGroupT_ExportDataConfigurationExportDataLogAssociation" class="bgwizard">
+                                <div class="tab-pane fade in" id="T_ExportDataConfigurationExportDataLogAssociation"></div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="@footerclassdiv1">
+                <div class="@footerclassdiv2">
+                    @Html.AntiForgeryToken()
+
+                    <a id="btnformcancel" class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "T_ExportDataConfiguration")');" alt="Cancel" title="Cancel">Cancel</a>
+
+                    @if (EditPermission)
+                    {
+
+                        <input type="submit" id="btnsavereturn" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save" title="Save" />
+
+                        if (ViewBag.IsPartial == null)
+                        {
+                            <input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev" />
+                            <input type="submit" id="btnsavestay" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+                        }
+                        <input type="hidden" name="hdncommand" value="" />
+                        <input type="hidden" name="hdnNextPrevId" value="" />
+                    }
+                    @foreach (var item in (List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates)
+                    {
+                        if (item.T_DisplayType == "Button")
+                        {
+                            var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                            var ispreview = item.T_EnablePreview.HasValue ? item.T_EnablePreview.Value : false;
+                            if (ispreview)
+                            {
+                                <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" data-placement="top" data-original-title="@item.T_Name" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityBR('addPopup','"+Model.DisplayValue+"','dvPopup','" + Url.Action("ViewPDF", "T_ExportDataConfiguration", new { id=Model.Id, DocumentId=item.T_Document, documentName=item.T_Name, outputFormat=item.T_DefaultOutputFormat, isdownload=false, ispreview=true }) + "')")" alt="@item.T_Name" title="@item.T_Name">
+                                    <i class="fa fa-file-pdf"></i> @item.T_Name
+                                </a>
+                            }
+                            else
+                            {
+
+                                <a class="btn btn-primary btn-sm pull-left formbuttonfix" style="fore-color:@item.T_FontColor!important;background-color:@item.T_BackGroundColor!important;" id="vrb1_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" onclick="GenerateDocumentFromButton(this,'@isdownload');" dataurl="@Url.Action("GenerateDocument", "T_ExportDataConfiguration", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = isdownload, ispreview = ispreview }, null)"> @item.T_Name</a>
+                            }
+                        }
+                    }
+                    @if (((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox").Count() > 0)
+                    {
+                        <div class="modal fade" id="addGenerateDocument" tabindex="-1" role="dialog" aria-labelledby="addGenerateDocumentLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="addGenerateDocumentLabel">Generate Document</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" onclick="cancelQuickAdd();">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row col-md-12 col-sm-12 col-xs-12" id="dvGroupGenerateDocument">
+                                            @foreach (var item in ((List<GeneratorBase.MVC.Models.T_DocumentTemplate>)ViewBag.DocumentTemplates).Where(p => p.T_DisplayType == "CheckBox"))
+                                            {
+                                                var isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false;
+                                                <div class="col-sm-4">
+                                                    <input type="checkbox" verbName="_@string.Join("", item.T_Name.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries))" name="SelectedGenerateDocumentTemplate" @(isdownload ? "download=true" : "download:false") dataurl='@Url.Action("GenerateDocument", "T_ExportDataConfiguration", new { id = Model.Id, DocumentId = item.T_Document, documentName = item.T_Name, outputFormat = item.T_DefaultOutputFormat, isdownload = item.T_EnableDownload.HasValue ? item.T_EnableDownload.Value : false }, null)' /> @item.T_Name
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="card-body row pull-right">
+                                            <label id="lblGenerateDocument" class="text-primary"></label>
+                                            <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default btn-sm" onclick="cancelQuickAdd();">Close</button>
+                                            <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','default');"> Generate</a>
+                                            <a class="btn btn-primary btn-sm pull-right" style="margin-left:5px;" onclick="GenerateDocument(this,'dvGroupGenerateDocument','pdf');"> Generate (PDF)</a>
+                                        </div>
+                                    </div>
+
+                                    <div style="clear:both"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="btn btn-primary btn-sm pull-left formbuttonfix" id="vrb1GenerateDocument" data-original-title="Generate Document" data-toggle="modal" data-target="#addGenerateDocument"> Generate Document</a>
+                    }
+                    @{List<string> hiddenVerb = new List<string>(); var Verblist = "";
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataConfiguration" && p.ActionTypeID.Contains(16)))
+                        {
+                            hiddenVerb = Model.ApplyHiddenVerbRule(User.businessrules, "T_ExportDataConfiguration");
+                            Verblist = string.Join(",", hiddenVerb.ToList());
+                        }
+                        if (User.businessrules.Any(p => p.EntityName == "T_ExportDataConfiguration" && p.ActionTypeID.Contains(16)))
+                        {
+                            <script>HideVerbFromBR('@Verblist');</script>
+                        }
+                    }
+
+
+
+                    @{var dropmenubottom = false;}
+
+                    <div class="pull-left formbuttonfix dropup" id="AddAssociationdropmenubottomT_ExportDataConfiguration">
+                        <button type="button" class="btn btn-primary btn-sm" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+                            <span class="fa fa-plus"></span> Add
+
+                        </button>
+                        <ul class="dropdown-menu BtnVerb" role="menu" aria-labelledby="dropdownMenu1" style="padding:0px; margin-bottom:5px;">
+                            @if (User.CanAdd("T_ExportDataDetails"))
+                            {
+                                dropmenubottom = true;
+                                <li>
+                                    <a class="dropdown-item" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "T_ExportDataDetails",
+						new { UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="T_ExportDataConfigurationExportDataDetailsAssociation",
+						HostingEntityName = "T_ExportDataConfiguration",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                                        <span class="fa fa-plus"></span> Add  Export Data Details
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    @if (!dropmenubottom || !EditPermission)
+                    {
+                        <script>
+                            $("#AddAssociationdropmenubottomT_ExportDataConfiguration").hide();
+                        </script>
+                    }
+                </div>
+            </div>} @*end form*@
+            <div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+            <div id="divDisplayBRmsgBeforeSaveProp1"></div>
+            <div id="divDisplayBRmsgMandatory1"></div>
+            <div id="divDisplayLockRecord1"></div>
+            <div id="divDisplayBRReadOnly1"></div>
+            <div id="divDisplayCodeFragment1"></div>
+        </div>
+        @if (string.IsNullOrEmpty(wizardid))
+        {
+            <div class="tab-pane fade in" id="JournalEntryToT_ExportDataConfigurationRelation"></div>
+            <div class="tab-pane fade in" id="T_ExportDataConfigurationExportDataDetailsAssociation"></div>
+            <div class="tab-pane fade in" id="T_ExportDataConfigurationExportDataLogAssociation"></div>
+        }
+    </div> <!-- /tab-content -->
+</div>
+<script>
+    $(function () {
+        ApplyAreYouSure();
+    });
+
+	$(window).on('load', function () {
+        $('#ExportDatails').find('a').each(function () {
+            recursiveFunction($(this).attr("id"));
+        });
+    });
+
+    function recursiveFunction(obj) {
+        actualFunction(obj);
+        $("#" + obj.replace("a", "ul")).find('a').each(function ()
+        {
+            recursiveFunction($(this).attr("id"));
+        });
+    }
+
+    function actualFunction(obj)
+    {
+        var chk = $("#" + obj).next().attr('id');
+        if ($("#" + chk).prop("checked"))
+            $("#" + obj).click();
+    }
+
+    function GetNodeData()
+    {
+        var obj = $("#T_EntityName").val();
+        $("#ExportDatails").html("");
+        var dataurl = '@Url.Action("ExportData", "T_ExportDataConfiguration")' + '?EntityName=' + obj;
+        if ('@Model.Id' > 0)
+            dataurl = dataurl + "&id=" + @Model.Id;
+        $.ajax({
+            async: false,
+            type: "GET",
+            url: dataurl,
+            success: function (data)
+            {
+                $("#ExportDatails").append(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+
+$('#printButton').click(function (evt) {
+                evt.preventDefault();
+                $('body').append('<iframe src="@Url.Action("Details", "T_ExportDataConfiguration", new { id = Model.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" id="printIFrame" name="printIFrame" style="display:none;"></iframe>');
+                $('#printIFrame').bind('load',
+                    function () {
+                        window.frames['printIFrame'].focus();
+                        window.frames['printIFrame'].print();
+
+                    }
+                 );
+
+            });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "T_ExportDataConfiguration").ToList();
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+    if (ViewBag.IsPartial == true)
+    {
+        var typelist = string.Join(",", businessruleforemailpage.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+
+        <script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+            var config = {
+                '.chosen-select': {},
+                '.chosen-select-deselect': { allow_single_deselect: true },
+                '.chosen-select-no-single': { disable_search_threshold: 10 },
+                '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+                '.chosen-select-width': { width: "95%" }
+            }
+            for (var selector in config) {
+                $(selector).chosen(config[selector]);
+            }
+        </script>
+        <script>
+					 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "T_ExportDataConfiguration", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "T_ExportDataConfiguration", false, "ErrMsg", form,"@typelist");
+				//business rules on inline associations
+				if (flag) {
+					$("#frmT_ExportDataConfiguration").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+            $("#divDisplayBRmsgBeforeSaveProp").hide();
+            $("#divDisplayLockRecord").hide();
+            $("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+        </script>
+    }
+}
+@{
+    var businessrule = User.businessrules.Where(p => p.EntityName == "T_ExportDataConfiguration").ToList();
+    if ((businessrule != null && businessrule.Count > 0))
+    {
+        var typelist = string.Join(",", businessrule.SelectMany(p => p.ActionTypeID).Distinct().ToList());
+        <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmT_ExportDataConfiguration");
+				dataurl = "@Url.Action("businessruletype", "T_ExportDataConfiguration", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "T_ExportDataConfiguration", false, "ErrMsg", form);
+				//business rules on inline associations
+				if('@ViewData["RecordReadOnly"]' != 'null' && '@isRecordReadOnly'=='True')
+                  {
+                        $(':input:not([readonly])', 'form').attr('disabled', 'disabled').attr('readonly', 'readonly').trigger("chosen:updated");
+						$('.input-group-append').hide();
+						$('.input-group-addon').hide();
+						$("a.btnupload").each(function(index) {$(this).remove() });
+                  }
+    });
+        </script>
+        <script>
+   $("form input[type=submit]").click(function() {
+		var actionName = $(this).attr("actionName")
+        if (actionName == undefined)
+            actionName = $(this).val();
+        $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+    $("form").submit(function (event) {
+	 $('[businessrule="mandatory"]').each(function () {
+       $(this).removeAttr('required');
+       });
+	if (!$("#frmT_ExportDataConfiguration").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmT_ExportDataConfiguration").serialize();
+				 dataurl = "@Url.Action("businessruletype", "T_ExportDataConfiguration", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "T_ExportDataConfiguration", false, "ErrMsg", form,"@typelist");
+  				 //business rules on inline associations
+
+			 if (flag)
+				{
+
+					 $("#frmT_ExportDataConfiguration").find(':input').removeAttr('disabled');
+					}
+					else
+					{
+						}
+            return flag;
+		});
+        </script>
+    }
+    else
+    {
+        <script>
+            $("input[type='submit']").click(function (event) {
+                if (!$("#frmT_ExportDataConfiguration").valid()) return;
+                $("#divDisplayBRmsgBeforeSaveProp").html("");
+                $("#divDisplayBRmsgBeforeSaveProp1").html("");
+                $("#divDisplayCodeFragment").html("");
+                var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+            });
+        </script>
+    }
+}
+
+<script type='text/javascript'>
+$("input[datatype='Double']").addClass("pull-right text-right");
+    $(document).ready(function ()
+    {
+        GetNodeData();
+				try {
+		focusOnControl('frmT_ExportDataConfiguration');
+        }
+        catch (ex) { }
+		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'T_ExportDataConfiguration','edit',false,'Export Data Configuration')
+		 //instruction feature
+         ShowInstructionLabel(@Html.Raw("'"+Url.Action("ShowInstructionLabel", "PropertyHelpPage")+"'"),'T_ExportDataConfiguration','edit',false,'Export Data Configuration')
+		 var arrgroup = '@lstHiddenGroupFLS'.split(',');
+            $.each( arrgroup, function( index, value ){
+                $("#"+value).hide();
+            });
+    });
+</script>
+@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityT_ExportDataConfigurationDisplayValueEdit != null)
+{
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            NextPrev("T_ExportDataConfiguration");
+        });
+    </script>
+}
+

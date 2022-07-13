@@ -1,0 +1,80 @@
+﻿@model GeneratorBase.MVC.Models.T_DataMetric
+@{
+    var linkPrefix = Url.Content("~/");
+    if (Convert.ToBoolean(ViewData["FromHome"]))
+    {
+        linkPrefix = "";
+    }
+}
+@*<style>
+    #overlay {
+        position: absolute;
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.29); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+        border-top-left-radius: .35rem !important;
+        border-bottom-left-radius: .35rem !important;
+    }
+</style>*@
+
+
+
+@*<div class="col-xl-12" id="Metric_@Model.Id" style="margin-top:0px !important">
+        <a title="@Model.T_ToolTip" class="card-content" href="@linkPrefix@Model.t_associatedfacetedsearch.T_LinkAddress">
+            <div class="media align-items-stretch">
+                <div class="media-body text-left" style="padding:5px;background-color:@Model.T_BackGroundColor">
+                    <i class="@Model.T_ClassIcon font-small-1" style="color: @Model.T_FontColor"></i> <span style="margin-left:10px;font-weight:600; font-size:16px; color:@Model.T_FontColor">@Model.T_Name</span>
+                    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                        <table id="Metric_@Model.Id" style="">
+                            <tr id="theaderMetric" style="margin-right:5px;color:@Model.T_FontColor !important"></tr>
+                            <tr id="trMetric" style="margin-right:5px;color:@Model.T_FontColor"></tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </a>
+    </div>*@
+
+
+<div class="col-xl-12" id="Metric_@Model.Id" style="margin-top:0px !important; padding:0px 8px 0px 8px">
+    <a title="@Model.T_ToolTip" class="card ccard h-100 pl-2 pr-2 pt-2 pb-1" href="@linkPrefix@Model.t_associatedfacetedsearch.T_LinkAddress">
+        <div id="dvMetricCrossTab" class="row row-flush rounded-left rounded-right" style="margin:0px;">
+            <div class="col bg-primary py-3 d-flex align-items-center justify-content-center rounded-left" style="background-color:@Model.T_BackGroundColor!important">
+                @*<div id="overlay"></div>*@
+                <i class="@Model.T_ClassIcon fa-2x" style="color: #fff; z-index: 3; margin-right: 8px; font-size: 22px"></i>
+                <div style="z-index:3">
+                    <span style="color:white; z-index:3; font-size:18px; font-weight:bolder;"> @Model.T_Name</span>
+                </div>
+            </div>
+
+        </div>
+
+    </a>
+</div>
+<style>
+
+    #Metric_@Model.Id .crossheader,.crossnumber{
+ color:@Model.T_BackGroundColor!important;
+   text-align: center;
+   font-weight:bolder!important;
+}
+    #Metric_@Model.Id a{
+    text-decoration:none;
+    }
+    .crossnumber {
+        font-size: 2rem;
+        font-weight: bolder;
+    }
+</style>
+<script>
+$(document).ready(function () {
+    LoadMetricResult('Metric_@Model.Id', '@Html.Raw(linkPrefix + Model.t_associatedfacetedsearch.T_LinkAddress)', '@Model.T_Aggregate', '@Model.T_AggregatePropertyName');
+});
+</script>

@@ -1,0 +1,167 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.SelectUserEditorViewModel>
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Users In Role";
+
+}
+
+<script>
+    $(document).ready(function () {
+        $(".pagination a").click(function (e) {
+            PaginationClick(e, 'UsersInRole', '@User.JavaScriptEncodedName')
+        })
+
+        $("#SearchStringUsersInRole").keypress(function (e) {
+            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                $("#UsersInRoleSearch").bind("click", (function () {
+                }));
+                $('#UsersInRoleSearch').trigger("click");
+                return false;
+            }
+        })
+
+    });
+</script>
+@functions {
+    object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+    {
+        if (IsPaging)
+        {
+            return new
+            {
+                page,
+                sortBy = ViewBag.CurrentSort,
+                isAsc = ViewBag.IsAsc,
+                currentFilter = ViewBag.CurrentFilter,
+                IsExport = IsExport,
+                search = Request.QueryString["search"],
+            };
+        }
+        else
+        {
+            return new
+            {
+                sortBy = sortby,
+                currentFilter = Request.QueryString["currentFilter"],
+                searchString = Request.QueryString["searchString"],
+                isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                page = ViewBag.Pages,
+                IsExport = IsExport,
+                search = Request.QueryString["search"],
+            };
+        }
+    }
+}
+<div id="UsersInRole">
+    <div class="content-heading">
+        <div class="col-lg-10">
+
+            <strong>
+                <a href="@Url.Action("Index")"> Admin </a>
+                <small>
+                    Users for @ViewBag.RolesName
+                </small>
+            </strong>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class='col-sm-12 col-md-12 col-xs-12'>
+                <div class='form-group'>
+                    <div class="input-group ">
+                        @Html.TextBox("SearchStringUsersInRole", null, new { @class = "form-control fixsearchbox", @placeholder = "Search", @Value = ViewBag.CurrentFilter })
+                        <div class="btn-group">
+                            <a id="UsersInRoleSearch" onclick="SearchClick(event, 'UsersInRole', '@Html.Raw(Url.Action("UsersInRole", "Account", new { searchString = "_SearchString", SearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary"><span class="fa fa-search"></span></a>
+                            <button id="UsersInRoleCancel" type="button"
+                                    class="btn btn-secondary collapse-data-btn"
+                                    onclick="CancelSearch('UsersInRole','@Html.Raw(Url.Action("UsersInRole", "Account", new { ClearSearchTimeStamp = DateTime.Now }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top">
+                                <span class="fa fa-remove"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12 col-xs-12">
+
+                @using (Html.BeginForm("UsersInRole", "Account", FormMethod.Post, new { encType = "multipart/form-data", name = "myform" }))
+        {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="card card-default AppForm">
+                                <div class="card-header clearfix">
+
+                                    <h3 class="card-title">Select Users Assignments</h3>
+                                </div>
+                                <div class="card-body" style="padding:8px; margin:0px;">
+                                    @Html.Hidden("RoleName", null, new { @Value = ViewBag.RolesName })
+
+                                    <table class="table table-hover default-bordered default-condensed">
+                                        <tr>
+                                            <th style="width:50px; text-align:center;">
+                                                Select
+                                            </th>
+                                            <th>
+                                                @Html.ActionLink("User", "UsersInRole", "Account", getSortHtmlAttributes("UserName", false, null, false), new { @onclick = "SortLinkClick(event,'UsersInRole');" })
+                                                @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "UserName")
+                                        {<i class="fa fa-sort-desc"></i>}
+                                                @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "UserName")
+                                        {<i class="fa fa-sort-asc"></i>}
+                                            </th>
+                                        </tr>
+                                        @*@Html.EditorFor(m => m)*@
+                                        @Html.EditorFor(modelItem => modelItem)
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+    <div class="card ButtonFooter">
+        <div class="card-footer container-fluid">
+            @Html.Hidden("UrlReferrer", Request.UrlReferrer.PathAndQuery)
+            @Html.ActionLink("Back to List", "ReturnToUsersInRole", new { urlReferrer = Request.UrlReferrer.PathAndQuery }, new { @class = "btn btn-default" })
+            @if (User.CanEditAdminFeature("AssignUserRole"))
+            {
+                <input type="submit" value="Save" class="btn btn-primary" />
+            }
+        </div>
+    </div>
+
+        }
+                @if (Model.Count > 0)
+        {
+                    <div id="pagination" class="MyPagination1">
+                        @Html.PagedListPager(Model, page => Url.Action("UsersInRole", "Account", getSortHtmlAttributes(null, true, page, false)))
+                        <div class="fixPageSize">
+                            Page Size :
+                            @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> {
+                       { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value", ViewBag.PageSize)
+                                , new
+                                {
+                                    @id = "pagesizelistUsersInRole",
+                                    @onchange = @Html.Raw("pagesizelistChange(event,'UsersInRole','" + @User.JavaScriptEncodedName + "')"),
+                                    @Url = Html.Raw(@Url.Action("UsersInRole", "Account",
+                                    getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                    null, false), null))
+                                })
+                            <span style="text-align:right;"> Total Count: @Model.TotalItemCount</span>
+                        </div>
+                    </div>
+        }
+
+            </div>
+        </div>
+    </div>
+    <div style="clear:both; margin-bottom:20px;"></div>
+</div>
+<script>
+    $("input[type='submit']").click(function (event) {
+        
+        $("#UsersInRole").find(':input').removeAttr('disabled');
+    });
+</script>

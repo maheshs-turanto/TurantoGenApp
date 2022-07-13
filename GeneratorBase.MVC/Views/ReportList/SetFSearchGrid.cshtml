@@ -1,0 +1,147 @@
+﻿@model GeneratorBase.MVC.Models.ReportList
+@{
+    ViewBag.Title = "Search";
+	var parentUrl = new System.Collections.Specialized.NameValueCollection();
+    if (Request.UrlReferrer != null)
+    {
+        parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+    }
+	Layout = null;
+	var isHosted = ViewData["HostingEntity"] != null && ViewData["HostingEntityID"] != null? true : false;
+    var HostingEntityName =Convert.ToString(ViewData["HostingEntity"]);
+    var HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]);
+    var AssociatedType = Convert.ToString(ViewData["AssociatedType"]);
+}
+	
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div id="ReportListGridQuery" class="panel-collapse collapsed collapse">
+            <div class="panel panel-default panel-body">	         
+@if (User.CanView("ReportsGroup"))
+                    {
+					if (!(isHosted && HostingEntityName == "ReportsGroup" && AssociatedType == "ReportsGroupSSRSReportAssociation"))
+                    { 
+						<div class='col-sm-4 col-md-4 col-xs-4'>
+                            <div class='form-group' title="Group">
+							@Html.LabelFor(model => model.ReportsGroupSSRSReportAssociationID)
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12" id="dvreportsgroupssrsreportassociation">
+                                    		
+	 @Html.DropDownList("reportsgroupssrsreportassociation",ViewBag.reportsgroupssrsreportassociation != null ? (SelectList)ViewBag.reportsgroupssrsreportassociation :  new SelectList(new Dictionary<string,string>(), "Key", "Value"), new {   @multiple = "multiple", @HostingName = "ReportsGroup", @dataurl = Url.Action("GetAllMultiSelectValue", "ReportsGroup",null) })
+                                </div>
+                            </div>
+                        </div>
+				}
+		}
+			<div class='col-sm-4 col-md-4 col-xs-4'>
+                    <div class='form-group'>
+                        <label>Is Hidden</label>
+                        <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                            <input type="checkbox" id="IsHidden" class="boolean" />
+                        </div>
+                    </div>
+                </div>
+ 				<button onclick="window.location.reload();" class="btn btn-default btn-sm pull-right">
+                    Reset
+                </button>
+				<button onclick="$('#ReportListGridQuery').collapse('toggle');" class="btn btn-default btn-sm pull-right">
+                    Close
+                </button>
+                <button onclick="RunQueryReportList();" class="btn btn-primary btn-sm pull-right">
+                    Search
+                </button>
+	</div>
+	</div>
+	</div>
+	</div>
+	 <script>
+        $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'ALL'
+            });
+        });
+    });
+    </script>
+@if (ViewBag.TemplatesName == "CardIndexPartial")
+{
+    <script>
+        function RunQueryT_Order() {
+            var buttons = document.getElementsByName('RunQueryT_Order');
+            for (var i = 0; i < buttons.length; i++)
+                buttons[i].click();
+        }
+    </script>
+}
+else
+{
+	<script>
+    function RunQueryReportList() {
+        url = '@Html.Raw(Url.Action("FSearch", new
+        {
+            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+            HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+            AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+			viewtype = ViewBag.TemplatesName,
+        }))';
+        var search = false;
+        $('.boolean', $("#ReportListGridQuery")).each(function () {
+            if ($(this).prop('checked') === true)
+            {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, "true");
+                search = true;
+            }
+        });
+        $('select[multiple="multiple"]', $("#ReportListGridQuery")).each(function () {
+            if ($(this).val() != undefined && $(this).val() != null) {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, $(this).val());
+                search = true;
+            }
+        });
+		if ("@isHosted" == "True")
+        {
+            url = addParameterToURL(url, "@AssociatedType.ToLower()", "@HostingEntityID");
+        }
+        if(search)
+            RefreshGrid("ReportList", AntiSanitizeURLString(url))
+    }
+    function RefreshGrid(dvName, url) {
+        var host = (getHostingEntityID(url)["AssociatedType"]);
+        var IsFilter = (getHostingEntityID(url)["IsFilter"]);
+        var IsdrivedTab = (getHostingEntityID(url)["IsdrivedTab"]);
+        $.ajax({
+            url: url,
+            cache: false,
+            complete: function (data) {
+				 $('body').css({ 'cursor': 'default' });
+               // (document.getElementById('ReportListGridQuery').className = 'in'); todo open box
+            },
+            success: function (data) {
+                if (data != null) {
+                    if (host != undefined && IsFilter != "True" && $('#' + host).length > 0) {
+                        if ($('#' + dvName, $('#' + host)).attr('id') == undefined)
+                            $('#' + dvName, $('#dv' + host)).html(data);
+                        else
+                            $('#' + dvName, $('#' + host)).html(data);
+                        if (IsdrivedTab) {
+                            $("a[href='" + host + "']").trigger("click");
+                        }
+                    }
+                    else {
+                        try {
+                            $('#' + dvName).html(data);
+                            if (IsdrivedTab) {
+                                $("a[href='" + host + "']").trigger("click");
+                            }
+                        } catch (ex) { }
+                    }
+                }
+            }
+        })
+        return false;
+    }
+</script>
+}
+

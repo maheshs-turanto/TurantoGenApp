@@ -1,0 +1,622 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.ReportList>
+@using PagedList.Mvc;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer.PathAndQuery;
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportList");
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var appcontext = (new ApplicationContext(User));
+    var isFilter = appcontext.ReportsGroups.Any(p => p.reportsgroupssrsreportassociation.Count() > 0);
+    var RoleList = (new GeneratorBase.MVC.Models.CustomRoleProvider()).GetAllRolesReport();
+}
+<div id="ReportList">
+    @if (RecycleView)
+    {
+        <center>
+            <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        </center>
+        
+    }
+    @if (ViewBag.ErrorInfo != null)
+    {
+        <div class="alert alert-danger"><span class="fa fa-warning"></span> @ViewBag.ErrorInfo</div>
+    }
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+    @if (ViewData["HostingEntity"] == null && isFilter)
+    {
+        <script>
+            $(document).ready(function () {
+                $("#fltReportsGroup").click();
+            });
+        </script>
+    }
+    <script type="text/javascript">
+        function LoadDivInsideTab(dvName, username, url) {
+            if (dvName.length > 0)
+                $.cookie(username + "TabCookie", dvName);
+            $("#" + dvName).empty();
+            if ($.trim($("#" + dvName).html()).length == 0) {
+                $("#" + dvName).html('Please wait..');
+                $("#" + dvName).load(url);
+            }
+        }
+        $(document).ready(function () {
+            $(".pagination a").click(function (e) {
+                //PaginationClick(e,'ReportList')
+                PaginationClick(e, 'ReportList', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchReportList").addClass('in');
+                @*if('@ViewData["HostingEntity"]'.length>0)
+	        {
+                $("#" + "@ViewData["HostingEntity"]" + "_ReportList").hide();
+	        }*@
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'ReportList');
+            }
+            $("#SearchStringReportList").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#ReportListSearch").bind("click", (function () {
+                    }));
+                    $('#ReportListSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideReportList").mouseup(function () {
+                if (document.getElementById('ColumnShowHideReportList').className == 'collapse') {
+                    $('#lblReportList').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".pull-left.actionbar").hide();
+            }
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+
+                    reportsgroupssrsreportassociation = Request.QueryString["reportsgroupssrsreportassociation"],
+                    ReportNoFrom = Request.QueryString["ReportNoFrom"],
+                    ReportNoFromhdn = Request.QueryString["ReportNoFromhdn"],
+                    ReportNoTo = Request.QueryString["ReportNoTo"],
+                    ReportNoTohdn = Request.QueryString["ReportNoTohdn"],
+                    IsHidden = Request.QueryString["IsHidden"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    reportsgroupssrsreportassociation = Request.QueryString["reportsgroupssrsreportassociation"],
+                    ReportNoFrom = Request.QueryString["ReportNoFrom"],
+                    ReportNoFromhdn = Request.QueryString["ReportNoFromhdn"],
+                    ReportNoTo = Request.QueryString["ReportNoTo"],
+                    ReportNoTohdn = Request.QueryString["ReportNoTohdn"],
+                    IsHidden = Request.QueryString["IsHidden"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    @if (ViewData["IsdrivedTab"] == null)
+    {
+        if (!RecycleView)
+        {
+            <div class="btn-group pull-left actionbar">
+
+
+
+                @if (User.CanView("ReportsGroup"))
+                {
+                    <div class=" mr-1">
+                        <div class="dropdown">
+
+                            <button href="#" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-original-title="Filter-Groupby" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-filter"></i> Filter <i class="caret"></i>
+                            </button>
+
+                            <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                <li>
+                                    <a class="dropdown-item" data-toggle="collapse" data-parent="#accordion" href="#ReportListGridQuery">
+                                        <i class="fa fa-search"> </i> Filter
+                                    </a>
+                                </li>
+                                <li class="dropdown-divider"></li>
+                                @if (ViewData["HostingEntity"] == null || Convert.ToBoolean(ViewData["IsFilter"]) == true)
+                                {
+
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item" tabindex="-1" href="#">
+                                            <i class="fa fa-search"></i>
+                                            Filter by
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            @if (User.CanView("ReportsGroup"))
+                                            {
+                                                <li class="dropdown-item">
+                                                    <a id="fltReportsGroup" data-placement="top" onclick=@Html.Raw("SetCookieFlt('fltReportsGroupReportList');EntityFilter('ReportList','" + Url.Action("GetAllValueForFilter", "ReportsGroup") + "','" + Html.Raw(Url.Action(ActionNameUrl, "ReportList", new { FirstCall=true,FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "ReportsGroup", AssociatedType = "ReportsGroupSSRSReportAssociation", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)})) + "','" + User.JavaScriptEncodedName + "');")>
+                                                        <span>Group</span>
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (User.CanEditAdminFeature("ReportRoles") || User.CanAddAdminFeature("ReportRoles") || User.CanDeleteAdminFeature("ReportRoles"))
+                                            {
+                                                <li class="dropdown-item">
+                                                    <a id="fltReportsRole" data-placement="top" onclick=@Html.Raw("SetCookieFlt('fltReportsRoleReportList');EntityFilter('ReportList','" + Url.Action("GetAllRolesForFilter", "ReportsGroup") + "','" + Html.Raw(Url.Action(ActionNameUrl, "ReportList", new { FirstCall = true, FilterHostingEntityID = ViewData["HostingEntityID"], IsFilter = true, HostingEntity = "Role", AssociatedType = "ReportsInRole", ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(), viewtype = Convert.ToString(ViewBag.TemplatesName) })) + "','" + User.JavaScriptEncodedName + "');")>
+                                                        <span>Role</span>
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            <li class="dropdown-item">
+                                                <a data-placement="top" href="@Url.Action("RedirectToEntity", "Home", new { EntityName = "ReportList", viewtype = Convert.ToString(ViewBag.TemplatesName) })" onclick="ClearFilterCookies();">
+                                                    <span class="fa fa-search-minus"> Clear</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+
+                        </div>
+
+                    </div>
+                }
+
+                @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                {
+                    if ((User.CanEdit("ReportList") && User.CanUseVerb("BulkUpdate", "ReportList", User)) || (User.CanDelete("ReportList") && User.CanUseVerb("BulkDelete", "ReportList", User)))
+                    {
+                        <div class="mr-1">
+                            <div class="dropdown">
+
+                                <a class="btn btn-secondary  dropdown-toggle" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                    <span class="fa fa-wrench"></span> Bulk
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    @if (User.CanEdit("ReportList") && User.CanUseVerb("BulkUpdate", "ReportList", User))
+                                    {
+                                        <li class="dropdown-item">
+                                            <a data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update SSRS Report','dvPopup','" + Url.Action("BulkUpdate", "ReportList", new { UrlReferrer = BackUrl, TS = DateTime.Now }) + "','ReportList')")">
+                                                <em class="fa fa-edit"></em> Update
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @if (User.CanDelete("ReportList") && User.CanUseVerb("BulkDelete", "ReportList", User))
+                                    {
+                                        <li class="dropdown-item">
+                                            <a style="cursor:pointer;" onclick="PerformBulkOperation(this,'ReportList','Bulk Delete','@Url.Action("DeleteBulk", "ReportList")','@ViewData["AssociatedType"]');">
+                                                <em class="fa fa-trash"></em> Delete
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                }
+
+                @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                {
+                    <div class="mr-1">
+                        <div class="dropdown">
+                            <a class="btn btn-secondary dropdown-toggle tip-top" data-toggle="dropdown" alt="Tools" title="Tools" href="#">
+                                Tools
+
+                            </a>
+                            <ul class="dropdown-menu" role="menu" style="min-width:110px">
+                                <li class="dropdown-item">
+                                    @if (ViewData["HostingEntity"] != null && User.CanEdit(ViewData["HostingEntity"].ToString()))
+                                    {
+                                        <a id="showAssociateBtn" data-placement="top" data-original-title="Associate SSRS Report with @GeneratorBase.MVC.Models.ModelConversion.GetDisplayNameOfEntity(ViewData["HostingEntity"].ToString())" data-toggle="modal" data-target="#dvPopupBulkOperation" onclick="@Html.Raw("OpenPopUpEntity1M(this,'PopupBulkOperation','SSRS Report','dvPopupBulkOperation','" + Url.Action("Index", "ReportList", new { BulkOperation = "multiple", BulkAssociate = true, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntity = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName) }) + "')")">
+                                            <i class="fa fa-plus-circle"></i> Add Association
+                                        </a>
+                                        <script>
+                                            if ($("#HostingEntityDisplayValue").attr('id') == undefined)
+                                                $("#showAssociateBtn").hide();
+                                        </script>
+                                    }
+
+                                </li>
+
+                                <li class="dropdown-item">
+                                    @if (User.CanView("ReportList") && User.CanUseVerb("ExportExcel", "ReportList", User))
+                                    {
+                                        <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action(ActionNameUrl,"ReportList",getSortHtmlAttributes(null, false, null, true), null) + "');") alt="Export Excel" title="Export Excel">
+                                            <i class="fa fa-download" style="margin-right:3px"></i>  Export Excel
+                                        </a>
+                                    }
+                                </li>
+                                @if (User.CanUseVerb("Recycle", "ReportList", User))
+                                {
+                                    <li class="dropdown-item">
+                                        <a onclick="CancelSearch('ReportList','@Html.Raw(Url.Action("Index", "ReportList", new {ShowDeleted = true,IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" alt="Recycle Bin" title="Recycle Bin">
+                                            <i class="fa fa-recycle" style="margin-right:3px"></i>  Recycle Bin
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+
+        }
+        <div class="pull-right mb-2">
+            <div class="input-group">
+                @Html.TextBox("SearchStringReportList", ViewBag.CurrentFilter as string, null, new { @class = "form-control", @value = ViewBag.Homeval, @placeholder = "Search" })
+                <div class="input-group-btn">
+                    <a id="ReportListSearch" onclick="SearchClick(event, 'ReportList', '@Html.Raw(Url.Action("Index", "ReportList", new {ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                    <a id="ReportListDeepSearch" onclick="SearchClick(event, 'ReportList', '@Html.Raw(Url.Action("Index", "ReportList", new {ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = true, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString() ,viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName');" data-original-title="Deep Search" class="btn btn-secondary tip-top" alt="Deep Search" title="Search deep"><span class="fa fa-search-plus"></span></a>
+                    <a id="ReportListCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('ReportList','@Html.Raw(Url.Action("Index", "ReportList", new {ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName) }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                        <span class="fa fa-minus-circle"></span>
+                    </a>
+                    <a id="ReportListSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('ReportList','@Html.Raw(Url.Action("Index", "ReportList", new {ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], ClearSearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = Convert.ToString(ViewBag.TemplatesName)}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                        <span class="fa fa-refresh"></span>
+                    </a>
+                    <a id="ReportListRefresh" class="d-none" onclick="CancelSearch('ReportList','@Html.Raw(Url.Action(ActionNameUrl, "ReportList", getSortHtmlAttributes(ViewBag.CurrentSort, false,null, false)))','@User.Name')"></a>
+                </div>
+            </div>
+        </div>
+    }
+    <div style="clear:both"></div>
+    @if (ViewBag.SearchResult != "")
+    {
+        <div id="fsearchReportList" class="collapse QueryResult" style="margin-top:5px">
+            @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))
+            <div class="pull-right" style="margin-top:-6px;">
+                @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                {
+                    <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", "ReportList",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = Convert.ToString(ViewBag.TemplatesName)})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                }
+                <a href="@(Url.Action("SetFSearch", "ReportList")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                @if (User.CanAdd("T_FacetedSearch"))
+                {
+                    <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="ReportList",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                }
+            </div>
+        </div>
+    }
+    @{Html.RenderPartial("~/Views/ReportList/SetFSearchGrid.cshtml", new GeneratorBase.MVC.Models.ReportList());}
+    @if (Model.Count > 0)
+    {
+        <div id="pagination" >
+            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "ReportList", getSortHtmlAttributes(null, true, page, false)),
+               new PagedListRenderOptions
+               {
+                   FunctionToTransformEachPageLink = (liTag, aTag) =>
+                   {
+                       aTag.Attributes.Add("class", "page-link");
+                       liTag.InnerHtml = aTag.ToString();
+                       return liTag;
+                   },
+                   LiElementClasses = new[] { "page-item" },
+                   UlElementClasses = new[] { "pagination pagination-sm" }
+               }
+ )
+               
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistReportList",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'ReportList','"
+                             + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "ReportList",
+                             getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                             null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistReportList"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    }
+
+    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+        <table class="table table-hover table-striped default-bordered default-condensed">
+            <thead>
+                <tr>
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("ReportList") && User.CanUseVerb("BulkUpdate", "ReportList", User)) || (User.CanDelete("ReportList") && User.CanUseVerb("BulkDelete", "ReportList", User))))
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("ReportList", "ReportNo"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "ReportNo");
+                        <th scope="col" class="col2">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "ReportList", getSortHtmlAttributes("ReportNo", false, null, false), new { @onclick = "SortLinkClick(event,'ReportList');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "ReportNo")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "ReportNo")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("ReportList", "DisplayName"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "DisplayName");
+                        <th scope="col" class="col3">
+                            @Html.ActionLink("Report Name", ActionNameUrl, "ReportList", getSortHtmlAttributes("DisplayName", false, null, false), new { @onclick = "SortLinkClick(event,'ReportList');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DisplayName")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DisplayName")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("ReportList", "Description"))
+                    {
+                        var SortPropertyName = EntityReflector.Properties.FirstOrDefault(q => q.Name == "Description");
+                        <th scope="col" class="col4">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "ReportList", getSortHtmlAttributes("Description", false, null, false), new { @onclick = "SortLinkClick(event,'ReportList');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Description")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Description")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanEditAdminFeature("ReportRoles") || User.CanAddAdminFeature("ReportRoles") || User.CanDeleteAdminFeature("ReportRoles"))
+                    {
+                        <th>Roles</th>
+                    }
+                </tr>
+            </thead>
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="5" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row">
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("ReportList") && User.CanUseVerb("BulkUpdate", "ReportList", User)) || (User.CanDelete("ReportList") && User.CanUseVerb("BulkDelete", "ReportList", User))))
+                    {
+                        <td>
+                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" />
+                        </td>
+                    }
+                    <td class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                        <div style="display:none;">
+                            <div class="btn-group tdDoubleClickGroup">
+                                <a onclick="SavePropertiesValue(this,'ReportList',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs dropdown-toggle btn-primary" alt="Save" title="Save" style="color:white">
+                                    <i class="fa fa-save"></i> Save
+                                </a>
+                                <a onclick="$('#ReportListRefresh').click();" class="btn btn-xs dropdown-toggle btn-default" alt="Cancel" title="Cancel">
+                                    <i class="fa fa-close"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                        <div id="DivbutEdit">
+                            <div class="btn-group" style="position:absolute;">
+                                @if (User.CanView("ReportList") && item.Type == "SSRS")
+                                {
+                                    <a class="btn btn-primary btn-xs" href="@Url.Action("ResultShow", "Reports", new { ReportName = item.ReportPath,DisplayName=item.DisplayName })"> Run</a>
+                                }
+                                @if (User.CanView("ReportList") && item.Type == "Custom")
+                                {
+                                    <a class="btn btn-primary btn-xs" href="@Url.Action("Edit", "CustomReports", new { Id = item.ReportPath })"> Run</a>
+                                }
+                                @if (User.CanEdit("ReportList"))
+                                {
+                                    <a data-toggle="dropdown" class="btn btn-xs dropdown-toggle btn-default" style="padding-left:6px; padding-right:6px" alt="More Options" title="More Options">
+
+                                    </a>
+                                    <ul class="dropdown-menu pull-left">
+                                        @if (User.CanView("ReportList") && item.Type == "SSRS")
+                                        {
+                                            <li class="dropdown-item">
+                                                <a target="_blank" style="cursor:pointer;" href="@Url.Action("ResultShow", "Reports", new { ReportName = item.ReportPath, DisplayName = item.DisplayName })"> Run in new window</a>
+                                            </li>
+                                        }
+                                        @if (User.CanView("ReportList") && item.Type == "Custom")
+                                        {
+                                            <li class="dropdown-item">
+                                                <a target="_blank" style="cursor:pointer;" href="@Url.Action("Edit", "CustomReports", new { Id = item.ReportPath })"> Run</a>
+                                            </li>
+                                        }
+                                        <li class="dropdown-item">
+                                            <a id='aBtnQuickEditReportList_@item.Id' style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntityQuickEdit('addPopup','Edit ReportList','dvPopup','" + Url.Action("EditQuick", "ReportList", new
+																			{
+																				id = item.Id,
+                                                                                UrlReferrer = Request.Url.PathAndQuery,
+																				AssociatedType = ViewData["AssociatedType"],
+																				HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]),
+																				HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+																				TS = DateTime.Now,viewtype = Convert.ToString(ViewBag.TemplatesName)
+																			}) + "')")">Edit Settings</a>
+                                        </li>
+
+                                    </ul>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    @if (User.CanView("ReportList", "ReportNo"))
+                    {
+
+                        <td onclick="OpenQuickEdit('ReportList','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.ReportNo)
+                        </td>
+                    }
+                    @if (User.CanView("ReportList", "DisplayName"))
+                    {
+
+                        <td onclick="OpenQuickEdit('ReportList','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.DisplayName)
+                        </td>
+                    }
+                    @if (User.CanView("ReportList", "Description"))
+                    {
+
+                        <td onclick="OpenQuickEdit('ReportList','@item.Id',event);">
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                    }
+                    @if (User.CanEditAdminFeature("ReportRoles") || User.CanAddAdminFeature("ReportRoles") || User.CanDeleteAdminFeature("ReportRoles"))
+                    {
+                        var itemid = Convert.ToString(item.Id);
+                        var reportroles = appcontext.ReportsInRoles.Where(r => r.ReportId == itemid).ToList();
+                        <td>
+                            @foreach (var chkitem in reportroles)
+                            {
+                                var RoleName = RoleList.FirstOrDefault(r => r.Key == chkitem.RoleId);
+                                if (RoleName.Value != null)
+                                {
+                                    <input type="checkbox" disabled name="Selected" checked /> @RoleName.Value
+                                }
+                            }
+                            <a style="margin-left:5px;" href="#" onclick="@Html.Raw("OpenPopUpEntity('addPopup','Edit Assign Roles','dvPopup','" + Url.Action("Edit", "Reports", new { id = item.Id, UrlReferrer = Request.Url.PathAndQuery, TS = DateTime.Now }) + "')")">
+                            <i class="fa fa-edit"></i> 
+                            </a>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0)
+    {
+        <div id="pagination" class="MyPagination1">
+            @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "ReportList", getSortHtmlAttributes(null, true, page, false)),
+               new PagedListRenderOptions
+               {
+                   FunctionToTransformEachPageLink = (liTag, aTag) =>
+                   {
+                       aTag.Attributes.Add("class", "page-link");
+                       liTag.InnerHtml = aTag.ToString();
+                       return liTag;
+                   },
+                   LiElementClasses = new[] { "page-item" },
+                   UlElementClasses = new[] { "pagination pagination-sm" }
+               }
+ )
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistReportList",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'ReportList','"
+                             + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "ReportList",
+                             getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                             null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistReportList"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityReportListDisplayValue", null, null, new { @Style = "display:none;" })
+</div>
+<script>
+    $('.table tr').click(function (e) {
+        $('.table tr').removeClass('highlighted');
+        $(this).addClass('highlighted');
+    });
+</script>
+

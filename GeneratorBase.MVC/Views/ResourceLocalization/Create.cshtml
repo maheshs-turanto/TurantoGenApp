@@ -1,0 +1,65 @@
+﻿@model  GeneratorBase.MVC.Controllers.ResourceLocalization
+@{
+    ViewBag.Title = "Resource Localization";
+    // Layout = null;
+}
+@using (Html.BeginForm("Create", "ResourceLocalization", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <div class="content-heading">
+        <div class="col-lg-10">
+            <strong>
+                <a href="@Url.Action("Index", "Admin")"> Admin</a> <a href="@Url.Action("Index", "ResourceLocalization")"> Labels Display Mapping </a>
+
+                <small> Create </small>
+            </strong>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.Name)
+    <div class="card">
+        
+        <div class="card-body">
+            <div id="Des_Table" class="table-responsive" style="overflow-x:auto;">
+                <table id="tblResourceLocalizationList" class="table table-hover table-striped default-bordered default-condensed">
+                    <thead>
+                        <tr>
+                            <th class="col1">
+                                Column Label Name
+                            </th>
+                            <th> Display Label As </th>
+                        </tr>
+                    </thead>
+
+
+                    @for (int i = 0; i < Model.columnmapping.Count; i++)
+                                {
+
+                                <tr>
+                                    <td>@Html.TextBoxFor(modelItem => Model.columnmapping[i].source, new { @readonly = "readonly", @class="form-control"})</td>
+
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.columnmapping[i].target, new { @class = "form-control" })
+                                    </td>
+                                </tr>
+
+                                }
+                </table>
+            </div>
+        </div>
+
+    </div>
+    <div class="card ButtonFooter">
+        <div class="card-footer container-fluid">
+            @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-secondary" })
+            @Html.ActionLink("Reset to Default", "Reset", new { name = Model.Name }, new { @class = "btn btn-secondary" })
+            <input type="submit" value="Set" class="btn btn-primary" />
+        </div>
+    </div>
+}
+@Scripts.Render("~/bundles/jqueryval")
+
+

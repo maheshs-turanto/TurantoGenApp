@@ -1,0 +1,49 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.DynamicRoleMapping>
+@{
+    ViewBag.Title = "DynamicRoleMapping List";
+    
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+    var appTheme = commonObj.getAppThemeName();
+}
+@if (appTheme == "Default" || appTheme == "Default_BS_5_x")
+{
+    <div class="content-heading">
+        <div class="col-lg-10">
+            <strong>
+                <a href="@Url.Action("Index")">Dynamic Role Mapping</a>
+                <small>Dynamic Role Mapping list</small>
+            </strong>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <div id="dvDynamicRoleMappingFilter"></div>
+                @Html.Partial("~/Views/DynamicRoleMapping/IndexPartial.cshtml", Model)
+            </div>
+        </div>
+    </div>
+}
+@if (appTheme == "Angular")
+{
+    <div class="content-heading">
+        <div class="col-lg-10">
+            <strong>
+                <a href="@Url.Action("Index")">Dynamic Role Mapping</a>
+                <small>Dynamic Role Mapping list</small>
+            </strong>
+        </div>
+        <div class="col-lg-2">
+        </div>
+    </div>
+<div class="">
+    <div class="card">
+        <div class="card-body">
+            <div id="dvDynamicRoleMappingFilter"></div>
+            @Html.Partial("~/Views/DynamicRoleMapping/IndexPartial.cshtml", Model)
+        </div>
+    </div>
+</div>
+}

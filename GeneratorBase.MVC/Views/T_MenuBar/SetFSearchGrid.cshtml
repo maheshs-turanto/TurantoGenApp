@@ -1,0 +1,242 @@
+﻿@model GeneratorBase.MVC.Models.T_MenuBar
+@{
+    ViewBag.Title = "Search";
+	var parentUrl = new System.Collections.Specialized.NameValueCollection();
+    if (Request.UrlReferrer != null)
+    {
+        parentUrl = HttpUtility.ParseQueryString(Request.UrlReferrer.Query);
+    }
+	Layout = null;
+	var isHosted = ViewData["HostingEntity"] != null && ViewData["HostingEntityID"] != null? true : false;
+    var HostingEntityName =Convert.ToString(ViewData["HostingEntity"]);
+    var HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]);
+    var AssociatedType = Convert.ToString(ViewData["AssociatedType"]);
+var counter = 0;
+    var counter1 = 0;
+}
+	
+<style>
+        #WorkOrderGridQuery .form-group {
+            margin-bottom: .3rem!important;
+        }
+
+        #WorkOrderGridQuery label {
+            color: black !important;
+            font-weight: 600;
+        }
+
+        #WorkOrderGridQuery .btn-default {
+            color: #000;
+            background: white;
+            border: 2px solid #e3e6f0;
+        }
+
+        .panel,
+        .panel-body {
+            box-shadow: none;
+            width: 100%;
+        }
+
+        .panel-group .panel-heading {
+            padding: 0;
+            border-top: 1px solid #e3e6f0;
+            border-bottom: 1px solid #e3e6f0;
+           
+        }
+
+            .panel-group .panel-heading a {
+                display: block;
+                padding: 6px 12px 2px 12px;
+                text-decoration: none;
+                position: relative;
+                font-size: 0.9rem;
+                color: black;
+                font-weight:600;
+            }
+
+                .panel-group .panel-heading a:after {
+                    content: '-';
+                    float: right;
+                }
+
+                .panel-group .panel-heading a.collapsed:after {
+                    content: '+';
+                }
+
+        .panel-group .panel-default {
+            display:block!important;
+        }
+		.panel-group .panel-heading:hover {
+background:#f3f5f9;
+color:white!important;
+}
+
+    </style>
+        <div id="T_MenuBarGridQuery"  style="width: 250px; float: left; margin-left: 12px;">
+           <div class="col-md-12 col-sm-12 col-xs-12 p-0 col-sm-12 m-0 row mb-2" style="border: 2px solid #e3e6f0;">
+<label style="font-weight:bold; padding-left:12px; padding-top:8px; font-size:16px;">Filter By</label>
+                <div style="clear:both"></div>
+
+                <a href="#" style="position:absolute; right:10px; top:10px; font-weight:600; display:none;">Clear All</a>
+
+				<div class="panel-group" id="accordionGroupOpen" role="tablist" aria-multiselectable="true" style="width:100%">
+
+	@if (User.CanView("T_MenuItem"))
+    {
+			
+			<div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingT_MenuBar">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordionGroupOpen" href="#collapseOpenT_MenuBar@(++counter)" aria-expanded="false" aria-controls="collapseT_MenuBar">
+                                   <label> Menu Item</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOpenT_MenuBar@(++counter1)" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingT_MenuBar">
+                            <div class="panel-body">
+							<div class='form-group col-md-12 col-sm-12 col-xs-12' title="Menu Item" style="padding:8px 12px 6px 12px">
+                                 <div class="input-group" id="dvt_menubar">
+                                   		
+	 @Html.DropDownList("t_menubarmenuitemassociation",ViewBag.t_menubarmenuitemassociation != null ? (SelectList)ViewBag.t_menubarmenuitemassociation :  new SelectList(new Dictionary<string,string>(), "Key", "Value"), new {   @multiple = "multiple", @HostingName = "T_MenuItem", @dataurl = Url.Action("GetAllMultiSelectValue", "T_MenuItem",null) })
+                                </div>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+
+                            
+                        
+		}
+
+		<div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingT_Disabled">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordionGroupOpen" href="#collapseOpenT_Disabled@(++counter)" aria-expanded="false" aria-controls="collapseT_Disabled">
+                                   <label>Disabled?</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOpenT_Disabled@(++counter1)" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingT_Disabled">
+                            <div class="panel-body">
+								<div class='form-group col-md-12 col-sm-12 col-xs-12' title="Disabled?" style="padding:8px 12px 6px 12px">
+									<div class="input-group">
+										 <input type="checkbox" id="T_Disabled" class="boolean" />
+									</div>
+								</div>
+                            </div>
+                        </div>
+
+                    </div>
+			
+                
+
+		<div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingT_Horizontal">
+                            <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordionGroupOpen" href="#collapseOpenT_Horizontal@(++counter)" aria-expanded="false" aria-controls="collapseT_Horizontal">
+                                   <label>Horizontal?</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOpenT_Horizontal@(++counter1)" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingT_Horizontal">
+                            <div class="panel-body">
+								<div class='form-group col-md-12 col-sm-12 col-xs-12' title="Horizontal?" style="padding:8px 12px 6px 12px">
+									<div class="input-group">
+										 <input type="checkbox" id="T_Horizontal" class="boolean" />
+									</div>
+								</div>
+                            </div>
+                        </div>
+
+                    </div>
+			
+                
+  
+
+
+<div class='col-md-12 col-sm-12 col-xs-12 p-2 card-footer'>
+<button onclick="RunQueryT_MenuBar();" class="btn btn-primary">
+                    Search
+                </button>
+				<button onclick="window.location.reload();" class="btn btn-secondary">
+                    Reset
+                </button>
+				<button  onclick="$('#LoadT_MenuBarSetFSearchGrid').hide();"  class="btn btn-secondary pull-right">
+                    Close
+                </button>
+                
+				</div>
+	</div>
+
+	</div>
+</div>
+	 <script>
+        $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'ALL'
+            });
+        });
+    });
+     if (GridQuery != undefined) {
+        debugger;
+        $('select[multiple="multiple"]', GridQuery).each(function () {
+            if ($(this).val() != undefined && $(this).val() != null) {
+                var idname = $(this).attr("id");
+                $("#heading" + idname).find('a').click();
+                $("#dv" + idname).find('button').click();
+                SetFSearchDropdown($(this).val().toString(), idname);
+                closeSel(this);
+            }
+        });
+    }
+    </script>
+@if (ViewBag.TemplatesName == "CardIndexPartial")
+{
+    <script>
+        function RunQueryT_MenuBar() {
+            var buttons = document.getElementsByName('RunQueryT_MenuBar');
+            for (var i = 0; i < buttons.length; i++)
+                buttons[i].click();
+        }
+    </script>
+}
+else
+{
+	<script>
+    function RunQueryT_MenuBar() {
+        url = '@Html.Raw(Url.Action("FSearch", new
+        {
+            HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+            HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+            AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+			viewtype = ViewBag.TemplatesName,
+                    }))';
+        var search = false;
+        $('.boolean', $("#T_MenuBarGridQuery")).each(function () {
+            if ($(this).prop('checked') === true)
+            {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, "true");
+                search = true;
+            }
+        });
+        $('select[multiple="multiple"]', $("#T_MenuBarGridQuery")).each(function () {
+            if ($(this).val() != undefined && $(this).val() != null) {
+                var idname = $(this).attr("id");
+                url = addParameterToURL(url, idname, $(this).val());
+                search = true;
+            }
+        });
+        GridQuery = $("#T_EmployeeGridQuery");
+		if ("@isHosted" == "True")
+        {
+            url = addParameterToURL(url, "@AssociatedType.ToLower()", "@HostingEntityID");
+        }
+        if(search)
+            RefreshGridFSearch("T_MenuBar", AntiSanitizeURLString(url))
+    }    
+</script>
+}
+  

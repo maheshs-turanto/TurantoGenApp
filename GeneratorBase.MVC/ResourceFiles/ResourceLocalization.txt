@@ -1,0 +1,2 @@
+This folder contains resx files for each entity.
+Each file contains label (language) setting for each field on form.

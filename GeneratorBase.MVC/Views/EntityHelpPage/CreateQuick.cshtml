@@ -1,0 +1,252 @@
+﻿@model GeneratorBase.MVC.Models.EntityHelpPage
+@{
+    ViewBag.Title = "Create Entity Help Page";
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+            if ('@Convert.ToString(ViewData["AssociatedType"])' != null) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+                $('#' + hostingEntityName + 'ID').attr("lock", "true");
+                $('#' + hostingEntityName + 'ID').trigger("change");
+            }
+        }
+        catch (ex) { }
+    });
+</script>
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.EntityHelpPageIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.EntityHelpPageIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.EntityHelpPageIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.EntityHelpPageIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.EntityHelpPageIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.EntityHelpPageIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+<link href='@Url.Content("~/Scripts/summernote.css")' rel="stylesheet" type="text/css" />
+<script src="@Url.Content("~/Scripts/summernote.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    function initHtmlEditor() {
+        $('#summernote').summernote();
+    }
+    $(document).ready(function () {
+        initHtmlEditor();
+        $('#summernote').summernote({ focus: true });
+    });
+</script>
+@using (Html.BeginForm("CreateQuick", "EntityHelpPage", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmEntityHelpPage" }))
+{
+    @Html.AntiForgeryToken();
+    Html.ValidationSummary(true);
+    Html.EnableClientValidation();
+    <input type="hidden" id="ErrMsgQuickAdd" />
+    @*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+    <div id="errorContainerQuickAdd" style="display: none">
+        <div id="errorsMsgQuickAdd"></div>
+        <div id="errorsQuickAdd"></div>
+    </div>
+    <div id="divDisplayThresholdLimit" style="display:none;">
+    </div>
+    <div id="divDisplayBRmsgMandatory" style="display:none;">
+    </div>
+    <div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+    </div>
+    <div class="row">
+        @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+        @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+        @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+        @Html.Hidden("fromHome", Convert.ToBoolean(ViewData["fromHome"]))
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card card-default AppForm">
+                <div class="card-body">
+                    <div class="row">
+                        @if (User.CanView("EntityHelpPage", "EntityOfEntityHelpID"))
+                        {
+                            <div class='col-sm-6' id="dvEntityOfEntityHelpID" style="display:none;">
+                                <div class='form-group'>
+                                    <label>@Html.LabelFor(model => model.EntityOfEntityHelpID) <span class="text-danger-reg">*</span></label>
+                                    <div class="input-group" style="width: 100%;">
+                                        @Html.DropDownList("EntityOfEntityHelpID", null, "-- Select --", new { @required = "required", @onchange = "SetEntityName(this);", @class = "form-control", @HostingName = "EntityPage" })
+                                        @Html.ValidationMessageFor(model => model.EntityOfEntityHelpID, "The Entity Name field is required.")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        @if (User.CanView("EntityHelpPage", "SectionName"))
+                        {
+                            <div class='col-sm-6' id="dvSectionName">
+                                <div class='form-group' title="Section Name">
+                                    <label>@Html.LabelFor(model => model.SectionName) <span class="text-danger-reg">*</span></label>
+                                    @Html.TextBoxFor(model => model.SectionName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SectionName)
+
+                                </div>
+                            </div>
+                        }
+                        @if (User.CanView("EntityHelpPage", "Order"))
+                        {
+                            <div class='col-sm-6' id="dvOrder">
+                                <div class='form-group' title="Order">
+                                    <label>@Html.LabelFor(model => model.Order) <span class="text-danger-reg">*</span></label>
+                                    @Html.TextBoxFor(model => model.Order, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Order)
+                                </div>
+                            </div>
+                        }
+                        @if (User.CanView("EntityHelpPage", "SectionText"))
+                        {
+
+                            <div class="">
+                                <div class="col-md-12 col-sm-12 col-xs-12" id="dvSectionText">
+                                    <div class="card card-default">
+                                        <div class="card-header clearfix">
+                                           
+                                            <h3 class="card-title">Section Text</h3>
+                                        </div>
+                                        <div class="card-body" style="margin:0px; padding:8px;">
+                                            @Html.TextAreaFor(model => model.SectionText, new {@Value = "" })
+                                            @Html.ValidationMessageFor(model => model.SectionText)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class='col-sm-6' id="dvSectionText">
+                                <div class='form-group' title="Section Text">
+                                    <label>@Html.LabelFor(model => model.SectionText) </label>
+                                    @Html.TextAreaFor(model => model.SectionText, new { @id = "summernote" })
+                                    @Html.ValidationMessageFor(model => model.SectionText)
+                                </div>
+                            </div>*@
+                        }
+                        @if (User.CanView("EntityHelpPage", "Disable"))
+                        {
+                            <div class='col-sm-6' id="dvDisable" style="display:none;">
+                                <label>
+                                    @Html.LabelFor(model => model.Disable)
+                                </label>
+                                <div class="form-group" title="Disable">
+                                    @Html.CheckBox("Disable", false)
+                                    @Html.ValidationMessageFor(model => model.Disable)
+                                </div>
+                            </div>
+                        }
+                        @if (User.CanView("EntityHelpPage", "EntityName"))
+                        {
+                            <div class='col-sm-6' id="dvEntityName" style="display:none;">
+                                <div class='form-group' title="Entity Name">
+                                    <label>@Html.LabelFor(model => model.EntityName) </label>
+                                    @Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.EntityName)
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    var busineesrule = User.businessrules.Where(p => p.EntityName == "EntityHelpPage").ToList();
+    var lstinlineentityname = "";
+    var lstinlineassocdispname = "";
+    var lstinlineassocname = "";
+    if (ViewBag.IsAddPop != null)
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="fillRIch();QuickAdd(event,'EntityHelpPage','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+    }
+    else
+    {
+        <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="fillRIch();QuickAddFromIndexEntityPage(event,true,'EntityHelpPage','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+    }
+    <div style="display:none;">
+        @Html.DropDownList("EntityNameDD", null, "-- Select --", new { @required = "required", @class = "form-control" })
+    </div>
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+<link href='@Url.Content("~/Scripts/summernote.css")' rel='stylesheet' type='text/css' />
+<script src='@Url.Content("~/Scripts/summernote.js")' type='text/javascript'></script>
+<script type='text/javascript'>$(document).ready(function () { $('#SectionText').summernote(); });</script>
+<script type='text/javascript'>
+
+    function fillRIch()
+    {
+        debugger;
+        if ($("#frmEntityHelpPage").find(".note-editable").html() == "<br>") {
+            $("#frmEntityHelpPage").find(".note-editable").html("");
+        } else {
+            $("#SectionText").text($("#frmEntityHelpPage").find(".note-editable").html());
+        }
+    }
+    $(document).ready(function () {
+        try {
+            document.getElementsByTagName("body")[0].focus();
+            $("#addPopup").removeAttr("tabindex");
+            var cltcoll = $("#dvPopup").find('input[type=text]:not([class=hidden]):not([readonly]),textarea:not([readonly])');
+            var cltid = "";
+            $(cltcoll).each(function () {
+                if ($(this).attr("id") == undefined)
+                    return
+                var dvhidden = $("#dv" + $(this).attr("id"));
+                var dvDate = $("#datetimepicker" + $(this).attr("id")).attr("id");
+                if (!(dvhidden.css('display') == 'none') && dvDate == undefined) {
+                    cltid = $(this);
+                    return false;
+                }
+            });
+            if (cltid != "" && cltid != undefined)
+                setTimeout(function () { $(cltid).focus(); }, 500);
+            var ctrlReadonly = $("#dvPopup").find('input[type=text][readonly],textarea[readonly]');
+            $(ctrlReadonly).each(function () {
+                $(ctrlReadonly).attr("tabindex", "-1");
+            });
+            var Value = $('#EntityOfEntityHelpID option:selected').val();
+            if (Value.length > 0) {
+                Value = $('#EntityOfEntityHelpID option:selected').text();
+                $("#EntityNameDD").val(Value);
+                var entvalue = $('#EntityNameDD option:selected').val();
+                $("#dvPopup").find('input[id=EntityName]').val(entvalue);
+            }
+        }
+        catch (ex) { }
+    });
+    function SetEntityName(obj) {
+        var Value = $('#EntityOfEntityHelpID option:selected').val();
+        if (Value.length > 0) {
+            Value = $('#EntityOfEntityHelpID option:selected').text();
+            $("#EntityNameDD").val(Value);
+            var entvalue = $('#EntityNameDD option:selected').val();
+            $("#dvPopup").find('input[id=EntityName]').val(entvalue);
+        }
+        else
+            $("#dvPopup").find('input[id=EntityName]').val('');
+
+    }
+</script>

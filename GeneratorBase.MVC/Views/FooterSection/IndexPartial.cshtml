@@ -1,0 +1,597 @@
+﻿@model PagedList.IPagedList<GeneratorBase.MVC.Models.FooterSection>
+@using PagedList.Mvc;
+@using GeneratorBase.MVC.UIPropertyHtmlHelper;
+@{
+    var ActionNameUrl = "Index";
+    if (HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper() == "FSEARCH")
+    {
+        ActionNameUrl = "FSearch";
+    }
+    var BackUrl = Request.Url.PathAndQuery;
+    if (ViewData["HostingEntity"] != null && (Request.QueryString["TabToken"] != null || Request.IsAjaxRequest()))
+    {
+        BackUrl = Request.UrlReferrer != null ? Request.UrlReferrer.PathAndQuery : "";
+    }
+    var EntityReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "FooterSection");
+    var EntityReflectorProperties = EntityReflector.Properties;
+    var RecycleView = ViewData["ShowDeleted"] != null && Convert.ToBoolean(ViewData["ShowDeleted"]);
+    var EntityDisplayName = EntityReflector != null ? (HttpUtility.JavaScriptStringEncode(Html.DisplayName(EntityReflector.DisplayName).ToString())) : "Footer Section ";
+    var HideAction = GeneratorBase.MVC.Models.CustomHelperMethod.ShowHideAction("FooterSection");
+    var viewbagname = Convert.ToString(ViewBag.TemplatesName);
+    var inlinegrid = Request.QueryString["inlinegrid"];
+    var DocumentUploadDocumentsOnPage = GeneratorBase.MVC.Models.DocumentHelper.GetDocumentNames(Model.Where(p => p.DocumentUpload != null).Select(p => p.DocumentUpload.Value).ToList(), null);
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.FooterSectionRestrictDropdownValueRuleInLIneEdit))
+    {
+        @Html.Raw(ViewBag.FooterSectionRestrictDropdownValueRuleInLIneEdit);
+    }
+}
+<style>
+    .CEntityCount {
+        display: none !important;
+    }
+</style>
+<div id="FooterSection">
+    @if (RecycleView)
+    {
+        <span class="text text-danger"><span class="fa fa-recycle"></span> Recycle Bin</span>
+        <br /><br />
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                $("#FooterSectionGridHeader").addClass('collapse in');
+            }
+            $(".pagination a").click(function (e) {
+                PaginationClick(e, 'FooterSection', '@User.JavaScriptEncodedName')
+            })
+            if ("@HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString().ToUpper()" == "FSEARCH") {
+                $("#fsearchFooterSection").addClass('show');
+                FSearchColumnsShowHide('@ViewData["HideColumns"]', 'FooterSection');
+            }
+            $("#SearchStringFooterSection").keypress(function (e) {
+                if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    $("#FooterSectionSearch").bind("click", (function () {
+                    }));
+                    $('#FooterSectionSearch').trigger("click");
+                    return false;
+                }
+            })
+            $("#btnShowHideFooterSection").mouseup(function () {
+                if (document.getElementById('ColumnShowHideFooterSection').className == 'collapse') {
+                    $('#lblFooterSection').css('display', 'none');
+                }
+            })
+            if ($("#ErrmsgLockRecord").length > 0 && $("#ErrmsgLockRecord").text().length > 0) {
+                $(".float-left.actionbar").hide();
+                if ('@inlinegrid' == 'true' || '@inlinegrid' == 'True') {
+                    $(".inlinegridoption").hide();
+                }
+            }
+        });
+    </script>
+    @functions {
+        object getSortHtmlAttributes(string sortby, bool IsPaging, int? page, bool? IsExport, string ExportType = null)
+        {
+            if (IsPaging)
+            {
+                return new
+                {
+                    page,
+                    sortBy = ViewBag.CurrentSort,
+                    isAsc = ViewBag.IsAsc,
+                    searchString = Request.QueryString["searchString"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    currentFilter = ViewBag.CurrentFilter,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    HostingEntityID = ViewData["HostingEntityID"],
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+
+                    companyinformationfootersectionassociation = Request.QueryString["companyinformationfootersectionassociation"],
+                    associatedfootersectiontype = Request.QueryString["associatedfootersectiontype"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+            else
+            {
+                return new
+                {
+                    sortBy = sortby,
+                    currentFilter = Request.QueryString["currentFilter"],
+                    inlinegrid = Request.QueryString["inlinegrid"],
+                    searchString = Request.QueryString["searchString"],
+                    isAsc = (ViewBag.IsAsc == "ASC" ? "DESC" : ""),
+                    page = ViewBag.Pages,
+                    HostingEntity = @Convert.ToString(ViewData["HostingEntity"]),
+                    HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),
+                    AssociatedType = @Convert.ToString(ViewData["AssociatedType"]),
+                    IsExport = IsExport,
+                    ExportType = ExportType,
+                    FSFilter = ViewBag.FSFilter == null ? "Fsearch" : ViewBag.FSFilter,
+                    IsFilter = @Convert.ToBoolean(ViewData["IsFilter"]),
+                    IsDivRender = ViewBag.IsDivRender,
+                    companyinformationfootersectionassociation = Request.QueryString["companyinformationfootersectionassociation"],
+                    associatedfootersectiontype = Request.QueryString["associatedfootersectiontype"],
+                    search = Request.QueryString["search"],
+                    SortOrder = Request.QueryString["SortOrder"],
+                    viewtype = ViewBag.TemplatesName,
+                    HideColumns = ViewData["HideColumns"],
+                    GroupByColumn = ViewBag.GroupByColumn,
+                    FilterCondition = ViewBag.FilterCondition,
+                    inbuiltSearchCriteria = ViewBag.inbuiltSearchCriteria,
+                    ShowDeleted = ViewData["ShowDeleted"]
+                };
+            }
+        }
+    }
+    <div id="FooterSectionGridHeader" class="">
+        @if (ViewData["IsdrivedTab"] == null)
+        {
+            if (!RecycleView)
+            {
+                <div class="float-left actionbar">
+                    @if (User.CanAdd("FooterSection"))
+                    {
+                        <a id="addInlineRowFooterSection" style="display:none;"
+                           onclick="@Html.Raw("OpenInlineEntity(this,'FooterSection','" + Url.Action("CreateInline", "FooterSection", new {AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "')")">
+                        </a>
+                        <div class="btn-group mb-1" id='@ViewData["HostingEntity"]_FooterSection'>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus-circle"></i> Add <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                                    @if (User.CanAdd("FooterSection"))
+                                    {
+                                        if (ViewBag.IsDivRender == true)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Create", "FooterSection", new { RenderPartial = true, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname ,}))')" alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-original-title="Full Add" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "FooterSection", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null) + "');") alt="Full Add" title="Full Add">
+                                                    <i class="fa fa-plus-circle"></i> Full Add
+                                                </a>
+                                            </li>
+                                        }
+                                        if (ViewBag.IsDivRender != true)
+                                        {
+                                            <li class="dropdown-item">
+                                                <a data-placement="top" id="addFooterSection" data-original-title="Quick Add" data-toggle="modal" data-target="#dvPopup" onclick="@Html.Raw("OpenPopUpEntity('addPopup','"+EntityDisplayName+"','dvPopup','" + Url.Action("CreateQuick", "FooterSection", new { UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS=DateTime.Now,viewtype = viewbagname }) + "')")" alt="Quick Add" title="Quick Add">
+                                                    <i class="fa fa-plus-circle"></i> Quick Add
+                                                </a>
+                                            </li>
+                                        }
+
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    <div class="btn-group">
+                    </div>
+                    @if (ViewBag.IsDivRender == null || ViewBag.IsDivRender == false)
+                    {
+                        if ((User.CanEdit("FooterSection") && User.CanUseVerb("BulkUpdate", "FooterSection", User)) || (User.CanDelete("FooterSection") && User.CanUseVerb("BulkDelete", "FooterSection", User)))
+                        {
+                            <div class="btn-group mb-1">
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu3" data-original-title="Bulk Actions" data-toggle="dropdown" href="#">
+                                        <span class="fa fa-wrench"></span> Bulk <i class="caret"></i>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu">
+                                        @if (User.CanEdit("FooterSection") && User.CanUseVerb("BulkUpdate", "FooterSection", User))
+                                        {
+                                            <a class="dropdown-item" data-placement="top" style="cursor:pointer;" data-toggle="modal" data-target="#dvPopup"
+                                               onclick="@Html.Raw("OpenPopUpBulKUpdate('addPopup','Bulk Update "+EntityDisplayName+"','dvPopup','" + Url.Action("BulkUpdate", "FooterSection", new { UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), TS = DateTime.Now }) + "','FooterSection')")">
+                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                                Update
+                                            </a>
+                                        }
+
+                                        @if (User.CanDelete("FooterSection") && User.CanUseVerb("BulkDelete", "FooterSection", User))
+                                        {
+                                            <a class="dropdown-item" style="cursor:pointer;" onclick="PerformBulkOperation(this,'FooterSection','Bulk Delete','@Url.Action("DeleteBulk", "FooterSection")','@ViewData["AssociatedType"]');">
+                                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                                Delete
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </div>
+            }
+            <div class="float-right" style="display:none;">
+                <div class="input-group">
+                    @Html.TextBox("SearchStringFooterSection", ViewBag.CurrentFilter as string, null, new { @class = "form-control listsearchbox", @value = ViewBag.Homeval, @placeholder = "Search" })
+                    <div class="input-group-btn">
+                        <a id="FooterSectionSearch" onclick="SearchClick(event, 'FooterSection', '@Html.Raw(Url.Action("Index", "FooterSection", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter = ViewData["IsFilter"], IsDeepSearch = false, searchString = "_SearchString", HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], SearchTimeStamp = DateTime.Now.Ticks.ToString(),viewtype = viewbagname }))','@User.JavaScriptEncodedName');" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></a>
+                        <a id="FooterSectionCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('FooterSection','@Html.Raw(Url.Action("Index", "FooterSection", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"],IsFilter=ViewData["IsFilter"], HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]), HideColumns = ViewData["HideColumns"], viewtype = viewbagname }))','@User.JavaScriptEncodedName')" data-original-title="Clear Search" data-placement="top" alt="Clear Search" title="Clear Search">
+                            <span class="fa fa-minus-circle"></span>
+                        </a>
+                        <a id="FooterSectionSearchCancel" class="btn btn-secondary collapse-data-btn tip-top" onclick="CancelSearch('FooterSection','@Html.Raw(Url.Action("Index", "FooterSection", new {inlinegrid = inlinegrid, ShowDeleted = ViewData["ShowDeleted"], IsFilter=ViewData["IsFilter"], itemsPerPage=Convert.ToInt32(ViewBag.PageSize),HostingEntity = Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = Convert.ToString(ViewData["HostingEntityID"]), AssociatedType = Convert.ToString(ViewData["AssociatedType"]),HideColumns = ViewData["HideColumns"], viewtype = viewbagname}))','@User.JavaScriptEncodedName')" data-original-title="Refresh Grid" data-placement="top" alt="Refresh Grid" title="Refresh Grid">
+                            <span class="fa fa-sync-alt"></span>
+                        </a>
+                        <a id="FooterSectionRefresh" class="fa fa-refresh d-none" onclick="CancelSearch('FooterSection','@Html.Raw(Url.Action(ActionNameUrl, "FooterSection", getSortHtmlAttributes(ViewBag.CurrentSort, false,null, false)))','@User.Name')"></a>
+                    </div>
+                </div>
+            </div>
+        }
+        <div style="clear:both"></div>
+        @if (ViewBag.SearchResult != "")
+        {
+            <div id="fsearchFooterSection" class="collapse QueryResult p-2 col-sm-12 m-0 bg-light border row">
+                <div class="col-sm-6">  @Html.Raw(Html.Encode(ViewBag.SearchResult).Replace(Environment.NewLine, ""))</div>
+                <div class="col-sm-6 text-right">
+                    @if (ActionNameUrl == "FSearch" && ViewData["HostingEntity"] != null)
+                    {
+                        <a onclick="window.location.reload();" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Index", "FooterSection",new{ShowDeleted = ViewData["ShowDeleted"], viewtype = viewbagname})" class="btn btn-primary btn-sm"><span class="fa fa-times-circle"></span> Clear</a>
+                    }
+                    <a href="@(Url.Action("SetFSearch", "FooterSection")+Request.Url.Query)" class="btn btn-primary btn-sm"><span class="fa fa-edit"></span> Modify</a>
+                    @if (User.CanAdd("T_FacetedSearch"))
+                    {
+                        <a onclick="@Html.Raw("OpenPopUpEntity('addPopup','Query','dvPopup','" + Url.Action("CreateQuick", "T_FacetedSearch", new { EntityName="FooterSection",Url=Html.Raw(Request.Url.PathAndQuery) }) + "')")" class="btn btn-primary btn-sm"><span class="fa fa-floppy-o"></span> Save</a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "FooterSection", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistFooterSection",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'FooterSection','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "FooterSection",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistFooterSection"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+    }
+    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+        <table class="table table-hover default-bordered default-condensed newlist">
+            <thead id="theaderFooterSection">
+                <tr>
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("FooterSection") && User.CanUseVerb("BulkUpdate", "FooterSection", User)) || (User.CanDelete("FooterSection") && User.CanUseVerb("BulkDelete", "FooterSection", User))))
+                    {
+                        <th class="col0" style="width:20px;" scope="col" data-sort-ignore="true">
+                            <input type="checkbox" class="tip-top" data-placement="top" data-original-title="Select All" onclick="SelectAllRows(this);" />
+                            @Html.Hidden("SelectedItems")
+                        </th>
+                    }
+                    <th scope="col" class="col1" style="width:75px;" alt="Actions" title="Actions" data-sort-ignore="true">Actions</th>
+                    @if (User.CanView("CompanyInformation") && User.CanView("FooterSection", "CompanyInformationFooterSectionAssociationID"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "CompanyInformationFooterSectionAssociationID");
+                        <th scope="col" class="col2" @(Convert.ToString(ViewData["HostingEntity"]) == "CompanyInformation" && Convert.ToString(ViewData["AssociatedType"]) == "CompanyInformationFooterSectionAssociation" ? "hidden" : "")>
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FooterSection", getSortHtmlAttributes("CompanyInformationFooterSectionAssociationID", false, null, false), new { @onclick = "SortLinkClick(event,'FooterSection');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "CompanyInformationFooterSectionAssociationID")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "CompanyInformationFooterSectionAssociationID")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("FooterSection", "Name"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "Name");
+                        <th scope="col" class="col3">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FooterSection", getSortHtmlAttributes("Name", false, null, false), new { @onclick = "SortLinkClick(event,'FooterSection');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "Name")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "Name")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("FooterSectiontype") && User.CanView("FooterSection", "AssociatedFooterSectionTypeID"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "AssociatedFooterSectionTypeID");
+                        <th scope="col" class="col4" @(Convert.ToString(ViewData["HostingEntity"]) == "FooterSectiontype" && Convert.ToString(ViewData["AssociatedType"]) == "AssociatedFooterSectionType" ? "hidden" : "")>
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FooterSection", getSortHtmlAttributes("AssociatedFooterSectionTypeID", false, null, false), new { @onclick = "SortLinkClick(event,'FooterSection');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "AssociatedFooterSectionTypeID")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "AssociatedFooterSectionTypeID")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("FooterSection", "WebLink"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "WebLink");
+                        <th scope="col" class="col5">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FooterSection", getSortHtmlAttributes("WebLink", false, null, false), new { @onclick = "SortLinkClick(event,'FooterSection');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "WebLink")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "WebLink")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                    @if (User.CanView("FooterSection", "DocumentUpload") && User.CanView("Document"))
+                    {
+                        var SortPropertyName = EntityReflectorProperties.FirstOrDefault(q => q.Name == "DocumentUpload");
+                        <th scope="col" class="col6">
+                            @Html.ActionLink(SortPropertyName.DisplayName, ActionNameUrl, "FooterSection", getSortHtmlAttributes("DocumentUpload", false, null, false), new { @onclick = "SortLinkClick(event,'FooterSection');" })
+                            @if (ViewBag.IsAsc == "DESC" && ViewBag.CurrentSort == "DocumentUpload")
+                            {<i class="fa fa-sort-desc"></i>}
+                            @if (ViewBag.IsAsc == "ASC" && ViewBag.CurrentSort == "DocumentUpload")
+                            {<i class="fa fa-sort-asc"></i>}
+                        </th>
+                    }
+                </tr>
+                <tr id="trInlineFooterSection" style="display:none; padding:0px!important">
+                    <th id="tdInlineFooterSection" colspan="7" style="padding: 0px!important;">
+
+                    </th>
+                </tr>
+            </thead>
+
+            @{ bool isFirst = true; var oldKey = string.Empty; }
+            @foreach (var item in Model)
+            {
+                List<string> hiddenProperties = new List<string>();
+                if (User.businessrules.Any(p => p.EntityName == "FooterSection" && p.ActionTypeID.Contains(6)))
+                {
+                    hiddenProperties = item.ApplyHiddenRule(User.businessrules, "FooterSection");
+                }
+                bool isRecordReadOnly = false;
+
+                if (ViewBag.IsGroupBy != null && Convert.ToBoolean(ViewBag.IsGroupBy))
+                {
+                    var groupKey = item.m_DisplayValue;
+                    if (oldKey != groupKey)
+                    {
+                        isFirst = true;
+                        oldKey = item.m_DisplayValue;
+                    }
+                    if (isFirst || (string.IsNullOrEmpty(oldKey)))
+                    {
+                        isFirst = false;
+                        string groupString = string.Empty;
+                        <tr>
+                            <td colspan="7" style="background: #EDF5FA; font-weight:bold"> @groupKey @groupString</td>
+                        </tr>
+                    }
+                }
+                <tr scope="row">
+                    @if ((ViewBag.IsDivRender == null || ViewBag.IsDivRender == false) && ((User.CanEdit("FooterSection") && User.CanUseVerb("BulkUpdate", "FooterSection", User)) || (User.CanDelete("FooterSection") && User.CanUseVerb("BulkDelete", "FooterSection", User))))
+                    {
+                        <td style="width: 20px;">
+                            <input type="checkbox" id="@item.Id" onclick="SelectForBulkOperation(this,'@item.Id');" style="position:absolute" />
+                        </td>
+                    }
+                    <td style="width: 70px;" class="btnaction" rowid="btnrow_@item.Id" businessrule='@Html.Raw(Url.Action("ApplyBusinessRuleBeforeById", new { objectId = item.Id }))'>
+                        <div style="display:none;">
+                            <div class="btn-group tdDoubleClickGroup">
+                                <a onclick="SavePropertiesValue(this,'FooterSection',@item.Id,'@Url.Action("SavePropertiesValue")');" class="btn btn-xs btn-lightBlue" alt="Save" title="Save" style="font-size:1rem;padding:0px 5px;color:white;">
+                                    <i class="fa fa-save"></i>
+                                </a>
+                                <a onclick="$('#FooterSectionRefresh').click();" class="btn btn-xs btn-default" alt="Cancel" title="Cancel" style="font-size:1rem;padding:0px 5px;">
+                                    <i class="fa fa-close"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div id="DivbutEdit">
+                            <div class="btn-group">
+                                @if (User.CanEdit("FooterSection"))
+                                {
+                                    var editIconClass = isRecordReadOnly ? "fa fa-eye" : "fa fa-pencil-alt";
+                                    var edittitle = isRecordReadOnly ? "View" : "Edit";
+                                    if (ViewBag.IsDivRender == true)
+                                    {
+                                        <a onclick="LoadDivInsideTab('@ViewData["AssociatedType"]','','@Html.Raw(Url.Action("Edit", "FooterSection", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), RenderPartial = ViewBag.IsDivRender, viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  }, null))')" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="fa fa-pencil-alt"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Edit","FooterSection", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly  },null)" class="btn btn-info btn-xs" alt="@edittitle" title="@edittitle">
+                                            <i class="@editIconClass"></i>
+                                        </a>
+                                    }
+                                }
+                                @if (!User.CanEdit("FooterSection"))
+                                {
+                                    <a href="@Url.Action("Details", "FooterSection", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]), viewtype = viewbagname }, null)" class="btn btn-secondary btn-xs">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                }
+                                <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                    <span class="sr-only"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    @if (User.CanEdit("FooterSection") && isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","FooterSection", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname, RecordReadOnly = isRecordReadOnly },null)"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Details", "FooterSection", new { id = item.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"])  }, null)" alt="View" title="View"><i class="fa fa-eye"></i>  View</a>
+                                        </li>
+                                    }
+
+
+                                    @if (!User.CanEdit("FooterSection"))
+                                    {
+                                    }
+
+                                    @if (User.CanEdit("FooterSection") && !isRecordReadOnly)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Edit","FooterSection", new { id = item.Id,  UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname },null)"><i class="fa fa-edit"></i>  Edit</a>
+                                        </li>
+                                    }
+                                    <div class="dropdown-divider"></div>
+
+                                    @if (!HideAction)
+                                    {
+                                        <div class="dropdown-divider" style="display:none"></div>
+                                        <li class="dropdown-submenu" style="display:none">
+                                            <a class="dropdown-item" tabindex="-1" href="#"><i class="fa fa-search"></i> Search Matching</a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="@Url.Action("FindFSearch", "CompanyInformationCompanyListAssociation", new {sourceEntity="FooterSection",id=item.Id}, null)">CompanyInformation CompanyList Association</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    <div class="dropdown-divider"></div>
+                                    @if (User.CanDelete("FooterSection") && !isRecordReadOnly)
+                                    {
+                                        <li class="divider" style="clear:both"></li>
+                                        <li>
+                                            <a class="dropdown-item" href="@Url.Action("Delete", "FooterSection", new { id = item.Id, UrlReferrer = BackUrl, AssociatedType=ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]),viewtype = viewbagname }, null)"><i class="fa fa-times-circle" style="color: #E7574B;"></i> Delete</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                    @*@if (User.CanView("CompanyInformation") && User.CanView("FooterSection", "CompanyInformationFooterSectionAssociationID"))
+                        {
+                            <td title="@Html.DisplayFor(modelItem => item.companyinformationfootersectionassociation.DisplayValue)" >
+                                @Html.DisplayFor(modelItem => item.companyinformationfootersectionassociation.DisplayValue)
+                            </td>
+                        }*@
+                    @if (User.CanView("FooterSection", "Name"))
+                    {
+                        <td title="@item.Name">
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                    }
+                    @if (User.CanView("FooterSection", "AssociatedFooterSectionTypeID"))
+                    {
+
+                        if (item.AssociatedFooterSectionTypeID == 1)
+                        {
+                            <td>Login and Master</td>}
+                        if (item.AssociatedFooterSectionTypeID == 2)
+                        {
+                            <td>Login Only</td>}
+                        if (item.AssociatedFooterSectionTypeID == 3)
+                        {
+                            <td>Master Only</td>}
+                        if (item.AssociatedFooterSectionTypeID == 4)
+                        {
+                            <td>Never</td>}
+
+                    }
+                    @if (User.CanView("FooterSection", "WebLink"))
+                    {
+                        <td title="@item.WebLink">
+                            <a href="@item.WebLink">@item.WebLinkTitle</a>
+                        </td>
+                    }
+                    @if (User.CanView("FooterSection", "DocumentUpload") && User.CanView("Document"))
+                    {
+                        <td title="@item.DocumentUpload">
+                            @if (!string.IsNullOrEmpty(Html.DisplayFor(modelItem => item.DocumentUpload).ToString()))
+                            {
+                                <a href="@Url.Action("Download", "Document", new { id = item.DocumentUpload })"> @DocumentUploadDocumentsOnPage.FirstOrDefault(p => p.Key == item.DocumentUpload.Value).Value</a>
+                            }
+                            else
+                            { <label>NA</label>}
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    @if (Model.Count > 0 && Model.TotalItemCount > 10)
+    {
+        <div id="pagination">
+            @if (Model.TotalItemCount > Convert.ToInt32(ViewBag.PageSize))
+            {
+                @Html.PagedListPager(Model, page => Url.Action(ActionNameUrl, "FooterSection", getSortHtmlAttributes(null, true, page, false)),
+                           new PagedListRenderOptions
+                           {
+                               FunctionToTransformEachPageLink = (liTag, aTag) =>
+                               {
+                                   aTag.Attributes.Add("class", "page-link");
+                                   liTag.InnerHtml = aTag.ToString();
+                                   return liTag;
+                               },
+                               LiElementClasses = new[] { "page-item" },
+                               UlElementClasses = new[] { "pagination pagination-sm" }
+                           })
+            }
+            <div class="fixPageSize">
+                Page Size :
+                @Html.DropDownList("PageSize", new SelectList(new Dictionary<string, int> { { "10", 10 }, { "20", 20 }, { "50", 50 }, { "100", 100 } }, "Key", "Value")
+                            , new
+                            {
+                                @id = "pagesizelistFooterSection",
+                                @onchange = @Html.Raw("pagesizelistChange(event,'FooterSection','"
+                                + @User.JavaScriptEncodedName + "')"),
+                                @Url = Html.Raw(@Url.Action(ActionNameUrl, "FooterSection",
+                                getSortHtmlAttributes(ViewBag.CurrentSort, ViewBag.Pages == 1 ? false : true,
+                                null, false), null))
+                            })
+                <span style="text-align:right;"> Total Count: @(Model.TotalItemCount)</span>
+                <script>
+                    $(document).ready(function () {
+                        $.validator.setDefaults({
+                            ignore: "#pagesizelistFooterSection"
+                        })
+                    });
+                </script>
+            </div>
+        </div>
+    }
+    @Html.DropDownList("EntityFooterSectionDisplayValue", null, null, new { @Style = "display:none;" })
+</div>

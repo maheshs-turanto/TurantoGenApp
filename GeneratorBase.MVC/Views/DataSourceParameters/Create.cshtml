@@ -1,0 +1,31 @@
+﻿@model GeneratorBase.MVC.Models.DataSourceParameters
+@{
+    ViewBag.Title = "Create Data Source Parameters";
+}
+<div class="content-heading">
+    <div class="col-lg-10 p-0">
+        <strong>
+            @{
+                var hostingValue = "";
+                if (ViewBag.DisplayVal != null)
+                {
+                    hostingValue = " - " + ViewBag.DisplayVal;
+                }
+            }
+            <a href=""> Data Source Parameters </a>
+            <small> Add Data Source Parameters @hostingValue</small>
+        </strong>
+    </div>
+    <div class="col-lg-2 text-right p-0">
+        @if (ViewData["HostingEntity"] == null)
+        {
+            <a href="@(Url.Action("SetFSearch", "DataSourceParameters")+Request.Url.Query)" data-original-title="Faceted Search" class="d-none btn btn-secondary">Search</a>
+        }
+        <button class="btn btn-secondary" type="button" data-original-title="List View" data-placement="top" onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Index", "DataSourceParameters") + "');")>
+            List
+        </button>
+    </div>
+
+    <!-- /.col-lg-12 -->
+</div>
+@Html.Partial("~/Views/DataSourceParameters/CreatePartial.cshtml", Model)

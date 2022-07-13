@@ -1,0 +1,487 @@
+﻿@model GeneratorBase.MVC.Models.ReportsGroup
+@using PagedList;
+@{
+    ViewBag.Title = "Edit Reports Group";
+	var EditPermission = User.CanEditItem("ReportsGroup", Model, User);
+	var DeletePermission = User.CanDeleteItem("ReportsGroup", Model, User);
+	var EntityDisplayNameReflector = ModelReflector.Entities.FirstOrDefault(p => p.Name == "ReportsGroup");
+    var EntityDisplayName = EntityDisplayNameReflector != null ? EntityDisplayNameReflector.DisplayName : "Reports Group";
+	if (ViewBag.IsPartial != null && ViewBag.IsPartial == true)
+    {
+        Layout = null;
+    }
+}
+@functions {
+    object getHtmlAttributes(string Property)
+    {
+        if (User.CanEdit("ReportsGroup", Property))
+        {
+            return new { @class = "form-control" };
+        } return new { @class = "form-control", @readonly = "readonly" };
+    }
+}
+<script>
+    $(document).ready(function () {
+        try {
+            var hostingEntityName = "";
+             if ('@Convert.ToString(ViewData["AssociatedType"])'.length > 0) {
+                hostingEntityName = '@Convert.ToString(ViewData["AssociatedType"])';
+				$('#' + hostingEntityName + 'ID').attr("lock","true");
+				// $('#' + hostingEntityName + 'ID').trigger("change");
+				  $("input[type='radio'][name='" + hostingEntityName + "ID']").each(function () {
+                    if (!this.checked)
+                        this.closest("li").style.display = "none";
+                });
+            }
+			if ($.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') != null) {
+				$('a[href="#' + $.cookie('@User.JavaScriptEncodedName@Model.Id' + 'TabCookie') + '"]').click();
+			}
+        }
+        catch (ex) { }
+    });
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.ReportsGroupIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.ReportsGroupIsSetValueUIRule);
+    }
+}
+<style>
+  
+
+    #Lnk_Print {
+        display: none !important;
+    }
+</style>
+
+	<div class="row wrapper border-bottom white-bg page-heading">
+<div class="col-lg-6">
+        <ol class="breadcrumb">
+            <li  class="active">
+              <strong><a href="@Url.Action("Index")"> @EntityDisplayName</a></strong>
+            </li>
+            <li>
+                Edit
+            </li>
+			<li>
+                <span id="HostingEntityDisplayValue" class="EntityDisplayName" title="@Html.DisplayFor(model => model.DisplayValue)">@Html.DisplayFor(model => model.DisplayValue)</span>
+            </li>
+        </ol>
+    </div>
+      <div class="col-lg-6"> 
+	 @if (ViewBag.IsPartial == null)
+	 {
+			   <div class="btn-group pull-right" style="margin-left:8px;">
+			              <a data-toggle="dropdown" class="btn btn-primary btn-xs dropdown-toggle" alt="Action" title="Action">
+                Action
+                <span class="caret" style="margin-bottom:2px">    </span>
+            </a>
+			<ul class="dropdown-menu pull-left">
+				<li>
+                    @if (EditPermission)
+                    {
+                        <a href="@Url.Action("Edit", "ReportsGroup", new { id = Model.Id, UrlReferrer = Request.UrlReferrer.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-edit"></i>  Edit</a>
+                    }
+                </li>             
+				<li>
+                    @if (EditPermission && User.CanDelete("ReportsGroup"))
+                    {
+                        <a href="@Url.Action("Delete", "ReportsGroup", new { UrlReferrer = Request.UrlReferrer.PathAndQuery, id = Model.Id, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null)"><i class="glyphicon glyphicon-remove-sign"></i>  Delete</a>
+                    }
+                </li>
+	<li class="divider" style="clear:both"></li>
+	<li class="dropdown-submenu pull-left" id="AddAssociationdropmenuReportsGroup">
+	 @{ var dropmenu = false; }
+	<a tabindex="-1" href="#" style="margin-bottom:10px;"><i class="fam-anchor small"></i> Add</a>
+    <ul class="dropdown-menu pull-left">
+				@if (User.CanAdd("ReportList"))
+				{ dropmenu = true;
+					<li>
+						<a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ReportList",
+              new
+              {
+                  UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="ReportsGroupSSRSReportAssociation", 
+							HostingEntityName = "ReportsGroup",
+							HostingEntityID = @Convert.ToString(Model.Id) }, null) + "');")>
+							<i class="glyphicon glyphicon-plus"></i>  Reports
+						</a>
+					</li>
+				}
+			</ul>
+</li>
+@if(!dropmenu)
+{
+    <script>
+        $("#AddAssociationdropmenuReportsGroup").hide();
+    </script>
+}
+			</ul>
+		</div>
+}
+			@if (ViewBag.IsPartial == null && EditPermission && ViewBag.EntityReportsGroupDisplayValueEdit != null)
+			{	
+				<div class="pull-right">
+					<button class="btn btn-primary btn-xs pull-right" id="nextEdit" onclick="@Html.Raw("nextFunEdit('ReportsGroup',event,'hdnNextPrevId')")" alt="Next" title="Next" style="border-radius:0px !important;"><i class="fa fa-chevron-right"></i></button>
+					@Html.DropDownList("EntityReportsGroupDisplayValueEdit", null, null, new { @onchange = "FillDisplayValueEditPage('ReportsGroup','frmReportsGroup','" + Model.Id + "',event)", @class = "pull-right", @Style = "height: 22px;width: 170px;" })
+					<button class="btn btn-primary btn-xs pull-right" id="prevEdit" onclick="@Html.Raw("prevFunEdit('ReportsGroup',event,'hdnNextPrevId')")" alt="Prev" title="Prev" style="border-radius:0px !important;"><i class="fa fa-chevron-left"></i></button>
+				</div>
+			}
+    </div>
+</div>
+<input type="hidden" id="ErrMsg" />
+<div id="errorContainerEdit" style="display: none">
+            <div id="errorsMsgEdit"></div>
+            <div id="errorsEdit"></div>
+        </div>
+<div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+</div>
+<div id="divDisplayBRmsgMandatory" style="display:none;">
+</div>
+<div id="divDisplayLockRecord" style="display:none;">
+</div>
+<div id="divDisplayBRReadOnly" style="display:none;">
+</div>
+<div id="divDisplayCodeFragment" style="display:none;">
+</div>
+<div class="wrapper wrapper-content animated fadeInRight ecommerce">
+    <div class="tabs-container">
+    <ul class="nav nav-tabs">
+	 <li class="active"><a href="#Details" onclick="ClearTabCookie('@User.JavaScriptEncodedName@Model.Id');" data-toggle="tab" alt="Details" title="Details">Details</a></li>
+			<li @(!User.CanView("ReportList") ?"style=display:none;":"")>
+			<a onclick="LoadTab('ReportsGroupSSRSReportAssociation','@User.JavaScriptEncodedName@Model.Id','@Html.Raw(Url.Action("Index", "ReportList", new {RenderPartial=true, HostingEntity ="ReportsGroup", HostingEntityID = @Model.Id, AssociatedType = "ReportsGroupSSRSReportAssociation",TabToken = DateTime.Now.Ticks,}))')" href="#ReportsGroupSSRSReportAssociation" data-toggle="tab" alt="Reports" title="Reports">Reports
+			@if(ViewBag.ReportsGroupSSRSReportAssociationCount != null)
+			{
+				<span class="badge bg-blue"><div id="dvcnt_ReportsGroupSSRSReportAssociation">@ViewBag.ReportsGroupSSRSReportAssociationCount</div></span>
+			}
+			</a>
+		 </li>
+    </ul>
+		<div class="tab-content">
+        <div class="tab-pane fade in active" id="Details">
+@using (Html.BeginForm("Edit","ReportsGroup",new {UrlReferrer =Convert.ToString(ViewData["ReportsGroupParentUrl"])}, FormMethod.Post, new { enctype = "multipart/form-data",@id="frmReportsGroup" }))
+{
+     Html.ValidationSummary(true);
+                Html.EnableClientValidation();
+    @Html.HiddenFor(model => model.Id)
+	@Html.HiddenFor(model => model.ConcurrencyKey)
+
+                <div class="col-md-12 col-sm-12 col-xs-12" style="padding:0px; margin:0px;">
+                    <div class="panel panel-default AppForm">
+						<div class="panel-body">
+											<div class="row">
+				@if(User.CanView("ReportsGroup","Name"))
+{
+				<div class='col-sm-6 col-md-6 col-xs-12' id="dvName">
+							<div class='form-group' title="Name">
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Name)  <span class="text-danger-reg">*</span> </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.Name,  getHtmlAttributes("Name"))
+									@Html.ValidationMessageFor(model => model.Name)
+								</div>
+                             </div>
+						</div>
+				} else { @Html.HiddenFor(model => model.Name, new { @class = "form-control" })}
+@if(User.CanView("ReportsGroup","Description"))
+{
+					<div class='col-sm-6 col-md-6 col-xs-12' id="dvDescription">
+							<div class='form-group' title="Description">
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.Description) </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+								@Html.TextAreaFor(model => model.Description, getHtmlAttributes("Description"))
+									@Html.ValidationMessageFor(model => model.Description)
+								</div>
+                             </div>
+						</div>
+} else { @Html.HiddenFor(model => model.Description, new { @class = "form-control" })}
+@if(User.CanView("ReportsGroup","DisplayOrder"))
+{
+				<div class='col-sm-6 col-md-6 col-xs-12' id="dvDisplayOrder">
+							<div class='form-group' title="DisplayOrder">
+								<label class="col-sm-5 col-md-5 col-xs-12" >@Html.LabelFor(model => model.DisplayOrder)   </label>
+                                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+											
+									@Html.TextBoxFor(model => model.DisplayOrder,  getHtmlAttributes("DisplayOrder"))
+									@Html.ValidationMessageFor(model => model.DisplayOrder)
+								</div>
+                             </div>
+						</div>
+				} else { @Html.HiddenFor(model => model.DisplayOrder, new { @class = "form-control" })}
+       </div>
+            </div>
+        </div>
+		</div>
+		<div id="divDisplayBRmsgBeforeSaveProp1"></div>
+		<div id="divDisplayBRmsgMandatory1"></div>
+		<div id="divDisplayLockRecord1"></div>
+		<div id="divDisplayBRReadOnly1"></div>
+		<div id="divDisplayCodeFragment1"></div>
+		 @Html.AntiForgeryToken();
+                if (ViewBag.IsPartial == null)
+                {
+                    <a class="btn btn-default btn-sm pull-left formbuttonfix" Onclick="goBack('@Url.Action("Index", "ReportsGroup")');" alt="Cancel" title="Cancel">Cancel</a>
+                }
+		 @*@Html.ActionLink("Cancel", "Cancel", new { UrlReferrer = ViewData["ReportsGroupParentUrl"] }, new { @onclick = "", @class = "btn btn-default btn-sm pull-left formbuttonfix", @alt="Cancel", @title="Cancel" })*@
+		 if (EditPermission)
+         {
+ 				if (ViewBag.IsPartial == null)
+                {
+					<input type="submit" name="command" value="Save" class="btn btn-primary btn-sm pull-left formbuttonfix"  alt="Save" title="Save"/>
+				}
+			if (ViewBag.IsPartial == null)
+			{
+				<input type="submit" id="sevranBtnEdit" style="display:none;" name="command" value="SaveNextPrev" alt="SaveNextPrev" title="SaveNextPrev"/>
+				<input type="submit" name="command" value="Save & Stay" class="btn btn-primary btn-sm pull-left formbuttonfix" alt="Save & Stay" title="Save & Stay" />
+			}
+					<input type="hidden" name="hdncommand" value="" />
+				<input type="hidden" name="hdnNextPrevId" value="" />
+}
+}
+ @{ 
+ var dropmenubottom = false; 
+ }
+<div class="dropdown pull-left formbuttonfix"  id="AddAssociationdropmenubottomReportsGroup">
+<button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" alt="Add Association" title="Add Association">
+            Add 
+            <span class="caret"></span>
+        </button>
+		 <ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">
+			@if (User.CanAdd("ReportList"))
+            {  dropmenubottom = true;
+                <li><a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", "ReportList",
+              new
+              {
+                  UrlReferrer = Request.Url.PathAndQuery,
+								AssociatedType ="ReportsGroupSSRSReportAssociation", 
+						HostingEntityName = "ReportsGroup",
+                              HostingEntityID = @Convert.ToString(Model.Id)
+                        }, null) + "');")>
+                   Add  Reports
+                </a>
+				</li>
+            }
+</ul>
+</div>
+@if(!dropmenubottom || !EditPermission)
+{
+    <script>
+        $("#AddAssociationdropmenubottomReportsGroup").hide();
+    </script>
+}
+<div class="clearfix" style="clear:both; margin-bottom:8px"></div>
+</div>
+ <div class="tab-pane fade in panel-body" id="ReportsGroupSSRSReportAssociation">
+	@if (User.CanView("ReportList"))
+	{
+	  // Html.RenderAction("Index", "ReportList", new {RenderPartial=true, HostingEntity = "ReportsGroup", HostingEntityID = @Model.Id, AssociatedType = "ReportsGroupSSRSReportAssociation" }); 
+	}
+  </div>
+</div> <!-- /tab-content --><br />
+<br/>
+</div>
+</div>
+	<script>
+    $(function () {
+        var userAgent = navigator.userAgent.toLowerCase();
+        // Figure out what browser is being used
+        var browser = {
+            version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+            safari: /webkit/.test(userAgent),
+            opera: /opera/.test(userAgent),
+            msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+            mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+        };
+        if (!browser.msie) {
+            $('form').areYouSure();
+        }
+        else if (browser.version > 8.0) {
+            $('form').areYouSure();
+        }
+    });
+</script>
+@{
+    var businessruleforemailpage = User.businessrules.Where(p => p.EntityName == "ReportsGroup").ToList();
+  
+    var isbrrequired = false;
+    if (businessruleforemailpage != null && businessruleforemailpage.Count > 0)
+    {
+        isbrrequired = true;
+    }
+}
+@{
+	if (ViewBag.IsPartial == true)
+	{
+		<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+        <script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+        <script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+    </script>
+	<script>
+		 function CancelFromDivTab_ReportsGroup() {
+                var associationname = '@Convert.ToString(ViewData["AssociatedType"])';
+                if (associationname != '' && associationname != null) {
+                }
+            }
+            function EditFromDivTab_ReportsGroup(obj) {
+                $('input:hidden[name="hdncommand"]').val(obj);
+                var associationname = '@Convert.ToString(ViewData["AssociatedType"])';
+                var form2 = $("#frmReportsGroup");
+                if (!form2.valid()) { return; }
+                var form = "";
+		form = $("#frmReportsGroup").serialize();
+				if ('@isbrrequired') {
+					if (!ApplyBusinessRule(form))
+						return false;
+				}
+                var frmUrl = form2.attr('action') + "&RenderPartial=true";
+                var fdata = new FormData(form2[0]);
+                $.ajax({
+                    url: frmUrl,
+                    type: "POST",
+                    cache: false,
+                    data: fdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('failed');
+                        return false;
+                    }
+                });
+            }
+			 function ApplyBusinessRule(form) {
+				var flag = true;
+				dataurl = "@Url.Action("businessruletype", "ReportsGroup", new { ruleType = "OnEdit"})";
+				flag = ApplyBusinessRuleOnSubmit(dataurl, "ReportsGroup", false, "ErrMsg", form);
+				//business rules on inline associations
+				if (flag) {
+					$("#frmReportsGroup").find(':input').removeAttr('disabled');
+					$("#divDisplayBRmsgMandatory").hide();
+            $("#divDisplayBRmsgBeforeSaveProp").hide();
+            $("#divDisplayLockRecord").hide();
+            $("#divDisplayBRReadOnly").hide();
+				}
+				return flag;
+			}
+</script>
+}
+}
+@{
+var businessrule = User.businessrules.Where(p => p.EntityName == "ReportsGroup").ToList();
+if ((businessrule != null && businessrule.Count > 0) )
+{
+	var ruleids = businessrule.Select(q => q.Id).ToList();
+	var typelist  = "";
+	using(var ruledb = new GeneratorBase.MVC.Models.RuleActionContext())
+	{
+		typelist  = string.Join(",", ruledb.RuleActions.Where(p => ruleids.Contains(p.RuleActionID.Value) && p.associatedactiontype.TypeNo.HasValue).Select(p => p.associatedactiontype.TypeNo.Value).Distinct().ToList());
+	}
+    <script>
+		$(document).ready(function () {
+				document.getElementById("ErrMsg").innerHTML = "";
+				var flag = true;
+                var dataurl = "";
+                var form = "";
+                var inlinecount = "0";
+ form = $("#frmReportsGroup");
+				dataurl = "@Url.Action("businessruletype", "ReportsGroup", new { ruleType = "OnEdit"})";
+                ApplyBusinessRuleOnPageLoad("@typelist",dataurl, "ReportsGroup", false, "ErrMsg", form);
+				//business rules on inline associations
+    });
+</script>
+<script>
+    $("form").submit(function (event) {
+	if (!$("#frmReportsGroup").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+			document.getElementById("ErrMsg").innerHTML = "";
+            var flag = true;
+            var dataurl = "";
+            var form = "";
+            var inlinecount = "0";
+ form = $("#frmReportsGroup").serialize();
+				 dataurl = "@Url.Action("businessruletype", "ReportsGroup", new { ruleType = "OnEdit"})";
+                 flag = ApplyBusinessRuleOnSubmit(dataurl, "ReportsGroup", false, "ErrMsg", form);
+  				 //business rules on inline associations
+			 if (flag)
+				{
+				                    $('input:hidden[name="hdncommand"]').val($(this.id).context.activeElement.value);
+					if ($(document.activeElement).attr('id') == "nextEdit" || $(document.activeElement).attr('id') == "prevEdit")
+			         $('input:hidden[name="hdncommand"]').val("SaveNextPrev");
+					 $("#frmReportsGroup").find(':input').removeAttr('disabled');
+					}
+            return flag;
+		});
+</script>
+}
+ else
+    {
+       <script>
+    $("input[type='submit']").click(function (event) {
+	if (!$("#frmReportsGroup").valid()) return;
+			$("#divDisplayBRmsgBeforeSaveProp").html("");
+			$("#divDisplayBRmsgBeforeSaveProp1").html("");
+			$("#divDisplayCodeFragment").html("");
+        var $this = $(this);
+                var actionName = $this.attr("actionName")
+                if (actionName == undefined)
+                    actionName = $this.val();
+                $('input:hidden[name="hdncommand"]').val(actionName);
+    });
+	</script>
+    }
+}
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        try {
+		focusOnControl('frmReportsGroup');
+        }
+        catch (ex) { }
+		 		ShowHelpIcon(@Html.Raw("'"+Url.Action("ShowHelpIcon", "PropertyHelpPage")+"'"),'ReportsGroup','edit',false,'Reports Group')
+    });
+		</script>
+	@if(ViewBag.IsPartial == null && EditPermission && ViewBag.EntityReportsGroupDisplayValueEdit != null)
+	{
+	<script type='text/javascript'>
+		 $(document).ready(function () {
+			var RecIdEdit = $("#frmReportsGroup").find("input:hidden[name='Id']").val();
+			$("#EntityReportsGroupDisplayValueEdit").val(RecIdEdit);
+			var textedit = $("option:selected", $("#EntityReportsGroupDisplayValueEdit")).text();
+			$("#EntityReportsGroupDisplayValueEdit").attr('data-toggle', 'tooltip')
+			$("#EntityReportsGroupDisplayValueEdit").attr('title', textedit);
+			var lastOptionValEdit = $('#EntityReportsGroupDisplayValueEdit option:last-child').val();
+			var fristOptionValEdit = $('#EntityReportsGroupDisplayValueEdit option:first-child').val();
+			if (lastOptionValEdit == RecIdEdit) {
+				$('#nextEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+			}
+			if (fristOptionValEdit == RecIdEdit)
+				$('#prevEdit').attr({ "disabled": "true", "style": "background-color:#eeeeee !important; color:#969696 !important; border-color:#ccc !important" });
+		});
+	 </script>
+	}
+

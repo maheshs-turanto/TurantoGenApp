@@ -1,0 +1,524 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A515D433-9AA2-4F34-9A75-78A56489DD94}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GeneratorBase.MVC.Models</RootNamespace>
+    <AssemblyName>GeneratorBase.MVC.Models</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ClosedXML">
+      <HintPath>..\packages\ClosedXML.0.95.4\lib\net46\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.DynamicFilters, Version=3.2.4.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.DynamicFilters.3.2.4\lib\net40\EntityFramework.DynamicFilters.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.5.0\lib\net461\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="GemBox.Document, Version=31.0.0.1215, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
+      <HintPath>..\packages\GemBox.Document.31.0.1215\lib\net35\GemBox.Document.dll</HintPath>
+    </Reference>
+    <Reference Include="InteractivePreGeneratedViews, Version=1.1.0.0, Culture=neutral, PublicKeyToken=46c4868af4307d2c, processorArchitecture=MSIL">
+      <HintPath>..\packages\EFInteractiveViews.1.1.0\lib\net45\InteractivePreGeneratedViews.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.3\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.3\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.WebApi.Versioning, Version=4.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Versioning.4.1.1\lib\net45\Microsoft.AspNet.WebApi.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.5\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.5\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.19.0\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.2.2\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.2.2\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.2.2\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.2.2\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.2.2\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.2.2\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.2.2\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.4.2.2\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebPages.OAuth, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.OAuth.3.2.9\lib\net45\Microsoft.Web.WebPages.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NSwag.Annotations, Version=13.16.1.0, Culture=neutral, PublicKeyToken=c2d88086e098d109, processorArchitecture=MSIL">
+      <HintPath>..\packages\NSwag.Annotations.13.16.1\lib\net45\NSwag.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.19.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.19.0\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.7.0.0-preview.4.22229.4\lib\net462\System.IO.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Json">
+      <HintPath>..\packages\System.Json.4.7.1\lib\net461\System.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.8\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.9\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Printing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Spatial, Version=5.8.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.8.5\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.9\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.9\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.9\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.9\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.9\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="Twilio, Version=5.75.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.5.75.2\lib\net451\Twilio.dll</HintPath>
+    </Reference>
+    <Reference Include="UAParser, Version=3.1.47.0, Culture=neutral, PublicKeyToken=f7377bf021646069, processorArchitecture=MSIL">
+      <HintPath>..\packages\UAParser.3.1.47\lib\net45\UAParser.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.DataVisualization">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.DirectoryServices.AccountManagement">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PagedList">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PagedList.Mvc">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Caching">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Revalee.Client">
+      <HintPath>..\packages\Revalee.Client.2.3.1\lib\net40\Revalee.Client.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Revalee.Client.Mvc">
+      <HintPath>..\packages\Revalee.Client.Mvc.2.3.1\lib\net45\Revalee.Client.Mvc.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Extensions, Version=6.14.0.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Extensions.6.14.0\lib\net45\Z.EntityFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=6.14.0.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.6.14.0\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="Z.Expressions.Eval, Version=4.0.84.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.Expressions.Eval.4.0.84\lib\net45\Z.Expressions.Eval.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing, Version=0.16.8.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.8\lib\net48\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.8.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.8\lib\net48\zxing.presentation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActiveDirectoryLookup.cs" />
+    <Compile Include="IndexArgsOption\FileDocumentIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\IndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_CustomerIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_ExportDataConfigurationIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_ExportDataDetailsIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_ExportDataLogIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_ExportDataLogstatusIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_MenuBarIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_MenuBarMenuItemAssociationIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\T_MenuItemIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\VerbGroupIndexArgsOption.cs" />
+    <Compile Include="IndexArgsOption\VerbsNameIndexArgsOption.cs" />
+    <Compile Include="ModelReflector.cs" />
+    <Compile Include="Models\Account_Permission\AccountViewModels.cs" />
+    <Compile Include="Models\Account_Permission\AppConfiguration.cs" />
+    <Compile Include="Models\Account_Permission\CustomPrincipal.cs" />
+    <Compile Include="Models\Account_Permission\CustomRoleProvider.cs" />
+    <Compile Include="Models\Account_Permission\DynamicRoleMapping.cs" />
+    <Compile Include="Models\Account_Permission\HierarchicalSecurityCheck.cs" />
+    <Compile Include="Models\Account_Permission\IdentityModels.cs" />
+    <Compile Include="Models\Account_Permission\InternalUser.cs" />
+    <Compile Include="Models\Account_Permission\ISoftDelete.cs" />
+    <Compile Include="Models\Account_Permission\ITenantEntity.cs" />
+    <Compile Include="Models\Account_Permission\IUser.cs" />
+    <Compile Include="Models\Account_Permission\MultiTenantExtraAccess.cs" />
+    <Compile Include="Models\Account_Permission\MultiTenantLoginSelected.cs" />
+    <Compile Include="Models\Account_Permission\Permission.cs" />
+    <Compile Include="Models\Account_Permission\PermissionAdminPrivilege.cs" />
+    <Compile Include="Models\Account_Permission\PermissionContext.cs" />
+    <Compile Include="Models\Account_Permission\ReportsInRole.cs" />
+    <Compile Include="Models\Account_Permission\ThirdPartyLogin.cs" />
+    <Compile Include="Models\Account_Permission\ThirdPartyLoginRepository.cs" />
+    <Compile Include="Models\Account_Permission\UserBasedSecurity.cs" />
+    <Compile Include="Models\Account_Permission\UserBasedSecurityContext.cs" />
+    <Compile Include="Models\Api\ApiDescriptionExtensions.cs" />
+    <Compile Include="Models\Api\ApiToken.cs" />
+    <Compile Include="Models\Api\ApiUser.cs" />
+    <Compile Include="Models\Api\HelpPageApiModel.cs" />
+    <Compile Include="Models\Api\HelpPageAreaRegistration.cs" />
+    <Compile Include="Models\Api\HelpPageConfigurationExtensions.cs" />
+    <Compile Include="Models\Api\HelpPageSampleGenerator.cs" />
+    <Compile Include="Models\Api\HelpPageSampleKey.cs" />
+    <Compile Include="Models\Api\ImageSample.cs" />
+    <Compile Include="Models\Api\IModelDocumentationProvider.cs" />
+    <Compile Include="Models\Api\InvalidSample.cs" />
+    <Compile Include="Models\Api\IXmlDocumentationProvider.cs" />
+    <Compile Include="Models\Api\ObjectGenerator.cs" />
+    <Compile Include="Models\Api\SampleDirection.cs" />
+    <Compile Include="Models\Api\TextSample.cs" />
+    <Compile Include="Models\Api\TypeDocumentation.cs" />
+    <Compile Include="Models\Api\XmlDocumentationProvider.cs" />
+    <Compile Include="Models\ApplicationContext.cs" />
+    <Compile Include="Models\Account_Permission\ApplicationSecurityFilter.cs" />
+    <Compile Include="Models\ApplicationContextMethods.cs" />
+    <Compile Include="Models\BusinessRule\ActionArgs.cs" />
+    <Compile Include="Models\BusinessRule\ActionArgsContext.cs" />
+    <Compile Include="Models\BusinessRule\ActionType.cs" />
+    <Compile Include="Models\BusinessRule\ActionTypeContext.cs" />
+    <Compile Include="Models\BusinessRule\BusinessRule.cs" />
+    <Compile Include="Models\BusinessRule\BusinessRuleContext.cs" />
+    <Compile Include="Models\BusinessRule\BusinessRuleType.cs" />
+    <Compile Include="Models\BusinessRule\BusinessRuleTypeContext.cs" />
+    <Compile Include="Models\BusinessRule\Condition.cs" />
+    <Compile Include="Models\BusinessRule\ConditionContext.cs" />
+    <Compile Include="Models\BusinessRule\RuleAction.cs" />
+    <Compile Include="Models\BusinessRule\RuleActionContext.cs" />
+    <Compile Include="Models\BusinessRule\ScheduledTaskHistory.cs" />
+    <Compile Include="Models\BusinessRule\ScheduledTaskHistoryContext.cs" />
+    <Compile Include="Models\BusinessRule\TimeBasedRule.cs" />
+    <Compile Include="Models\FileDocument.cs" />
+    <Compile Include="Models\LiveMonitoring.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\AdminSettings.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\AdminSettingsRepository.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\AppSetting.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\AppSettingGroup.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\CompanyInformation.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\CompanyInformationCompanyListAssociation.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\CompanyProfile.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\CompanyProfileRepository.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\CustomReports.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\DefaultEntityPage.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\EmailTemplate.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\EmailTemplateType.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\EntityHelpPage.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\EntityPage.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\FooterSection.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\PropertyHelpPage.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\PropertyValidationandFormat.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\PropertyValidationandFormatContext.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\Theme.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\ThemeSettingRepository.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\ThemeSettings.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\UserDefinePages.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\UserDefinePagesContext.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\UserDefinePagesRole.cs" />
+    <Compile Include="Models\OtherDefaultModels\Admin\UserDefinePagesRoleContext.cs" />
+    <Compile Include="Models\OtherDefaultModels\Audit\JournalEntry.cs" />
+    <Compile Include="Models\OtherDefaultModels\Audit\JournalEntryContext.cs" />
+    <Compile Include="Models\OtherDefaultModels\Audit\JournalEntrySecurityFilter.cs" />
+    <Compile Include="Models\OtherDefaultModels\Audit\UserAudit.cs" />
+    <Compile Include="Models\OtherDefaultModels\CaptchaImage.cs" />
+    <Compile Include="Models\OtherDefaultModels\CustomRemoteValidation.cs" />
+    <Compile Include="Models\OtherDefaultModels\CustomWebViewPage.cs" />
+    <Compile Include="Models\OtherDefaultModels\DataToExcel.cs" />
+    <Compile Include="Models\OtherDefaultModels\DisplayItem.cs" />
+    <Compile Include="Models\OtherDefaultModels\Document.cs" />
+    <Compile Include="Models\OtherDefaultModels\EncryptDecrypt.cs" />
+    <Compile Include="Models\OtherDefaultModels\Entity.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityComparer.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityDataSource\DataSourceParameters.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityDataSource\EntityDataSource.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityDataSource\PropertyMapping.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityDefault.cs" />
+    <Compile Include="Models\OtherDefaultModels\EntityHelper.cs" />
+    <Compile Include="Models\OtherDefaultModels\ExportData.cs" />
+    <Compile Include="Models\OtherDefaultModels\ExternalService.cs" />
+    <Compile Include="Models\OtherDefaultModels\FavoriteItem.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\ApplicationFeedback.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\ApplicationFeedbackStatus.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\ApplicationFeedbackType.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\FeedbackPriority.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\FeedbackResource.cs" />
+    <Compile Include="Models\OtherDefaultModels\FeedbackModels\FeedbackSeverity.cs" />
+    <Compile Include="Models\OtherDefaultModels\FilteredDBSet.cs" />
+    <Compile Include="Models\OtherDefaultModels\IEntity.cs" />
+    <Compile Include="Models\OtherDefaultModels\IFilter.cs" />
+    <Compile Include="Models\OtherDefaultModels\ImportConfiguration.cs" />
+    <Compile Include="Models\OtherDefaultModels\LinqExtension.cs" />
+    <Compile Include="Models\OtherDefaultModels\NearByLocations.cs" />
+    <Compile Include="Models\OtherDefaultModels\ODataServices.cs" />
+    <Compile Include="Models\OtherDefaultModels\ODataServicesRepository.cs" />
+    <Compile Include="Models\OtherDefaultModels\PaginatedList.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\TemplateEvents.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_MonthlyRepeatType.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_RecurrenceDays.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_RecurringEndType.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_RecurringFrequency.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_RecurringScheduleDetailstype.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_RepeatOn.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_Schedule.cs" />
+    <Compile Include="Models\OtherDefaultModels\RecurrenceTaskModels\T_Scheduletype.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\EntitySearchFilter.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\ReportList.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\Reports.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\ReportsContext.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\ReportsGroup.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\T_Chart.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\T_DataMetric.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\T_DataMetrictype.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\T_DocumentTemplate.cs" />
+    <Compile Include="Models\OtherDefaultModels\Reports\T_FacetedSearch.cs" />
+    <Compile Include="Models\OtherDefaultModels\SystemUser.cs" />
+    <Compile Include="Models\OtherDefaultModels\UniqueAttribute.cs" />
+    <Compile Include="Models\SearchOptions\DocumentSearchOptions.cs" />
+    <Compile Include="Models\SearchOptions\JournalEntrySearchOptions.cs" />
+    <Compile Include="Models\SearchOptions\SearchOptionsBase.cs" />
+    <Compile Include="Models\T_Customer.cs" />
+    <Compile Include="Models\T_ExportDataConfiguration.cs" />
+    <Compile Include="Models\T_ExportDataDetails.cs" />
+    <Compile Include="Models\T_ExportDataLog.cs" />
+    <Compile Include="Models\T_ExportDataLogstatus.cs" />
+    <Compile Include="Models\T_MenuBar.cs" />
+    <Compile Include="Models\T_MenuBarMenuItemAssociation.cs" />
+    <Compile Include="Models\T_MenuItem.cs" />
+    <Compile Include="Models\T_TimeZone.cs" />
+    <Compile Include="Models\VerbGroup.cs" />
+    <Compile Include="Models\VerbsName.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\BusinessRuleHelper.cs" />
+    <Compile Include="Utils\CacheHelper.cs" />
+    <Compile Include="Utils\ChartTheme.cs" />
+    <Compile Include="Utils\CommonFunction.cs" />
+    <Compile Include="Utils\CssRewriteUrlTransform.cs" />
+    <Compile Include="Utils\CSVHelper.cs" />
+    <Compile Include="Utils\CurrencyHelper.cs" />
+    <Compile Include="Utils\CustomDisplayFormat.cs" />
+    <Compile Include="Utils\CustomHelperMethod.cs" />
+    <Compile Include="Utils\CustomRegularExpressionAttribute.cs" />
+    <Compile Include="Utils\DailyRecurrenceSettings.cs" />
+    <Compile Include="Utils\DropdownHelper.cs" />
+    <Compile Include="Utils\DynamicQueryable.cs" />
+    <Compile Include="Utils\EmailService.cs" />
+    <Compile Include="Utils\EntityDefaultPageHelper.cs" />
+    <Compile Include="Utils\ExcelExportHelper.cs" />
+    <Compile Include="Utils\ExcelImportHelper.cs" />
+    <Compile Include="Utils\ExportDataHelper.cs" />
+    <Compile Include="Utils\FileHandler.cs" />
+    <Compile Include="Utils\FilterApplicationDropdowns.cs" />
+    <Compile Include="Utils\GraphHelper.cs" />
+    <Compile Include="Utils\JWTHelper.cs" />
+    <Compile Include="Utils\MonthlyRecurrenceSettings.cs" />
+    <Compile Include="Utils\OneDriveHelper.cs" />
+    <Compile Include="Utils\PivotTable.cs" />
+    <Compile Include="Utils\RecurrenceHelper.cs" />
+    <Compile Include="Utils\RecurrenceInfo.cs" />
+    <Compile Include="Utils\RecurrenceMananger.cs" />
+    <Compile Include="Utils\RecurrenceSettings.cs" />
+    <Compile Include="Utils\RecurrenceValues.cs" />
+    <Compile Include="Utils\SearchHelper.cs" />
+    <Compile Include="Utils\SendEmailHelper.cs" />
+    <Compile Include="Utils\SmsService.cs" />
+    <Compile Include="Utils\UIPropertyHtmlHelper.cs" />
+    <Compile Include="Utils\UrlHelper.cs" />
+    <Compile Include="Utils\UserManagerHelper.cs" />
+    <Compile Include="Utils\WeeklyRecurrenceSettings.cs" />
+    <Compile Include="Utils\YearlyRecurrenceSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

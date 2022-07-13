@@ -1,0 +1,197 @@
+﻿@model Dictionary<string, int>
+@using PagedList.Mvc;
+@{
+    var logdids = !string.IsNullOrEmpty(ViewBag.Ids) ? ViewBag.Ids : null;
+}
+
+<div id="PurgeAll">
+    <style>
+        .table-responsive > .fixed-column {
+            position: absolute;
+            display: block;
+            width: auto;
+            border: 0px solid transparent;
+            border-top: 1px solid #c3ddec;
+        }
+
+        .fixed-column th {
+            background: #fff;
+        }
+
+        .fixed-column td {
+            background: #fff;
+        }
+    </style>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".tip-top").tooltip({
+                placement: 'top'
+            });
+            $(".tip-right").tooltip({
+                placement: 'right'
+            });
+            $(".tip-bottom").tooltip({
+                placement: 'bottom'
+            });
+            $(".tip-left").tooltip({
+                placement: 'left'
+            });
+        });
+        function RefreshPage(url) {
+            var r = confirm("Do you want to really execute !");
+            if (r == true) {
+                $.ajax({
+                    url: url,
+                    cache: false,
+                    async: false,
+                    type: "POST",
+                    complete: function (data) {
+                        $('body').css({ 'cursor': 'default' });
+                        window.location.reload();
+                    },
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+            }
+            else {
+                return true;
+            }
+        }
+        function PurgeAll() {
+            url = '@Html.Raw(Url.Action("PurgeAll"))';
+            if ('@logdids' != 'null')
+            {
+                url = '@Html.Raw(Url.Action("PurgeAll", new { ExportDataLog = "EXPDT", IsPurge = true }))'.replace("EXPDT", '@logdids');
+            }
+            RefreshPage(url);
+        }
+        function RestoreAll() {
+            url = '@Html.Raw(Url.Action("PurgeAll"))';
+            if ('@logdids' != 'null')
+            {
+                url = '@Html.Raw(Url.Action("PurgeAll", new { ExportDataLog = "EXPDT" }))'.replace("EXPDT", '@logdids');
+            }
+            RefreshPage(url);
+        }
+        function PurgeEntity(obj) {
+            url = $(obj).attr('dataurl');
+            RefreshPage(url);
+        }
+        function RestoreEntity(obj) {
+            url = $(obj).attr('dataurl');
+            RefreshPage(url);
+        }
+    </script>
+
+    <div class="content-heading">
+        <div class="TitleName"><strong><a href="@Url.Action("Index","Admin")">Recycle Bin</a><small>Deleted Records</small></strong></div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div id="PurgeAll">
+                <div id="PurgeAllGridHeader" class="">
+                    <div class="float-left actionbar">
+                        <div class="btn-group">
+                            <a class="btn btn-white btn-sm" style="cursor:pointer;" onclick="RestoreAll();">Restore All</a>
+                            <a class="btn btn-white btn-sm" style="cursor:pointer;margin-right:5px;" onclick="PurgeAll();">Purge All</a>
+                        </div>
+                    </div>
+                    <div class="float-right col-sm-6 col-md-6 col-xs-6" style="">
+                        <div class="input-group col-sm-12 col-md-12 col-xs-12">
+                                @if (ViewBag.ExportDataLog != null)
+                                {
+                                    @Html.DropDownList("ExportDataLog", null, new { @multiple = "multiple" })
+                                    <div class="input-group-btn">
+                                        <button id="PurgeAllSearch" onclick="getExportDataLog();" data-original-title="Grid Search" class="btn btn-secondary tip-top" alt="Grid Search" title="Search on grid"><span class="fa fa-search"></span></button>
+                                    </div>
+                                }
+                            </div>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="row">
+                    <div id="Des_Table" class="table-responsive" style="margin-top:5px;">
+                        <table class="table table-hover default-bordered default-condensed newlist">
+                            <thead>
+                                <tr>
+                                    <th class="col1">Actions</th>
+                                    <th class="col2">
+                                        Entity Name
+                                    </th>
+
+                                    <th>
+                                        Count
+                                    </th>
+
+                                </tr>
+                                @foreach (var item in Model)
+                                {
+                                    var Entity = ModelReflector.Entities.FirstOrDefault(p => p.Name == item.Key);
+                                    var EntityDisplayName = item.Key;
+                                    if (Entity != null)
+                                    {
+                                        EntityDisplayName = Entity.DisplayName;
+                                    }
+
+                                    <tr>
+                                        <td>
+                                            <div style="width:42px; margin-top:-2px;">
+                                                <div class="btn-group" style="position:absolute;">
+
+                                                    <button class="btn dropdown-toggle btn-secondary btn-xs" type="button" data-toggle="dropdown" aria-expanded="true">
+                                                        Actions <span class="sr-only"></span>
+                                                    </button>
+
+                                                    @if (User.CanUseVerb("Recycle", item.Key, User))
+                                                    {
+
+                                                        <ul class="dropdown-menu pull-left">
+                                                            <li>
+                                                                <a class="dropdown-item" href="@Html.Raw(Url.Action("Index", item.Key, new { ShowDeleted = true }))" alt=" view" title="View"><i class="glyphicon glyphicon-eye-open"></i>  View</a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="RestoreEntity(this)" dataurl="@Url.Action("RecycleAll", item.Key)"><i class="glyphicon glyphicon-edit"></i>  Restore</a>
+                                                            </li>
+
+                                                            <li class="divider" style="clear:both"></li>
+                                                            <li>
+                                                                <a class="dropdown-item" onclick="PurgeEntity(this)" dataurl="@Url.Action("PurgeAll", item.Key)"><i class="glyphicon glyphicon-remove-sign" style="color: #E7574B;"></i> Purge </a>
+                                                            </li>
+                                                        </ul>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @EntityDisplayName
+                                        </td>
+                                        <td>@item.Value</td>
+                                    </tr>
+                                }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('select[multiple="multiple"]').each(function () {
+            $(this).multiselect({
+                buttonWidth: '100%',
+                nonSelectedText: 'ALL'
+            });
+        });
+    });
+
+    function getExportDataLog()
+    {
+        var exportdata = $("#ExportDataLog").val();
+        var url = '@Url.Action("PurgeAll", "Account", new { ExportDataLog = "EXPDT" })'.replace("EXPDT", exportdata);
+        window.location.href = url;
+    }
+</script>

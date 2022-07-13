@@ -1,0 +1,31 @@
+﻿@model IEnumerable<GeneratorBase.MVC.Models.EditUserViewModel>
+@{
+    ViewBag.Title = "User List";
+    
+    var commonObj = GeneratorBase.MVC.Models.CommonFunction.Instance;
+}
+    <div class="content-heading">
+    <div class="col-lg-10">
+
+        <strong>
+            <a href="@Url.Action("Index", "Admin")">Admin</a>
+            <small>User list</small>
+        </strong>
+
+    </div>
+    <div class="col-lg-2">
+
+    </div>
+</div>
+    <div class="row">
+        <div class="col" style="width:200px; float:left;">
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="dvAccount"></div>
+
+                    @Html.Partial("~/Views/Account/IndexPartial.cshtml", Model)
+                </div>
+            </div>
+        </div>
+    </div>

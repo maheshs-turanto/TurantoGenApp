@@ -1,0 +1,276 @@
+﻿@model GeneratorBase.MVC.Models.PropertyValidationandFormat
+@{
+    ViewBag.Title = "Create Property Validation, Masking and Format";
+    Layout = null;
+}
+
+<script>
+    $(document).ready(function () {
+        $('#EntityName').change(function () {
+            var SelectedText = $('#EntityName :selected').val();
+            if (SelectedText.length == 0) {
+                window.location.reload();
+                return false;
+            }
+            $('#EntityName').val(SelectedText);
+
+            $.ajax({
+                url: '@Url.Action("GetPropertiesofEntity")' + '?Entity=' + SelectedText,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+                    var optionDOM = '<option value="SelectProperty">--Select Property--</option>';
+                    for (i = 0; i < result.length; i++) {
+                        optionDOM += '<option datatype="' + result[i].DataType + '" value="' + result[i].Name + '">' + result[i].DisplayName + '</option>';
+                    }
+                    $("#" + "PropertyName").html(optionDOM);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            })
+
+        });
+        $('#PropertyName').change(function () {
+            var SelectedText = $('#EntityName :selected').val();
+            var SelectedTextProperty = $('#PropertyName :selected').val();
+            $("#dvRegExPattern").hide();
+            $("#dvMaskPattern").hide();
+            $("#dvErrorMessage").hide();
+            $("#dvDisplayFormat").hide();
+            //$("#dvOther1").hide();
+            $.ajax({
+                url: '@Url.Action("GetRegExofProperty")' + '?Entity=' + SelectedText + '&Property=' + SelectedTextProperty,
+                type: "GET",
+                cache: false,
+                async: false,
+                success: function (result) {
+                    $("#RegExPattern").val(result.regex);
+                    $("#MaskPattern").val(result.mask);
+                    if (result.regex.length > 0) {
+                        $("#dvRegExPattern").show();
+                        $("#dvMaskPattern").show();
+                        $("#dvErrorMessage").show();
+                    }
+                    $("#DisplayFormat").val(result.displayformat);
+                    //$("#Other1").val(result.uidisplayformat);
+                    if (result.displayformat.length > 0) {
+                        $("#dvDisplayFormat").show();
+                        //$("#dvOther1").show();
+                    }
+                    $("#ErrorMessage").val("Invalid " + $('#PropertyName :selected').text());
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            })
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': { allow_single_deselect: true },
+        '.chosen-select-no-single': { disable_search_threshold: 10 },
+        '.chosen-select-no-results': { no_results_text: 'Oops, nothing found!' },
+        '.chosen-select-width': { width: "95%" }
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsGroupsHiddenRule);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(ViewBag.PropertyValidationandFormatIsSetValueUIRule))
+    {
+        @Html.Raw(ViewBag.PropertyValidationandFormatIsSetValueUIRule);
+    }
+}
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+<link href="@Url.Content("~/Content/chosen.css")" rel="stylesheet" type="text/css" />
+@using (Html.BeginForm("CreateQuick", "PropertyValidationandFormat", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+                            Html.ValidationSummary(true);
+                            Html.EnableClientValidation();
+                            <input type="hidden" id="ErrMsgQuickAdd" />
+                            @*<label id="ErrMsgQuickAdd" class="text-primary small pull-right" style="color:red; vertical-align:middle; font-weight:100;"></label>*@
+                            <div id="errorContainerQuickAdd" style="display: none">
+                                <div id="errorsMsgQuickAdd"></div>
+                                <div id="errorsQuickAdd"></div>
+                            </div>
+                            <div id="divDisplayThresholdLimit" style="display:none;">
+                            </div>
+                            <div id="divDisplayBRmsgMandatory" style="display:none;">
+                            </div>
+                            <div id="divDisplayBRmsgBeforeSaveProp" style="display:none;">
+                            </div>
+                            <div class="row">
+                                @Html.Hidden("AssociatedEntity", Convert.ToString(ViewData["AssociatedType"]))
+                                @Html.Hidden("HostingEntityName", Convert.ToString(ViewData["HostingEntityName"]))
+                                @Html.Hidden("HostingEntityID", Convert.ToString(ViewData["HostingEntityID"]))
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <div class="panel panel-default AppForm">
+                                        <div class="panel-body">
+                                            <div class="row">
+
+                                                @if (User.CanView("PropertyValidationandFormat", "EntityName"))
+                                                {
+                                                  
+                                                    <div class='col-sm-6' id="dvEntityName">
+                                                        <div class='form-group' title="Entity Name">
+                                                            <label>@Html.LabelFor(model => model.EntityName) <span class="text-danger-reg">*</span></label>
+                                                            @Html.DropDownList("EntityName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                            @*@Html.TextBoxFor(model => model.EntityName, new { @class = "form-control" })*@
+                                                            @Html.ValidationMessageFor(model => model.EntityName)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("PropertyValidationandFormat", "PropertyName"))
+                                                {
+                                                    <div class='col-sm-6' id="dvPropertyName">
+                                                        <div class='form-group' title="Property Name">
+                                                            <label>@Html.LabelFor(model => model.PropertyName) <span class="text-danger-reg">*</span></label>
+                                                            @Html.DropDownList("PropertyName", null, "-- Select --", new { @required = "required", @class = "form-control" })
+                                                            @*@Html.TextBoxFor(model => model.PropertyName, new { @class = "form-control" })*@
+                                                            @Html.ValidationMessageFor(model => model.PropertyName)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("PropertyValidationandFormat", "RegExPattern"))
+                                                {
+                                                    <div class='col-sm-6' id="dvRegExPattern">
+                                                        <div class='form-group' title="RegEx Pattern">
+                                                            <label>@Html.LabelFor(model => model.RegExPattern) </label>
+
+                                                            @Html.TextBoxFor(model => model.RegExPattern, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.RegExPattern)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("PropertyValidationandFormat", "MaskPattern"))
+                                                {
+                                                    <div class='col-sm-6' id="dvMaskPattern">
+                                                        <div class='form-group' title="Mask Pattern">
+                                                            <label>@Html.LabelFor(model => model.MaskPattern) </label>
+
+                                                            @Html.TextBoxFor(model => model.MaskPattern, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.MaskPattern)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("PropertyValidationandFormat", "ErrorMessage"))
+                                                {
+                                                    <div class='col-sm-6' id="dvErrorMessage">
+                                                        <div class='form-group' title="Error Message">
+                                                            <label>@Html.LabelFor(model => model.ErrorMessage) </label>
+
+                                                            @Html.TextBoxFor(model => model.ErrorMessage, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.ErrorMessage)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @*@if (User.CanView("PropertyValidationandFormat", "LowerBound"))
+                                                {
+                                                    <div class='col-sm-6' id="dvLowerBound">
+                                                        <div class='form-group' title="Lower Bound">
+                                                            <label>@Html.LabelFor(model => model.LowerBound) </label>
+
+                                                            @Html.TextBoxFor(model => model.LowerBound, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.LowerBound)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @if (User.CanView("PropertyValidationandFormat", "UpperBound"))
+                                                {
+                                                    <div class='col-sm-6' id="dvUpperBound">
+                                                        <div class='form-group' title="Upper Bound">
+                                                            <label>@Html.LabelFor(model => model.UpperBound) </label>
+
+                                                            @Html.TextBoxFor(model => model.UpperBound, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.UpperBound)
+
+                                                        </div>
+                                                    </div>
+                                                }*@
+                                                @if (User.CanView("PropertyValidationandFormat", "DisplayFormat"))
+                                                {
+                                                    <div class='col-sm-6' id="dvDisplayFormat">
+                                                        <div class='form-group' title="Display Format">
+                                                            <label>@Html.LabelFor(model => model.DisplayFormat) </label>
+
+                                                            @Html.TextBoxFor(model => model.DisplayFormat, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.DisplayFormat)
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                @*@if (User.CanView("PropertyValidationandFormat", "Other1"))
+                                                {
+                                                    <div class='col-sm-6' id="dvOther1">
+                                                        <div class='form-group' title="Display Format">
+                                                            <label>@Html.LabelFor(model => model.Other1) </label>
+
+                                                            @Html.TextBoxFor(model => model.Other1, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.Other1)
+
+                                                        </div>
+                                                    </div>
+                                                }*@
+    @if (User.CanView("PropertyValidationandFormat", "IsEnabled"))
+    {
+        <div class='col-sm-6 col-md-6 col-xs-12' id="dvIsEnabled">
+            <div class="form-group" title="Is Enabled">
+                <label class="col-sm-5 col-md-5 col-xs-12">
+                    @Html.LabelFor(model => model.IsEnabled)
+                </label>
+                <div class="input-group col-sm-7 col-md-7 col-xs-12">
+                    @Html.CheckBox("IsEnabled", true)
+                    @Html.ValidationMessageFor(model => model.IsEnabled)
+                </div>
+            </div>
+        </div>
+    }
+ 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button id="CancelQuickAdd" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                                                var busineesrule = User.businessrules.Where(p => p.EntityName == "PropertyValidationandFormat").ToList();
+                                                var lstinlineentityname = "";
+                                                var lstinlineassocdispname = "";
+                                                var lstinlineassocname = "";
+                                                if (ViewBag.IsAddPop != null)
+                                                {
+                                                    <input type="submit" value="Create" caller="@Request.QueryString["caller"]" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'PropertyValidationandFormat','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                    <input type="submit" caller="@Request.QueryString["caller"]" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAdd(event,'PropertyValidationandFormat','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="submit" value="Create" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'PropertyValidationandFormat','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                    <input type="submit" value="Create & Continue" btnval="createcontinue" class="btn btn-primary btn-sm" onclick="QuickAddFromIndex(event,true,'PropertyValidationandFormat','@ViewData["AssociatedType"]','@busineesrule',@busineesrule.Count,'OnCreate','ErrMsgQuickAdd',false,'@lstinlineassocname','@lstinlineassocdispname','@lstinlineentityname');" />
+                                                }
+                                                
+}
+<script src="@Url.Content("~/bundles/jqueryval")" type="text/javascript"></script>
+<script src="@Url.Content("~/bundles/common3")" type="text/javascript"></script>
+

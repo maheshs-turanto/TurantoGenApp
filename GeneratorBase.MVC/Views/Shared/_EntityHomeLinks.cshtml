@@ -1,0 +1,111 @@
+﻿@model string
+@{
+    var EntityReflectorObj = ModelReflector.Entities.FirstOrDefault(p => p.Name == Model);
+    var DisplayString = EntityReflectorObj != null ? EntityReflectorObj.DisplayName : Model;
+    var maindivclass = "col-sm-4";
+    if (ViewData["from"] == "Home2") { maindivclass = ""; }
+}
+@if (User.CanView(Model))
+{
+    if (ViewData["type"] == "box")
+    {
+        string searchstring = "SearchString" + Model + "C";
+        string searchid1 = Model + "CSearch";
+        string searchid2 = Model + "C";
+        string IconBackground = Convert.ToString(ViewData["IconBackground"]);
+            <div class="@maindivclass">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = Model })">
+                            <h4 class="text-@IconBackground"><span class="label label-@IconBackground pull-right">@ViewBag.Count</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
+                        </a>
+                        <div style="clear:both"></div>
+                        <div class="input-group mt-1">
+                            @Html.TextBox(searchstring, ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'" + searchid2 + "');", @placeholder = "Search" })
+                            <div class="">
+                                <a id="@searchid1" onclick="HomeSearchClick(event,'@searchid2','@Html.Raw(Url.Action("Index", Model))');"
+                                   data-original-title="List Search" class="btn btn-default btn-default tip-top" style="cursor: pointer;"><span class="fa fa-search"></span></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-sm-12 btn-group mt-1 p-0">
+                            <a href="@Url.Action("RedirectToEntity","Home", new { EntityName=Model})" class="btn btn-outline-secondary mr-1 btn-xs">View</a>
+                            @if (User.CanAdd(Model))
+                    {
+                                <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", Model, new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") class="btn btn-outline-secondary btn-xs"> Add </a>
+                    }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+            if (ViewData["type"] == "graphlink")
+            {
+            <a class="btn btn-secondary" style="margin-right:5px;" dataurl="@Url.Action("ShowGraph", Model , new { type = "all" })" onclick="OpenDashBoardFromHome(this, 'EntityGraph', '@DisplayString');">
+                @DisplayString
+            </a>
+            }
+            if (ViewData["type"] == "recent")
+            {
+            if (User.CanView("JournalEntry"))
+            {
+            string journalsearchstring = "JournalEntryTo" + Model + "Relation";
+            string IconBackground = Convert.ToString(ViewData["IconBackground"]);
+            string entitytype = Convert.ToString(ViewData["entitytype"]);
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title" alt="@DisplayString" title="@DisplayString">
+                            <h4 class="text-@IconBackground" data-toggle="collapse" data-parent="#accordion" href="#@journalsearchstring" onclick="LoadTab('@journalsearchstring','@User.JavaScriptEncodedName','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = Model, HostingEntityID = 0, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks, IsHomePage = true, sortBy = "DateTimeOfEntry", isAsc = "desc", itemsPerPage = 5})')" style="cursor:pointer;float: left;">
+                                @DisplayString
+                            </h4>
+                            <div class="actions" style="float: right;">
+                                @if (User.CanAdd(Model) && entitytype != "Bridge")
+                                {
+                                    <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", Model, new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") class="btn btn-outline-secondary btn-xs" alt="Add" title="Add" style="cursor: pointer;">
+                                        <i class="fa fa-plus-circle" style="cursor: pointer;"></i> Add
+                                    </a>
+                                }
+                                <a data-toggle="collapse" data-parent="#accordion" href="#@journalsearchstring" class="btn btn-outline-secondary btn-xs" onclick="LoadTab('@journalsearchstring','@User.JavaScriptEncodedName','@Url.Action("Index", "JournalEntry", new { RenderPartial = true, HostingEntity = Model, HostingEntityID = 0, AssociatedType = "JournalEntry", TabToken = DateTime.Now.Ticks, IsHomePage = true, sortBy = "DateTimeOfEntry", isAsc = "desc", itemsPerPage = 5 })')" alt="Expand/Collapse" title="Expand/Collapse">
+                                    <i class="fa fa-angle-down"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content nopadding collapse" id="@journalsearchstring"></div>
+                </div>
+
+            </div>
+            }
+            }
+            if (ViewData["type"] == "pagecontent")
+            {
+            string searchstring = "SearchString" + Model + "C";
+            string searchid1 = Model + "CSearch";
+            string searchid2 = Model + "C";
+            string IconBackground = Convert.ToString(ViewData["IconBackground"]);
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body">
+                        <a href="@Url.Action("RedirectToEntity","Home", new { EntityName=Model})">
+                            <h4 class="text-@IconBackground"><span class="label label-@IconBackground pull-right">@ViewBag.Count</span> <span class="index-boxTitle pull-left">@DisplayString</span> </h4>
+                        </a>
+                        <div style="clear:both"></div>
+                        <div class="input-group mt-1">
+                            @Html.TextBox(searchstring, ViewBag.CurrentFilter as string, null, new { @class = "form-control fixsearchbox", @onkeypress = "SearchKeyPress(event,'" + searchid2 + "');", @placeholder = "Search" })
+                            <div class="">
+                                <a id="@searchid1" onclick="HomeSearchClick(event,'@searchid2','@Html.Raw(Url.Action("Index", Model))');"
+                                   data-original-title="List Search" class="btn btn-default btn-default tip-top" style="cursor: pointer;"><span class="fa fa-search"></span></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-sm-12 btn-group mt-1 p-0">
+                            <a href="@Url.Action("RedirectToEntity", "Home", new { EntityName = Model })" class="btn btn-outline-secondary mr-1 btn-xs">View</a>
+                            @if (User.CanAdd(Model))
+                        {
+                                <a onclick=@Html.Raw("NavigateToUrl('" + Url.Action("Create", Model, new { UrlReferrer = Request.Url.PathAndQuery, AssociatedType = ViewData["AssociatedType"], HostingEntityName = @Convert.ToString(ViewData["HostingEntity"]), HostingEntityID = @Convert.ToString(ViewData["HostingEntityID"]) }, null) + "');") class="btn btn-outline-secondary btn-xs"> Add </a>
+                        }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+            }
