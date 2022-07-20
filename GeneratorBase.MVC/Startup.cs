@@ -11,7 +11,7 @@ public partial class Startup
 {
     public void Configuration(IAppBuilder app)
     {
-		//mahesh test demo to mukul fgfdg
+		//mahesh test demo to mukul test
         var allDbContextsTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == (typeof(DbContext))).ToList();
         foreach(Type dbContextType in allDbContextsTypes)
         {
